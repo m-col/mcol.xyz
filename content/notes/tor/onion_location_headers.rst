@@ -32,8 +32,6 @@ was add this line into my nginx.conf in my clearnet site's server block:
 
     add_header Onion-Location http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion$request_uri;
 
-(In case of overflow: that is one line.)
-
 That header is all it takes for tor browser users to use onions by default on
 all sites that host them, removing any need for manual identification of
 whether websites that they visit host onion services.

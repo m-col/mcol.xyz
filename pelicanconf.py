@@ -35,6 +35,8 @@ CATEGORIES_SAVE_AS = 'categories.html'
 AUTHOR_SAVE_AS = ''
 DISPLAY_CATEGORIES_ON_MENU = False
 
+
+# rice layout
 MENUITEMS = (
     ('code', '/code'),
     ('about', '/about.html'),
@@ -47,14 +49,19 @@ ICONITEMS = (
     ('fas fa-rss', '/rss.xml'),
 )
 
+SITESUBTITLE = "A hobbyist's notes on FOSS, linux toys and privacy tools"
+MENUPADTO = 8
+EXTRAHEAD = """<link rel="stylesheet" href="/theme/css/fa.css" />
+    <script async defer src="/matomo/404.js"></script>"""
+PRIVACYPOLICY = """I collect some but very little and 100% anonymous data to get a vague
+sense of what pages are visited, if any, and from what websites visitors come from. That
+is its only use, and its only by me, only on my machine."""
+
+
 # minify-fontawesome
 PLUGINS.append("pelican-minify-fontawesome")
 MINIFY_FONTAWESOME = '/home/mcol/git/mcol.xyz/fontawesome-free-5.11.2-web'
 
-SITESUBTITLE = "A hobbyist's notes on FOSS, linux toys and privacy tools"
-MENUPADTO = 8
-EXTRA_HEAD = """<link rel="stylesheet" href="/theme/css/fa.css" />
-    <script async defer src="/matomo/404.js"></script>"""
 
 # development settings
 DELETE_OUTPUT_DIRECTORY = True

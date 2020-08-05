@@ -42,8 +42,9 @@ MENUITEMS = (
 )
 
 ICONITEMS = (
-    ('<i class="fab fa-mastodon"></i>', 'https://fosstodon.org/@mcol" rel="me'),
-    ('<i class="fas fa-envelope"></i>', 'mailto:mcol@posteol.net'),
+    ('fab fa-mastodon', 'https://fosstodon.org/@mcol" rel="me'),
+    ('fas fa-envelope', 'mailto:mcol@posteo.net'),
+    ('fas fa-rss', '/rss.xml'),
 )
 
 # minify-fontawesome
@@ -51,7 +52,7 @@ PLUGINS.append("pelican-minify-fontawesome")
 MINIFY_FONTAWESOME = '/home/mcol/git/mcol.xyz/fontawesome-free-5.11.2-web'
 
 SITESUBTITLE = "A hobbyist's notes on FOSS, linux toys and privacy tools"
-MENUPADTO = 18
+MENUPADTO = 8
 EXTRA_HEAD = """<link rel="stylesheet" href="/theme/css/fa.css" />
     <script async defer src="/matomo/404.js"></script>"""
 

@@ -67,7 +67,6 @@ endif
 
 
 devserver:
-	sed -i 's/^ONION[\ ]*=.*/ONION = False/1' $(CONFFILE)
 ifdef PORT
 	$(PELICAN) -lr $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS) -p $(PORT)
 else

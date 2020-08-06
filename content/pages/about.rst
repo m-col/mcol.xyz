@@ -18,8 +18,8 @@ at `@mcol@fosstodon.org <https://fosstodon.org/@mcol>`_, mcol on IRC or you can
 email me at :code:`mcol` at :code:`posteo.net` [`pgp key`_].
 
 
-blogs i like
-------------
+blogroll
+--------
 
 *in random order*
 

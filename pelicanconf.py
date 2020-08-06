@@ -53,9 +53,9 @@ SITESUBTITLE = "A hobbyist's notes on FOSS, linux toys and privacy tools"
 MENUPADTO = 8
 EXTRAHEAD = """<link rel="stylesheet" href="/theme/css/fa.css" />
     <script async defer src="/matomo/404.js"></script>"""
-PRIVACYPOLICY = """I collect some but very little and 100% anonymous data to get a vague
-sense of what pages are visited, if any, and from what websites visitors come from. That
-is its only use, and its only by me, only on my machine."""
+PRIVACYPOLICY = """I collect very little 100% anonymous data for a vague sense of what
+pages are visited, and from what websites. That is its only use, only by me, only on my
+machine."""
 
 
 # minify-fontawesome

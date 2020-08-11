@@ -73,4 +73,10 @@ BLOGROLL.append([
     "www.arp242.net",
 ])
 
+BLOGROLL.append([
+    "Set of Principles",
+    "https://setofprinciples.com",
+    "setofprinciples.com",
+])
+
 random.shuffle(BLOGROLL)

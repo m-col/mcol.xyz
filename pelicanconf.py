@@ -18,8 +18,7 @@ THEME = '/home/mcol/git/rice-theme'
 PAGE_PATHS = ['pages',]
 ARTICLE_PATHS = ['notes',]
 DEFAULT_DATE_FORMAT = '%Y-%m-%d'
-#STATIC_PATHS = ['static', 'favicon.png']
-STATIC_PATHS = ['static']
+STATIC_PATHS = ['static', 'favicon.png']
 PLUGIN_PATHS = ["/home/mcol/git", "/home/mcol/git/pelican-plugins"]
 PLUGINS = []
 RELATIVE_URLS = True
@@ -52,7 +51,7 @@ ICONITEMS = (
 SITESUBTITLE = "A hobbyist's notes on FOSS, linux toys and privacy tools"
 MENUPADTO = 8
 EXTRAHEAD = """<link rel="stylesheet" href="/theme/css/fa.css" />
-    <script async defer src="/matomo/404.js"></script>"""
+    <script data-goatcounter="https://goat.mcol.xyz/count" async src="//goat.mcol.xyz/count.js"></script>"""
 PRIVACYPOLICY = """I collect very little 100% anonymous data for a vague sense of what
 pages are visited, and from what websites. That is its only use, only by me, only on my
 machine."""

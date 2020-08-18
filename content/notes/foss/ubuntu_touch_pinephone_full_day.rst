@@ -99,7 +99,7 @@ even when idle:
 * 18:15: 33% charge
 * 18:30: 20% charge
 
-Then I sat browseing reddit for 30 minutes or so using `Quickddit
+Then I sat browsing reddit for 30 minutes or so using `Quickddit
 <https://github.com/accumulator/Quickddit>`_, finally getting a 'Low Battery'
 notification at 7pm with 9% battery. This prompted me to stop wasting my time
 on reddit and put the phone down. When I checked it again 10 minutes later it

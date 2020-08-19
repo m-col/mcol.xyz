@@ -38,7 +38,7 @@ DISPLAY_CATEGORIES_ON_MENU = False
 # Theme
 ICONS = (
     ('/icons/home.png', 'Home', '/'),
-    ('/icons/git.png', 'My git respositories', '/code/'),
+    ('/icons/git.png', 'My git repositories', '/code/'),
     ('/icons/mastodon.png', 'Me on Mastodon', 'https://fosstodon.org/@mcol rel=me'),
     ('/icons/email.png', 'Email me', 'mailto:mcol@posteo.net'),
     ('/icons/github.png', 'Me on GitHub', 'https://github.com/m-col'),

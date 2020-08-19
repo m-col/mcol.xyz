@@ -16,15 +16,15 @@ PATH = 'content'
 TIMEZONE = 'UTC'
 THEME = '/home/mcol/git/mcol.xyz-theme'
 PAGE_PATHS = ['pages',]
-ARTICLE_PATHS = ['notes',]
+ARTICLE_PATHS = ['posts',]
 DEFAULT_DATE_FORMAT = '%Y-%m-%d'
-STATIC_PATHS = ['static', 'favicon.png']
+STATIC_PATHS = ['static', 'favicon.png', 'icons', 'avatar.png']
 PLUGIN_PATHS = ["/home/mcol/git", "/home/mcol/git/pelican-plugins"]
 PLUGINS = []
 RELATIVE_URLS = True
 
-ARCHIVES_TITLE = 'notes'
-ARCHIVES_SAVE_AS = 'notes.html'
+ARCHIVES_TITLE = 'posts'
+ARCHIVES_SAVE_AS = 'posts.html'
 AUTHORS_SAVE_AS = ''
 TAGS_SAVE_AS = ''
 ARTICLE_URL = '{date:%Y}/{date:%m}/{slug}.html'
@@ -35,27 +35,24 @@ AUTHOR_SAVE_AS = ''
 DISPLAY_CATEGORIES_ON_MENU = False
 
 
-# rice layout
-MENUITEMS = (
-    ('code', '/code'),
-    ('about', '/about.html'),
-    ('onion', 'http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion'),
+# Theme
+ICONS = (
+    ('/icons/home.png', 'Home', '/'),
+    ('/icons/git.png', 'My git respositories', '/code/'),
+    ('/icons/mastodon.png', 'Me on Mastodon', 'https://fosstodon.org/@mcol rel=me'),
+    ('/icons/email.png', 'Email me', 'mailto:mcol@posteo.net'),
+    ('/icons/github.png', 'Me on GitHub', 'https://github.com/m-col'),
+    ('/icons/liberapay.png', 'Me on Liberapay', 'https://liberapay.com/mcol'),
+    ('/icons/onion.png', 'Onion service', 'http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion'),
+    ('/icons/rss.png', 'RSS feed', '/rss.xml'),
 )
 
-ICONITEMS = (
-    ('fab fa-mastodon', 'https://fosstodon.org/@mcol" rel="me'),
-    ('fas fa-envelope', 'mailto:mcol@posteo.net'),
-    ('fas fa-rss', '/rss.xml'),
-)
-
-SITESUBTITLE = "A hobbyist's notes on FOSS, linux toys and privacy tools"
-MENUPADTO = 8
+AVATAR = "/avatar.png"
+HOME1 = "A hobbyist's notes on FOSS, linux toys and privacy tools"
+HOME2 = "~ Welcome ~"
 EXTRAHEAD = """<link rel="stylesheet" href="/theme/css/fa.css" />
     <script data-goatcounter="https://goat.mcol.xyz/count" async src="//goat.mcol.xyz/count.js"></script>"""
-PRIVACYPOLICY = """I collect very little 100% anonymous data for a vague sense of what
-pages are visited, and from what websites. That is its only use, only by me, only on my
-machine."""
-
+EXTRATAIL = "<script data-goatcounter=https://goat.mcol.xyz/count async src=//goat.mcol.xyz/count.js></script>"
 
 # minify-fontawesome
 PLUGINS.append("pelican-minify-fontawesome")

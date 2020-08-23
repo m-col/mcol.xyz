@@ -49,7 +49,7 @@ ICONS = (
 
 AVATAR = "/avatar.png"
 HOME1 = "A hobbyist's notes on FOSS, linux toys and privacy tools"
-HOME2 = "~ Welcome ~"
+HOME2 = "Welcome"
 EXTRAHEAD = "<link rel=stylesheet href=/theme/css/fa.css />"
 EXTRATAIL = "<script data-goatcounter=https://goat.mcol.xyz/count async src=//goat.mcol.xyz/count.js></script>"
 

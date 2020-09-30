@@ -14,7 +14,7 @@ AUTHOR = 'mcol'
 SITENAME = 'mcol.xyz'
 PATH = 'content'
 TIMEZONE = 'UTC'
-THEME = '/home/mcol/git/mcol.xyz-theme'
+THEME = '/home/mcol/git/mini-theme'
 PAGE_PATHS = ['pages',]
 ARTICLE_PATHS = ['posts',]
 DEFAULT_DATE_FORMAT = '%Y-%m-%d'
@@ -36,16 +36,22 @@ DISPLAY_CATEGORIES_ON_MENU = False
 
 
 # Theme
-ICONS = (
-    ('/icons/home.png', 'Home', '/'),
-    ('/icons/git.png', 'My git repositories', '/code/'),
-    ('/icons/mastodon.png', 'Me on Mastodon', 'https://fosstodon.org/@mcol rel=me'),
-    ('/icons/email.png', 'Email me', 'mailto:mcol@posteo.net'),
-    ('/icons/github.png', 'Me on GitHub', 'https://github.com/m-col'),
-    ('/icons/liberapay.png', 'Me on Liberapay', 'https://liberapay.com/mcol'),
-    ('/icons/onion.png', 'Onion service', 'http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion'),
-    ('/icons/rss.png', 'RSS feed', '/rss.xml'),
+ONION = 'http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion'
+LINKS = (
+    ('mastodon', 'https://fosstodon.org/@mcol', 'hit me up to chat!'),
+    ('email', 'mailto:mcol@posteo.net',         'or here, if you want'),
+    ('github', 'https://github.com/m-col',      'this i use when i must'),
+    ('liberapay', 'https://liberapay.com/mcol', 'buy me some candy?'),
+    ('blog onion', ONION,                       'feeling edgy and/or paranoid?'),
+    ('blog RSS feed', '/rss.xml',               'follow me if you\'d like'),
 )
+
+ABOUT = """
+<p>Welcome to my blog!</p>
+<p>I'm Matt and I write about open source software that I stumble across surfing the web.</p>
+<p>Some of my main interests are self-hosting, privacy tools, and anything
+to do with <a href=https://wiki.installgentoo.com/wiki/GNU/Linux_ricing>ricing</a>.</p>
+"""
 
 AVATAR = "/avatar.png"
 HOME1 = "A hobbyist's notes on FOSS, linux toys and privacy tools"

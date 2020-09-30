@@ -4,11 +4,11 @@ bye gitea, hello cgit
 :date: 2020-08-02
 :summary: After a few months of running a gitea instance on my website, the
           headache of putting up with it's sluggishness became too strong and I
-          needed to replace it with someone less heavy.
+          needed to replace it with something less heavy.
 
 After a few months of running a gitea_ instance on my website, the headache of
 putting up with it's sluggishness became too strong and I needed to replace it
-with someone less heavy.
+with something less heavy.
 
 Before I had set up gitea, I read briefly about cgit_ and, although it
 certainly looked attractive as a minimal, functional git server, gitea swayed

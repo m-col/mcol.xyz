@@ -18,7 +18,8 @@ THEME = '/home/mcol/git/mini-theme'
 PAGE_PATHS = ['pages',]
 ARTICLE_PATHS = ['posts',]
 DEFAULT_DATE_FORMAT = '%Y-%m-%d'
-STATIC_PATHS = ['static', 'favicon.png', 'icons', 'avatar.png']
+STATIC_PATHS = ['static', 'favicon.png', 'icons', 'avatar.png', 'screenshots']
+STATIC_CREATE_LINKS = True
 PLUGIN_PATHS = ["/home/mcol/git", "/home/mcol/git/pelican-plugins"]
 PLUGINS = []
 RELATIVE_URLS = True
@@ -50,7 +51,8 @@ ABOUT = """
 <p>Welcome to my blog!</p>
 <p>I'm Matt and I write about open source software that I stumble across surfing the web.</p>
 <p>Some of my main interests are self-hosting, privacy tools, and anything
-to do with <a href=https://wiki.installgentoo.com/wiki/GNU/Linux_ricing>ricing</a>.</p>
+to do with <a href=https://wiki.installgentoo.com/wiki/GNU/Linux_ricing>ricing</a> (see
+mine <a href="/screenshots.html">here</a>).</p>
 """
 
 AVATAR = "/avatar.png"
@@ -58,6 +60,11 @@ HOME1 = "A hobbyist's notes on FOSS, linux toys and privacy tools"
 HOME2 = "Welcome"
 EXTRAHEAD = "<link rel=stylesheet href=/theme/css/fa.css />"
 EXTRATAIL = "<script data-goatcounter=https://goat.mcol.xyz/count async src=//goat.mcol.xyz/count.js></script>"
+
+import html
+SCREENSHOTS = os.listdir('content/screenshots')
+SCREENSHOTS = [html.escape(i) for i in SCREENSHOTS]
+SCREENSHOTS.sort(reverse=True)
 
 # minify-fontawesome
 PLUGINS.append("pelican-minify-fontawesome")

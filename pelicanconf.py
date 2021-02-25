@@ -42,7 +42,6 @@ LINKS = (
     ('mastodon', 'https://fosstodon.org/@mcol', 'hit me up to chat!'),
     ('email', 'mailto:mcol@posteo.net',         'or here, if you want'),
     ('github', 'https://github.com/m-col',      'this i use when i must'),
-    ('liberapay', 'https://liberapay.com/mcol', 'buy me some candy?'),
     ('blog onion', ONION,                       'feeling edgy and/or paranoid?'),
     ('blog RSS feed', '/rss.xml',               'follow me if you\'d like'),
 )
@@ -59,7 +58,7 @@ AVATAR = "/avatar.png"
 HOME1 = "A hobbyist's notes on FOSS, linux toys and privacy tools"
 HOME2 = "Welcome"
 EXTRAHEAD = "<link rel=stylesheet href=/theme/css/fa.css />"
-EXTRATAIL = "<script data-goatcounter=https://goat.mcol.xyz/count async src=//goat.mcol.xyz/count.js></script>"
+EXTRATAIL = ""
 ARTICLE_FEEDBACK = """If you have any thoughts, comments, criticisms, feel free to reach
 out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
 href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ"""

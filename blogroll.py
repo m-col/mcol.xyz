@@ -8,21 +8,9 @@ import random
 BLOGROLL = []
 
 BLOGROLL.append([
-    "Freddy's Ramblings",
-    "https://write.privacytools.io/freddy",
-    "write.privacytools.io/freddy",
-])
-
-BLOGROLL.append([
     "Nduli's World",
     "https://jnduli.co.ke",
     "jnduli.co.ke",
-])
-
-BLOGROLL.append([
-    "Jonathan Borichevskiy's Up and to the Right",
-    "https://jborichevskiy.com",
-    "jborichevskiy.com",
 ])
 
 BLOGROLL.append([
@@ -50,12 +38,6 @@ BLOGROLL.append([
 ])
 
 BLOGROLL.append([
-    "Addy",
-    "https://addy-dclxvi.github.io",
-    "addy-dclxvi.github.io",
-])
-
-BLOGROLL.append([
     "Alejandro",
     "https://baez.link",
     "baez.link",
@@ -74,15 +56,15 @@ BLOGROLL.append([
 ])
 
 BLOGROLL.append([
-    "Set of Principles",
-    "https://setofprinciples.com",
-    "setofprinciples.com",
-])
-
-BLOGROLL.append([
     "TyChi",
     "https://musings.tychi.me/",
     "musings.tychi.me",
+])
+
+BLOGROLL.append([
+    "Matt Parsons' Overcoming Software",
+    "https://www.parsonsmatt.org/",
+    "www.parsonsmatt.org",
 ])
 
 random.shuffle(BLOGROLL)

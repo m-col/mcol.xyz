@@ -57,7 +57,7 @@ mine <a href="/screenshots.html">here</a>).</p>
 """
 
 AVATAR = "/avatar.png"
-HOME1 = "One more person's notes on FOSS, code and unix toys."
+HOME1 = "One more person's notes on FOSS, code and unix toys"
 HOME2 = "Welcome"
 EXTRAHEAD = "<link rel=stylesheet href=/theme/css/fa.css />"
 EXTRATAIL = ""

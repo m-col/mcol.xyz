@@ -14,6 +14,12 @@ BLOGROLL.append([
 ])
 
 BLOGROLL.append([
+    "Gabriella Gonzalez's Haskell for all",
+    "https://www.haskellforall.com",
+    "haskellforall.com",
+])
+
+BLOGROLL.append([
     "Nduli's World",
     "https://jnduli.co.ke",
     "jnduli.co.ke",

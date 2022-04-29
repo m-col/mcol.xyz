@@ -8,6 +8,12 @@ import random
 BLOGROLL = []
 
 BLOGROLL.append([
+    "Sandy Maguire's Reasonably Polymorphic",
+    "https://reasonablypolymorphic.com/",
+    "reasonablypolymorphic.com",
+])
+
+BLOGROLL.append([
     "Bartosz Milewski's Programming Cafe",
     "https://bartoszmilewski.com",
     "bartoszmilewski.com",

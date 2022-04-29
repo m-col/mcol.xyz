@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>mcol.xyz but in VR</title>
+    <meta name="description" content="mcol.xyz but in VR">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <a-entity class="board"
+        geometry="primitive: box; height: 7; width: 2.5; depth: 0.2"
+        material="shader: flat; color: #aab"
+      >
+      </a-entity>
+      
+      <a-light type="ambient" color="#666"></a-light>
+      <a-light type="point" intensity="2" position="2 4 4"></a-light>
+      <a-sky color="#fff"></a-sky>
+      <a-plane color="#aab" rotation="-90 0 0" height="20" width="20"></a-plane>
+      <a-text value="Hello, A-Frame!" color="black" position="-0.9 0.2 -3" scale="1 1 1"></a-text>
+    </a-scene>
+  </body>
+</html>

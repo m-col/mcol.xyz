@@ -81,8 +81,8 @@ BLOGROLL.append([
 
 BLOGROLL.append([
     "Matt Parsons' Overcoming Software",
-    "https://www.parsonsmatt.org/",
-    "www.parsonsmatt.org",
+    "https://www.overcoming.software/",
+    "overcoming.software",
 ])
 
 random.shuffle(BLOGROLL)

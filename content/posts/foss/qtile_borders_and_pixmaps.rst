@@ -97,4 +97,4 @@ ideas that you'd want implemented for your own Qtile config!
 .. _XCB: https://en.wikipedia.org/wiki/XCB
 .. _trapezia: https://www.thefreedictionary.com/trapezia
 .. _`Common Desktop Environment`: https://en.wikipedia.org/wiki/Common_Desktop_Environment
-.. _qtools: /code/qtools/tree/qtools/borders
+.. _qtools: /code/qtools/file/qtools/borders/borders.py.html

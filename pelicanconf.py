@@ -7,7 +7,7 @@ from html import escape
 sys.path.append(os.curdir)
 from blogroll import BLOGROLL
 
-SITEURL = "//"
+SITEURL = "https://mcol.xyz"
 AUTHOR = "mcol"
 SITENAME = "mcol.xyz"
 PATH = "content"

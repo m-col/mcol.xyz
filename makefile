@@ -16,7 +16,6 @@ SSH_TARGET_DIR_ONION=/home/mcol/mcol.onion
 
 FTP_USER=mcol@mcol.xyz
 FTP_HOST=mcol.xyz
-FTP_TARGET_DIR=/
 
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
@@ -89,7 +88,11 @@ rsync_upload: publish
 	    $(OUTPUTDIR)/ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
 
 ftp_upload: publish
-	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) $(FTP_TARGET_DIR) $(OUTPUTDIR)/*
+	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) / $(OUTPUTDIR)/*
+
+code:
+	gitja -c gitja.dhall
+	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) /code/ output-gitja/*
 
 
 .PHONY: html help clean regenerate serve serve-global devserver stopserver publish ssh_upload rsync_upload ftp_upload

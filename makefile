@@ -14,6 +14,10 @@ SSH_USER=mcol
 SSH_TARGET_DIR=/home/mcol/mcol.xyz
 SSH_TARGET_DIR_ONION=/home/mcol/mcol.onion
 
+FTP_USER=mcol@mcol.xyz
+FTP_HOST=mcol.xyz
+FTP_TARGET_DIR=/
+
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 	PELICANOPTS += -D
@@ -37,6 +41,7 @@ help:
 	@echo '   make devserver [PORT=8000]          serve and regenerate together      '
 	@echo '   make ssh_upload                     upload the web site via SSH        '
 	@echo '   make rsync_upload                   upload the web site via rsync+ssh  '
+	@echo '   make ftp_upload                     upload the web site via FTP        '
 	@echo '                                                                          '
 	@echo 'Set the DEBUG variable to 1 to enable debugging, e.g. make DEBUG=1 html   '
 	@echo 'Set the RELATIVE variable to 1 to enable relative urls                    '
@@ -83,5 +88,8 @@ rsync_upload: publish
 	rsync -e "ssh -p $(SSH_PORT)" -P -rczz --cvs-exclude --delete --chmod=D755,F644 --copy-dirlinks \
 	    $(OUTPUTDIR)/ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
 
+ftp_upload: publish
+	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) $(FTP_TARGET_DIR) $(OUTPUTDIR)/*
 
-.PHONY: html help clean regenerate serve serve-global devserver stopserver publish ssh_upload rsync_upload
+
+.PHONY: html help clean regenerate serve serve-global devserver stopserver publish ssh_upload rsync_upload ftp_upload

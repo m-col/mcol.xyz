@@ -44,7 +44,7 @@ LINKS = (
     ("mastodon", "https://fosstodon.org/@mcol", "hit me up to chat!"),
     ("email", "mailto:mcol@posteo.net", "or here, if you want"),
     ("github", "https://github.com/m-col", "this i use when i must"),
-    ("blog onion", ONION, "feeling edgy and/or paranoid?"),
+    #("blog onion", ONION, "feeling edgy and/or paranoid?"),
     ("blog RSS feed", "/rss.xml", "follow me if you'd like"),
 )
 
@@ -65,7 +65,7 @@ ARTICLE_FEEDBACK = """If you have any thoughts, comments, criticisms, feel free 
 out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
 href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ"""
 
-SCREENSHOTS = reversed([escape(i) for i in os.listdir("content/screenshots")])
+SCREENSHOTS = reversed(escape(i) for i in os.listdir("content/screenshots"))
 
 # minify-fontawesome
 PLUGINS.append("pelican-minify-fontawesome")

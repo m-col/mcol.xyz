@@ -12,7 +12,6 @@ SSH_HOST=mcol.xyz
 SSH_PORT=22
 SSH_USER=mcol
 SSH_TARGET_DIR=/home/mcol/mcol.xyz
-SSH_TARGET_DIR_ONION=/home/mcol/mcol.onion
 
 FTP_USER=mcol@mcol.xyz
 FTP_HOST=mcol.xyz

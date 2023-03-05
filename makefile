@@ -93,5 +93,4 @@ code:
 	gitja -c gitja.dhall
 	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) /code/ output-gitja/*
 
-
-.PHONY: html help clean regenerate serve serve-global devserver stopserver publish ssh_upload rsync_upload ftp_upload
+.PHONY: html help clean regenerate serve serve-global devserver stopserver publish ssh_upload rsync_upload ftp_upload code

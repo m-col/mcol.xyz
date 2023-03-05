@@ -65,7 +65,7 @@ ARTICLE_FEEDBACK = """If you have any thoughts, comments, criticisms, feel free 
 out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
 href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ"""
 
-SCREENSHOTS = reversed(escape(i) for i in os.listdir("content/screenshots"))
+SCREENSHOTS = reversed([escape(i) for i in os.listdir("content/screenshots")])
 
 # minify-fontawesome
 PLUGINS.append("pelican-minify-fontawesome")

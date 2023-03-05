@@ -14,7 +14,7 @@
 
 <table>
   <tr><td><span class="desc">{{ description }}</span></td></tr>
-  <tr class="url"><td>git clone <a href="{{ host }}/code/{{ name }}">{{ host }}/code/{{ name }}</a></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/{{ name }}">https://github.com/m-col/{{ name }}</a></td></tr>
   <tr><td>
     <a href="{{ host }}/code/{{ name }}/tree.html">Files</a> | <a href="{{ host }}/code/{{ name }}/refs.html">Refs</a>
     {% if readme %} | <a href="{{ host }}/code/{{ name }}/file/{{ readme.href }}">Readme</a>{% endif %}

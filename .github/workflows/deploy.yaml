@@ -40,13 +40,6 @@ jobs:
           uv sync --locked
           uv run pelican content -o output -s publishconf.py
 
-      - name: Checkout gitja
-        uses: actions/checkout@v5
-        with:
-          repository: m-col/gitja
-          path: gitja-src
-          fetch-depth: 0
-
       - name: Download gitja
         run: |
           curl -fsSL -o /usr/local/bin/gitja \
@@ -62,16 +55,10 @@ jobs:
       - name: Clone repos listed on /code
         run: |
           repos=$(dhall-to-json --file gitja/config.dhall | jq -r '.repos[]' | sed 's#^\.\./##')
-          mv gitja-src ../gitja
           cd ..
           for repo in $repos; do
-            case "$repo" in
-              # mcol.xyz is already checked out here as this workflow's own
-              # repo, and gitja was just moved into place above (it was
-              # already checked out with full history for its own /code
-              # page data).
-              mcol.xyz | gitja) continue ;;
-            esac
+            # mcol.xyz is already checked out here as this workflow's own repo.
+            [ "$repo" = mcol.xyz ] && continue
             # Full clone, not shallow - see the fetch-depth comment above.
             git clone "https://github.com/m-col/$repo" "$repo"
           done

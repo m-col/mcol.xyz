@@ -8,6 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # gitja walks each repo's full commit history, and libgit2 (which
+          # gitja uses) doesn't handle git's shallow-clone boundary the way
+          # native git does - a shallow fetch here makes it error out
+          # trying to look up commits that were never downloaded.
+          fetch-depth: 0
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
@@ -22,3 +28,32 @@ jobs:
 
       - name: Build site
         run: just publish
+
+      - name: Download gitja
+        run: |
+          curl -fsSL -o /usr/local/bin/gitja \
+            https://github.com/m-col/gitja/releases/latest/download/gitja-linux-x86_64
+          chmod +x /usr/local/bin/gitja
+
+      - name: Install dhall-to-json
+        run: |
+          curl -fsSL \
+            https://github.com/dhall-lang/dhall-haskell/releases/download/1.42.2/dhall-json-1.7.12-x86_64-linux.tar.bz2 \
+            | tar xj -C /usr/local/bin --strip-components=1 bin/dhall-to-json
+
+      - name: Clone repos listed on /code
+        run: |
+          repos=$(dhall-to-json --file gitja/config.dhall | jq -r '.repos[]' | sed 's#^\.\./##')
+          cd ..
+          for repo in $repos; do
+            # mcol.xyz is already checked out here as this workflow's own repo.
+            [ "$repo" = mcol.xyz ] && continue
+            # Full clone, not shallow - see the fetch-depth comment above.
+            git clone "https://github.com/m-col/$repo" "$repo"
+          done
+
+      - name: Write repo descriptions
+        run: python3 gitja/descriptions.py
+
+      - name: Check gitja runs against the templates
+        run: gitja -c gitja/config.dhall -q

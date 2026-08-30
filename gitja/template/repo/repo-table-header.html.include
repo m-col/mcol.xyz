@@ -16,9 +16,9 @@
   <tr><td><span class="desc">{{ description }}</span></td></tr>
   <tr class="url"><td>git clone <a href="https://github.com/m-col/{{ name }}">https://github.com/m-col/{{ name }}</a></td></tr>
   <tr><td>
-    <a href="{{ host }}/code/{{ name }}/tree.html">Files</a> | <a href="{{ host }}/code/{{ name }}/refs.html">Refs</a>
-    {% if readme %} | <a href="{{ host }}/code/{{ name }}/file/{{ readme.href }}">Readme</a>{% endif %}
-    {% if license %} | <a href="{{ host }}/code/{{ name }}/file/{{ license.href }}">License</a>{% endif %}
+    <a href="{{ host }}/code/{{ name }}/files.html">Files</a> | <a href="{{ host }}/code/{{ name }}/refs.html">Refs</a>
+    {% if readme %} | <a href="{{ host }}/code/{{ name }}/blob/{{ readme.href }}">Readme</a>{% endif %}
+    {% if license %} | <a href="{{ host }}/code/{{ name }}/blob/{{ license.href }}">License</a>{% endif %}
   </td></tr>
 </table>
 <hr>

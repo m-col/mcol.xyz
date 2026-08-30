@@ -74,12 +74,6 @@ BLOGROLL.append([
 ])
 
 BLOGROLL.append([
-    "TyChi",
-    "https://musings.tychi.me/",
-    "musings.tychi.me",
-])
-
-BLOGROLL.append([
     "Matt Parsons' Overcoming Software",
     "https://www.overcoming.software/",
     "overcoming.software",

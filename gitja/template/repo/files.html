@@ -1,7 +1,7 @@
 {% extends "../template.html.include" %}
 
 {%- block title -%}
-{{ name }} - target
+{{ name }} - files
 {%- endblock -%}
 
 {% block body %}
@@ -17,10 +17,10 @@
     </thead>
 
     <tbody>
-      {% for file in tree %}
+      {% for file in blobs %}
       <tr>
         <td>{{ file.mode_symbolic }}</td>
-        <td><a href="{{ host }}/code/{{ name }}/file/{{ file.href }}">{{ file.path }}</a></td>
+        <td><a href="{{ host }}/code/{{ name }}/blob/{{ file.href }}">{{ file.path }}</a></td>
       </tr>
       {% endfor %}
     </tbody>

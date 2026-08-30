@@ -30,13 +30,14 @@
 </table>
 <script>
 (function () {
-	var table = document.getElementById("blogroll");
-	var rows = Array.prototype.slice.call(table.rows);
-	for (var i = rows.length - 1; i > 0; i--) {
-		var j = Math.floor(Math.random() * (i + 1));
-		var tmp = rows[i]; rows[i] = rows[j]; rows[j] = tmp;
-	}
-	rows.forEach(function (row) { table.appendChild(row); });
+        var tbody = document.querySelector("#blogroll tbody");
+        if (!tbody) return;
+        var rows = Array.prototype.slice.call(tbody.rows);
+        for (var i = rows.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var tmp = rows[i]; rows[i] = rows[j]; rows[j] = tmp;
+        }
+        rows.forEach(function (row) { tbody.appendChild(row); });
 })();
 </script>
 

@@ -19,6 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # gitja walks each repo's full commit history, and libgit2 (which
+          # gitja uses) doesn't handle git's shallow-clone boundary the way
+          # native git does - a shallow fetch here makes it error out
+          # trying to look up commits that were never downloaded.
+          fetch-depth: 0
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
@@ -39,8 +45,9 @@ jobs:
         with:
           repository: m-col/gitja
           path: gitja-src
+          fetch-depth: 0
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ~/.stack
           key: ${{ runner.os }}-stack-${{ hashFiles('gitja-src/stack.yaml.lock') }}
@@ -69,7 +76,8 @@ jobs:
               # already checked out to build the gitja binary itself).
               mcol.xyz | gitja) continue ;;
             esac
-            git clone --depth 100 "https://github.com/m-col/$repo" "$repo"
+            # Full clone, not shallow - see the fetch-depth comment above.
+            git clone "https://github.com/m-col/$repo" "$repo"
           done
 
       - name: Write repo descriptions

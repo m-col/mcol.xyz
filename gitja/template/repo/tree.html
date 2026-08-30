@@ -20,7 +20,11 @@
       {% for file in tree %}
       <tr>
         <td>{{ file.mode_symbolic }}</td>
+        {% if file.mode == "Directory" %}
+        <td>{{ file.path }}</td>
+        {% else %}
         <td><a href="{{ host }}/code/{{ name }}/file/{{ file.href }}">{{ file.path }}</a></td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>

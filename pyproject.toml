@@ -2,7 +2,7 @@
 name = "mcol-xyz"
 version = "0.1.0"
 description = "Source for the mcol.xyz blog, built with Pelican"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 dependencies = [
     "css-html-js-minify>=2.5.5",
     "docutils>=0.23",

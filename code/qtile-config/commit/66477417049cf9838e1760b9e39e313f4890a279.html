@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - rearrange imports, add notification server</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/66477417049cf9838e1760b9e39e313f4890a279.html">66477417049cf9838e1760b9e39e313f4890a279</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/5b9f14fe849988e5aa302b0dbafdc2f164ad180e.html">5b9f14fe849988e5aa302b0dbafdc2f164ad180e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-29 01:21:57 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-29 01:21:57 +0100
+
+rearrange imports, add notification server
+</pre><div class="diff">
+  <p>
+    <b>notification.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,434 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile plugin that acts as a notification server and draws notification windows.
+</span><span class="add">+
+</span><span class="add">+Usage:
+</span><span class="add">+
+</span><span class="add">+    import notification
+</span><span class="add">+
+</span><span class="add">+    notifier = notification.Server()
+</span><span class="add">+
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;M-&lt;grave&gt;&apos;:    notifier.lazy_prev,
+</span><span class="add">+        &apos;M-S-&lt;grave&gt;&apos;:  notifier.lazy_next,
+</span><span class="add">+        &apos;C-&lt;space&gt;&apos;:    notifier.lazy_close,
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+from __future__ import annotations
+</span><span class="add">+
+</span><span class="add">+import asyncio
+</span><span class="add">+from typing import TYPE_CHECKING
+</span><span class="add">+
+</span><span class="add">+from libqtile import configurable, hook, images, pangocffi, qtile
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from libqtile.notify import notifier
+</span><span class="add">+from libqtile.popup import Popup
+</span><span class="add">+
+</span><span class="add">+if TYPE_CHECKING:
+</span><span class="add">+    from typing import Any, Callable, Dict, List, Optional, Tuple
+</span><span class="add">+
+</span><span class="add">+    from cairocffi import ImageSurface
+</span><span class="add">+
+</span><span class="add">+    from libqtile.core.manager import Qtile
+</span><span class="add">+    try:
+</span><span class="add">+        from libqtile.notify import Notification
+</span><span class="add">+    except ImportError:  # no dbus_next
+</span><span class="add">+        Notification = Any  # type: ignore
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Server(configurable.Configurable):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This class provides a full graphical notification manager for the
+</span><span class="add">+    org.freedesktop.Notifications service implemented in libqtile.notify.
+</span><span class="add">+
+</span><span class="add">+    The format option determines what text is shown on the popup windows, and supports
+</span><span class="add">+    markup and new line characters e.g. &apos;&lt;b&gt;{summary}&lt;/b&gt;\n{body}&apos;. Available
+</span><span class="add">+    placeholders are summary, body and app_name.
+</span><span class="add">+
+</span><span class="add">+    Foreground and background colours can be specified either as tuples/lists of 3
+</span><span class="add">+    strings, corresponding to low, normal and critical urgencies, or just a single
+</span><span class="add">+    string which will then be used for all urgencies. The timeout and border options can
+</span><span class="add">+    be set in the same way.
+</span><span class="add">+
+</span><span class="add">+    The max_windows option limits how many popup windows can be drawn at a time. When
+</span><span class="add">+    more notifications are recieved while the maximum number are already drawn,
+</span><span class="add">+    notifications are queued and displayed when existing notifications are closed.
+</span><span class="add">+
+</span><span class="add">+    TODO:
+</span><span class="add">+        - text overflow
+</span><span class="add">+        - select screen / follow mouse/keyboard focus
+</span><span class="add">+        - critical notifications to replace any visible non-critical notifs immediately?
+</span><span class="add">+        - hints: image-path, desktop-entry (for icon)
+</span><span class="add">+        - hints: actions
+</span><span class="add">+        - hints: Server parameters set for single notification?
+</span><span class="add">+        - hints: progress value e.g. int:value:42 with drawing
+</span><span class="add">+
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;x&apos;, 32, &apos;x position on screen to start drawing notifications.&apos;),
+</span><span class="add">+        (&apos;y&apos;, 64, &apos;y position on screen to start drawing notifications.&apos;),
+</span><span class="add">+        (&apos;width&apos;, 192, &apos;Width of notifications.&apos;),
+</span><span class="add">+        (&apos;height&apos;, 64, &apos;Height of notifications.&apos;),
+</span><span class="add">+        (&apos;format&apos;, &apos;{summary}\n{body}&apos;, &apos;Text format.&apos;),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;foreground&apos;,
+</span><span class="add">+            (&apos;#ffffff&apos;, &apos;#ffffff&apos;, &apos;#ffffff&apos;),
+</span><span class="add">+            &apos;Foreground colour of notifications, in ascending order of urgency.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;background&apos;,
+</span><span class="add">+            (&apos;#111111&apos;, &apos;#111111&apos;, &apos;#111111&apos;),
+</span><span class="add">+            &apos;Background colour of notifications, in ascending order of urgency.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;border&apos;,
+</span><span class="add">+            (&apos;#111111&apos;, &apos;#111111&apos;, &apos;#111111&apos;),
+</span><span class="add">+            &apos;Border colours in ascending order of urgency. Or None for none.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;timeout&apos;,
+</span><span class="add">+            (5000, 5000, 0),
+</span><span class="add">+            &apos;Millisecond timeout duration, in ascending order of urgency.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (&apos;opacity&apos;, 1.0, &apos;Opacity of notifications.&apos;),
+</span><span class="add">+        (&apos;border_width&apos;, 4, &apos;Line width of drawn borders.&apos;),
+</span><span class="add">+        (&apos;corner_radius&apos;, None, &apos;Corner radius for round corners, or None.&apos;),
+</span><span class="add">+        (&apos;font&apos;, &apos;sans&apos;, &apos;Font used in notifications.&apos;),
+</span><span class="add">+        (&apos;font_size&apos;, 14, &apos;Size of font.&apos;),
+</span><span class="add">+        (&apos;fontshadow&apos;, None, &apos;Color for text shadows, or None for no shadows.&apos;),
+</span><span class="add">+        (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+</span><span class="add">+        (&apos;horizontal_padding&apos;, None, &apos;Padding at sides of text.&apos;),
+</span><span class="add">+        (&apos;vertical_padding&apos;, None, &apos;Padding at top and bottom of text.&apos;),
+</span><span class="add">+        (&apos;line_spacing&apos;, 4, &apos;Space between lines.&apos;),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;overflow&apos;,
+</span><span class="add">+            &apos;truncate&apos;,
+</span><span class="add">+            &apos;How to deal with too much text: more_width, more_height, or truncate.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (&apos;max_windows&apos;, 2, &apos;Maximum number of windows to show at once.&apos;),
+</span><span class="add">+        (&apos;gap&apos;, 12, &apos;Vertical gap between popup windows.&apos;),
+</span><span class="add">+        (&apos;sticky_history&apos;, True, &apos;Disable timeout when browsing history.&apos;),
+</span><span class="add">+        (&apos;icon_size&apos;, 36, &apos;Pixel size of any icons.&apos;),
+</span><span class="add">+        (&apos;fullscreen&apos;, &apos;show&apos;, &apos;What to do when in fullscreen: show, hide, or queue.&apos;),
+</span><span class="add">+        (&apos;screen&apos;, &apos;focus&apos;, &apos;How to select a screen: focus, mouse, or an int.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+    # &apos;actions&apos; is (currently) a lie so that Firefox uses this
+</span><span class="add">+    capabilities = {&apos;body&apos;, &apos;body-markup&apos;, &apos;actions&apos;}
+</span><span class="add">+    # specification: https://developer.gnome.org/notification-spec/
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, **config) -&gt; None:
+</span><span class="add">+        configurable.Configurable.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Server.defaults)
+</span><span class="add">+        self._hidden: List[Popup] = []
+</span><span class="add">+        self._shown: List[Popup] = []
+</span><span class="add">+        self._queue: List[Notification] = []
+</span><span class="add">+        self._positions: List[Tuple[int, int]] = []
+</span><span class="add">+        self._scroll_popup: Optional[Popup] = None
+</span><span class="add">+        self._current_id: int = 0
+</span><span class="add">+        self._notif_id: Optional[int] = None
+</span><span class="add">+        self._paused: bool = False
+</span><span class="add">+        self._icons: Dict[str, Tuple[ImageSurface, int]] = {}
+</span><span class="add">+
+</span><span class="add">+        self._make_attr_list(&apos;foreground&apos;)
+</span><span class="add">+        self._make_attr_list(&apos;background&apos;)
+</span><span class="add">+        self._make_attr_list(&apos;timeout&apos;)
+</span><span class="add">+        self._make_attr_list(&apos;border&apos;)
+</span><span class="add">+
+</span><span class="add">+        qtile.call_soon(asyncio.create_task, self.configure())
+</span><span class="add">+
+</span><span class="add">+    def __getattr__(self, name: str) -&gt; Any:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Using this, we can get e.g. Server.lazy_close which is the equivalent of
+</span><span class="add">+        lazy.function(Server.close) but more convenient for setting keybindings.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if name.startswith(&apos;lazy_&apos;):
+</span><span class="add">+            return lazy.function(getattr(self, name[5:]))
+</span><span class="add">+        return configurable.Configurable.__getattr__(self, name)
+</span><span class="add">+
+</span><span class="add">+    def _make_attr_list(self, attr: str) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Turns &apos;#000000&apos; into (&apos;#000000&apos;, &apos;#000000&apos;, &apos;#000000&apos;)
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        value = getattr(self, attr)
+</span><span class="add">+        if not isinstance(value, (tuple, list)):
+</span><span class="add">+            setattr(self, attr, (value,) * 3)
+</span><span class="add">+
+</span><span class="add">+    async def configure(self) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        This method needs to be called to set up the Server with the Qtile manager and
+</span><span class="add">+        create the required popup windows.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if self.horizontal_padding is None:
+</span><span class="add">+            self.horizontal_padding = self.font_size // 2
+</span><span class="add">+        if self.vertical_padding is None:
+</span><span class="add">+            self.vertical_padding = self.font_size // 2
+</span><span class="add">+
+</span><span class="add">+        popup_config = {
+</span><span class="add">+            &quot;x&quot;: self.x,
+</span><span class="add">+            &quot;y&quot;: self.y,
+</span><span class="add">+            &quot;width&quot;: self.width,
+</span><span class="add">+            &quot;height&quot;: self.height,
+</span><span class="add">+        }
+</span><span class="add">+
+</span><span class="add">+        for opt in Popup.defaults:
+</span><span class="add">+            key = opt[0]
+</span><span class="add">+            if hasattr(self, key):
+</span><span class="add">+                value = getattr(self, key)
+</span><span class="add">+                if isinstance(value, (tuple, list)):
+</span><span class="add">+                    popup_config[key] = value[1]
+</span><span class="add">+                else:
+</span><span class="add">+                    popup_config[key] = value
+</span><span class="add">+
+</span><span class="add">+        for win in range(self.max_windows):
+</span><span class="add">+            popup = Popup(qtile, **popup_config)
+</span><span class="add">+            popup.win.process_button_click = self._buttonpress(popup)
+</span><span class="add">+            popup.replaces_id = None
+</span><span class="add">+            self._hidden.append(popup)
+</span><span class="add">+            self._positions.append(
+</span><span class="add">+                (
+</span><span class="add">+                    self.x,
+</span><span class="add">+                    self.y + win * (self.height + 2 * self.border_width + self.gap)
+</span><span class="add">+                )
+</span><span class="add">+            )
+</span><span class="add">+
+</span><span class="add">+        await notifier.register(self._notify, Server.capabilities)
+</span><span class="add">+        logger.info(&quot;Notification server started up successfully&quot;)
+</span><span class="add">+
+</span><span class="add">+    def _buttonpress(self, popup: Popup) -&gt; Callable:
+</span><span class="add">+        def _(x: int, y: int, button: int) -&gt; None:
+</span><span class="add">+            # TODO: actions
+</span><span class="add">+            if button == 1:
+</span><span class="add">+                self._close(popup)
+</span><span class="add">+        return _
+</span><span class="add">+
+</span><span class="add">+    def _notify(self, notif: Notification) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        This method is registered with the NotificationManager to handle notifications
+</span><span class="add">+        received via dbus. They will either be drawn now or queued to be drawn soon.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if self._paused:
+</span><span class="add">+            self._queue.append(notif)
+</span><span class="add">+            return
+</span><span class="add">+
+</span><span class="add">+        if qtile.current_window and qtile.current_window.fullscreen:
+</span><span class="add">+            if self.fullscreen != &apos;show&apos;:
+</span><span class="add">+                if self.fullscreen == &apos;queue&apos;:
+</span><span class="add">+                    if self._unfullscreen not in hook.subscriptions:
+</span><span class="add">+                        hook.subscribe.float_change(self._unfullscreen)
+</span><span class="add">+                    self._queue.append(notif)
+</span><span class="add">+                return
+</span><span class="add">+
+</span><span class="add">+        if notif.replaces_id:
+</span><span class="add">+            for popup in self._shown:
+</span><span class="add">+                if notif.replaces_id == popup.replaces_id:
+</span><span class="add">+                    self._shown.remove(popup)
+</span><span class="add">+                    self._send(notif, popup)
+</span><span class="add">+                    self._reposition()
+</span><span class="add">+                    return
+</span><span class="add">+
+</span><span class="add">+        if self._hidden:
+</span><span class="add">+            self._send(notif, self._hidden.pop())
+</span><span class="add">+        else:
+</span><span class="add">+            self._queue.append(notif)
+</span><span class="add">+
+</span><span class="add">+    def _unfullscreen(self) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Begin displaying of queue notifications after leaving fullscreen.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if not qtile.current_window.fullscreen:
+</span><span class="add">+            hook.unsubscribe.float_change(self._unfullscreen)
+</span><span class="add">+            self._renotify()
+</span><span class="add">+
+</span><span class="add">+    def _renotify(self) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        If we hold off temporarily on sending notifications and accumulate a queue, we
+</span><span class="add">+        should use this to send the queue through self._notify again.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        queue = self._queue.copy()
+</span><span class="add">+        self._queue.clear()
+</span><span class="add">+        while queue:
+</span><span class="add">+            self._notify(queue.pop(0))
+</span><span class="add">+
+</span><span class="add">+    def _send(
+</span><span class="add">+        self, notif: Notification, popup: Popup, timeout: Optional[int] = None
+</span><span class="add">+    ) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Draw the desired notification using the specified Popup instance.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        text = self._get_text(notif)
+</span><span class="add">+
+</span><span class="add">+        if &quot;urgency&quot; in notif.hints:
+</span><span class="add">+            urgency = notif.hints[&quot;urgency&quot;].value
+</span><span class="add">+        else:
+</span><span class="add">+            urgency = 1
+</span><span class="add">+
+</span><span class="add">+        self._current_id += 1
+</span><span class="add">+        popup.id = self._current_id
+</span><span class="add">+        if popup not in self._shown:
+</span><span class="add">+            self._shown.append(popup)
+</span><span class="add">+        popup.x, popup.y = self._get_coordinates()
+</span><span class="add">+        popup.place()
+</span><span class="add">+        icon = self._load_icon(notif)
+</span><span class="add">+        popup.unhide()
+</span><span class="add">+
+</span><span class="add">+        popup.background = self.background[urgency]
+</span><span class="add">+        popup.foreground = self.foreground[urgency]
+</span><span class="add">+        popup.clear()
+</span><span class="add">+
+</span><span class="add">+        if icon:
+</span><span class="add">+            popup.draw_image(
+</span><span class="add">+                icon[0],
+</span><span class="add">+                self.horizontal_padding,
+</span><span class="add">+                1 + (self.height - icon[1]) / 2,
+</span><span class="add">+            )
+</span><span class="add">+            popup.horizontal_padding += self.icon_size + self.horizontal_padding / 2
+</span><span class="add">+
+</span><span class="add">+        for num, line in enumerate(text.split(&apos;\n&apos;)):
+</span><span class="add">+            popup.text = line
+</span><span class="add">+            y = self.vertical_padding + num * (popup.layout.height + self.line_spacing)
+</span><span class="add">+            popup.draw_text(y=y)
+</span><span class="add">+        if self.border_width:
+</span><span class="add">+            popup.set_border(self.border[urgency])
+</span><span class="add">+        popup.draw()
+</span><span class="add">+        popup.replaces_id = notif.replaces_id
+</span><span class="add">+        if icon:
+</span><span class="add">+            popup.horizontal_padding = self.horizontal_padding
+</span><span class="add">+
+</span><span class="add">+        if timeout is None:
+</span><span class="add">+            if notif.timeout is None or notif.timeout &lt; 0:
+</span><span class="add">+                timeout = self.timeout[urgency]
+</span><span class="add">+            else:
+</span><span class="add">+                timeout = notif.timeout
+</span><span class="add">+        elif timeout &lt; 0:
+</span><span class="add">+            timeout = self.timeout[urgency]
+</span><span class="add">+        if timeout &gt; 0:
+</span><span class="add">+            qtile.call_later(timeout / 1000, self._close, popup, self._current_id)
+</span><span class="add">+
+</span><span class="add">+    def _get_text(self, notif: Notification) -&gt; str:
+</span><span class="add">+        summary = &apos;&apos;
+</span><span class="add">+        body = &apos;&apos;
+</span><span class="add">+        app_name = &apos;&apos;
+</span><span class="add">+        if notif.summary:
+</span><span class="add">+            summary = pangocffi.markup_escape_text(notif.summary)
+</span><span class="add">+        if notif.body:
+</span><span class="add">+            body = pangocffi.markup_escape_text(notif.body)
+</span><span class="add">+        if notif.app_name:
+</span><span class="add">+            app_name = pangocffi.markup_escape_text(notif.app_name)
+</span><span class="add">+        return self.format.format(summary=summary, body=body, app_name=app_name)
+</span><span class="add">+
+</span><span class="add">+    def _get_coordinates(self) -&gt; Tuple[int, int]:
+</span><span class="add">+        x, y = self._positions[len(self._shown) - 1]
+</span><span class="add">+        if isinstance(self.screen, int):
+</span><span class="add">+            screen = qtile.screens[self.screen]
+</span><span class="add">+        elif self.screen == &apos;focus&apos;:
+</span><span class="add">+            screen = qtile.current_screen
+</span><span class="add">+        elif self.screen == &apos;mouse&apos;:
+</span><span class="add">+            screen = qtile.find_screen(*qtile.mouse_position)
+</span><span class="add">+        return x + screen.x, y + screen.y
+</span><span class="add">+
+</span><span class="add">+    def _close(self, popup: Popup, nid: Optional[int] = None) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Close the specified Popup instance.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if popup in self._shown:
+</span><span class="add">+            if nid is not None and popup.id != nid:
+</span><span class="add">+                return
+</span><span class="add">+            self._shown.remove(popup)
+</span><span class="add">+            if self._scroll_popup is popup:
+</span><span class="add">+                self._scroll_popup = None
+</span><span class="add">+                self._notif_id = None
+</span><span class="add">+            popup.hide()
+</span><span class="add">+            if self._queue and not self._paused:
+</span><span class="add">+                self._send(self._queue.pop(0), popup)
+</span><span class="add">+            else:
+</span><span class="add">+                self._hidden.append(popup)
+</span><span class="add">+        self._reposition()
+</span><span class="add">+
+</span><span class="add">+    def _reposition(self) -&gt; None:
+</span><span class="add">+        for index, shown in enumerate(self._shown):
+</span><span class="add">+            shown.x, shown.y = self._positions[index]
+</span><span class="add">+            shown.place()
+</span><span class="add">+
+</span><span class="add">+    def _load_icon(self, notif: Notification) -&gt; Optional[Tuple[ImageSurface, int]]:
+</span><span class="add">+        if not notif.app_icon:
+</span><span class="add">+            return None
+</span><span class="add">+        if notif.app_icon in self._icons:
+</span><span class="add">+            return self._icons.get(notif.app_icon)
+</span><span class="add">+        try:
+</span><span class="add">+            img = images.Img.from_path(notif.app_icon)
+</span><span class="add">+            if img.width &gt; img.height:
+</span><span class="add">+                img.resize(width=self.icon_size)
+</span><span class="add">+            else:
+</span><span class="add">+                img.resize(height=self.icon_size)
+</span><span class="add">+            surface, _ = images._decode_to_image_surface(
+</span><span class="add">+                img.bytes_img, img.width, img.height
+</span><span class="add">+            )
+</span><span class="add">+            self._icons[notif.app_icon] = surface, surface.get_height()
+</span><span class="add">+        except (FileNotFoundError, images.LoadingError, IsADirectoryError) as e:
+</span><span class="add">+            logger.exception(e)
+</span><span class="add">+            self._icons[notif.app_icon] = None
+</span><span class="add">+        return self._icons[notif.app_icon]
+</span><span class="add">+
+</span><span class="add">+    def close(self, _qtile=None) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Close the oldest of all visible popup windows.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if self._shown:
+</span><span class="add">+            self._close(self._shown[0])
+</span><span class="add">+
+</span><span class="add">+    def close_all(self, _qtile=None) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Close all popup windows.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        self._queue.clear()
+</span><span class="add">+        while self._shown:
+</span><span class="add">+            self._close(self._shown[0])
+</span><span class="add">+
+</span><span class="add">+    def prev(self, _qtile=None) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Display the previous notification in the history.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if notifier.notifications:
+</span><span class="add">+            if self._scroll_popup is None:
+</span><span class="add">+                if self._hidden:
+</span><span class="add">+                    self._scroll_popup = self._hidden.pop(0)
+</span><span class="add">+                else:
+</span><span class="add">+                    self._scroll_popup = self._shown[0]
+</span><span class="add">+                self._notif_id = len(notifier.notifications)
+</span><span class="add">+            if self._notif_id &gt; 0:
+</span><span class="add">+                self._notif_id -= 1
+</span><span class="add">+            self._send(
+</span><span class="add">+                notifier.notifications[self._notif_id],
+</span><span class="add">+                self._scroll_popup,
+</span><span class="add">+                0 if self.sticky_history else None,
+</span><span class="add">+            )
+</span><span class="add">+
+</span><span class="add">+    def next(self, _qtile=None) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Display the next notification in the history.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if self._scroll_popup:
+</span><span class="add">+            if self._notif_id &lt; len(notifier.notifications) - 1:
+</span><span class="add">+                self._notif_id += 1
+</span><span class="add">+            if self._scroll_popup in self._shown:
+</span><span class="add">+                self._shown.remove(self._scroll_popup)
+</span><span class="add">+            self._send(
+</span><span class="add">+                notifier.notifications[self._notif_id],
+</span><span class="add">+                self._scroll_popup,
+</span><span class="add">+                0 if self.sticky_history else None,
+</span><span class="add">+            )
+</span><span class="add">+
+</span><span class="add">+    def pause(self, _qtile=None) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Pause display of notifications on screen. Notifications will be queued and
+</span><span class="add">+        presented as usual when this is called again.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if self._paused:
+</span><span class="add">+            self._paused = False
+</span><span class="add">+            self._renotify()
+</span><span class="add">+        else:
+</span><span class="add">+            self._paused = True
+</span><span class="add">+            while self._shown:
+</span><span class="add">+                self._close(self._shown[0])
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,24 +19,25 @@
+<span class="def"> from libqtile.widget.backlight import ChangeDirection
+</span><span class="def"> from libqtile.widget.battery import Battery, BatteryState
+</span><span class="def"> 
+</span><span class="add">+if TYPE_CHECKING:
+</span><span class="add">+    from typing import Any, List, Tuple
+</span><span class="add">+
+</span><span class="add">+    from libqtile.core.manager import Qtile
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Config imports
+</span><span class="def"> def reload(module):
+</span><span class="def">     if module in sys.modules:
+</span><span class="def">         importlib.reload(sys.modules[module])
+</span><span class="def"> 
+</span><span class="sub">-reload(&quot;traverse&quot;)
+</span><span class="def"> import traverse
+</span><span class="def"> 
+</span><span class="def"> reload(&quot;groups&quot;)
+</span><span class="def"> from groups import groups, keys_group
+</span><span class="add">+
+</span><span class="def"> reload(&quot;scratchpad&quot;)
+</span><span class="def"> from scratchpad import keys_scratchpad, scratchpad
+</span><span class="def"> 
+</span><span class="sub">-if TYPE_CHECKING:
+</span><span class="sub">-    from typing import Any, List, Tuple
+</span><span class="sub">-
+</span><span class="sub">-    from libqtile.core.manager import Qtile
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+</span><span class="def"> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span><span class="def"> 
+</span>@@ -200,13 +201,10 @@
+<span class="def">     border_normal=border_normal,
+</span><span class="def">     corner_radius=cw,
+</span><span class="def">     float_rules=[
+</span><span class="sub">-        Match(title=&apos;wlroots - X11-1&apos;),
+</span><span class="sub">-        Match(title=&apos;wlroots - X11-2&apos;),
+</span><span class="sub">-        Match(title=&apos;wlroots - WL-1&apos;),
+</span><span class="sub">-        Match(title=&apos;wlroots - WL-2&apos;),
+</span><span class="def">         Match(title=&apos;Open File&apos;),
+</span><span class="def">         Match(title=&apos;Unlock Database - KeePassXC&apos;),  # Wayland
+</span><span class="def">         Match(wm_class=&apos;Arandr&apos;),
+</span><span class="add">+        Match(wm_class=&apos;org.kde.ark&apos;),
+</span><span class="def">         Match(wm_class=&apos;confirm&apos;),
+</span><span class="def">         Match(wm_class=&apos;dialog&apos;),
+</span><span class="def">         Match(wm_class=&apos;download&apos;),
+</span>@@ -224,6 +222,7 @@
+<span class="def">         Match(wm_class=&apos;Dragon&apos;),
+</span><span class="def">         Match(wm_class=&apos;Dragon-drag-and-drop&apos;),
+</span><span class="def">         Match(wm_class=&apos;toolbar&apos;),
+</span><span class="add">+        Match(wm_class=&apos;wlroots&apos;),
+</span><span class="def">         Match(wm_class=&apos;Xephyr&apos;),
+</span><span class="def">         Match(wm_type=&apos;dialog&apos;),
+</span><span class="def">         Match(role=&apos;gimp-file-export&apos;),
+</span>@@ -505,3 +504,46 @@
+<span class="def"> focus_on_window_activation = &apos;smart&apos;
+</span><span class="def"> keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+</span><span class="def"> groups.append(scratchpad)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Notification server
+</span><span class="add">+reload(&quot;notification&quot;)
+</span><span class="add">+import notification
+</span><span class="add">+
+</span><span class="add">+notification.Server(
+</span><span class="add">+    background=&apos;#888888&apos;,
+</span><span class="add">+    foreground=&apos;#00ffff&apos;,
+</span><span class="add">+    x=50,
+</span><span class="add">+    y=50,
+</span><span class="add">+    width=320,
+</span><span class="add">+    height=100,
+</span><span class="add">+    border=&apos;#dddddd&apos;,
+</span><span class="add">+    border_width=8,
+</span><span class="add">+    font_size=16,
+</span><span class="add">+    max_windows=1,
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+    &apos;M-&lt;grave&gt;&apos;:    notifier.lazy_prev,
+</span><span class="add">+    &apos;M-S-&lt;grave&gt;&apos;:  notifier.lazy_next,
+</span><span class="add">+    &apos;C-&lt;space&gt;&apos;:    notifier.lazy_close,
+</span><span class="add">+}.items()])
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+from libqtile.popup import Popup
+</span><span class="add">+p = Popup(qtile, background=&apos;#33ff33&apos;, foreground=&apos;#ff33ff&apos;)
+</span><span class="add">+p.text = &quot;hello&quot;
+</span><span class="add">+
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+
+</span><span class="add">+def func(*a):
+</span><span class="add">+    if p.win.mapped:
+</span><span class="add">+        p.hide()
+</span><span class="add">+    else:
+</span><span class="add">+        p.unhide()
+</span><span class="add">+        p.draw_text()
+</span><span class="add">+        p.draw()
+</span><span class="add">+
+</span><span class="add">+keys.append(Key([mod], &apos;t&apos;, lazy.function(func)))
+</span></pre>
+</div></div>
+  </body>
+</html>

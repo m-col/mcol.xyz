@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - rename category tor to privacy</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/05836f648247519baf556b42afa4f612e67b20d1.html">05836f648247519baf556b42afa4f612e67b20d1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/730a8e5caebfb9b8192eae45e0605a9b1f5b09f0.html">730a8e5caebfb9b8192eae45e0605a9b1f5b09f0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-06 00:54:07 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-06 00:54:07 +0100
+
+rename category tor to privacy
+</pre><div class="diff">
+  <p>
+    <b>content/notes/tor/tor_vpn_nftables_killswitch.rst</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,152 +0,0 @@
+<span class="sub">-nftables as a tor and VPN killswitch
+</span><span class="sub">-====================================
+</span><span class="sub">-
+</span><span class="sub">-:date: 2019-05-05
+</span><span class="sub">-:summary: nftables as a tor and VPN killswitch
+</span><span class="sub">-
+</span><span class="sub">-Truth be told, I never got the hang of iptables. nftables has a much nicer
+</span><span class="sub">-syntax and its improvements over iptables will lead to its dominance...
+</span><span class="sub">-eventually.
+</span><span class="sub">-
+</span><span class="sub">-This nftables configuration restricts outward network traffic to a locally
+</span><span class="sub">-running tor client, running as the user :code:`tor`, and a VPN interface, as two
+</span><span class="sub">-independent streams of traffic. This way I can allow any programs that aren&apos;t
+</span><span class="sub">-so tor friendly to use the VPN, and everything to go through tor directly.
+</span><span class="sub">-The whole file can be found `here &lt;{static}/static/nftables.conf&gt;`_.
+</span><span class="sub">-
+</span><span class="sub">-Usually the configuration file is at :code:`/etc/nftables.conf`.
+</span><span class="sub">-
+</span><span class="sub">-First, we need to flush any current rules:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: Java
+</span><span class="sub">-
+</span><span class="sub">-    flush ruleset
+</span><span class="sub">-
+</span><span class="sub">-Next, we create our first :code:`table`, which is of type :code:`inet`, and
+</span><span class="sub">-named :code:`restricted`. This type means is it applies to IPv4 and IPv6 both.
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: Java
+</span><span class="sub">-
+</span><span class="sub">-    table inet restricted {
+</span><span class="sub">-        chain inbound {
+</span><span class="sub">-            type filter hook input priority 0;
+</span><span class="sub">-
+</span><span class="sub">-Within the table, we define our first :code:`chain` with the name
+</span><span class="sub">-:code:`input`.  We specify the chains behaviour on the first line in the chain.
+</span><span class="sub">-This chain is of type :code:`filter`, i.e. it will filter packets. We then give
+</span><span class="sub">-it the :code:`input` hook so it will act on incoming packets.
+</span><span class="sub">-
+</span><span class="sub">-Priorities can be set to order the chains relative to some internal Netfilter
+</span><span class="sub">-operations, see the `nftables wiki
+</span><span class="sub">-&lt;https://wiki.nftables.org/wiki-nftables/index.php/Configuring_chains#Base_chain_priority&gt;`_
+</span><span class="sub">-for more info. For a non-routing setup such as this one, priority of 0 works
+</span><span class="sub">-for everything, though it is important to note that packets will be tested
+</span><span class="sub">-against all chains using the relevant hook.
+</span><span class="sub">-
+</span><span class="sub">-Next is the first rule. It starts with a &apos;selector&apos;, which here is :code:`ct`
+</span><span class="sub">-for connection tracking, which uses packet metainformation to match packets.
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: Java
+</span><span class="sub">-
+</span><span class="sub">-                ct state {established, related} accept
+</span><span class="sub">-
+</span><span class="sub">-This rule matches packets by **state**, and matches those with state
+</span><span class="sub">-:code:`established` or :code:`related`.
+</span><span class="sub">-
+</span><span class="sub">-The rule ends with an action, in this case :code:`accept`. This rule will allow
+</span><span class="sub">-incoming packets from connections we&apos;ve previously established, which means
+</span><span class="sub">-we&apos;ve already allows them and they&apos;re safe. This accounts for most traffic so
+</span><span class="sub">-is best put first.
+</span><span class="sub">-
+</span><span class="sub">-Next, we accept packets with incoming interface name :code:`lo`, the loopback
+</span><span class="sub">-interface, which is required for many programs to work. Simple!
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: Java
+</span><span class="sub">-
+</span><span class="sub">-                iifname lo accept
+</span><span class="sub">-
+</span><span class="sub">-Next, we match packets by :code:`ip protocol`, of type :code:`icmp`. We match
+</span><span class="sub">-these more specifically by :code:`icmp type` with type :code:`echo-request`,
+</span><span class="sub">-and accept them. These are pings, which are fine to allow.
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: Java
+</span><span class="sub">-
+</span><span class="sub">-                ip protocol icmp icmp type echo-request accept
+</span><span class="sub">-                reject with icmp type port-unreachable
+</span><span class="sub">-            }
+</span><span class="sub">-
+</span><span class="sub">-We end the chain by rejecting all other inputs with the &apos;port unreachable&apos;
+</span><span class="sub">-message.
+</span><span class="sub">-
+</span><span class="sub">-We then create our output chain, another filter but this time with the
+</span><span class="sub">-:code:`output` hook. Again, we should accept all traffic on the loopback
+</span><span class="sub">-interface.
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: Java
+</span><span class="sub">-
+</span><span class="sub">-    chain outbound {
+</span><span class="sub">-        type filter hook output priority 0;
+</span><span class="sub">-            oifname lo accept
+</span><span class="sub">-
+</span><span class="sub">-Now we start restricting our outward traffic. This rule matches connections
+</span><span class="sub">-being output from my wireless interface, :code:`wlan0`, so substitute the name
+</span><span class="sub">-of your main interface there. It accepts all traffic on this interface destined
+</span><span class="sub">-for the address listed, for example, the VPN server you&apos;re connecting to, and
+</span><span class="sub">-any local devices you wouldn&apos;t want to restrict.
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: Java
+</span><span class="sub">-
+</span><span class="sub">-    oifname wlan0 ip daddr { 123.456.789.123, 192.168.1.3 } accept
+</span><span class="sub">-    oifname wlan0 skuid tor accept
+</span><span class="sub">-
+</span><span class="sub">-On the second line, we allow outbound connections on the same interface where
+</span><span class="sub">-the UID of the originating socket (:code:`skuid`) is :code:`tor`. With a local
+</span><span class="sub">-tor client run as the user :code:`tor`, its connections will be accepted here.
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: Java
+</span><span class="sub">-
+</span><span class="sub">-        oifname wg0 accept
+</span><span class="sub">-        reject
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-It is definitely getting straightforward. Here we allow outbound connections on
+</span><span class="sub">-the :code:`wg0` interface, which is for my wireguard VPN. If your VPN might use
+</span><span class="sub">-a :code:`tun0` interface, in which case substitute that.
+</span><span class="sub">-
+</span><span class="sub">-Some commercial VPNs provide a proxy within their VPN tunnels, which can be
+</span><span class="sub">-used to further restrict what programs can can access the internet through the
+</span><span class="sub">-VPN. To do this, add :code:`ip daddr &lt;proxy ip&gt;` before the accept, and make
+</span><span class="sub">-any allowed programs use this proxy address for connections.
+</span><span class="sub">-
+</span><span class="sub">-We then close the chain rejecting all other traffic, blocking it from leaving
+</span><span class="sub">-your device.
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: Java
+</span><span class="sub">-
+</span><span class="sub">-        chain forward {
+</span><span class="sub">-	    type filter hook forward priority 0; policy drop;
+</span><span class="sub">-        }
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-Lastly, as we don&apos;t need to do any forwarding of packets we can create an empty
+</span><span class="sub">-chain with the hook :code:`forward`. This declaration also contains a default
+</span><span class="sub">-action, with :code:`policy drop`. We then close the table with :code:`}`.
+</span><span class="sub">-
+</span><span class="sub">-To enable this firewall, we can run this command with your config path substituted:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: bash
+</span><span class="sub">-
+</span><span class="sub">-    nft -f /etc/nftables/restricted.conf
+</span><span class="sub">-
+</span><span class="sub">-Most linux distros will package a systemd service file which can be edited and
+</span><span class="sub">-enabled to set up this firewall at boot.
+</span><span class="sub">-
+</span><span class="sub">-The only connections that can go out to the internet are connections on the VPN
+</span><span class="sub">-interface and any connections that the tor client makes, which can be accessed
+</span><span class="sub">-by programs using it as a proxy. This way we can ensure we know exactly what
+</span><span class="sub">-connections are allowed out and all connections that leave your machine are
+</span><span class="sub">-encrypted while in your ISP&apos;s hands.
+</span><span class="sub">-
+</span><span class="sub">-I highly recommend the nftables wiki especially the `quickstart guide
+</span><span class="sub">-&lt;https://wiki.nftables.org/wiki-nftables/index.php/Quick_reference-nftables_in_10_minutes&gt;`_
+</span><span class="sub">-once you&apos;re comfortable with the syntax.
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>content/notes/tor/tor_newsboat.rst</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,58 +0,0 @@
+<span class="sub">-read news and reddit anonymously with tor and newsboat
+</span><span class="sub">-======================================================
+</span><span class="sub">-
+</span><span class="sub">-:date: 2019-04-21
+</span><span class="sub">-:summary: read news and reddit anonymously with tor and newsboat
+</span><span class="sub">-
+</span><span class="sub">-ncurses based programs can be a bit hit-or-miss but newsboat is one of the
+</span><span class="sub">-kings.
+</span><span class="sub">-
+</span><span class="sub">-`newsboat &lt;https://newsboat.org/&gt;`_ is an RSS reader, and as far as I&apos;m
+</span><span class="sub">-concerned, a reddit interface, as you can turn any reddit feed into an RSS
+</span><span class="sub">-feed. Just stick something like this into your :code:`~/.config/newsboat/urls`
+</span><span class="sub">-file:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: conf
+</span><span class="sub">-
+</span><span class="sub">-    https://www.reddit.com/r/onions/new/.rss?sort=new  &quot;~/r/onions&quot;
+</span><span class="sub">-
+</span><span class="sub">-Each time your run newsboat you&apos;ll get posts to that subreddit sorted by new -
+</span><span class="sub">-easy subscription without going near a web browser.
+</span><span class="sub">-
+</span><span class="sub">-The key to torifying newsboat is its socks5 proxy, which is enabled with these
+</span><span class="sub">-config settings in :code:`~/.config/newsboat/config`:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: conf
+</span><span class="sub">-
+</span><span class="sub">-    use-proxy yes
+</span><span class="sub">-    proxy-type socks5h
+</span><span class="sub">-    proxy 127.0.0.1:9050
+</span><span class="sub">-
+</span><span class="sub">-The proxy IP and port of course must correspond to the socks5 proxy set up in
+</span><span class="sub">-your torrc config. The **h** in :code:`socks5h` is important - this makes tor
+</span><span class="sub">-do all its own DNS resolutions so they aren&apos;t leaking out the usual route.
+</span><span class="sub">-
+</span><span class="sub">-You can take the functionality to the next level by opening any feed items in
+</span><span class="sub">-tor-browser directly from newsboat, too. First, stick this into your newsboat
+</span><span class="sub">-config:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: bash
+</span><span class="sub">-
+</span><span class="sub">-    browser &quot;nohup tor-browser --allow-remote %u &gt; /dev/null 2&gt;&amp;1 &amp;&quot;
+</span><span class="sub">-
+</span><span class="sub">-and set the setting :code:`browser.tabs.loadDivertedInBackground` in
+</span><span class="sub">-tor-browser&apos;s :code:`about:config` to false. This allows feed items to be
+</span><span class="sub">-opened from newsboat when hitting :code:`o` without tor-browser stealing focus.
+</span><span class="sub">-
+</span><span class="sub">-nohup is needed so tor-browser can stay alive even after your close newsboat,
+</span><span class="sub">-if newsboat opened it. :code:`--allow-remote` will launch tor-browser and allow
+</span><span class="sub">-it to receive remote commands to open urls as we are doing here. If
+</span><span class="sub">-tor-browser, with this option, is already running then the url will be opened
+</span><span class="sub">-in that instance but newsboat will stay focussed. The rest of the line sends
+</span><span class="sub">-all output to oblivion and backgrounds the command so that it doesn&apos;t disrupt
+</span><span class="sub">-your newsboating.
+</span><span class="sub">-
+</span><span class="sub">-With this setup I just open newsboat once a day and give it a couple minutes to
+</span><span class="sub">-update its feeds while I do something else. Then I can quickly comb through
+</span><span class="sub">-everything, opening anything I want to read more about in tor-browser as I go
+</span><span class="sub">-and deleting the rest.
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>content/notes/tor/onion_location_headers.rst</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,45 +0,0 @@
+<span class="sub">-tor browser can now redirect clearnet sites to onion services
+</span><span class="sub">-=============================================================
+</span><span class="sub">-
+</span><span class="sub">-:date: 2020-06-03
+</span><span class="sub">-:summary: tor browser has a new feature that redirects clearnet sites to their
+</span><span class="sub">-          onion services
+</span><span class="sub">-
+</span><span class="sub">-On Monday the Tor Project released_ version 9.5 of the tor browser and with it
+</span><span class="sub">-a long-awaited new feature. The update will tell you if a website you visit in
+</span><span class="sub">-the browser has a corresponding onion service.
+</span><span class="sub">-
+</span><span class="sub">-Initially, when you visit one of these websites (such as this one), the URL bar
+</span><span class="sub">-will display this label:
+</span><span class="sub">-
+</span><span class="sub">-.. image:: /static/onion_location.png
+</span><span class="sub">-   :alt: Tor Browser displaying &apos;.onion available&apos; in URL bar.
+</span><span class="sub">-
+</span><span class="sub">-Clicking on this label will take you to the onion service version of the
+</span><span class="sub">-website.
+</span><span class="sub">-
+</span><span class="sub">-And the cool part: you can set tor browser to always redirect you to these
+</span><span class="sub">-onion services, by finding this preference and setting it to &apos;Always&apos;:
+</span><span class="sub">-
+</span><span class="sub">-.. image:: /static/onion_location_pref.png
+</span><span class="sub">-   :alt: Tor Browser onion-location pref
+</span><span class="sub">-
+</span><span class="sub">-This functionality depends on websites setting a :code:`Onion-Location` HTTP
+</span><span class="sub">-header containing the link to their onion service. For example, all I had to do
+</span><span class="sub">-was add this line into my nginx.conf in my clearnet site&apos;s server block:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: sh
+</span><span class="sub">-
+</span><span class="sub">-    add_header Onion-Location http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion$request_uri;
+</span><span class="sub">-
+</span><span class="sub">-That header is all it takes for tor browser users to use onions by default on
+</span><span class="sub">-all sites that host them, removing any need for manual identification of
+</span><span class="sub">-whether websites that they visit host onion services.
+</span><span class="sub">-
+</span><span class="sub">-By improving awareness and accessibility of onion services in this way, not
+</span><span class="sub">-only can we discover more onions for popular websites that may have them, but
+</span><span class="sub">-we legitimise and encourage the use of onion services as a simple means of
+</span><span class="sub">-making the web more accessible for those who experience internet censorship.
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-.. _released : https://blog.torproject.org/new-release-tor-browser-95
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>content/notes/privacy/tor_vpn_nftables_killswitch.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,152 @@
+<span class="add">+nftables as a tor and VPN killswitch
+</span><span class="add">+====================================
+</span><span class="add">+
+</span><span class="add">+:date: 2019-05-05
+</span><span class="add">+:summary: nftables as a tor and VPN killswitch
+</span><span class="add">+
+</span><span class="add">+Truth be told, I never got the hang of iptables. nftables has a much nicer
+</span><span class="add">+syntax and its improvements over iptables will lead to its dominance...
+</span><span class="add">+eventually.
+</span><span class="add">+
+</span><span class="add">+This nftables configuration restricts outward network traffic to a locally
+</span><span class="add">+running tor client, running as the user :code:`tor`, and a VPN interface, as two
+</span><span class="add">+independent streams of traffic. This way I can allow any programs that aren&apos;t
+</span><span class="add">+so tor friendly to use the VPN, and everything to go through tor directly.
+</span><span class="add">+The whole file can be found `here &lt;{static}/static/nftables.conf&gt;`_.
+</span><span class="add">+
+</span><span class="add">+Usually the configuration file is at :code:`/etc/nftables.conf`.
+</span><span class="add">+
+</span><span class="add">+First, we need to flush any current rules:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: Java
+</span><span class="add">+
+</span><span class="add">+    flush ruleset
+</span><span class="add">+
+</span><span class="add">+Next, we create our first :code:`table`, which is of type :code:`inet`, and
+</span><span class="add">+named :code:`restricted`. This type means is it applies to IPv4 and IPv6 both.
+</span><span class="add">+
+</span><span class="add">+.. code-block:: Java
+</span><span class="add">+
+</span><span class="add">+    table inet restricted {
+</span><span class="add">+        chain inbound {
+</span><span class="add">+            type filter hook input priority 0;
+</span><span class="add">+
+</span><span class="add">+Within the table, we define our first :code:`chain` with the name
+</span><span class="add">+:code:`input`.  We specify the chains behaviour on the first line in the chain.
+</span><span class="add">+This chain is of type :code:`filter`, i.e. it will filter packets. We then give
+</span><span class="add">+it the :code:`input` hook so it will act on incoming packets.
+</span><span class="add">+
+</span><span class="add">+Priorities can be set to order the chains relative to some internal Netfilter
+</span><span class="add">+operations, see the `nftables wiki
+</span><span class="add">+&lt;https://wiki.nftables.org/wiki-nftables/index.php/Configuring_chains#Base_chain_priority&gt;`_
+</span><span class="add">+for more info. For a non-routing setup such as this one, priority of 0 works
+</span><span class="add">+for everything, though it is important to note that packets will be tested
+</span><span class="add">+against all chains using the relevant hook.
+</span><span class="add">+
+</span><span class="add">+Next is the first rule. It starts with a &apos;selector&apos;, which here is :code:`ct`
+</span><span class="add">+for connection tracking, which uses packet metainformation to match packets.
+</span><span class="add">+
+</span><span class="add">+.. code-block:: Java
+</span><span class="add">+
+</span><span class="add">+                ct state {established, related} accept
+</span><span class="add">+
+</span><span class="add">+This rule matches packets by **state**, and matches those with state
+</span><span class="add">+:code:`established` or :code:`related`.
+</span><span class="add">+
+</span><span class="add">+The rule ends with an action, in this case :code:`accept`. This rule will allow
+</span><span class="add">+incoming packets from connections we&apos;ve previously established, which means
+</span><span class="add">+we&apos;ve already allows them and they&apos;re safe. This accounts for most traffic so
+</span><span class="add">+is best put first.
+</span><span class="add">+
+</span><span class="add">+Next, we accept packets with incoming interface name :code:`lo`, the loopback
+</span><span class="add">+interface, which is required for many programs to work. Simple!
+</span><span class="add">+
+</span><span class="add">+.. code-block:: Java
+</span><span class="add">+
+</span><span class="add">+                iifname lo accept
+</span><span class="add">+
+</span><span class="add">+Next, we match packets by :code:`ip protocol`, of type :code:`icmp`. We match
+</span><span class="add">+these more specifically by :code:`icmp type` with type :code:`echo-request`,
+</span><span class="add">+and accept them. These are pings, which are fine to allow.
+</span><span class="add">+
+</span><span class="add">+.. code-block:: Java
+</span><span class="add">+
+</span><span class="add">+                ip protocol icmp icmp type echo-request accept
+</span><span class="add">+                reject with icmp type port-unreachable
+</span><span class="add">+            }
+</span><span class="add">+
+</span><span class="add">+We end the chain by rejecting all other inputs with the &apos;port unreachable&apos;
+</span><span class="add">+message.
+</span><span class="add">+
+</span><span class="add">+We then create our output chain, another filter but this time with the
+</span><span class="add">+:code:`output` hook. Again, we should accept all traffic on the loopback
+</span><span class="add">+interface.
+</span><span class="add">+
+</span><span class="add">+.. code-block:: Java
+</span><span class="add">+
+</span><span class="add">+    chain outbound {
+</span><span class="add">+        type filter hook output priority 0;
+</span><span class="add">+            oifname lo accept
+</span><span class="add">+
+</span><span class="add">+Now we start restricting our outward traffic. This rule matches connections
+</span><span class="add">+being output from my wireless interface, :code:`wlan0`, so substitute the name
+</span><span class="add">+of your main interface there. It accepts all traffic on this interface destined
+</span><span class="add">+for the address listed, for example, the VPN server you&apos;re connecting to, and
+</span><span class="add">+any local devices you wouldn&apos;t want to restrict.
+</span><span class="add">+
+</span><span class="add">+.. code-block:: Java
+</span><span class="add">+
+</span><span class="add">+    oifname wlan0 ip daddr { 123.456.789.123, 192.168.1.3 } accept
+</span><span class="add">+    oifname wlan0 skuid tor accept
+</span><span class="add">+
+</span><span class="add">+On the second line, we allow outbound connections on the same interface where
+</span><span class="add">+the UID of the originating socket (:code:`skuid`) is :code:`tor`. With a local
+</span><span class="add">+tor client run as the user :code:`tor`, its connections will be accepted here.
+</span><span class="add">+
+</span><span class="add">+.. code-block:: Java
+</span><span class="add">+
+</span><span class="add">+        oifname wg0 accept
+</span><span class="add">+        reject
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+It is definitely getting straightforward. Here we allow outbound connections on
+</span><span class="add">+the :code:`wg0` interface, which is for my wireguard VPN. If your VPN might use
+</span><span class="add">+a :code:`tun0` interface, in which case substitute that.
+</span><span class="add">+
+</span><span class="add">+Some commercial VPNs provide a proxy within their VPN tunnels, which can be
+</span><span class="add">+used to further restrict what programs can can access the internet through the
+</span><span class="add">+VPN. To do this, add :code:`ip daddr &lt;proxy ip&gt;` before the accept, and make
+</span><span class="add">+any allowed programs use this proxy address for connections.
+</span><span class="add">+
+</span><span class="add">+We then close the chain rejecting all other traffic, blocking it from leaving
+</span><span class="add">+your device.
+</span><span class="add">+
+</span><span class="add">+.. code-block:: Java
+</span><span class="add">+
+</span><span class="add">+        chain forward {
+</span><span class="add">+	    type filter hook forward priority 0; policy drop;
+</span><span class="add">+        }
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+Lastly, as we don&apos;t need to do any forwarding of packets we can create an empty
+</span><span class="add">+chain with the hook :code:`forward`. This declaration also contains a default
+</span><span class="add">+action, with :code:`policy drop`. We then close the table with :code:`}`.
+</span><span class="add">+
+</span><span class="add">+To enable this firewall, we can run this command with your config path substituted:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: bash
+</span><span class="add">+
+</span><span class="add">+    nft -f /etc/nftables/restricted.conf
+</span><span class="add">+
+</span><span class="add">+Most linux distros will package a systemd service file which can be edited and
+</span><span class="add">+enabled to set up this firewall at boot.
+</span><span class="add">+
+</span><span class="add">+The only connections that can go out to the internet are connections on the VPN
+</span><span class="add">+interface and any connections that the tor client makes, which can be accessed
+</span><span class="add">+by programs using it as a proxy. This way we can ensure we know exactly what
+</span><span class="add">+connections are allowed out and all connections that leave your machine are
+</span><span class="add">+encrypted while in your ISP&apos;s hands.
+</span><span class="add">+
+</span><span class="add">+I highly recommend the nftables wiki especially the `quickstart guide
+</span><span class="add">+&lt;https://wiki.nftables.org/wiki-nftables/index.php/Quick_reference-nftables_in_10_minutes&gt;`_
+</span><span class="add">+once you&apos;re comfortable with the syntax.
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>content/notes/privacy/tor_newsboat.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,58 @@
+<span class="add">+read news and reddit anonymously with tor and newsboat
+</span><span class="add">+======================================================
+</span><span class="add">+
+</span><span class="add">+:date: 2019-04-21
+</span><span class="add">+:summary: read news and reddit anonymously with tor and newsboat
+</span><span class="add">+
+</span><span class="add">+ncurses based programs can be a bit hit-or-miss but newsboat is one of the
+</span><span class="add">+kings.
+</span><span class="add">+
+</span><span class="add">+`newsboat &lt;https://newsboat.org/&gt;`_ is an RSS reader, and as far as I&apos;m
+</span><span class="add">+concerned, a reddit interface, as you can turn any reddit feed into an RSS
+</span><span class="add">+feed. Just stick something like this into your :code:`~/.config/newsboat/urls`
+</span><span class="add">+file:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: conf
+</span><span class="add">+
+</span><span class="add">+    https://www.reddit.com/r/onions/new/.rss?sort=new  &quot;~/r/onions&quot;
+</span><span class="add">+
+</span><span class="add">+Each time your run newsboat you&apos;ll get posts to that subreddit sorted by new -
+</span><span class="add">+easy subscription without going near a web browser.
+</span><span class="add">+
+</span><span class="add">+The key to torifying newsboat is its socks5 proxy, which is enabled with these
+</span><span class="add">+config settings in :code:`~/.config/newsboat/config`:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: conf
+</span><span class="add">+
+</span><span class="add">+    use-proxy yes
+</span><span class="add">+    proxy-type socks5h
+</span><span class="add">+    proxy 127.0.0.1:9050
+</span><span class="add">+
+</span><span class="add">+The proxy IP and port of course must correspond to the socks5 proxy set up in
+</span><span class="add">+your torrc config. The **h** in :code:`socks5h` is important - this makes tor
+</span><span class="add">+do all its own DNS resolutions so they aren&apos;t leaking out the usual route.
+</span><span class="add">+
+</span><span class="add">+You can take the functionality to the next level by opening any feed items in
+</span><span class="add">+tor-browser directly from newsboat, too. First, stick this into your newsboat
+</span><span class="add">+config:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: bash
+</span><span class="add">+
+</span><span class="add">+    browser &quot;nohup tor-browser --allow-remote %u &gt; /dev/null 2&gt;&amp;1 &amp;&quot;
+</span><span class="add">+
+</span><span class="add">+and set the setting :code:`browser.tabs.loadDivertedInBackground` in
+</span><span class="add">+tor-browser&apos;s :code:`about:config` to false. This allows feed items to be
+</span><span class="add">+opened from newsboat when hitting :code:`o` without tor-browser stealing focus.
+</span><span class="add">+
+</span><span class="add">+nohup is needed so tor-browser can stay alive even after your close newsboat,
+</span><span class="add">+if newsboat opened it. :code:`--allow-remote` will launch tor-browser and allow
+</span><span class="add">+it to receive remote commands to open urls as we are doing here. If
+</span><span class="add">+tor-browser, with this option, is already running then the url will be opened
+</span><span class="add">+in that instance but newsboat will stay focussed. The rest of the line sends
+</span><span class="add">+all output to oblivion and backgrounds the command so that it doesn&apos;t disrupt
+</span><span class="add">+your newsboating.
+</span><span class="add">+
+</span><span class="add">+With this setup I just open newsboat once a day and give it a couple minutes to
+</span><span class="add">+update its feeds while I do something else. Then I can quickly comb through
+</span><span class="add">+everything, opening anything I want to read more about in tor-browser as I go
+</span><span class="add">+and deleting the rest.
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>content/notes/privacy/onion_location_headers.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,45 @@
+<span class="add">+tor browser can now redirect clearnet sites to onion services
+</span><span class="add">+=============================================================
+</span><span class="add">+
+</span><span class="add">+:date: 2020-06-03
+</span><span class="add">+:summary: tor browser has a new feature that redirects clearnet sites to their
+</span><span class="add">+          onion services
+</span><span class="add">+
+</span><span class="add">+On Monday the Tor Project released_ version 9.5 of the tor browser and with it
+</span><span class="add">+a long-awaited new feature. The update will tell you if a website you visit in
+</span><span class="add">+the browser has a corresponding onion service.
+</span><span class="add">+
+</span><span class="add">+Initially, when you visit one of these websites (such as this one), the URL bar
+</span><span class="add">+will display this label:
+</span><span class="add">+
+</span><span class="add">+.. image:: /static/onion_location.png
+</span><span class="add">+   :alt: Tor Browser displaying &apos;.onion available&apos; in URL bar.
+</span><span class="add">+
+</span><span class="add">+Clicking on this label will take you to the onion service version of the
+</span><span class="add">+website.
+</span><span class="add">+
+</span><span class="add">+And the cool part: you can set tor browser to always redirect you to these
+</span><span class="add">+onion services, by finding this preference and setting it to &apos;Always&apos;:
+</span><span class="add">+
+</span><span class="add">+.. image:: /static/onion_location_pref.png
+</span><span class="add">+   :alt: Tor Browser onion-location pref
+</span><span class="add">+
+</span><span class="add">+This functionality depends on websites setting a :code:`Onion-Location` HTTP
+</span><span class="add">+header containing the link to their onion service. For example, all I had to do
+</span><span class="add">+was add this line into my nginx.conf in my clearnet site&apos;s server block:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: sh
+</span><span class="add">+
+</span><span class="add">+    add_header Onion-Location http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion$request_uri;
+</span><span class="add">+
+</span><span class="add">+That header is all it takes for tor browser users to use onions by default on
+</span><span class="add">+all sites that host them, removing any need for manual identification of
+</span><span class="add">+whether websites that they visit host onion services.
+</span><span class="add">+
+</span><span class="add">+By improving awareness and accessibility of onion services in this way, not
+</span><span class="add">+only can we discover more onions for popular websites that may have them, but
+</span><span class="add">+we legitimise and encourage the use of onion services as a simple means of
+</span><span class="add">+making the web more accessible for those who experience internet censorship.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+.. _released : https://blog.torproject.org/new-release-tor-browser-95
+</span></pre>
+</div></div>
+  </body>
+</html>

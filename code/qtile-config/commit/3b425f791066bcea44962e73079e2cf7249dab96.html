@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - group change</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/3b425f791066bcea44962e73079e2cf7249dab96.html">3b425f791066bcea44962e73079e2cf7249dab96</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/d060471705f2c9df7bd3fd19ea4012e28c0ee7d0.html">d060471705f2c9df7bd3fd19ea4012e28c0ee7d0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-09-09 07:13:15 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-09-09 07:13:15 +0100
+
+group change
+</pre><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,18 +24,18 @@
+<span class="def"> 
+</span><span class="def"> mod = &quot;mod1&quot; if int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) else &quot;mod4&quot;
+</span><span class="def"> 
+</span><span class="sub">-keys_group: tuple[list[str], str, Any, str] = []
+</span><span class="add">+keys_group: list[tuple[list[str], str, Any, str]] = []
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> groups: list[Group] = [
+</span><span class="def">     Group(&quot;1&quot;, label=&quot;term&quot;),
+</span><span class="def">     Group(&quot;2&quot;, label=&quot;term&quot;),
+</span><span class="def">     Group(&quot;3&quot;, label=&quot;term&quot;),
+</span><span class="sub">-    Group(&quot;4&quot;, label=&quot;term&quot;),
+</span><span class="add">+    Group(&quot;4&quot;, label=&quot;spot&quot;, matches=[Match(title=&quot;spotify&quot;)]),
+</span><span class="def">     Group(&quot;q&quot;, label=&quot;html&quot;, matches=[Match(wm_class=&quot;firefox&quot;)]),
+</span><span class="def">     Group(&quot;w&quot;, label=&quot;imap&quot;, matches=[Match(wm_class=&quot;geary&quot;), Match(title=&quot;Geary&quot;)]),
+</span><span class="def">     Group(&quot;e&quot;, label=&quot;work&quot;),
+</span><span class="sub">-    Group(&quot;r&quot;, label=&quot;spot&quot;, matches=[Match(title=&quot;spotify&quot;)]),
+</span><span class="add">+    Group(&quot;r&quot;, label=&quot;work&quot;),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

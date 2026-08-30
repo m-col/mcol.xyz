@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Add log handling, printing all log messages to stdout</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/cc6a574f6a3e1c611925acf31eb8afcc6a1382a6.html">cc6a574f6a3e1c611925acf31eb8afcc6a1382a6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/ede0f0208b7827bc2bc3ebb7e91a503d256cf3d7.html">ede0f0208b7827bc2bc3ebb7e91a503d256cf3d7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-18 21:33:42 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-18 22:59:02 +0000
+
+Add log handling, printing all log messages to stdout
+</pre><div class="diff">
+  <p>
+    <b>src/log.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,6 @@
+<span class="add">+#ifndef DESKWM_LOG_H
+</span><span class="add">+#define DESKWM_LOG_H
+</span><span class="add">+
+</span><span class="add">+void init_log(enum wlr_log_importance log_level);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/log.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,36 @@
+<span class="add">+#include &lt;stdio.h&gt;
+</span><span class="add">+#include &lt;time.h&gt;
+</span><span class="add">+#include &lt;wlr/util/log.h&gt;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+enum wlr_log_importance log_importance;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+const char *verbosity_headers[] = {
+</span><span class="add">+	[WLR_SILENT] = &quot;&quot;,
+</span><span class="add">+	[WLR_ERROR] = &quot;[ERROR]&quot;,
+</span><span class="add">+	[WLR_INFO] = &quot;[INFO]&quot;,
+</span><span class="add">+	[WLR_DEBUG] = &quot;[DEBUG]&quot;,
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void log_stdout(enum wlr_log_importance verbosity, const char *fmt, va_list args) {
+</span><span class="add">+    if (verbosity &gt; log_importance) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    time_t t = time(NULL);
+</span><span class="add">+    struct tm *now = localtime(&amp;t);
+</span><span class="add">+    char nows[20];
+</span><span class="add">+    strftime(nows, 20, &quot;%F %T&quot;, now);
+</span><span class="add">+
+</span><span class="add">+    fprintf(stdout, &quot;%s %s: &quot;, nows, verbosity_headers[verbosity]);
+</span><span class="add">+    vfprintf(stdout, fmt, args);
+</span><span class="add">+    fprintf(stdout, &quot;\n&quot;);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void init_log(enum wlr_log_importance log_level) {
+</span><span class="add">+    log_importance = log_level;
+</span><span class="add">+    wlr_log_init(log_importance, log_stdout);
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,6 +13,7 @@
+<span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;deskwm.h&quot;
+</span><span class="def"> #include &quot;input.h&quot;
+</span><span class="add">+#include &quot;log.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span>@@ -27,12 +28,13 @@
+<span class="def"> ;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-int main(int argc, char *argv[]) {
+</span><span class="sub">-    wlr_log_init(WLR_ERROR, NULL);
+</span><span class="sub">-
+</span><span class="add">+int main(int argc, char *argv[])
+</span><span class="add">+{
+</span><span class="def">     int opt;
+</span><span class="add">+    int log_level = WLR_ERROR;
+</span><span class="def">     char *config = NULL;
+</span><span class="sub">-    while ((opt = getopt(argc, argv, &quot;hcdi:&quot;)) != -1) {
+</span><span class="add">+
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;hcdi&quot;)) != -1) {
+</span><span class="def">         switch (opt) {
+</span><span class="def"> 	    case &apos;h&apos;:
+</span><span class="def"> 		printf(usage);
+</span>@@ -42,14 +44,16 @@
+<span class="def"> 		config = strdup(optarg);
+</span><span class="def"> 		break;
+</span><span class="def"> 	    case &apos;d&apos;:
+</span><span class="sub">-		wlr_log_init(WLR_DEBUG, NULL);
+</span><span class="add">+		log_level = WLR_DEBUG;
+</span><span class="def"> 		break;
+</span><span class="def"> 	    case &apos;i&apos;:
+</span><span class="sub">-		wlr_log_init(WLR_INFO, NULL);
+</span><span class="add">+		log_level = WLR_INFO;
+</span><span class="def"> 		break;
+</span><span class="def">         }
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    init_log(log_level);
+</span><span class="add">+
+</span><span class="def">     // create
+</span><span class="def">     struct server server;
+</span><span class="def">     server.display = wl_display_create();
+</span></pre>
+</div></div>
+  </body>
+</html>

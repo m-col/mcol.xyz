@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-microfeed - microfeed.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-microfeed">pelican-microfeed</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to create tiny single-page feeds</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-microfeed">https://github.com/m-col/pelican-microfeed</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-microfeed/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-microfeed/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-microfeed/file/README.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- microfeed.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> # -*- coding: utf-8 -*-
+<a href="#l2" class="line" id="l2">      2</a> &quot;&quot;&quot;
+<a href="#l3" class="line" id="l3">      3</a> microfeed - Pelican plugin
+<a href="#l4" class="line" id="l4">      4</a> ==========================
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a> microfeeds allows for the creation of pages that each act as a feed of content separate
+<a href="#l7" class="line" id="l7">      7</a> to the main articles. The how and what:
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a>  - Write articles under a category that will be used to make a microfeed.
+<a href="#l10" class="line" id="l10">     10</a>  - Create the config setting MICROFEEDS as a list of these categories.
+<a href="#l11" class="line" id="l11">     11</a>  - Articles in these categories are extracted early in generation so they are excluded
+<a href="#l12" class="line" id="l12">     12</a>    from any article lists used in templates.
+<a href="#l13" class="line" id="l13">     13</a>  - A *microfeed* object is exposed to page templates via which articles can be accessed
+<a href="#l14" class="line" id="l14">     14</a>    as microfeed.*category* or microfeed[*category*] (these are equivalent).
+<a href="#l15" class="line" id="l15">     15</a>  - Each microfeed will also generate an ATOM/RSS feed as usual if you have set
+<a href="#l16" class="line" id="l16">     16</a>    CATEGORY_FEED_ATOM or CATEGORY_FEED_RSS.
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> &quot;&quot;&quot;
+<a href="#l19" class="line" id="l19">     19</a> 
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a> from functools import partial
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> from pelican import signals
+<a href="#l24" class="line" id="l24">     24</a> 
+<a href="#l25" class="line" id="l25">     25</a> 
+<a href="#l26" class="line" id="l26">     26</a> class Microfeed:
+<a href="#l27" class="line" id="l27">     27</a>     categories = ()
+<a href="#l28" class="line" id="l28">     28</a>     articles = {}
+<a href="#l29" class="line" id="l29">     29</a> 
+<a href="#l30" class="line" id="l30">     30</a>     def setup_dict(self):
+<a href="#l31" class="line" id="l31">     31</a>         &quot;&quot;&quot;
+<a href="#l32" class="line" id="l32">     32</a>         Sets microfeed.articles to contain a key for each category, each holding an
+<a href="#l33" class="line" id="l33">     33</a>         empty list.
+<a href="#l34" class="line" id="l34">     34</a>         &quot;&quot;&quot;
+<a href="#l35" class="line" id="l35">     35</a>         for cat in self.categories:
+<a href="#l36" class="line" id="l36">     36</a>             self.articles[cat] = []
+<a href="#l37" class="line" id="l37">     37</a> 
+<a href="#l38" class="line" id="l38">     38</a> microfeed = Microfeed()
+<a href="#l39" class="line" id="l39">     39</a> 
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a> def get_categories(pelican):
+<a href="#l42" class="line" id="l42">     42</a>     &quot;&quot;&quot;
+<a href="#l43" class="line" id="l43">     43</a>     Collect the list of categories that the user wants to turn into microfeeds.
+<a href="#l44" class="line" id="l44">     44</a>     &quot;&quot;&quot;
+<a href="#l45" class="line" id="l45">     45</a>     categories = pelican.settings.get(&apos;MICROFEEDS&apos;, None)
+<a href="#l46" class="line" id="l46">     46</a>     if categories and type(categories) in (list, set, tuple):
+<a href="#l47" class="line" id="l47">     47</a>         microfeed.categories = categories
+<a href="#l48" class="line" id="l48">     48</a>         microfeed.setup_dict()
+<a href="#l49" class="line" id="l49">     49</a> 
+<a href="#l50" class="line" id="l50">     50</a> def collect_microfeed_articles(article_generator):
+<a href="#l51" class="line" id="l51">     51</a>     &quot;&quot;&quot;
+<a href="#l52" class="line" id="l52">     52</a>     Collect the microfeed articles from the article generator and move them to the
+<a href="#l53" class="line" id="l53">     53</a>     microfeed object for later use.
+<a href="#l54" class="line" id="l54">     54</a>     &quot;&quot;&quot;
+<a href="#l55" class="line" id="l55">     55</a>     if microfeed.categories:
+<a href="#l56" class="line" id="l56">     56</a>         microfeed.setup_dict()
+<a href="#l57" class="line" id="l57">     57</a>         normal_articles = []
+<a href="#l58" class="line" id="l58">     58</a>         for article in article_generator.articles:
+<a href="#l59" class="line" id="l59">     59</a>             if article.category in microfeed.categories:
+<a href="#l60" class="line" id="l60">     60</a>                 microfeed.articles[article.category].append(article)
+<a href="#l61" class="line" id="l61">     61</a>             else:
+<a href="#l62" class="line" id="l62">     62</a>                 normal_articles.append(article)
+<a href="#l63" class="line" id="l63">     63</a>         article_generator.articles = normal_articles
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a> def add_microfeed_to_context(page_generator):
+<a href="#l66" class="line" id="l66">     66</a>     &quot;&quot;&quot;
+<a href="#l67" class="line" id="l67">     67</a>     Expose the microfeed object to the page generator&apos;s context for use in page
+<a href="#l68" class="line" id="l68">     68</a>     templates&apos;
+<a href="#l69" class="line" id="l69">     69</a>     &quot;&quot;&quot;
+<a href="#l70" class="line" id="l70">     70</a>     for cat in microfeed.categories:
+<a href="#l71" class="line" id="l71">     71</a>         setattr(microfeed, cat, microfeed.articles[cat])
+<a href="#l72" class="line" id="l72">     72</a>     page_generator.context[&apos;microfeed&apos;] = microfeed
+<a href="#l73" class="line" id="l73">     73</a> 
+<a href="#l74" class="line" id="l74">     74</a> def gen_microfeed_feed(article_generator, writer):
+<a href="#l75" class="line" id="l75">     75</a>     &quot;&quot;&quot;
+<a href="#l76" class="line" id="l76">     76</a>     Optionally generate an ATOM/RSS feed for each microfeed.
+<a href="#l77" class="line" id="l77">     77</a>     &quot;&quot;&quot;
+<a href="#l78" class="line" id="l78">     78</a>     for cat_name in microfeed.categories:
+<a href="#l79" class="line" id="l79">     79</a>         cat = microfeed.articles[cat_name][0].category
+<a href="#l80" class="line" id="l80">     80</a> 
+<a href="#l81" class="line" id="l81">     81</a>         if article_generator.settings.get(&apos;CATEGORY_FEED_ATOM&apos;):
+<a href="#l82" class="line" id="l82">     82</a>             writer.write_feed(
+<a href="#l83" class="line" id="l83">     83</a>                 microfeed.articles[cat.name],
+<a href="#l84" class="line" id="l84">     84</a>                 article_generator.context,
+<a href="#l85" class="line" id="l85">     85</a>                 article_generator.settings[&apos;CATEGORY_FEED_ATOM&apos;].format(slug=cat.slug),
+<a href="#l86" class="line" id="l86">     86</a>                 article_generator.settings.get(
+<a href="#l87" class="line" id="l87">     87</a>                     &apos;CATEGORY_FEED_ATOM_URL&apos;,
+<a href="#l88" class="line" id="l88">     88</a>                     article_generator.settings[&apos;CATEGORY_FEED_ATOM&apos;]
+<a href="#l89" class="line" id="l89">     89</a>                 ).format(slug=cat.slug),
+<a href="#l90" class="line" id="l90">     90</a>                 feed_title=cat.name
+<a href="#l91" class="line" id="l91">     91</a>             )
+<a href="#l92" class="line" id="l92">     92</a> 
+<a href="#l93" class="line" id="l93">     93</a>         if article_generator.settings.get(&apos;CATEGORY_FEED_RSS&apos;):
+<a href="#l94" class="line" id="l94">     94</a>             writer.write_feed(
+<a href="#l95" class="line" id="l95">     95</a>                 microfeed.articles[cat.name],
+<a href="#l96" class="line" id="l96">     96</a>                 article_generator.context,
+<a href="#l97" class="line" id="l97">     97</a>                 article_generator.settings[&apos;CATEGORY_FEED_RSS&apos;].format(slug=cat.slug),
+<a href="#l98" class="line" id="l98">     98</a>                 article_generator.settings.get(
+<a href="#l99" class="line" id="l99">     99</a>                     &apos;CATEGORY_FEED_RSS_URL&apos;,
+<a href="#l100" class="line" id="l100">    100</a>                     article_generator.settings[&apos;CATEGORY_FEED_RSS&apos;]
+<a href="#l101" class="line" id="l101">    101</a>                 ).format(slug=cat.slug),
+<a href="#l102" class="line" id="l102">    102</a>                 feed_title=cat.name,
+<a href="#l103" class="line" id="l103">    103</a>                 feed_type=&apos;rss&apos;
+<a href="#l104" class="line" id="l104">    104</a>             )
+<a href="#l105" class="line" id="l105">    105</a>     if article_generator.settings.get(&apos;GENERATE_MICROFEED_POSTS&apos;, False):
+<a href="#l106" class="line" id="l106">    106</a>         write = partial(
+<a href="#l107" class="line" id="l107">    107</a>             writer.write_file,
+<a href="#l108" class="line" id="l108">    108</a>             relative_urls=article_generator.settings[&apos;RELATIVE_URLS&apos;],
+<a href="#l109" class="line" id="l109">    109</a>         )
+<a href="#l110" class="line" id="l110">    110</a>         for cat_name in microfeed.categories:
+<a href="#l111" class="line" id="l111">    111</a>             article_generator.articles = microfeed.articles[cat_name]
+<a href="#l112" class="line" id="l112">    112</a>             article_generator.generate_articles(write)
+<a href="#l113" class="line" id="l113">    113</a> 
+<a href="#l114" class="line" id="l114">    114</a> def register():
+<a href="#l115" class="line" id="l115">    115</a>     signals.initialized.connect(get_categories)
+<a href="#l116" class="line" id="l116">    116</a>     signals.article_generator_pretaxonomy.connect(collect_microfeed_articles)
+<a href="#l117" class="line" id="l117">    117</a>     signals.page_generator_finalized.connect(add_microfeed_to_context)
+<a href="#l118" class="line" id="l118">    118</a>     signals.article_writer_finalized.connect(gen_microfeed_feed)
+<a href="#l119" class="line" id="l119">    119</a> 
+</pre>
+  </div>
+  </body>
+</html>

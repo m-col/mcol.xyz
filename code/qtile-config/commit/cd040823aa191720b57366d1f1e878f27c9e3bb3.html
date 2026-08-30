@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - custom Columns effect where a single &apos;foot&apos; window is centred</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/cd040823aa191720b57366d1f1e878f27c9e3bb3.html">cd040823aa191720b57366d1f1e878f27c9e3bb3</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/99c1e8a3be578905b2b8ab4c070a04ff3b2738d5.html">99c1e8a3be578905b2b8ab4c070a04ff3b2738d5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-09-03 00:50:26 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-09-03 00:50:26 +0100
+
+custom Columns effect where a single &apos;foot&apos; window is centred
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -291,7 +291,7 @@
+<span class="def">         if len(self.columns) == 1 and (len(col) == 1 or not col.split):
+</span><span class="def">             if not self.border_on_single:
+</span><span class="def">                 border = 0
+</span><span class="sub">-            if &quot;foot&quot; in client.get_wm_class():
+</span><span class="add">+            if &quot;foot&quot; in (client.get_wm_class() or []):
+</span><span class="def">                 margin_size = [0, 200, 0, 200]
+</span><span class="def">         width = int(0.5 + col.width * screen_rect.width * 0.01 / len(self.columns))
+</span><span class="def">         x = screen_rect.x + int(0.5 + pos * screen_rect.width * 0.01 / len(self.columns))
+</span>@@ -322,24 +322,25 @@
+<span class="def">             client.hide()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+# Weird custom behaviour here but isn&apos;t that what qtile is for?
+</span><span class="add">+# I want a Columns layout but also sometimes i want &apos;foot&apos; windows to be thinner and
+</span><span class="add">+# centred in a &apos;central&apos; column, so I define a whole new MyColumns layout that does that
+</span><span class="add">+# and I just jump between the two when I want that.
+</span><span class="add">+col_opts = dict(
+</span><span class="add">+    insert_position=1,
+</span><span class="add">+    border_width=5,
+</span><span class="add">+    border_focus=border_focus,
+</span><span class="add">+    border_normal=&quot;00000000&quot;,
+</span><span class="add">+    border_on_single=False,
+</span><span class="add">+    wrap_focus_columns=False,
+</span><span class="add">+    wrap_focus_rows=False,
+</span><span class="add">+    margin=0,
+</span><span class="add">+    # margin_on_single=30,  # 4
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="def"> layouts = [
+</span><span class="sub">-    MyColumns(
+</span><span class="sub">-        insert_position=1,
+</span><span class="sub">-        border_width=5,
+</span><span class="sub">-        border_focus=border_focus,
+</span><span class="sub">-        border_normal=&quot;00000000&quot;,
+</span><span class="sub">-        border_on_single=False,
+</span><span class="sub">-        wrap_focus_columns=False,
+</span><span class="sub">-        wrap_focus_rows=False,
+</span><span class="sub">-        margin=0,
+</span><span class="sub">-        # margin_on_single=30,  # 4
+</span><span class="sub">-    ),
+</span><span class="sub">-    # layout.Stack(
+</span><span class="sub">-    #    border_width=5,
+</span><span class="sub">-    #    border_focus=border_focus,
+</span><span class="sub">-    #    border_normal=&quot;00000000&quot;,
+</span><span class="sub">-    #    margin=0,
+</span><span class="sub">-    # ),
+</span><span class="add">+    MyColumns(**col_opts),
+</span><span class="add">+    layout.Columns(**col_opts),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> floating_layout = layout.Floating(
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/87688ede66c439d90edac96e57fac81693b6dd71.html">87688ede66c439d90edac96e57fac81693b6dd71</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/01dc9dccb876b488cfdfc1593a02b5b6ad5f7a6b.html">01dc9dccb876b488cfdfc1593a02b5b6ad5f7a6b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-07-05 00:57:44 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-07-05 00:57:44 +0100
+
+updates
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -25,12 +25,12 @@
+<span class="def">     Plugin &apos;gu-fan/riv.vim&apos;
+</span><span class="def">     Plugin &apos;https://mcol.xyz/code/vimlab&apos;   &quot; vimlab
+</span><span class="def">     Plugin &apos;lervag/vimtex&apos;		    &quot; vimtex
+</span><span class="add">+    Plugin &apos;elixir-editors/vim-elixir&apos;	    &quot; elixir support
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> Plugin &apos;https://mcol.xyz/code/vim-misc&apos;	    &quot; my vimrc and misc functions 
+</span><span class="def"> Plugin &apos;https://mcol.xyz/code/tide&apos;	    &quot; tmux ide 
+</span><span class="def"> Plugin &apos;airblade/vim-gitgutter&apos;		    &quot; gitgutter
+</span><span class="sub">-Plugin &apos;terryma/vim-multiple-cursors&apos;	    &quot; multicursor
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span><span class="def"> filetype plugin indent on		    &quot; required
+</span>@@ -75,7 +75,7 @@
+<span class="def"> 
+</span><span class="def"> set splitbelow			&quot; default new sp window goes below
+</span><span class="def"> set splitright			&quot; default new vsp window goes right
+</span><span class="sub">-set scrolloff=10		&quot; keep x lines at top and bottom visible when scrollingkeep x lines at top and bottom visible when scrolling
+</span><span class="add">+set scrolloff=4			&quot; keep x lines at top and bottom visible when scrollingkeep x lines at top and bottom visible when scrolling
+</span><span class="def"> autocmd VimResized * wincmd =	&quot; keep splits equal size when resizing window
+</span><span class="def"> 
+</span><span class="def"> syntax on			&quot; enable syntax highlighting
+</span>@@ -118,9 +118,6 @@
+<span class="def">     set mmp=2000
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="sub">-let g:gitgutter_enabled = 0
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> &quot; Intelligently navigate tmux panes and Vim splits using the same keys.
+</span><span class="def"> &quot; See https://sunaku.github.io/tmux-select-pane.html for documentation.
+</span><span class="def"> let progname = substitute($VIM, &apos;.*[/\\]&apos;, &apos;&apos;, &apos;&apos;)
+</span>@@ -132,12 +129,6 @@
+<span class="def"> if &amp;term =~ &apos;^screen&apos; &amp;&amp; !has(&apos;nvim&apos;) | exe &quot;set t_ts=\e]2; t_fs=\7&quot; | endif
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-&quot; vim-multiple-cursors
+</span><span class="sub">-let g:multi_cursor_use_default_mapping = 0
+</span><span class="sub">-let g:multi_cursor_start_word_key      = &apos;&lt;C-c&gt;&apos;
+</span><span class="sub">-let g:multi_cursor_next_key            = &apos;&lt;C-n&gt;&apos;
+</span><span class="sub">-let g:multi_cursor_prev_key            = &apos;&lt;C-p&gt;&apos;
+</span><span class="sub">-let g:multi_cursor_skip_key            = &apos;&lt;C-x&gt;&apos;
+</span><span class="sub">-let g:multi_cursor_quit_key            = &apos;&lt;Esc&gt;&apos;
+</span><span class="sub">-
+</span><span class="sub">-set ff=unix
+</span><span class="add">+if exists(&quot;$WAYLAND_DISPLAY&quot;)
+</span><span class="add">+    set ttym=sgr
+</span><span class="add">+endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/theme.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -35,11 +35,11 @@
+<span class="def"> hi TabLineSel ctermfg=0 ctermbg=12
+</span><span class="def"> hi Title ctermfg=0 ctermbg=12
+</span><span class="def"> 
+</span><span class="sub">-&quot; vimdiff
+</span><span class="sub">-hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="sub">-hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="sub">-hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="sub">-hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="add">+&quot; vimdiff  &quot; commented out as it was disrupting git gutter
+</span><span class="add">+&quot;hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="add">+&quot;hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="add">+&quot;hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="add">+&quot;hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="def"> 
+</span><span class="def"> &quot; folds
+</span><span class="def"> hi Folded ctermbg=8 ctermfg=4 cterm=none
+</span>@@ -66,12 +66,12 @@
+<span class="def"> augroup END
+</span><span class="def"> 
+</span><span class="def"> &quot; change cursor shape in insert mode
+</span><span class="sub">-&quot;let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="sub">-&quot;let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="sub">-&quot;augroup myCmds
+</span><span class="sub">-&quot;    au!
+</span><span class="sub">-&quot;    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="sub">-&quot;augroup END
+</span><span class="add">+let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="add">+let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="add">+augroup myCmds
+</span><span class="add">+    au!
+</span><span class="add">+    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="add">+augroup END
+</span><span class="def"> 
+</span><span class="def"> &quot; character for split barrier
+</span><span class="def"> set fillchars=vert:\ 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,10 +38,13 @@
+<span class="def"> nnoremap K k
+</span><span class="def"> 
+</span><span class="def"> &quot; copy and paste system clipboard
+</span><span class="sub">-nnoremap &lt;C-y&gt; &quot;+y
+</span><span class="sub">-nnoremap &lt;C-y&gt;&lt;C-y&gt; ms0v$&quot;+y`s
+</span><span class="sub">-vnoremap &lt;C-y&gt; &quot;+y
+</span><span class="sub">-inoremap &lt;C-y&gt; &lt;Esc&gt;&quot;+y
+</span><span class="add">+nmap &lt;C-y&gt; &quot;+y
+</span><span class="add">+nmap &lt;C-y&gt;&lt;C-y&gt; ms0v$&quot;+y`s
+</span><span class="add">+vmap &lt;C-y&gt; &quot;+y
+</span><span class="add">+imap &lt;C-y&gt; &lt;Esc&gt;&quot;+y
+</span><span class="add">+if exists(&quot;$WAYLAND_DISPLAY&quot;)
+</span><span class="add">+    xmap &quot;+y y:call system(&quot;wl-copy&quot;, @&quot;)\|echo &apos;&apos; &lt;cr&gt;
+</span><span class="add">+endif
+</span><span class="def"> 
+</span><span class="def"> &quot; save read-only file with sudo trick
+</span><span class="def"> cnoremap w!! w !sudo tee &gt; /dev/null %
+</span>@@ -108,18 +111,15 @@
+<span class="def"> nmap &lt;C-n&gt; :Explore&lt;CR&gt;
+</span><span class="def"> let g:netrw_sort_sequence=&apos;[\/]$&apos;
+</span><span class="def"> 
+</span><span class="sub">-&quot; disable middle click paste (restoring xterm middle click open url)
+</span><span class="sub">-map &lt;MiddleMouse&gt; &lt;Nop&gt;
+</span><span class="sub">-imap &lt;MiddleMouse&gt; &lt;Nop&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; gitgutter
+</span><span class="sub">-nmap &lt;localleader&gt;g :GitGutterToggle&lt;CR&gt;
+</span><span class="sub">-nmap gp &lt;Plug&gt;(GitGutterPreviewHunk)
+</span><span class="sub">-nmap gs &lt;Plug&gt;(GitGutterStageHunk)
+</span><span class="sub">-nmap gu &lt;Plug&gt;(GitGutterUndoHunk)
+</span><span class="sub">-nmap [g &lt;Plug&gt;(GitGutterPrevHunk)
+</span><span class="sub">-nmap ]g &lt;Plug&gt;(GitGutterNextHunk)
+</span><span class="sub">-omap ig &lt;Plug&gt;(GitGutterTextObjectInnerPending)
+</span><span class="sub">-omap ag &lt;Plug&gt;(GitGutterTextObjectOuterPending)
+</span><span class="sub">-xmap ig &lt;Plug&gt;(GitGutterTextObjectInnerVisual)
+</span><span class="sub">-xmap ag &lt;Plug&gt;(GitGutterTextObjectOuterVisual)
+</span><span class="add">+&quot; bind number keys to scroll so i can use foot terminal&apos;s alt scrolling
+</span><span class="add">+map &lt;Down&gt; j
+</span><span class="add">+map &lt;Up&gt; k
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot; bind scroll to move cursor up and down
+</span><span class="add">+nnoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="add">+nnoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="add">+inoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="add">+inoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="add">+vnoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="add">+vnoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/indent.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,12 +2,12 @@
+<span class="def"> &quot;  Indentation of entire file
+</span><span class="def"> &quot;------------------------------------------------------------------
+</span><span class="def"> 
+</span><span class="sub">-function! IndentFile()
+</span><span class="sub">-    mkview
+</span><span class="sub">-    let l:win_view = winsaveview()
+</span><span class="sub">-    :normal! gg=G
+</span><span class="sub">-    silent loadview
+</span><span class="sub">-    call winrestview(l:win_view)
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-nnoremap &lt;C-i&gt; :call IndentFile()&lt;CR&gt;
+</span><span class="add">+&quot;function! IndentFile()
+</span><span class="add">+&quot;    mkview
+</span><span class="add">+&quot;    let l:win_view = winsaveview()
+</span><span class="add">+&quot;    :normal! gg=G
+</span><span class="add">+&quot;    silent loadview
+</span><span class="add">+&quot;    call winrestview(l:win_view)
+</span><span class="add">+&quot;endfunction
+</span><span class="add">+&quot;
+</span><span class="add">+&quot;nnoremap &lt;C-i&gt; :call IndentFile()&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/goyo.vim.shelved</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,15 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Goyo configuration
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-function! s:goyo_enter()
+</span><span class="sub">-    set noshowmode
+</span><span class="sub">-    set noshowcmd
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-function! s:goyo_leave()
+</span><span class="sub">-    source ~/.vim/bundle/vim-misc/plugin/theme.vim
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-autocmd! User GoyoEnter nested call &lt;SID&gt;goyo_enter()
+</span><span class="sub">-autocmd! User GoyoLeave nested call &lt;SID&gt;goyo_leave()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>after/plugin/gitgutter.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,16 @@
+<span class="add">+&quot;turn off realtime updates for gitgutter but update upon write
+</span><span class="add">+let g:gitgutter_enabled = 0
+</span><span class="add">+autocmd! gitgutter CursorHold,CursorHoldI
+</span><span class="add">+autocmd BufWritePost * GitGutter
+</span><span class="add">+
+</span><span class="add">+&quot; gitgutter
+</span><span class="add">+nmap &lt;localleader&gt;g :GitGutterToggle&lt;CR&gt;
+</span><span class="add">+nmap gp &lt;Plug&gt;(GitGutterPreviewHunk)
+</span><span class="add">+nmap gs &lt;Plug&gt;(GitGutterStageHunk)
+</span><span class="add">+nmap gu &lt;Plug&gt;(GitGutterUndoHunk)
+</span><span class="add">+nmap [g &lt;Plug&gt;(GitGutterPrevHunk)
+</span><span class="add">+nmap ]g &lt;Plug&gt;(GitGutterNextHunk)
+</span><span class="add">+omap ig &lt;Plug&gt;(GitGutterTextObjectInnerPending)
+</span><span class="add">+omap ag &lt;Plug&gt;(GitGutterTextObjectOuterPending)
+</span><span class="add">+xmap ig &lt;Plug&gt;(GitGutterTextObjectInnerVisual)
+</span><span class="add">+xmap ag &lt;Plug&gt;(GitGutterTextObjectOuterVisual)
+</span></pre>
+</div></div>
+  </body>
+</html>

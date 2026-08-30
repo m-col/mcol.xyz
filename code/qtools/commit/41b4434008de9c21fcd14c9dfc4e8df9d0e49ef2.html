@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add Notify base class as template for notification-creating plugins</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/41b4434008de9c21fcd14c9dfc4e8df9d0e49ef2.html">41b4434008de9c21fcd14c9dfc4e8df9d0e49ef2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/a70c494614f8176c33556bc255de7cc7ccc91e87.html">a70c494614f8176c33556bc255de7cc7ccc91e87</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-10 18:39:18 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-10 18:39:18 +0000
+
+add Notify base class as template for notification-creating plugins
+</pre><div class="diff">
+  <p>
+    <b>__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,62 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Simple base classes that can be used for multiple plugins.
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import gi
+</span><span class="add">+gi.require_version(&apos;Notify&apos;, &apos;0.7&apos;)
+</span><span class="add">+from gi.repository import Notify
+</span><span class="add">+
+</span><span class="add">+from libqtile.configurable import Configurable
+</span><span class="add">+from libqtile.command import lazy
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Notifier(Configurable):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This is a base class for classes with methods that are to be executed upon key
+</span><span class="add">+    presses and that generate pop-up notifications.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    _is_initted = False
+</span><span class="add">+
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;summary&apos;, &apos;Notifier&apos;, &apos;Notification summary.&apos;),
+</span><span class="add">+        (&apos;timeout&apos;, -1, &apos;Timeout for notifications.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        if not Notifier._is_initted:
+</span><span class="add">+            Notifier._is_initted = True
+</span><span class="add">+            Notify.init(&apos;Qtile&apos;)
+</span><span class="add">+
+</span><span class="add">+        Configurable.__init__(self)
+</span><span class="add">+        self.add_defaults(Notifier.defaults)
+</span><span class="add">+        self._notifier = None
+</span><span class="add">+
+</span><span class="add">+    def __getattr__(self, name):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Using this, we can get e.g. Mpc.lazy_toggle which is the equivalent of
+</span><span class="add">+        lazy.function(Mpc.toggle), which is more convenient for setting keybindings.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if name.startswith(&apos;lazy_&apos;):
+</span><span class="add">+            return lazy.function(getattr(self, name[5:]))
+</span><span class="add">+        return Configurable.__getattr__(self, name)
+</span><span class="add">+
+</span><span class="add">+    @property
+</span><span class="add">+    def notifier(self):
+</span><span class="add">+        if self._notifier is None:
+</span><span class="add">+            self._notifier = Notify.Notification.new(self.summary, &apos;&apos;)
+</span><span class="add">+            self._notifier.set_timeout(self.timeout)
+</span><span class="add">+        return self._notifier
+</span><span class="add">+
+</span><span class="add">+    def set_timeout(self, timeout):
+</span><span class="add">+        self.notifier.set_timeout(timeout)
+</span><span class="add">+        self.timeout = timeout
+</span><span class="add">+
+</span><span class="add">+    def show(self):
+</span><span class="add">+        self.notifier.show()
+</span><span class="add">+
+</span><span class="add">+    def hide(self):
+</span><span class="add">+        self.notifier.hide()
+</span><span class="add">+
+</span><span class="add">+    def update(self, body):
+</span><span class="add">+        self.notifier.update(self.summary, body)
+</span></pre>
+</div></div>
+  </body>
+</html>

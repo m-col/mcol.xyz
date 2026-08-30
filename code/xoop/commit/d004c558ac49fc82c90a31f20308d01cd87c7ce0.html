@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - move stack_move and wm_name settings into set_window_type</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/d004c558ac49fc82c90a31f20308d01cd87c7ce0.html">d004c558ac49fc82c90a31f20308d01cd87c7ce0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/9506e3b8e5c374a672d9b44066ed6739f1aa72fd.html">9506e3b8e5c374a672d9b44066ed6739f1aa72fd</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-20 13:03:39 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-20 13:03:39 +0100
+
+move stack_move and wm_name settings into set_window_type
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -58,7 +58,13 @@
+<span class="def">         NULL
+</span><span class="def">     );
+</span><span class="def">     xcb_change_property(
+</span><span class="sub">-        conn, XCB_PROP_MODE_REPLACE, wid, reply3-&gt;atom, XCB_ATOM_INTEGER, 1, 1, (uint32_t []){ 0xFFFFFFFF }
+</span><span class="add">+        conn, XCB_PROP_MODE_REPLACE, wid, reply3-&gt;atom, XCB_ATOM_INTEGER, 1, 1, (uint32_t []){0xFFFFFFFF}
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, (uint32_t []){XCB_STACK_MODE_ABOVE});
+</span><span class="add">+
+</span><span class="add">+    xcb_change_property(
+</span><span class="add">+	conn, XCB_PROP_MODE_REPLACE, wid, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, 4, PROGNAME
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     free(reply1);
+</span>@@ -76,10 +82,8 @@
+<span class="def"> 	conn, 1, pixmap, wid, screen-&gt;width_in_pixels, screen-&gt;height_in_pixels
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="sub">-    const uint32_t values[] = {screen-&gt;white_pixel};
+</span><span class="sub">-
+</span><span class="def">     xcb_create_gc(
+</span><span class="sub">-	conn, gc, pixmap, XCB_GC_FOREGROUND, values
+</span><span class="add">+	conn, gc, pixmap, XCB_GC_FOREGROUND, (uint32_t []){screen-&gt;white_pixel}
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     xcb_rectangle_t rect = {
+</span>@@ -124,13 +128,6 @@
+<span class="def">     set_window_type();
+</span><span class="def">     set_window_shape();
+</span><span class="def"> 
+</span><span class="sub">-    uint32_t above = XCB_STACK_MODE_ABOVE;
+</span><span class="sub">-    xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, &amp;above);
+</span><span class="sub">-
+</span><span class="sub">-    xcb_change_property(
+</span><span class="sub">-	conn, XCB_PROP_MODE_REPLACE, wid, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, 4, PROGNAME
+</span><span class="sub">-    );
+</span><span class="sub">-
+</span><span class="def">     xcb_map_window(conn, wid);
+</span><span class="def">     xcb_flush(conn);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

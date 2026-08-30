@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mini-theme - add background color to code tags; yellow-&gt;white</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mini-theme">mini-theme</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A mini theme for the pelican static site generator</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mini-theme">https://github.com/m-col/mini-theme</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mini-theme/tree.html">Files</a> | <a href="https://mcol.xyz/code/mini-theme/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mini-theme/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mini-theme/commit/7d6892417d5dee5e3df774ddbda298433c44fdff.html">7d6892417d5dee5e3df774ddbda298433c44fdff</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mini-theme/commit/c6cde48ade8c0b70f5693e983540808d2cb12630.html">c6cde48ade8c0b70f5693e983540808d2cb12630</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-05 00:00:13 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-05 00:00:13 +0100
+
+add background color to code tags; yellow-&gt;white
+</pre><div class="diff">
+  <p>
+    <b>static/css/main.css</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,7 +6,7 @@
+<span class="def">     /* code colours */
+</span><span class="def">     --c0: #030405; /* dark */
+</span><span class="def">     --c1: #8742a5; /* red */
+</span><span class="sub">-    --c2: #e6df52; /* green */
+</span><span class="add">+    --c2: #FFFFFF; /* green */
+</span><span class="def">     --c3: #406794; /* yellow */
+</span><span class="def">     --c4: #8f4ff0; /* blue */
+</span><span class="def">     --c5: var(--trim); /* purple */
+</span>@@ -161,10 +161,15 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> .highlight {
+</span><span class="add">+    background: #dedefe;
+</span><span class="def">     white-space: pre-wrap;
+</span><span class="def">     word-wrap: break-word;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+code {
+</span><span class="add">+    background: #dedefe;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> .err { color: var(--c1); } /* Error */
+</span><span class="def"> .o { color: var(--c1); } /* Operator */
+</span><span class="def"> .c { color: var(--c4); } /* Comment */
+</span></pre>
+</div></div>
+  </body>
+</html>

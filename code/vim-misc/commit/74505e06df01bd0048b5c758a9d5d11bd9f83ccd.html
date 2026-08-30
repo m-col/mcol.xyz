@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add some settings</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/74505e06df01bd0048b5c758a9d5d11bd9f83ccd.html">74505e06df01bd0048b5c758a9d5d11bd9f83ccd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/369e543fd2ccc87c1e352d2046b5de52fa0a80c7.html">369e543fd2ccc87c1e352d2046b5de52fa0a80c7</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2023-07-31 23:50:02 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2023-07-31 23:50:02 +0100
+
+add some settings
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -75,17 +75,19 @@
+<span class="def"> 
+</span><span class="def"> runtime macros/emoji-ab.vim
+</span><span class="def"> 
+</span><span class="sub">-&quot;\   &apos;python&apos;: [&apos;flake8&apos;, &apos;mypy&apos;],
+</span><span class="add">+&quot; Only linters listed explicitly will be run.
+</span><span class="add">+let g:ale_linters_explicit = 1
+</span><span class="def"> let g:ale_linters = {
+</span><span class="def"> \   &apos;haskell&apos;: [&apos;hlint&apos;],
+</span><span class="add">+\   &apos;python&apos;: [&apos;flake8&apos;, &apos;mypy&apos;, &apos;ruff&apos;],
+</span><span class="def"> \}
+</span><span class="sub">-let g:ale_linters_explicit = 1
+</span><span class="sub">-let g:ale_lint_on_text_changed = &apos;never&apos;
+</span><span class="sub">-let g:ale_lint_on_insert_leave = 0
+</span><span class="add">+&quot; Don&apos;t show errors in virtual text or signs column; rely on echoed message instead
+</span><span class="add">+let g:ale_virtualtext_cursor = 0
+</span><span class="add">+let g:ale_set_signs = 0
+</span><span class="def"> &quot;let g:ale_command_wrapper = &apos;nice -n5&apos;
+</span><span class="def"> let g:ale_fixers = {
+</span><span class="def"> \   &apos;haskell&apos;: [&apos;ormolu&apos;],
+</span><span class="sub">-\   &apos;python&apos;: [&apos;black&apos;, &apos;isort&apos;],
+</span><span class="add">+\   &apos;python&apos;: [&apos;black&apos;, &apos;ruff&apos;],
+</span><span class="def"> \}
+</span><span class="def"> &quot;\   &apos;markdown&apos;: [&apos;prettier&apos;],
+</span><span class="def"> 
+</span>@@ -93,3 +95,6 @@
+<span class="def"> let g:vim_markdown_conceal_code_blocks = 0
+</span><span class="def"> let g:vim_json_conceal=0
+</span><span class="def"> let g:markdown_syntax_conceal=0
+</span><span class="add">+
+</span><span class="add">+let g:any_jump_references_only_for_current_filetype = 1
+</span><span class="add">+let g:any_jump_disable_vcs_ignore = 1
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -126,3 +126,12 @@
+<span class="def"> &quot; ALE navigation
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-S-k&gt; &lt;Plug&gt;(ale_previous_wrap)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-S-j&gt; &lt;Plug&gt;(ale_next_wrap)
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-S-f&gt; :ALEFix&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; Github copilot
+</span><span class="add">+imap &lt;silent&gt; &lt;S-Tab&gt; &lt;Plug&gt;(copilot-next)
+</span><span class="add">+
+</span><span class="add">+&quot; any-jump
+</span><span class="add">+let g:any_jump_disable_default_keybindings = 1
+</span><span class="add">+nnoremap &lt;leader&gt;g :AnyJump&lt;CR&gt;
+</span><span class="add">+xnoremap &lt;leader&gt;g :AnyJumpVisual&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

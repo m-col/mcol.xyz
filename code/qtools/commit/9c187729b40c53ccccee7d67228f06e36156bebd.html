@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - update borders</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/9c187729b40c53ccccee7d67228f06e36156bebd.html">9c187729b40c53ccccee7d67228f06e36156bebd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/72368620f29d913fb5c655ee53e874ed6fd9a1e5.html">72368620f29d913fb5c655ee53e874ed6fd9a1e5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-04 19:34:56 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-04 19:34:56 +0100
+
+update borders
+</pre><div class="diff">
+  <p>
+    <b>qtools/borders/cde.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,7 @@
+<span class="def"> import xcffib
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-def cde(self, inner_w, inner_h, borderwidths, bordercolors):
+</span><span class="add">+def cde(self, colors, borderwidth, width, height):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     The &quot;CDE&quot; style is based on the window decorations used by the Common Desktop
+</span><span class="def">     Environment, and has a 3D bevelled look.
+</span>@@ -25,43 +25,51 @@
+<span class="def">      |__|________|__|
+</span><span class="def"> 
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-    if len(bordercolors) &lt; 3:
+</span><span class="sub">-        self.set_attribute(borderpixel=bordercolors[0])
+</span><span class="add">+    if not colors or not borderwidth:
+</span><span class="def">         return
+</span><span class="def"> 
+</span><span class="sub">-    core = self.conn.conn.core
+</span><span class="sub">-    self.borderwidth = borderwidth = sum(borderwidths)
+</span><span class="sub">-    outer_w = inner_w + borderwidth * 2
+</span><span class="sub">-    outer_h = inner_h + borderwidth * 2
+</span><span class="add">+    if isinstance(colors, str):
+</span><span class="add">+        self.set_attribute(borderpixel=self.conn.color_pixel(colors))
+</span><span class="add">+        return
+</span><span class="def"> 
+</span><span class="add">+    if len(colors) &lt; 3:
+</span><span class="add">+        self.set_attribute(borderpixel=self.conn.color_pixel(colors[0]))
+</span><span class="add">+        return
+</span><span class="add">+
+</span><span class="add">+    colors = [self.conn.color_pixel(c) for c in colors]
+</span><span class="add">+    core = self.conn.conn.core
+</span><span class="add">+    outer_w = width + borderwidth * 2
+</span><span class="add">+    outer_h = height + borderwidth * 2
+</span><span class="def">     pixmap = self.conn.conn.generate_id()
+</span><span class="sub">-    core.CreatePixmap(
+</span><span class="sub">-        self.conn.default_screen.root_depth, pixmap, self.wid, outer_w, outer_h
+</span><span class="sub">-    )
+</span><span class="def">     gc = self.conn.conn.generate_id()
+</span><span class="sub">-    core.CreateGC(gc, pixmap, xcffib.xproto.GC.Foreground, [bordercolors[2]])
+</span><span class="sub">-    rect = xcffib.xproto.RECTANGLE.synthetic(0, 0, outer_w, outer_h)
+</span><span class="sub">-    core.PolyFillRectangle(pixmap, gc, 1, [rect])
+</span><span class="sub">-
+</span><span class="sub">-    core.ChangeGC(gc, xcffib.xproto.GC.Foreground, [bordercolors[1]])
+</span><span class="sub">-    rect = xcffib.xproto.RECTANGLE.synthetic(2, 2, outer_w - 4, outer_h - 4)
+</span><span class="sub">-    core.PolyFillRectangle(pixmap, gc, 1, [rect])
+</span><span class="sub">-
+</span><span class="sub">-    core.ChangeGC(gc, xcffib.xproto.GC.Foreground, [bordercolors[0]])
+</span><span class="sub">-    rect = xcffib.xproto.RECTANGLE.synthetic(
+</span><span class="sub">-        borderwidth - 1, borderwidth - 1, inner_w + 2, inner_h + 2
+</span><span class="sub">-    )
+</span><span class="sub">-    core.PolyFillRectangle(pixmap, gc, 1, [rect])
+</span><span class="sub">-
+</span><span class="sub">-    shadows, light = _lines(borderwidth, outer_w, outer_h)
+</span><span class="sub">-    core.PolyLine(0, pixmap, gc, 18, shadows)
+</span><span class="sub">-    core.ChangeGC(gc, xcffib.xproto.GC.Foreground, [bordercolors[2]])
+</span><span class="sub">-    core.PolyLine(0, pixmap, gc, 15, light)
+</span><span class="sub">-
+</span><span class="sub">-    self.set_borderpixmap(pixmap, gc, outer_w, outer_h)
+</span><span class="sub">-    core.FreePixmap(pixmap)
+</span><span class="sub">-    core.FreeGC(gc)
+</span><span class="sub">-    return
+</span><span class="add">+
+</span><span class="add">+    try:
+</span><span class="add">+        core.CreatePixmap(
+</span><span class="add">+            self.conn.default_screen.root_depth, pixmap, self.wid, outer_w, outer_h
+</span><span class="add">+        )
+</span><span class="add">+        core.CreateGC(gc, pixmap, xcffib.xproto.GC.Foreground, [colors[2]])
+</span><span class="add">+        rect = xcffib.xproto.RECTANGLE.synthetic(0, 0, outer_w, outer_h)
+</span><span class="add">+        core.PolyFillRectangle(pixmap, gc, 1, [rect])
+</span><span class="add">+
+</span><span class="add">+        core.ChangeGC(gc, xcffib.xproto.GC.Foreground, [colors[1]])
+</span><span class="add">+        rect = xcffib.xproto.RECTANGLE.synthetic(2, 2, outer_w - 4, outer_h - 4)
+</span><span class="add">+        core.PolyFillRectangle(pixmap, gc, 1, [rect])
+</span><span class="add">+
+</span><span class="add">+        core.ChangeGC(gc, xcffib.xproto.GC.Foreground, [colors[0]])
+</span><span class="add">+        rect = xcffib.xproto.RECTANGLE.synthetic(
+</span><span class="add">+            borderwidth - 1, borderwidth - 1, width + 2, height + 2
+</span><span class="add">+        )
+</span><span class="add">+        core.PolyFillRectangle(pixmap, gc, 1, [rect])
+</span><span class="add">+
+</span><span class="add">+        shadows, light = _lines(borderwidth, outer_w, outer_h)
+</span><span class="add">+        core.PolyLine(0, pixmap, gc, 18, shadows)
+</span><span class="add">+        core.ChangeGC(gc, xcffib.xproto.GC.Foreground, [colors[2]])
+</span><span class="add">+        core.PolyLine(0, pixmap, gc, 15, light)
+</span><span class="add">+        self.set_borderpixmap(pixmap, gc, borderwidth, width, height)
+</span><span class="add">+
+</span><span class="add">+    finally:
+</span><span class="add">+        core.FreePixmap(pixmap)
+</span><span class="add">+        core.FreeGC(gc)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> @functools.lru_cache()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/borders/borders.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -30,6 +30,7 @@
+<span class="def">     Available styles:
+</span><span class="def"> 
+</span><span class="def">         - frame
+</span><span class="add">+        - CDE
+</span><span class="def"> 
+</span><span class="def">     Parameters
+</span><span class="def">     ----------
+</span>@@ -38,9 +39,7 @@
+<span class="def"> 
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     style = style.lower()
+</span><span class="sub">-    if style not in _style_map:
+</span><span class="sub">-        logger.exception(&quot;qtools.borders: style {0} not found.&quot;.format(style))
+</span><span class="sub">-        return
+</span><span class="sub">-
+</span><span class="sub">-    xcbq.Window.paint_borders = _style_map[style]
+</span><span class="sub">-    return
+</span><span class="add">+    if style in _style_map:
+</span><span class="add">+        xcbq.Window.paint_borders = _style_map[style]
+</span><span class="add">+    else:
+</span><span class="add">+        logger.exception(&quot;qtools.borders: style {} not found.&quot;.format(style))
+</span></pre>
+</div></div>
+  </body>
+</html>

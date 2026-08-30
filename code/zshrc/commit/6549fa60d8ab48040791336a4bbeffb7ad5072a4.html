@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/6549fa60d8ab48040791336a4bbeffb7ad5072a4.html">6549fa60d8ab48040791336a4bbeffb7ad5072a4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/286714d0421da05ec931784cf439dd50bf3ed884.html">286714d0421da05ec931784cf439dd50bf3ed884</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2025-08-21 15:59:22 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2025-08-21 15:59:22 +0100
+
+changes
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -62,7 +62,7 @@
+<span class="def">     SUDO_EDITOR=nvim \
+</span><span class="def">     EDITOR=nvim \
+</span><span class="def">     AUR_PAGER=ranger \
+</span><span class="sub">-    TERM=xterm \
+</span><span class="add">+    TERM=xterm-256color \
+</span><span class="def">     LANG=en_GB.UTF-8 \
+</span><span class="def">     LC_CTYPE=en_GB.UTF-8 \
+</span><span class="def">     PAGER=&quot;less --mouse&quot; \
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>fzf.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,7 +12,7 @@
+<span class="def"> 	#--bind &apos;ctrl-/:change-preview-window(down|hidden|)&apos;
+</span><span class="def">     export FZF_DEFAULT_OPTS=&quot;
+</span><span class="def"> 	--tmux
+</span><span class="sub">-	--walker-skip .git,node_modules,target,.mypy_cache,.venv,__pycache__,.DS_Store
+</span><span class="add">+	--walker-skip .git,node_modules,target,.mypy_cache,.venv,__pycache__,.DS_Store,ws
+</span><span class="def"> 	&quot;
+</span><span class="def">     export FZF_CTRL_T_COMMAND=&quot;&quot;
+</span><span class="def">     source &lt;(fzf --zsh)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,28 +3,30 @@
+<span class="def"> #
+</span><span class="def"> 
+</span><span class="def"> # use last browsed directory automatically with ranger
+</span><span class="sub">-_ranger=`which ranger`
+</span><span class="sub">-ranger-cd() { 
+</span><span class="sub">-    tempfile=&quot;$(mktemp -t ranger.XXXXXX)&quot;
+</span><span class="sub">-    if [[ -f $HOME/.local/bin/ranger ]]
+</span><span class="sub">-    then
+</span><span class="sub">-	$HOME/.local/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="sub">-    else
+</span><span class="sub">-	$_ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="sub">-    fi
+</span><span class="sub">-    test -f &quot;$tempfile&quot; &amp;&amp;
+</span><span class="sub">-	if [ &quot;$(cat -- &quot;$tempfile&quot;)&quot; != &quot;$(echo -n `pwd`)&quot; ]; then
+</span><span class="sub">-	    cd -- &quot;$(cat &quot;$tempfile&quot;)&quot;
+</span><span class="add">+if which ranger &amp;&gt; /dev/null; then
+</span><span class="add">+    _ranger=`which ranger`
+</span><span class="add">+    ranger-cd() {
+</span><span class="add">+	tempfile=&quot;$(mktemp -t ranger.XXXXXX)&quot;
+</span><span class="add">+	if [[ -f $HOME/.local/bin/ranger ]]
+</span><span class="add">+	then
+</span><span class="add">+	    $HOME/.local/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="add">+	else
+</span><span class="add">+	    $_ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="def"> 	fi
+</span><span class="sub">-	rm -f -- &quot;$tempfile&quot;
+</span><span class="sub">-}
+</span><span class="sub">-ranger() { # prevent nested ranger instances when shelling from ranger
+</span><span class="sub">-    if [ -z &quot;$RANGER_LEVEL&quot; ]; then
+</span><span class="sub">-	ranger-cd &quot;$@&quot;
+</span><span class="sub">-    else
+</span><span class="sub">-	exit
+</span><span class="sub">-    fi
+</span><span class="sub">-}
+</span><span class="add">+	test -f &quot;$tempfile&quot; &amp;&amp;
+</span><span class="add">+	    if [ &quot;$(cat -- &quot;$tempfile&quot;)&quot; != &quot;$(echo -n `pwd`)&quot; ]; then
+</span><span class="add">+		cd -- &quot;$(cat &quot;$tempfile&quot;)&quot;
+</span><span class="add">+	    fi
+</span><span class="add">+	    rm -f -- &quot;$tempfile&quot;
+</span><span class="add">+    }
+</span><span class="add">+    ranger() { # prevent nested ranger instances when shelling from ranger
+</span><span class="add">+	if [ -z &quot;$RANGER_LEVEL&quot; ]; then
+</span><span class="add">+	    ranger-cd &quot;$@&quot;
+</span><span class="add">+	else
+</span><span class="add">+	    exit
+</span><span class="add">+	fi
+</span><span class="add">+    }
+</span><span class="add">+fi
+</span><span class="def"> 
+</span><span class="def"> shebang() { # create new file, add shebang, and vim
+</span><span class="def">     touch $1
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -85,9 +85,9 @@
+<span class="def"> rb() {
+</span><span class="def">     if git branch | /usr/bin/grep -qw main
+</span><span class="def">     then
+</span><span class="sub">-	git pull --rebase upstream main
+</span><span class="add">+	git pull --rebase origin main
+</span><span class="def">     else
+</span><span class="sub">-	git pull --rebase upstream master
+</span><span class="add">+	git pull --rebase origin master
+</span><span class="def">     fi
+</span><span class="def"> }
+</span><span class="def"> alias rbi=&apos;git rebase -i&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - Allow inclusion of extra icons with FONTAWESOME_EXTRA</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/5ebecd52679ebf6557f57e5f64ad595aba7d4ad8.html">5ebecd52679ebf6557f57e5f64ad595aba7d4ad8</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/323c4b1bc6ff6f266cd9330c8d97fcb4e796fc52.html">323c4b1bc6ff6f266cd9330c8d97fcb4e796fc52</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-05 21:43:52 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-05 21:43:52 +0100
+
+Allow inclusion of extra icons with FONTAWESOME_EXTRA
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -32,6 +32,16 @@
+<span class="def"> 
+</span><span class="def">     &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ SITEURL }}/theme/css/fa.css&quot;/&gt;
+</span><span class="def"> 
+</span><span class="add">+Additional icons
+</span><span class="add">+----------------
+</span><span class="add">+
+</span><span class="add">+Additional icons that aren&apos;t found in your articles can be added using a list
+</span><span class="add">+of their corresponding CSS references and this variable name:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: python
+</span><span class="add">+
+</span><span class="add">+   FONTAWESOME_EXTRA = [&apos;fa-rss&apos;, &apos;fa-poo-storm&apos;]
+</span><span class="add">+
+</span><span class="def"> RST roles
+</span><span class="def"> ---------
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>minify_fontawesome.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -59,12 +59,12 @@
+<span class="def"> 
+</span><span class="def">     print(f&apos;Font Awesome icons incorporated: {icons}&apos;)
+</span><span class="def"> 
+</span><span class="sub">-def get_classes(folder):
+</span><span class="add">+def get_classes(folder, extra_icons):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     Gets a list of font awesome CSS classes defined in all html files within a
+</span><span class="def">     folder i.e. those beginning with &apos;fa&apos;.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-    fa_classes = []
+</span><span class="add">+    fa_classes = extra_icons if extra_icons else []
+</span><span class="def">     all_classes = []
+</span><span class="def"> 
+</span><span class="def">     for root, dirs, files in os.walk(folder):
+</span>@@ -83,7 +83,7 @@
+<span class="def">     return fa_classes
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-def copy_css(output_path, css_file):
+</span><span class="add">+def copy_css(output_path, css_file, extra_icons):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     Copy css for only used icons over to output folder. Returns the css blocks
+</span><span class="def">     corresponding to these icons so we know which icons to copy from the font
+</span>@@ -101,7 +101,7 @@
+<span class="def">         )
+</span><span class="def"> 
+</span><span class="def">     css_blocks = []
+</span><span class="sub">-    for cls in get_classes(output_path):
+</span><span class="add">+    for cls in get_classes(output_path, extra_icons):
+</span><span class="def">         match = re.search(f&apos;\.{cls}:before.*?}}&apos;, contents)
+</span><span class="def">         if match:
+</span><span class="def">             css_blocks.append(match.group(0))
+</span>@@ -129,6 +129,7 @@
+<span class="def">     css_blocks = copy_css(
+</span><span class="def">         output_path,
+</span><span class="def">         css_file,
+</span><span class="add">+        instance.settings.get(&apos;FONTAWESOME_EXTRA&apos;, None)
+</span><span class="def">     )
+</span><span class="def"> 
+</span><span class="def">     copy_glyphs(
+</span></pre>
+</div></div>
+  </body>
+</html>

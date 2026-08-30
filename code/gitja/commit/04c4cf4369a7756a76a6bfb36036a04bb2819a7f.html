@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - repo scope: repos -&gt; repositories</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/04c4cf4369a7756a76a6bfb36036a04bb2819a7f.html">04c4cf4369a7756a76a6bfb36036a04bb2819a7f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/ebcacfb770e1d711120e27c7478b6782cd36802c.html">ebcacfb770e1d711120e27c7478b6782cd36802c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-27 02:07:09 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-27 02:07:09 +0000
+
+repo scope: repos -&gt; repositories
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -119,7 +119,7 @@
+<span class="def"> package env repos name description commits tree tags branches =
+</span><span class="def">     HashMap.fromList
+</span><span class="def">         [ (&quot;host&quot;, toGVal . envHost $ env)
+</span><span class="sub">-        , (&quot;repos&quot;, toGVal repos)
+</span><span class="add">+        , (&quot;repositories&quot;, toGVal repos)
+</span><span class="def">         , (&quot;name&quot;, toGVal . pack . init . toFilePath $ name)
+</span><span class="def">         , (&quot;description&quot;, toGVal description)
+</span><span class="def">         , (&quot;commits&quot;, toGVal . reverse $ commits) -- Could be optimised
+</span></pre>
+</div></div>
+  </body>
+</html>

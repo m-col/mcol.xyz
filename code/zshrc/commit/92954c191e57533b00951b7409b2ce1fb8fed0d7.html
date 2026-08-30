@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - clean up tmux variable and zshrc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/92954c191e57533b00951b7409b2ce1fb8fed0d7.html">92954c191e57533b00951b7409b2ce1fb8fed0d7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/7c630d03f9eb8f8231008d2969c6a87230437f1d.html">7c630d03f9eb8f8231008d2969c6a87230437f1d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-21 21:17:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-21 21:17:52 +0000
+
+clean up tmux variable and zshrc
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,10 +2,18 @@
+<span class="def"> # zshrc
+</span><span class="def"> #
+</span><span class="def"> 
+</span><span class="sub">-if [ -n &quot;$SSH_CLIENT&quot; ] || [ -n &quot;$SSH_TTY&quot; ]; then
+</span><span class="sub">-    export is_ssh=true
+</span><span class="add">+if [ -n &quot;$SSH_CLIENT&quot; ] || [ -n &quot;$SSH_TTY&quot; ]
+</span><span class="add">+then
+</span><span class="add">+    export IS_SSH=true
+</span><span class="def"> else
+</span><span class="sub">-    export is_ssh=false
+</span><span class="add">+    export IS_SSH=false
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+if [[ -n &quot;$TMUX&quot; ]]
+</span><span class="add">+then
+</span><span class="add">+    export IS_TMUX=true
+</span><span class="add">+else
+</span><span class="add">+    export IS_TMUX=false
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="def"> ZSH=&quot;$HOME/.zsh&quot;
+</span>@@ -20,7 +28,6 @@
+<span class="def">     source $plugin
+</span><span class="def"> done
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> so () { [[ -e $1 ]] &amp;&amp; source $1 }
+</span><span class="def"> 
+</span><span class="def"> so $ZSH/aliases	    # general aliases
+</span>@@ -35,12 +42,15 @@
+<span class="def"> ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+</span><span class="def"> so $ZSH/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+</span><span class="def"> 
+</span><span class="add">+export SUDO_EDITOR=vim
+</span><span class="add">+export EDITOR=vim
+</span><span class="def"> 
+</span><span class="def"> # Ensure that the prompt is redrawn when the terminal size changes.
+</span><span class="sub">-TRAPWINCH () {
+</span><span class="sub">-    zle &amp;&amp;  zle -R
+</span><span class="sub">-}
+</span><span class="add">+TRAPWINCH () { zle &amp;&amp;  zle -R }
+</span><span class="def"> 
+</span><span class="def"> # these are needed for some unicode to work (e.g. in tmux)
+</span><span class="def"> export LANG=en_US.UTF-8
+</span><span class="def"> export LC_CTYPE=en_US.UTF-8
+</span><span class="add">+
+</span><span class="add">+# don&apos;t load default ranger config
+</span><span class="add">+export RANGER_LOAD_DEFAULT_RC=FALSE
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,7 +8,7 @@
+<span class="def"> local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="def"> 
+</span><span class="def"> # prompt segment shape: arrow or square
+</span><span class="sub">-if $is_ssh
+</span><span class="add">+if $IS_SSH
+</span><span class="def"> then
+</span><span class="def">     SEGMENT_SEPARATOR_L=$&apos;\ue0b0&apos;
+</span><span class="def">     SEGMENT_SEPARATOR_R=$&apos;&apos;
+</span>@@ -46,7 +46,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> prompt_context() {
+</span><span class="sub">-    if $is_ssh; then
+</span><span class="add">+    if $IS_SSH; then
+</span><span class="def"> 	prompt_segment green black &quot; %(!.%{%F{yellow}%}.)$USER@$HOST &quot;
+</span><span class="def">     fi
+</span><span class="def"> }
+</span>@@ -124,7 +124,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-if $is_ssh
+</span><span class="add">+if $IS_SSH
+</span><span class="def"> then
+</span><span class="def">     tmux_following_colour=green
+</span><span class="def"> else
+</span>@@ -133,7 +133,7 @@
+<span class="def"> prompt_tmux() {
+</span><span class="def">     local tmux_indicator
+</span><span class="def">     local SEGMENT_SEPARATOR=&apos;&apos;
+</span><span class="sub">-    if [[ -n &quot;$TMUX&quot; ]]
+</span><span class="add">+    if $IS_TMUX
+</span><span class="def">     then
+</span><span class="def"> 	tmux_indicator=$&apos;\ue0b0&apos;
+</span><span class="def">     else
+</span></pre>
+</div></div>
+  </body>
+</html>

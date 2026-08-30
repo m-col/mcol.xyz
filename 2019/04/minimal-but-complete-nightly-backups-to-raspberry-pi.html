@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / minimal but complete nightly backups to raspberry pi</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2019/04/minimal-but-complete-nightly-backups-to-raspberry-pi.html>minimal but complete nightly backups to raspberry pi</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>I searched far and wide for an effective backup solution for my laptop that
+wasn't overkill.</p>
+<p>When I first converted to linux I used programs like <a class="reference external" href="https://github.com/teejee2008/timeshift">timeshift</a> and <a class="reference external" href="https://github.com/bit-team/backintime">backintime</a> and although they worked well, I
+wanted more fine grain control over what was backed up and less meat on what
+should be a lightweight background process.</p>
+<p>In my quest I stumbled upon this <a class="reference external" href="https://news.ycombinator.com/item?id=11070797">Hacker News discussion</a> about turning your home
+directory into a git working tree, where its .git folder is in some other
+folder, out of the way. This setup stops your home git repo from getting in the
+way of any git folders you have in your home directory, but has some problems:</p>
+<ul class="simple">
+<li>you need to remember to use the alias or folder names for this git repo to
+use the correct .git folder and working tree</li>
+<li>working tree changes won't get picked up by utilities like zsh prompts or
+ranger, so you might not always remember when things have changed</li>
+<li>to not pick up every single file in your home directory, these setups
+generally ignore untracked files. This requires you to remember to manually
+add any new config files in the future</li>
+</ul>
+<p>Maybe I just have a poor memory.</p>
+<p>A slight adjustment of this is to just use the <code>$HOME/.config</code> folder for
+what it was intended: storing your config files. Turning this folder into your
+dotfiles repository, you can treat it as any other git repo.</p>
+<p>Most programs can keep their configs in this folder, but the few that don't can
+simply have their configs symlinked into place from the repo. This symlinking
+make up the only scripting that would be required to install the repo into
+another machine.</p>
+<p>It makes sense to git track configuration files, but your photos, music and
+documents? git is not going to like that. This calls for a small bit of
+scripting to rsync these folders and push the .config repo to a remote
+location.</p>
+<p>First we need the location: a raspberry pi, ticking away somewhere hidden in
+your flat, wired to an external hard drive. With one up and running, stick your
+hard drive into the pi's <code>/etc/fstab</code>:</p>
+<div class="highlight"><pre><span></span>/dev/disk/by-uuid/1234-abcd /mnt/backups ext4 auto,rw,nofail,noatime,nosuid,noexec 0 0
+</pre></div>
+<p>Make sure your user has write access to the hard drive and then create the
+remote repo for the configs:</p>
+<div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-m<span class="w"> </span><span class="m">1777</span><span class="w"> </span>/mnt/backups/dotfiles
+<span class="nb">cd</span><span class="w"> </span>/mnt/backups/dotfiles
+git<span class="w"> </span>init<span class="w"> </span>--bare
+</pre></div>
+<p>Make any additional folders for each folder in your home directory that will be
+backed up:</p>
+<div class="highlight"><pre><span></span>mkdir<span class="w"> </span>/mnt/backups/<span class="o">{</span>documents,music,pictures<span class="o">}</span>
+</pre></div>
+<p>While we're on the rasperry pi, let's configure some hard drive power
+management so the hard drive spins down soon after the daily backup to save
+some power. First install <code>hdparm</code>, then set the power management and
+spin down settings (see the <a class="reference external" href="https://wiki.archlinux.org/index.php/Hdparm#Power_management_configuration">Arch wiki</a>
+for more info).</p>
+<div class="highlight"><pre><span></span>apt-get<span class="w"> </span>install<span class="w"> </span>hdparm
+hdparm<span class="w"> </span>-B<span class="w"> </span><span class="m">127</span><span class="w"> </span>/dev/disk/by-uuid/1234-abcd<span class="w">   </span><span class="c1"># best performance permitting spin-down</span>
+hdparm<span class="w"> </span>-S<span class="w"> </span><span class="m">241</span><span class="w"> </span>/dev/disk/by-uuid/1234-abcd<span class="w">   </span><span class="c1"># spin down after 30 minutes</span>
+</pre></div>
+<p>Back on the laptop, we write the backup script, substituting where necessary:</p>
+<div class="highlight"><pre><span></span><span class="nv">pi_IP</span><span class="o">=</span><span class="m">192</span>.168.1.2
+<span class="nv">pi_drive</span><span class="o">=</span><span class="s2">&quot;pi@</span><span class="nv">$pi_IP</span><span class="s2">:/mnt/backups&quot;</span>
+
+<span class="nv">rsyncargs</span><span class="o">=</span><span class="s2">&quot;--recursive --links --times --partial --delete --compress --perms --verbose&quot;</span>
+
+<span class="c1"># this environmental variable lets cron use notify-send for user ID 1000</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">DBUS_SESSION_BUS_ADDRESS</span><span class="o">=</span>unix:path<span class="o">=</span>/run/user/1000/bus
+
+<span class="k">if</span><span class="w"> </span>ping<span class="w"> </span><span class="nv">$pi_IP</span><span class="w"> </span>-c<span class="w"> </span><span class="m">1</span>
+<span class="k">then</span>
+<span class="w">    </span>notify-send<span class="w"> </span><span class="s2">&quot;Nightly backup to pi&quot;</span><span class="w"> </span><span class="s2">&quot;Backup starting...&quot;</span>
+<span class="k">else</span>
+<span class="w">    </span>notify-send<span class="w"> </span><span class="s2">&quot;Nightly backup to pi&quot;</span><span class="w"> </span><span class="s2">&quot;Couldn&#39;t ping pi&quot;</span>
+<span class="w">    </span><span class="nb">exit</span><span class="w">    </span><span class="c1"># exit if we can&#39;t ping the pi - are you still at work?</span>
+<span class="k">fi</span>
+
+<span class="o">{</span>
+<span class="w">    </span><span class="c1"># dotfiles</span>
+<span class="w">    </span>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="nv">$HOME</span>/.config/.git/<span class="w"> </span>--work-tree<span class="o">=</span><span class="nv">$HOME</span>/.config<span class="w"> </span>add<span class="w"> </span>-A
+<span class="w">    </span>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="nv">$HOME</span>/.config/.git/<span class="w"> </span>--work-tree<span class="o">=</span><span class="nv">$HOME</span>/.config<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;cron commit&quot;</span>
+<span class="w">    </span>git<span class="w"> </span>--git-dir<span class="o">=</span><span class="nv">$HOME</span>/.config/.git/<span class="w"> </span>--work-tree<span class="o">=</span><span class="nv">$HOME</span>/.config<span class="w"> </span>push<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nv">errors</span><span class="o">=</span><span class="nb">true</span>
+
+<span class="w">    </span><span class="c1"># other folders</span>
+<span class="w">    </span>rsync<span class="w"> </span><span class="nv">$rsyncargs</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--exclude<span class="o">=</span>path/to/folder/you/want/to/exclude<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">$HOME</span>/documents/<span class="w"> </span><span class="nv">$pi_drive</span>/documents/<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nv">errors</span><span class="o">=</span><span class="nb">true</span>
+
+<span class="w">    </span>rsync<span class="w"> </span><span class="nv">$rsyncargs</span><span class="w"> </span><span class="nv">$HOME</span>/pictures/<span class="w">    </span><span class="nv">$pi_drive</span>/pictures/<span class="w">  </span><span class="o">||</span><span class="w"> </span><span class="nv">errors</span><span class="o">=</span><span class="nb">true</span>
+<span class="w">    </span>rsync<span class="w"> </span><span class="nv">$rsyncargs</span><span class="w"> </span><span class="nv">$HOME</span>/music/<span class="w">       </span><span class="nv">$pi_drive</span>/music/<span class="w">     </span><span class="o">||</span><span class="w"> </span><span class="nv">errors</span><span class="o">=</span><span class="nb">true</span>
+
+<span class="c1"># catch the output into a file in case we need it</span>
+<span class="o">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/tmp/BACKUPLOG-<span class="k">$(</span>date<span class="w"> </span>+%y%m%d-%H%M%S<span class="k">)</span>
+
+<span class="c1"># notify with outcome</span>
+<span class="k">if</span><span class="w"> </span><span class="si">${</span><span class="nv">errors</span><span class="k">:-</span><span class="nv">false</span><span class="si">}</span>
+<span class="k">then</span>
+<span class="w">    </span>notify-send<span class="w"> </span><span class="s2">&quot;Nightly backup to pi&quot;</span><span class="w"> </span><span class="s2">&quot;Completed with error(s)&quot;</span>
+<span class="k">else</span>
+<span class="w">    </span>notify-send<span class="w"> </span><span class="s2">&quot;Nightly backup to pi&quot;</span><span class="w"> </span><span class="s2">&quot;Completed successfully.&quot;</span>
+<span class="k">fi</span>
+</pre></div>
+<p>This can easily be run by cron, e.g.:</p>
+<div class="highlight"><pre><span></span><span class="c1"># backup nightly at 9.30 pm</span>
+<span class="m">30</span><span class="w"> </span><span class="m">21</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="nv">$HOME</span>/bin/nightly_backup
+</pre></div>
+<p>Now every night at 9.30 your home directory will get backed up to the raspberry
+pi if you're at home. If it doesn't work for whatever reason, you'll get
+notified of the error and you can check out the log in the /tmp folder.</p>
+<p>Complement this with <a class="reference external" href="https://wiki.archlinux.org/index.php/etckeeper">etckeeper</a> to back up system files and
+this simple and lightweight setup can restore your machine in no time.</p>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2019-04-25T00:00:00+00:00">2019-04-25</time>
+in <a href="/category/raspberrypi.html">raspberrypi</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

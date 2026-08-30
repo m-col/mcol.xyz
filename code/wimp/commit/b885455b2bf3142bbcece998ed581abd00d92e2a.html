@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - expose next_desk, prev_desk to client interface</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/b885455b2bf3142bbcece998ed581abd00d92e2a.html">b885455b2bf3142bbcece998ed581abd00d92e2a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/77f6e7ef3bd908d4bfa22eb9bbe68fcde6e5fe12.html">77f6e7ef3bd908d4bfa22eb9bbe68fcde6e5fe12</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-06 19:32:07 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-06 19:32:07 +0000
+
+expose next_desk, prev_desk to client interface
+</pre><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,22 +15,19 @@
+<span class="def"> 
+</span><span class="def"> bool do_action(char *message, char *response) {
+</span><span class="def">     char *s;
+</span><span class="sub">-    bool handled = false;
+</span><span class="add">+    bool handled = true;
+</span><span class="def"> 
+</span><span class="def">     if (!strcasecmp(message, &quot;terminate&quot;)) {
+</span><span class="sub">-	handled = true;
+</span><span class="def"> 	terminate(NULL);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     else if (!strcasecmp(message, &quot;exec&quot;)) {
+</span><span class="sub">-	handled = true;
+</span><span class="def"> 	if ((s = strtok(NULL, &quot;\n\r&quot;))) {
+</span><span class="def"> 	    exec_command(s);
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     else if (!strcasecmp(message, &quot;change_vt&quot;)) {
+</span><span class="sub">-	handled = true;
+</span><span class="def"> 	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="def"> 	    int vt = strtod(s, NULL);
+</span><span class="def"> 	    if (vt &amp;&amp; 0 &lt; vt &amp;&amp; vt &lt;= 12) {
+</span>@@ -42,12 +39,10 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     else if (!strcasecmp(message, &quot;close_window&quot;)) {
+</span><span class="sub">-	handled = true;
+</span><span class="def"> 	close_window(NULL);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     else if (!strcasecmp(message, &quot;move_window&quot;)) {
+</span><span class="sub">-	handled = true;
+</span><span class="def"> 	char *x, *y;
+</span><span class="def"> 	if (
+</span><span class="def"> 	    (x = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; (y = strtok(NULL, &quot; \t\n\r&quot;))
+</span>@@ -76,7 +71,6 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     else if (!strcasecmp(message, &quot;focus_in_direction&quot;)) {
+</span><span class="sub">-	handled = true;
+</span><span class="def"> 	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="def"> 	    struct wlr_box box;
+</span><span class="def"> 	    if (wlr_box_from_str(s, &amp;box)) {
+</span>@@ -85,8 +79,15 @@
+<span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    else if (!strcasecmp(message, &quot;next_desk&quot;)) {
+</span><span class="add">+	next_desk(NULL);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (!strcasecmp(message, &quot;prev_desk&quot;)) {
+</span><span class="add">+	prev_desk(NULL);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     else if (!strcasecmp(message, &quot;to_region&quot;)) {
+</span><span class="sub">-	handled = true;
+</span><span class="def"> 	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="def"> 	    struct wlr_box box;
+</span><span class="def"> 	    if (wlr_box_from_str(s, &amp;box)) {
+</span>@@ -95,6 +96,10 @@
+<span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    else {
+</span><span class="add">+	handled = false;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     return handled;
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

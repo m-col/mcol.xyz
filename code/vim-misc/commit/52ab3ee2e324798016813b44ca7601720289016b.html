@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - make background dark for functional transparency. Add tmux indicator to statusbar</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/52ab3ee2e324798016813b44ca7601720289016b.html">52ab3ee2e324798016813b44ca7601720289016b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/7f5802275dd7d9ed71dbe0f048f9bee642db7efc.html">7f5802275dd7d9ed71dbe0f048f9bee642db7efc</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-20 19:17:59 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-20 19:17:59 +0000
+
+make background dark for functional transparency. Add tmux indicator to statusbar
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,23 +13,23 @@
+<span class="def"> &quot; Plugins                                                          &quot;
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="sub">-set nocompatible		    &quot; be iMproved, required
+</span><span class="sub">-filetype off			    &quot; required
+</span><span class="sub">-set rtp+=~/.vim/bundle/Vundle.vim   &quot; required
+</span><span class="add">+set nocompatible			    &quot; be iMproved, required
+</span><span class="add">+filetype off				    &quot; required
+</span><span class="add">+set rtp+=~/.vim/bundle/Vundle.vim	    &quot; required
+</span><span class="def"> call vundle#begin()
+</span><span class="def"> 
+</span><span class="sub">-Plugin &apos;VundleVim/Vundle.vim&apos;	    &quot; required
+</span><span class="add">+Plugin &apos;VundleVim/Vundle.vim&apos;		    &quot; required
+</span><span class="def"> if hostname() == &quot;zenbook&quot;
+</span><span class="sub">-    Plugin &apos;mcolligan/vimlab&apos;	    &quot; vimlab
+</span><span class="sub">-    Plugin &apos;vimwiki/vimwiki&apos;	    &quot; vimwiki
+</span><span class="add">+    Plugin &apos;mcolligan/vimlab&apos;		    &quot; vimlab
+</span><span class="add">+    Plugin &apos;vimwiki/vimwiki&apos;		    &quot; vimwiki
+</span><span class="def"> endif
+</span><span class="def"> Plugin &apos;junegunn/goyo.vim&apos;
+</span><span class="sub">-Plugin &apos;mcolligan/vim-misc&apos;	    &quot; my vimrc and misc functions 
+</span><span class="sub">-Plugin &apos;mcolligan/tide&apos;		    &quot; tmux ide
+</span><span class="add">+Plugin &apos;mcolligan/vim-misc&apos;		    &quot; my vimrc and misc functions 
+</span><span class="add">+Plugin &apos;mcolligan/tide&apos;			    &quot; tmux ide
+</span><span class="def"> Plugin &apos;christoomey/vim-tmux-navigator&apos;	    &quot; navigate vim and tmux splits seamlessly
+</span><span class="def"> 
+</span><span class="sub">-call vundle#end()            &quot; required
+</span><span class="sub">-filetype plugin indent on    &quot; required
+</span><span class="add">+call vundle#end()			    &quot; required
+</span><span class="add">+filetype plugin indent on		    &quot; required
+</span><span class="def"> 
+</span><span class="def"> &quot; Brief help
+</span><span class="def"> &quot; :PluginList       - lists configured plugins
+</span>@@ -88,7 +88,7 @@
+<span class="def"> 
+</span><span class="def"> set autochdir			&quot; cwd to current file
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="add">+set background=dark		&quot; needed in case urxvt background colour is transparent
+</span><span class="def"> 
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> &quot; Misc                                                             &quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/theme.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,18 +5,21 @@
+<span class="def"> &quot; statusline
+</span><span class="def"> set laststatus=2			    &quot; always show status bar
+</span><span class="def"> set statusline =
+</span><span class="add">+if ! empty($TMUX)
+</span><span class="add">+    set statusline +=%6*%*
+</span><span class="add">+endif
+</span><span class="def"> set statusline +=%1*\ \ %&lt;%F\ \ %*	    &quot; full path
+</span><span class="def"> set statusline +=%2*\ \ %y%*                &quot; file type
+</span><span class="def"> set statusline +=%2*\ %m\ %*                &quot; modified flag
+</span><span class="def"> set statusline +=%3*%=%*		    &quot; centre padding
+</span><span class="def"> set statusline +=%4*\ \ %l\ /\ %L\ \ %*	    &quot; current / total lines
+</span><span class="sub">-set statusline +=%5*\ %n\ %*		    &quot; buffer number
+</span><span class="sub">-
+</span><span class="add">+set statusline +=%5*\ %n\ %*		    &quot; buffer number 
+</span><span class="def"> hi User1 ctermfg=0 ctermbg=5 cterm=none 
+</span><span class="def"> hi User2 ctermfg=0 ctermbg=4 cterm=none 
+</span><span class="def"> hi User3 ctermfg=0 ctermbg=14 cterm=none 
+</span><span class="def"> hi User4 ctermfg=0 ctermbg=2 cterm=none 
+</span><span class="def"> hi User5 ctermfg=0 ctermbg=3 cterm=none 
+</span><span class="add">+hi User6 ctermfg=3 ctermbg=5 cterm=none 
+</span><span class="def"> 
+</span><span class="def"> &quot; tab bar
+</span><span class="def"> hi TabLineFill ctermfg=0 ctermbg=1
+</span></pre>
+</div></div>
+  </body>
+</html>

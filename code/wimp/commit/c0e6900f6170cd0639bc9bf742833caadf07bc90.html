@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Print config errors to WLR_ERROR log level</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/c0e6900f6170cd0639bc9bf742833caadf07bc90.html">c0e6900f6170cd0639bc9bf742833caadf07bc90</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/2818b216b0523d1f0812935a462fcc769f7157b0.html">2818b216b0523d1f0812935a462fcc769f7157b0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-22 12:03:37 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-22 12:03:37 +0000
+
+Print config errors to WLR_ERROR log level
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -112,7 +112,7 @@
+<span class="def">     wordexp(config, &amp;p, WRDE_NOCMD | WRDE_UNDEF);
+</span><span class="def"> 
+</span><span class="def">     if (access(p.we_wordv[0], R_OK) == -1) {
+</span><span class="sub">-	wlr_log(WLR_INFO, &quot;%s not accessible. Using defaults.&quot;, p.we_wordv[0]);
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;%s not accessible. Using defaults.&quot;, p.we_wordv[0]);
+</span><span class="def"> 	wordfree(&amp;p);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span>@@ -136,7 +136,10 @@
+<span class="def"> 	} else if (!strcasecmp(s, &quot;set_modifier&quot;)) {
+</span><span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="def"> 		int mod = modifier_by_name(s);
+</span><span class="sub">-		server-&gt;mod = (mod ? mod : WLR_MODIFIER_LOGO);
+</span><span class="add">+		if (mod)
+</span><span class="add">+		    server-&gt;mod = mod;
+</span><span class="add">+		else
+</span><span class="add">+		    wlr_log(WLR_ERROR, &quot;Config line %i: invalid modifier name &apos;%s&apos;.&quot;, line, s);
+</span><span class="def"> 	    }
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;zoom_min&quot;)) {
+</span><span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_decimal(s)) {
+</span></pre>
+</div></div>
+  </body>
+</html>

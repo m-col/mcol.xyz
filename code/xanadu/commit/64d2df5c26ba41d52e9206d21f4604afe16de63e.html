@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Move style code into new Style.hs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/64d2df5c26ba41d52e9206d21f4604afe16de63e.html">64d2df5c26ba41d52e9206d21f4604afe16de63e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/758b84314e9771ca583cb4d3eaf9dbe57fe1e858.html">758b84314e9771ca583cb4d3eaf9dbe57fe1e858</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-02 17:30:38 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-02 17:30:38 +0000
+
+Move style code into new Style.hs
+</pre><div class="diff">
+  <p>
+    <b>xanadu.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,6 +17,7 @@
+<span class="def">   hs-source-dirs:      src
+</span><span class="def">   main-is:             Main.hs
+</span><span class="def">   other-modules:       Icons
+</span><span class="add">+                     , Style
+</span><span class="def">                      , Window
+</span><span class="def">   default-language:    Haskell2010
+</span><span class="def">   build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Window.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,7 +24,6 @@
+<span class="def"> 
+</span><span class="def">     initWayland win
+</span><span class="def">     runMaybeT $ initX11 win
+</span><span class="sub">-    addCSS win
+</span><span class="def">     return win
+</span><span class="def"> 
+</span><span class="def"> initWayland :: Gtk.ApplicationWindow -&gt; IO ()
+</span>@@ -46,12 +45,3 @@
+<span class="def">     width &lt;- Gdk.getRectangleWidth rect
+</span><span class="def">     height &lt;- Gdk.getRectangleHeight rect
+</span><span class="def">     Gtk.windowSetDefaultSize win width height
+</span><span class="sub">-
+</span><span class="sub">-addCSS :: Gtk.ApplicationWindow -&gt; IO ()
+</span><span class="sub">-addCSS win = do
+</span><span class="sub">-    screen &lt;- Gtk.windowGetScreen win
+</span><span class="sub">-    settings &lt;- Gtk.settingsGetForScreen screen
+</span><span class="sub">-    Gtk.setSettingsGtkApplicationPreferDarkTheme settings True
+</span><span class="sub">-    cssProvider &lt;- Gtk.cssProviderNew
+</span><span class="sub">-    Gtk.cssProviderLoadFromData cssProvider &quot;* { background-color: transparent; }&quot;
+</span><span class="sub">-    Gtk.styleContextAddProviderForScreen screen cssProvider 800
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Style.hs</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,20 @@
+<span class="add">+{-# LANGUAGE OverloadedStrings #-}
+</span><span class="add">+
+</span><span class="add">+module Style (
+</span><span class="add">+    initStyle
+</span><span class="add">+) where
+</span><span class="add">+
+</span><span class="add">+import qualified GI.Gtk as Gtk
+</span><span class="add">+
+</span><span class="add">+initStyle :: Gtk.ApplicationWindow -&gt; IO ()
+</span><span class="add">+initStyle win = do
+</span><span class="add">+    addCSS win
+</span><span class="add">+
+</span><span class="add">+addCSS :: Gtk.ApplicationWindow -&gt; IO ()
+</span><span class="add">+addCSS win = do
+</span><span class="add">+    screen &lt;- Gtk.windowGetScreen win
+</span><span class="add">+    settings &lt;- Gtk.settingsGetForScreen screen
+</span><span class="add">+    Gtk.setSettingsGtkApplicationPreferDarkTheme settings True
+</span><span class="add">+    cssProvider &lt;- Gtk.cssProviderNew
+</span><span class="add">+    Gtk.cssProviderLoadFromData cssProvider &quot;* { background-color: transparent; }&quot;
+</span><span class="add">+    Gtk.styleContextAddProviderForScreen screen cssProvider 800
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,6 +4,7 @@
+<span class="def"> module Main where
+</span><span class="def"> 
+</span><span class="def"> import Icons (initIcons)
+</span><span class="add">+import Style (initStyle)
+</span><span class="def"> import Window (initWindow)
+</span><span class="def"> 
+</span><span class="def"> import Data.GI.Base
+</span>@@ -23,6 +24,7 @@
+<span class="def"> activateApp :: Gtk.Application -&gt; IO ()
+</span><span class="def"> activateApp app = do
+</span><span class="def">     win &lt;- initWindow app
+</span><span class="add">+    initStyle win
+</span><span class="def">     iconView &lt;- initIcons win
+</span><span class="def">     #add win iconView
+</span><span class="def">     #showAll win
+</span></pre>
+</div></div>
+  </body>
+</html>

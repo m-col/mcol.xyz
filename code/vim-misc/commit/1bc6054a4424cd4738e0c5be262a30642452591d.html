@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - Lots of updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/1bc6054a4424cd4738e0c5be262a30642452591d.html">1bc6054a4424cd4738e0c5be262a30642452591d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/87688ede66c439d90edac96e57fac81693b6dd71.html">87688ede66c439d90edac96e57fac81693b6dd71</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-03-01 00:12:44 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-03-01 00:12:44 +0000
+
+Lots of updates
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,19 +22,23 @@
+<span class="def"> 
+</span><span class="def"> if stridx(hostname(), &quot;book&quot;) != -1
+</span><span class="def">     &quot;Plugin &apos;vimwiki/vimwiki&apos;		    &quot; vimwiki
+</span><span class="sub">-    Plugin &apos;gu-fan/riv.vim&apos;
+</span><span class="add">+    &quot;Plugin &apos;gu-fan/riv.vim&apos;
+</span><span class="def">     Plugin &apos;https://mcol.xyz/code/vimlab&apos;   &quot; vimlab
+</span><span class="def">     Plugin &apos;lervag/vimtex&apos;		    &quot; vimtex
+</span><span class="sub">-    Plugin &apos;elixir-editors/vim-elixir&apos;	    &quot; elixir support
+</span><span class="add">+    Plugin &apos;tpope/vim-fugitive&apos;             &quot; git plugin
+</span><span class="add">+
+</span><span class="add">+    Plugin &apos;elixir-editors/vim-elixir&apos;	    &quot; elixir highlighting
+</span><span class="add">+    Plugin &apos;vmchale/dhall-vim&apos;              &quot; dhall highlighting
+</span><span class="add">+
+</span><span class="add">+    Plugin &apos;https://gitlab.com/gi1242/vim-emoji-ab.git&apos; &quot; emoji input support
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> Plugin &apos;https://mcol.xyz/code/vim-misc&apos;	    &quot; my vimrc and misc functions 
+</span><span class="def"> Plugin &apos;https://mcol.xyz/code/tide&apos;	    &quot; tmux ide 
+</span><span class="sub">-Plugin &apos;airblade/vim-gitgutter&apos;		    &quot; gitgutter
+</span><span class="add">+&quot;Plugin &apos;airblade/vim-gitgutter&apos;		    &quot; gitgutter
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span><span class="def"> filetype plugin indent on		    &quot; required
+</span><span class="sub">-
+</span><span class="def"> &quot; Brief help
+</span><span class="def"> &quot; :PluginList       - lists configured plugins
+</span><span class="def"> &quot; :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+</span>@@ -91,6 +95,8 @@
+<span class="def"> 
+</span><span class="def"> set autochdir			&quot; cwd to current file
+</span><span class="def"> 
+</span><span class="add">+let g:netrw_liststyle=3		&quot; Set netrw style to tree
+</span><span class="add">+
+</span><span class="def"> &quot; Misc ------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="def"> &quot; restore last line in opened file
+</span>@@ -107,7 +113,6 @@
+<span class="def"> 
+</span><span class="def">     let g:vimtex_view_general_viewer = &apos;qpdfview&apos;
+</span><span class="def">     let g:vimtex_view_general_options = &apos;--unique @pdf\#src:@tex:@line:@col&apos;
+</span><span class="sub">-    let g:vimtex_view_general_options_latexmk = &apos;--unique&apos;
+</span><span class="def">     let g:vimtex_view_qpdfview_hook_callback = &apos;ViewerCallback&apos;
+</span><span class="def">     function! ViewerCallback() dict
+</span><span class="def">         VimtexView
+</span>@@ -132,3 +137,5 @@
+<span class="def"> if exists(&quot;$WAYLAND_DISPLAY&quot;)
+</span><span class="def">     set ttym=sgr
+</span><span class="def"> endif
+</span><span class="add">+
+</span><span class="add">+runtime macros/emoji-ab.vim
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/tex.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +1,7 @@
+<span class="def"> setlocal tabstop=4
+</span><span class="def"> setlocal softtabstop=4
+</span><span class="def"> setlocal shiftwidth=4
+</span><span class="sub">-setlocal textwidth=79
+</span><span class="add">+setlocal textwidth=110
+</span><span class="def"> setlocal expandtab
+</span><span class="def"> 
+</span><span class="def"> nnoremap K :VimtexDocPackage&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/mail.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +0,0 @@
+<span class="sub">-nnoremap &lt;buffer&gt; &lt;space&gt; mmgggqG`m:echo &quot;Formatted.&quot;&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-setlocal textwidth=80
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/include.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+setlocal filetype=html
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/html.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +1,4 @@
+<span class="def"> setlocal tabstop=2
+</span><span class="def"> setlocal softtabstop=2
+</span><span class="def"> setlocal shiftwidth=2
+</span><span class="add">+setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/haskell.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,5 @@
+<span class="add">+setlocal tabstop=4
+</span><span class="add">+setlocal softtabstop=4
+</span><span class="add">+setlocal shiftwidth=4
+</span><span class="add">+setlocal textwidth=88
+</span><span class="add">+setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>after/plugin/gitgutter.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,16 +1,16 @@
+<span class="sub">-&quot;turn off realtime updates for gitgutter but update upon write
+</span><span class="sub">-let g:gitgutter_enabled = 0
+</span><span class="sub">-autocmd! gitgutter CursorHold,CursorHoldI
+</span><span class="sub">-autocmd BufWritePost * GitGutter
+</span><span class="sub">-
+</span><span class="sub">-&quot; gitgutter
+</span><span class="sub">-nmap &lt;localleader&gt;g :GitGutterToggle&lt;CR&gt;
+</span><span class="sub">-nmap gp &lt;Plug&gt;(GitGutterPreviewHunk)
+</span><span class="sub">-nmap gs &lt;Plug&gt;(GitGutterStageHunk)
+</span><span class="sub">-nmap gu &lt;Plug&gt;(GitGutterUndoHunk)
+</span><span class="sub">-nmap [g &lt;Plug&gt;(GitGutterPrevHunk)
+</span><span class="sub">-nmap ]g &lt;Plug&gt;(GitGutterNextHunk)
+</span><span class="sub">-omap ig &lt;Plug&gt;(GitGutterTextObjectInnerPending)
+</span><span class="sub">-omap ag &lt;Plug&gt;(GitGutterTextObjectOuterPending)
+</span><span class="sub">-xmap ig &lt;Plug&gt;(GitGutterTextObjectInnerVisual)
+</span><span class="sub">-xmap ag &lt;Plug&gt;(GitGutterTextObjectOuterVisual)
+</span><span class="add">+&quot;&quot;turn off realtime updates for gitgutter but update upon write
+</span><span class="add">+&quot;let g:gitgutter_enabled = 0
+</span><span class="add">+&quot;autocmd! gitgutter CursorHold,CursorHoldI
+</span><span class="add">+&quot;autocmd BufWritePost * GitGutter
+</span><span class="add">+&quot;
+</span><span class="add">+&quot;&quot; gitgutter
+</span><span class="add">+&quot;nmap &lt;localleader&gt;g :GitGutterToggle&lt;CR&gt;
+</span><span class="add">+&quot;nmap gp &lt;Plug&gt;(GitGutterPreviewHunk)
+</span><span class="add">+&quot;nmap gs &lt;Plug&gt;(GitGutterStageHunk)
+</span><span class="add">+&quot;nmap gu &lt;Plug&gt;(GitGutterUndoHunk)
+</span><span class="add">+&quot;nmap [g &lt;Plug&gt;(GitGutterPrevHunk)
+</span><span class="add">+&quot;nmap ]g &lt;Plug&gt;(GitGutterNextHunk)
+</span><span class="add">+&quot;omap ig &lt;Plug&gt;(GitGutterTextObjectInnerPending)
+</span><span class="add">+&quot;omap ag &lt;Plug&gt;(GitGutterTextObjectOuterPending)
+</span><span class="add">+&quot;xmap ig &lt;Plug&gt;(GitGutterTextObjectInnerVisual)
+</span><span class="add">+&quot;xmap ag &lt;Plug&gt;(GitGutterTextObjectOuterVisual)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>after/plugin/emoji-config.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,7 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Config for https://gitlab.com/gi1242/vim-emoji-ab.git
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; reload current buffer
+</span><span class="add">+&quot;runtime macros/emojis.vim
+</span><span class="add">+
+</span></pre>
+</div></div>
+  </body>
+</html>

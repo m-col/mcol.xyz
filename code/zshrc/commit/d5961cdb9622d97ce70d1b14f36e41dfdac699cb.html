@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add prs alias</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/d5961cdb9622d97ce70d1b14f36e41dfdac699cb.html">d5961cdb9622d97ce70d1b14f36e41dfdac699cb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/6549fa60d8ab48040791336a4bbeffb7ad5072a4.html">6549fa60d8ab48040791336a4bbeffb7ad5072a4</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2025-09-09 10:31:20 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2025-09-09 10:31:20 +0100
+
+add prs alias
+</pre><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -123,6 +123,7 @@
+<span class="def"> get_git_dirty() {
+</span><span class="def">     git status --porcelain | awk &apos;match($1, &quot;M&quot;){print $2}&apos; | grep -E &quot;\.tsx$|\.ts$&quot;
+</span><span class="def"> }
+</span><span class="add">+alias prs=&quot;gh search prs --author=@me --owner=edra-org --state=open&quot;
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

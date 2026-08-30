@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - remove loading of non-woff fonts from css</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/94d36eb5c5332e8e9a1b7ff93f39db139d4bbd1f.html">94d36eb5c5332e8e9a1b7ff93f39db139d4bbd1f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/8a84b1f05bfc4fe3cb4cdfdb93a7781ee7b8d101.html">8a84b1f05bfc4fe3cb4cdfdb93a7781ee7b8d101</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-15 00:24:26 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-15 00:24:26 +0100
+
+remove loading of non-woff fonts from css
+</pre><div class="diff">
+  <p>
+    <b>minify_fontawesome.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -85,6 +85,12 @@
+<span class="def">         contents = fd.read()
+</span><span class="def"> 
+</span><span class="def">     base_css = re.sub(&apos;\.fa-[\w-]+:before.*?}&apos;, &apos;&apos;, contents)
+</span><span class="add">+    for string in [&apos;brands-400&apos;, &apos;regular-400&apos;, &apos;solid-900&apos;]:
+</span><span class="add">+        base_css = re.sub(
+</span><span class="add">+            f&apos;src:url\(\.\./webfonts/fa-{string}\.eot\).*?\}}&apos;,
+</span><span class="add">+            f&apos;src:url(../webfonts/fa-{string}.woff) format(&quot;woff&quot;)}}&apos;,
+</span><span class="add">+            base_css
+</span><span class="add">+        )
+</span><span class="def"> 
+</span><span class="def">     css_blocks = []
+</span><span class="def">     for cls in get_classes(output_path):
+</span></pre>
+</div></div>
+  </body>
+</html>

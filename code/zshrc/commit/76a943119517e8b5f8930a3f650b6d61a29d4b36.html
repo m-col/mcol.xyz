@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add project to pythonpath; localise ranger install</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/76a943119517e8b5f8930a3f650b6d61a29d4b36.html">76a943119517e8b5f8930a3f650b6d61a29d4b36</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/1b5d648de04046ecc9f9ffc4d0aa356a209f7806.html">1b5d648de04046ecc9f9ffc4d0aa356a209f7806</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-09-15 17:26:47 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-09-15 17:26:47 +0100
+
+add project to pythonpath; localise ranger install
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -64,3 +64,5 @@
+<span class="def"> 
+</span><span class="def"> # don&apos;t load default ranger config
+</span><span class="def"> export RANGER_LOAD_DEFAULT_RC=FALSE
+</span><span class="add">+
+</span><span class="add">+export PYTHONPATH=$HOME/work/analysis/reach
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -645,7 +645,7 @@
+<span class="def"> map gP cd ~/pictures
+</span><span class="def"> map gw cd ~/work
+</span><span class="def"> map ga cd ~/work/analysis
+</span><span class="sub">-map gp cd ~/work/research/research.wiki/papers/pdfs
+</span><span class="add">+map gp cd ~/work/phd/papers/pdfs
+</span><span class="def"> map gf cd ~/work/analysis/Figures
+</span><span class="def"> map gW cd ~/work/research/research.wiki
+</span><span class="def"> map gr cd ~/work/analysis/rochefort-tools
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,9 +5,9 @@
+<span class="def"> # use last browsed directory automatically with ranger
+</span><span class="def"> ranger-cd() { 
+</span><span class="def">     tempfile=&quot;$(mktemp -t tmp.XXXXXX)&quot;
+</span><span class="sub">-    if [[ -f /usr/local/bin/ranger ]]
+</span><span class="add">+    if [[ -f $HOME/.local/bin/ranger ]]
+</span><span class="def">     then
+</span><span class="sub">-	/usr/local/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="add">+	$HOME/.local/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="def">     else
+</span><span class="def"> 	/usr/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="def">     fi
+</span></pre>
+</div></div>
+  </body>
+</html>

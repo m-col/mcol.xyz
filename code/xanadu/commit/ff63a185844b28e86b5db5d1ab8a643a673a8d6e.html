@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Set window size to monitor size</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/ff63a185844b28e86b5db5d1ab8a643a673a8d6e.html">ff63a185844b28e86b5db5d1ab8a643a673a8d6e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/841d620a6a0ba0782deb102949d284244be5b2d2.html">841d620a6a0ba0782deb102949d284244be5b2d2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-01 01:11:55 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-01 01:11:55 +0000
+
+Set window size to monitor size
+</pre><div class="diff">
+  <p>
+    <b>xanadu.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,6 +17,7 @@
+<span class="def">   hs-source-dirs:      src
+</span><span class="def">   main-is:             Main.hs
+</span><span class="def">   other-modules:       Icons
+</span><span class="add">+                     , Window
+</span><span class="def">   default-language:    Haskell2010
+</span><span class="def">   build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+</span><span class="def">                      , directory
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Window.hs</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,40 @@
+<span class="add">+{-# LANGUAGE OverloadedLabels #-}
+</span><span class="add">+{-# LANGUAGE OverloadedStrings #-}
+</span><span class="add">+
+</span><span class="add">+module Window (
+</span><span class="add">+    initWindow
+</span><span class="add">+) where
+</span><span class="add">+
+</span><span class="add">+import Control.Monad.IO.Class (liftIO)
+</span><span class="add">+import Control.Monad.Trans.Maybe
+</span><span class="add">+import GHC.Int (Int32)
+</span><span class="add">+
+</span><span class="add">+import Data.GI.Base
+</span><span class="add">+import qualified GI.Gdk as Gdk
+</span><span class="add">+import qualified GI.Gdk.Enums as Enums
+</span><span class="add">+import qualified GI.Gtk as Gtk
+</span><span class="add">+
+</span><span class="add">+initWindow :: Gtk.Application -&gt; IO Gtk.ApplicationWindow
+</span><span class="add">+initWindow app = do
+</span><span class="add">+    win &lt;- new Gtk.ApplicationWindow
+</span><span class="add">+        [ #application := app
+</span><span class="add">+        , #title := &quot;xanadu&quot;
+</span><span class="add">+        , #resizable := False
+</span><span class="add">+        ]
+</span><span class="add">+
+</span><span class="add">+    geometry &lt;- runMaybeT getGeometry
+</span><span class="add">+    case geometry of
+</span><span class="add">+        Nothing -&gt; error &quot;Could not open display.&quot;
+</span><span class="add">+        Just (width, height) -&gt; Gtk.windowSetDefaultSize win width height
+</span><span class="add">+
+</span><span class="add">+    Gtk.windowSetTypeHint win Enums.WindowTypeHintDesktop
+</span><span class="add">+    return win
+</span><span class="add">+
+</span><span class="add">+getGeometry :: MaybeT IO (Int32, Int32)
+</span><span class="add">+getGeometry = do
+</span><span class="add">+    display &lt;- MaybeT Gdk.displayGetDefault
+</span><span class="add">+    monitor &lt;- MaybeT $ Gdk.displayGetMonitor display 0
+</span><span class="add">+    rect &lt;- liftIO $ Gdk.monitorGetGeometry monitor
+</span><span class="add">+    width &lt;- Gdk.getRectangleWidth rect
+</span><span class="add">+    height &lt;- Gdk.getRectangleHeight rect
+</span><span class="add">+    return (width, height)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,10 +3,10 @@
+<span class="def"> 
+</span><span class="def"> module Main where
+</span><span class="def"> 
+</span><span class="sub">-import qualified Icons
+</span><span class="add">+import Icons (initIcons)
+</span><span class="add">+import Window (initWindow)
+</span><span class="def"> 
+</span><span class="def"> import Data.GI.Base
+</span><span class="sub">-import qualified GI.Gdk.Enums as Enums
+</span><span class="def"> import qualified GI.Gio as Gio
+</span><span class="def"> import qualified GI.Gtk as Gtk
+</span><span class="def"> 
+</span>@@ -22,13 +22,8 @@
+<span class="def"> 
+</span><span class="def"> activateApp :: Gtk.Application -&gt; IO ()
+</span><span class="def"> activateApp app = do
+</span><span class="sub">-    win &lt;- new Gtk.ApplicationWindow
+</span><span class="sub">-        [ #application := app
+</span><span class="sub">-        , #title := &quot;xanadu&quot;
+</span><span class="sub">-        , #resizable := False
+</span><span class="sub">-        ]
+</span><span class="sub">-    #setTypeHint win Enums.WindowTypeHintDesktop
+</span><span class="sub">-    iconView &lt;- Icons.initIcons win
+</span><span class="add">+    win &lt;- initWindow app
+</span><span class="add">+    iconView &lt;- initIcons win
+</span><span class="def">     #add win iconView
+</span><span class="def">     #showAll win
+</span><span class="def">     return ()
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - CI: use haskell/actions/setup</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/16dba4c4d0d2047a2cb5f1d2f93aed22f0af21b3.html">16dba4c4d0d2047a2cb5f1d2f93aed22f0af21b3</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/db8f23aa8db5142276a60a5227a95a28de63558d.html">db8f23aa8db5142276a60a5227a95a28de63558d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-26 19:52:13 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-26 19:52:13 +0000
+
+CI: use haskell/actions/setup
+</pre><div class="diff">
+  <p>
+    <b>.github/workflows/haskell.yml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,17 +7,15 @@
+<span class="def">     branches: [ master ]
+</span><span class="def"> 
+</span><span class="def"> jobs:
+</span><span class="sub">-  build:
+</span><span class="sub">-
+</span><span class="add">+  ci:
+</span><span class="def">     runs-on: ubuntu-latest
+</span><span class="def"> 
+</span><span class="def">     steps:
+</span><span class="def">     - uses: actions/checkout@v1
+</span><span class="def"> 
+</span><span class="sub">-      # See https://github.com/mstksg/setup-stack/issues/13
+</span><span class="sub">-    - name: &apos;GitHub actions env workaround&apos;
+</span><span class="sub">-      run: &apos;echo &quot;ACTIONS_ALLOW_UNSECURE_COMMANDS=true&quot; &gt;&gt; $GITHUB_ENV&apos;
+</span><span class="sub">-    - uses: mstksg/setup-stack@v2
+</span><span class="add">+    - uses: haskell/actions/setup@v1
+</span><span class="add">+      with:
+</span><span class="add">+        enable-stack: true
+</span><span class="def"> 
+</span><span class="def">     - uses: actions/cache@v1
+</span><span class="def">       env:
+</span></pre>
+</div></div>
+  </body>
+</html>

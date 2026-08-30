@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / hacking on Qtile: painting complex borders</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2020/05/hacking-on-qtile-painting-complex-borders.html>hacking on Qtile: painting complex borders</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>The years of checking up on the unixporn subreddit has imprinted in me a want
+for a unique and aesthetic desktop. One of the advantages I saw in the Qtile
+window manager (while I was rapidly hopping between WMs) is how easy it is to
+bend to my will, being made in Python. Recently I set out to satisfy my desire
+for more than just single colour, single line window borders.</p>
+<p>The result of this endeavour has two parts. The first is a <a class="reference external" href="https://github.com/qtile/qtile/pull/1697">PR</a> I submitted last
+week to Qtile that lets users pass their layouts a list of border colours and a
+list of border widths to paint multiple borders on their windows. In my head it
+was a long time coming, having nice windows like these:</p>
+<img style="box-shadow: 10px 10px 5px black;" alt="Window with triple borders" src="/static/qtile_multi.png"/><p>The code accepts any number of border colours and widths, so if you <em>really</em>
+wanted to, you could have borders like these:</p>
+<img style="box-shadow: 10px 10px 5px black;" alt="Window with a shitload of borders" src="/static/qtile_multi2.png"/><p>Has user freedom come too far?</p>
+<p>The PR also aimed to unify all border-drawing code into one callable. This
+leads to the second development: you can override this callable -
+<code>xcbq.Window.paint_borders</code> of Qtile's X11 backend  - and replace the
+border-painting logic with your wildest dreams.</p>
+<p>Normally, this method would loop over the configured colours and widths, using
+them to draw increasingly small filled rectangles centred on a pixmap that will
+be used to paint the window's borders. This results in the multi-border effect
+above. A function we define to override this method will therefore have access
+to a list of colours, as well as the window's geometry including border width,
+and a canvas - the pixmap.</p>
+<p>The paintbrush is tycho0's <a class="reference external" href="https://github.com/tych0/xcffib">xcffib</a>, which provides Python bindings to <a class="reference external" href="https://en.wikipedia.org/wiki/XCB">XCB</a>. The
+<code>xcffib.xproto</code> module gives us the functions we need to create some
+shapes and paint them to our pixmap, which are reminiscent of their C
+counterparts such as <code>xcb_poly_fill_rectangle</code> from xcb.xproto.h.</p>
+<p>Using this information, we can do whatever we want. A simple example would be
+to draw a couple of trapeziums (<a class="reference external" href="https://www.thefreedictionary.com/trapezia">trapezia</a>? thefreedictionary suggests either,
+TIL) using <code>xcffib.xproto.POINT</code> and paint them using and
+<code>FillPoly</code> in two of the colours. This can create this picture frame-like
+appearance:</p>
+<img style="box-shadow: 10px 10px 5px black;" alt="Window with frame" src="/static/qtile_frame.png"/><p>Pretty cool, no? Maybe too simple.</p>
+<p>With some faffing around in GIMP on a screenshot of the <a class="reference external" href="https://en.wikipedia.org/wiki/Common_Desktop_Environment">Common Desktop
+Environment</a> (CDE), I decoded the design for their old-school 3D borders. I'm
+aware I could have hunted down the source code to find out how their borders
+are drawn but where's the fun in that?</p>
+<p>The design is largely made of 1-pixel-wide lines, so we can use
+<code>xcffib.xproto.POINT</code> as before to join them up, then <code>PolyLine</code> to
+paint them to the pixmap. With a main colour, a lighter shade and a darker
+shade, we can get this result:</p>
+<img style="box-shadow: 10px 10px 5px black;" alt="Window with triple borders" src="/static/qtile_cde.png"/><p>Pretty groovy borders if you ask me, and it's a design I can use without
+sacrificing a solid, modern window manager.</p>
+<p>I've added these to my Qtile plugin repository <a class="reference external" href="/code/qtools/file/qtools.borders.borders.py.html">qtools</a>, from which they can be
+used by simply importing and enabling the borders plugin with the desired
+style:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">qtools.borders</span>
+<span class="n">borders</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="s2">&quot;CDE&quot;</span><span class="p">)</span>
+</pre></div>
+<p>The plugins might also serve as a simple starting point to implement more
+border designs.</p>
+<p>I'd love to make a small library of different designs that can be used to make
+borders but my own creativity is limited. Let me know if you have any design
+ideas that you'd want implemented for your own Qtile config!</p>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2020-05-12T00:00:00+00:00">2020-05-12</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

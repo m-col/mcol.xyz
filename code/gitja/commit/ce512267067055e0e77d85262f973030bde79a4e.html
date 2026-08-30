@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Use only horizontal lines to delimit public/private</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/ce512267067055e0e77d85262f973030bde79a4e.html">ce512267067055e0e77d85262f973030bde79a4e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/169e3d1d5731a81026e3e91457d6f32d5e947419.html">169e3d1d5731a81026e3e91457d6f32d5e947419</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-18 18:40:05 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-18 18:40:05 +0100
+
+Use only horizontal lines to delimit public/private
+</pre><div class="diff">
+  <p>
+    <b>src/Templates.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -29,7 +29,6 @@
+<span class="def">     sequence $ loadTemplate &lt;$&gt; files
+</span><span class="def"> 
+</span><span class="def"> ----------------------------------------------------------------------------------------
+</span><span class="sub">--- Private
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="def"> This reads the contents of a file and stores it within a `Template` object.
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,7 +21,6 @@
+<span class="def"> run config templates = foldMap processRepo . repoPaths $ config
+</span><span class="def"> 
+</span><span class="def"> ----------------------------------------------------------------------------------------
+</span><span class="sub">--- Private
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="def"> This receives a file path to a single repository and tries to process it. If the
+</span></pre>
+</div></div>
+  </body>
+</html>

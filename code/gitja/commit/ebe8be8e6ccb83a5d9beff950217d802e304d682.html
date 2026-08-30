@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add filemodes to all TreePath objects, expose modes to ginger</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/ebe8be8e6ccb83a5d9beff950217d802e304d682.html">ebe8be8e6ccb83a5d9beff950217d802e304d682</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/cb44a3c33227ab8077759e0a55aea78f55b4a49b.html">cb44a3c33227ab8077759e0a55aea78f55b4a49b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-05 23:20:49 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-05 23:21:20 +0100
+
+Add filemodes to all TreePath objects, expose modes to ginger
+</pre><div class="diff">
+  <p>
+    <b>src/Types.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +1,4 @@
+<span class="add">+{-# Language DerivingStrategies #-}
+</span><span class="def"> {-# Language LambdaCase #-}
+</span><span class="def"> {-# Language OverloadedStrings #-}
+</span><span class="def"> {-# Language FlexibleInstances #-}  -- Needed for `instance ToGVal`
+</span>@@ -51,11 +52,16 @@
+<span class="def"> data TreeFile = TreeFile
+</span><span class="def">     { treeFilePath :: TreeFilePath
+</span><span class="def">     , treeFileContents :: TreeFileContents
+</span><span class="add">+    , treeFileMode :: TreeEntryMode
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-data TreeFileContents = FileContents (TreeEntryMode, Text) | FolderContents [TreeFilePath]
+</span><span class="add">+data TreeFileContents = FileContents Text | FolderContents [TreeFilePath]
+</span><span class="def"> 
+</span><span class="def"> data TreeEntryMode = ModeDirectory | ModePlain | ModeExecutable | ModeSymlink | ModeSubmodule
+</span><span class="add">+    deriving stock Show
+</span><span class="add">+
+</span><span class="add">+showMode :: TreeEntryMode -&gt; String
+</span><span class="add">+showMode = drop 4 . show
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="def"> Some helper functions to convert from Haskell&apos;s LibGit2 BlobKind to our TreeEntryMode,
+</span>@@ -68,18 +74,18 @@
+<span class="def"> blobkindToMode SymlinkBlob = ModeSymlink
+</span><span class="def"> 
+</span><span class="def"> modeToOctal :: TreeEntryMode -&gt; String
+</span><span class="sub">-modeToOctal ModeDirectory = &quot;40000&quot;
+</span><span class="sub">-modeToOctal ModePlain = &quot;00644&quot;
+</span><span class="add">+modeToOctal ModeDirectory  = &quot;40000&quot;
+</span><span class="add">+modeToOctal ModePlain      = &quot;00644&quot;
+</span><span class="def"> modeToOctal ModeExecutable = &quot;00755&quot;
+</span><span class="sub">-modeToOctal ModeSymlink = &quot;20000&quot;
+</span><span class="sub">-modeToOctal ModeSubmodule = &quot;60000&quot;
+</span><span class="add">+modeToOctal ModeSymlink    = &quot;20000&quot;
+</span><span class="add">+modeToOctal ModeSubmodule  = &quot;60000&quot;
+</span><span class="def"> 
+</span><span class="def"> modeToSymbolic :: TreeEntryMode -&gt; String
+</span><span class="sub">-modeToSymbolic ModeDirectory = &quot;drwxr-xr-x&quot;
+</span><span class="sub">-modeToSymbolic ModePlain = &quot;-rw-r--r--&quot;
+</span><span class="add">+modeToSymbolic ModeDirectory  = &quot;drwxr-xr-x&quot;
+</span><span class="add">+modeToSymbolic ModePlain      = &quot;-rw-r--r--&quot;
+</span><span class="def"> modeToSymbolic ModeExecutable = &quot;-rwxr-xr-x&quot;
+</span><span class="sub">-modeToSymbolic ModeSymlink = &quot;l---------&quot;
+</span><span class="sub">-modeToSymbolic ModeSubmodule = &quot;git-module&quot;
+</span><span class="add">+modeToSymbolic ModeSymlink    = &quot;l---------&quot;
+</span><span class="add">+modeToSymbolic ModeSubmodule  = &quot;git-module&quot;
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="def"> GVal implementations for data definitions above, allowing commits to be rendered in
+</span>@@ -95,7 +101,7 @@
+<span class="def"> 
+</span><span class="def"> instance ToGVal m TreeFileContents where
+</span><span class="def">     toGVal :: TreeFileContents -&gt; GVal m
+</span><span class="sub">-    toGVal (FileContents (_, text)) = toGVal text
+</span><span class="add">+    toGVal (FileContents text) = toGVal text
+</span><span class="def">     toGVal (FolderContents filePaths) = def
+</span><span class="def">         { asHtml = html . pack . show $ filePaths
+</span><span class="def">         , asText = pack . show $ filePaths
+</span>@@ -107,6 +113,9 @@
+<span class="def">     &quot;path&quot; -&gt; Just . toGVal . treeFilePath $ treefile
+</span><span class="def">     &quot;href&quot; -&gt; Just . toGVal . treePathToHref . treeFilePath $ treefile
+</span><span class="def">     &quot;contents&quot; -&gt; Just . toGVal . treeFileContents $ treefile
+</span><span class="add">+    &quot;mode&quot; -&gt; Just . toGVal . show . treeFileMode $ treefile
+</span><span class="add">+    &quot;mode_octal&quot; -&gt; Just . toGVal . modeToOctal . treeFileMode $ treefile
+</span><span class="add">+    &quot;mode_symbolic&quot; -&gt; Just . toGVal . modeToSymbolic . treeFileMode $ treefile
+</span><span class="def">     &quot;is_directory&quot; -&gt; Just . toGVal . treeFileIsDirectory $ treefile
+</span><span class="def">     _ -&gt; Nothing
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -110,6 +110,9 @@
+<span class="def">     , (&quot;tree&quot;, toGVal tree)
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="add">+{-
+</span><span class="add">+Collect commit information.
+</span><span class="add">+-}
+</span><span class="def"> getCommits :: CommitOid LgRepo -&gt; ReaderT LgRepo IO [Commit LgRepo]
+</span><span class="def"> getCommits commitID =
+</span><span class="def">     sequence . mapMaybe loadCommit &lt;=&lt;
+</span>@@ -119,17 +122,25 @@
+<span class="def"> loadCommit (CommitObjOid oid) = Just $ lookupCommit oid
+</span><span class="def"> loadCommit _ = Nothing
+</span><span class="def"> 
+</span><span class="add">+{-
+</span><span class="add">+Collect tree information.
+</span><span class="add">+-}
+</span><span class="def"> getTree :: CommitOid LgRepo -&gt; ReaderT LgRepo IO [TreeFile]
+</span><span class="def"> getTree commitID = do
+</span><span class="def">     entries &lt;- listTreeEntries =&lt;&lt; lookupTree . commitTree =&lt;&lt; lookupCommit commitID
+</span><span class="sub">-    contents &lt;- mapM (gvalTreeEntry . snd) entries
+</span><span class="sub">-    return $ zipWith TreeFile (fmap fst entries) contents
+</span><span class="sub">-
+</span><span class="sub">-gvalTreeEntry :: TreeEntry LgRepo -&gt; ReaderT LgRepo IO TreeFileContents
+</span><span class="sub">-gvalTreeEntry (BlobEntry oid kind) =
+</span><span class="sub">-    FileContents . (,) (blobkindToMode kind) . decodeUtf8With lenientDecode &lt;$&gt; catBlob oid
+</span><span class="sub">-gvalTreeEntry (TreeEntry oid) = FolderContents . fmap fst &lt;$&gt; (listTreeEntries =&lt;&lt; lookupTree oid)
+</span><span class="sub">-gvalTreeEntry (CommitEntry _) = return . FileContents $ (ModeSubmodule, &quot;No contents&quot;)  -- TODO
+</span><span class="add">+    contents &lt;- mapM (getEntryContents . snd) entries
+</span><span class="add">+    modes &lt;- mapM (getEntryModes . snd) entries
+</span><span class="add">+    return $ zipWith3 TreeFile (fmap fst entries) contents modes
+</span><span class="add">+
+</span><span class="add">+getEntryContents :: TreeEntry LgRepo -&gt; ReaderT LgRepo IO TreeFileContents
+</span><span class="add">+getEntryContents (BlobEntry oid _) = FileContents . decodeUtf8With lenientDecode &lt;$&gt; catBlob oid
+</span><span class="add">+getEntryContents (TreeEntry oid) = FolderContents . fmap fst &lt;$&gt; (listTreeEntries =&lt;&lt; lookupTree oid)
+</span><span class="add">+getEntryContents (CommitEntry oid) = return . FileContents . pack . show . untag $ oid
+</span><span class="add">+
+</span><span class="add">+getEntryModes :: TreeEntry LgRepo -&gt; ReaderT LgRepo IO TreeEntryMode
+</span><span class="add">+getEntryModes (BlobEntry _ kind) = return . blobkindToMode $ kind
+</span><span class="add">+getEntryModes (TreeEntry _) = return ModeDirectory
+</span><span class="add">+getEntryModes (CommitEntry _) = return ModeSubmodule
+</span><span class="def"> 
+</span><span class="def"> ----------------------------------------------------------------------------------------
+</span><span class="def"> -- Targets -----------------------------------------------------------------------------
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>README.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -39,6 +39,6 @@
+<span class="def"> [ ] Expose license url in repo scope for convenient hyperlinking
+</span><span class="def"> [ ] Expose repo branches and tags in repo scope
+</span><span class="def"> [ ] Commit diffs
+</span><span class="sub">-[ ] Tree entry filemodes
+</span><span class="add">+[x] Tree entry filemodes
+</span><span class="def"> [ ] Generate RSS?
+</span><span class="def"> [ ] Write guide in readme
+</span></pre>
+</div></div>
+  </body>
+</html>

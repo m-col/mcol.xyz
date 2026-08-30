@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - Warp cursor to opposite end of screen when entering window</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/ea612441915ba2a396fbd666c7f2c6f9bba9520e.html">ea612441915ba2a396fbd666c7f2c6f9bba9520e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/d6624daa1322e569068e7058ab9614ee72673d79.html">d6624daa1322e569068e7058ab9614ee72673d79</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-18 19:55:23 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-18 19:55:23 +0100
+
+Warp cursor to opposite end of screen when entering window
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -100,20 +100,46 @@
+<span class="def"> void event_loop()
+</span><span class="def"> {
+</span><span class="def">     xcb_generic_event_t *event;
+</span><span class="add">+    xcb_enter_notify_event_t *entry;
+</span><span class="add">+    int16_t x, y;
+</span><span class="add">+
+</span><span class="add">+    int16_t far_x = screen-&gt;width_in_pixels - 1;
+</span><span class="add">+    int16_t far_y = screen-&gt;height_in_pixels - 1;
+</span><span class="def"> 
+</span><span class="def">     while((event = xcb_wait_for_event(conn))) {
+</span><span class="def"> 	switch (event-&gt;response_type) {
+</span><span class="def"> 
+</span><span class="def"> 	    case XCB_ENTER_NOTIFY:
+</span><span class="sub">-	    printf(&quot;# enter window\n&quot;);
+</span><span class="add">+	    entry = (xcb_enter_notify_event_t *)event;
+</span><span class="add">+
+</span><span class="add">+	    if (entry-&gt;event_x == 0) {
+</span><span class="add">+		x = far_x;
+</span><span class="add">+		y = entry-&gt;event_y;
+</span><span class="add">+	    } else if (entry-&gt;event_y == 0){
+</span><span class="add">+		x = entry-&gt;event_x;
+</span><span class="add">+		y = far_y;
+</span><span class="add">+	    } else if (entry-&gt;event_x == far_x){
+</span><span class="add">+		x = 0;
+</span><span class="add">+		y = entry-&gt;event_y;
+</span><span class="add">+	    } else if (entry-&gt;event_y == far_y){
+</span><span class="add">+		x = entry-&gt;event_x;
+</span><span class="add">+		y = 0;
+</span><span class="add">+	    };
+</span><span class="add">+	    xcb_warp_pointer(
+</span><span class="add">+		conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y
+</span><span class="add">+	    );
+</span><span class="add">+	    xcb_flush(conn);
+</span><span class="add">+	    printf(&quot;(%d, %d) to (%d, %d)\n&quot;, entry-&gt;event_x, entry-&gt;event_y, x, y);
+</span><span class="def"> 	    break;
+</span><span class="def"> 	}
+</span><span class="def"> 
+</span><span class="sub">-    free(event);
+</span><span class="def">     }
+</span><span class="add">+    free(event);
+</span><span class="add">+    free(entry);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> int main()
+</span><span class="def"> {
+</span><span class="def">     xcb_window_t wid;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - print -&gt; putStrLn</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/143fdb3b66c85512696406fab8d3ba525bffc675.html">143fdb3b66c85512696406fab8d3ba525bffc675</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/3fc70d807e7e1d49c8841c90ef376904a56daf45.html">3fc70d807e7e1d49c8841c90ef376904a56daf45</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-24 22:33:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-24 22:33:06 +0000
+
+print -&gt; putStrLn
+
+The latter doesn&apos;t add unnecessary quotation marks
+</pre><div class="diff">
+  <p>
+    <b>src/Templates.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -108,7 +108,7 @@
+<span class="def">     parseGingerFile includeResolver path &gt;&gt;= \case
+</span><span class="def">         Right parsed -&gt; return . Just . Template path $ parsed
+</span><span class="def">         Left err -&gt; do
+</span><span class="sub">-            print . peErrorMessage $ err
+</span><span class="add">+            putStrLn . peErrorMessage $ err
+</span><span class="def">             return Nothing
+</span><span class="def"> 
+</span><span class="def"> {-
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -72,7 +72,7 @@
+<span class="def"> 
+</span><span class="def">     resolveReference &quot;HEAD&quot; &gt;&gt;= \case
+</span><span class="def">         Nothing -&gt; do
+</span><span class="sub">-            liftIO . print $ &quot;gitserve: &quot; &lt;&gt; name &lt;&gt; &quot;: Failed to resolve HEAD.&quot;
+</span><span class="add">+            liftIO . putStrLn $ &quot;gitserve: &quot; &lt;&gt; name &lt;&gt; &quot;: Failed to resolve HEAD.&quot;
+</span><span class="def">             return repo
+</span><span class="def">         Just commitID -&gt; do
+</span><span class="def">             let gitHead = Tagged commitID
+</span>@@ -243,6 +243,6 @@
+<span class="def">     let output&apos; = output &lt;/&gt; category target &lt;/&gt; identify target
+</span><span class="def">     exists &lt;- liftIO . doesFileExist $ output&apos;
+</span><span class="def">     when (force || not exists) $ do
+</span><span class="sub">-        liftIO $ putStrLn $ &quot;Writing &quot; &lt;&gt; output&apos;
+</span><span class="add">+        liftIO . putStrLn $ &quot;Writing &quot; &lt;&gt; output&apos;
+</span><span class="def">         let scope&apos; = scope &lt;&gt; HashMap.fromList [(pack . category $ target, toGVal target)]
+</span><span class="def">         generate output&apos; scope&apos; template
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - use new mini theme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/4e6ef578b7f496cb78626b6ca3c1af0beb6b8af4.html">4e6ef578b7f496cb78626b6ca3c1af0beb6b8af4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/3a7171aaefc860decc10cd45ade04799b85d1d13.html">3a7171aaefc860decc10cd45ade04799b85d1d13</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-01 00:59:10 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-01 00:59:10 +0100
+
+use new mini theme
+</pre><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,7 +14,7 @@
+<span class="def"> SITENAME = &apos;mcol.xyz&apos;
+</span><span class="def"> PATH = &apos;content&apos;
+</span><span class="def"> TIMEZONE = &apos;UTC&apos;
+</span><span class="sub">-THEME = &apos;/home/mcol/git/mcol.xyz-theme&apos;
+</span><span class="add">+THEME = &apos;/home/mcol/git/mini-theme&apos;
+</span><span class="def"> PAGE_PATHS = [&apos;pages&apos;,]
+</span><span class="def"> ARTICLE_PATHS = [&apos;posts&apos;,]
+</span><span class="def"> DEFAULT_DATE_FORMAT = &apos;%Y-%m-%d&apos;
+</span>@@ -36,17 +36,23 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Theme
+</span><span class="sub">-ICONS = (
+</span><span class="sub">-    (&apos;/icons/home.png&apos;, &apos;Home&apos;, &apos;/&apos;),
+</span><span class="sub">-    (&apos;/icons/git.png&apos;, &apos;My git repositories&apos;, &apos;/code/&apos;),
+</span><span class="sub">-    (&apos;/icons/mastodon.png&apos;, &apos;Me on Mastodon&apos;, &apos;https://fosstodon.org/@mcol rel=me&apos;),
+</span><span class="sub">-    (&apos;/icons/email.png&apos;, &apos;Email me&apos;, &apos;mailto:mcol@posteo.net&apos;),
+</span><span class="sub">-    (&apos;/icons/github.png&apos;, &apos;Me on GitHub&apos;, &apos;https://github.com/m-col&apos;),
+</span><span class="sub">-    (&apos;/icons/liberapay.png&apos;, &apos;Me on Liberapay&apos;, &apos;https://liberapay.com/mcol&apos;),
+</span><span class="sub">-    (&apos;/icons/onion.png&apos;, &apos;Onion service&apos;, &apos;http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion&apos;),
+</span><span class="sub">-    (&apos;/icons/rss.png&apos;, &apos;RSS feed&apos;, &apos;/rss.xml&apos;),
+</span><span class="add">+ONION = &apos;http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion&apos;
+</span><span class="add">+LINKS = (
+</span><span class="add">+    (&apos;mastodon&apos;, &apos;https://fosstodon.org/@mcol&apos;, &apos;hit me up to chat!&apos;),
+</span><span class="add">+    (&apos;email&apos;, &apos;mailto:mcol@posteo.net&apos;,         &apos;or here, if you want&apos;),
+</span><span class="add">+    (&apos;github&apos;, &apos;https://github.com/m-col&apos;,      &apos;this i use when i must&apos;),
+</span><span class="add">+    (&apos;liberapay&apos;, &apos;https://liberapay.com/mcol&apos;, &apos;buy me some candy?&apos;),
+</span><span class="add">+    (&apos;blog onion&apos;, ONION,                       &apos;feeling edgy and/or paranoid?&apos;),
+</span><span class="add">+    (&apos;blog RSS feed&apos;, &apos;/rss.xml&apos;,               &apos;follow me if you\&apos;d like&apos;),
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="add">+ABOUT = &quot;&quot;&quot;
+</span><span class="add">+&lt;p&gt;Welcome to my blog!&lt;/p&gt;
+</span><span class="add">+&lt;p&gt;I&apos;m Matt and I write about open source software that I stumble across surfing the web.&lt;/p&gt;
+</span><span class="add">+&lt;p&gt;Some of my main interests are self-hosting, privacy tools, and anything
+</span><span class="add">+to do with &lt;a href=https://wiki.installgentoo.com/wiki/GNU/Linux_ricing&gt;ricing&lt;/a&gt;.&lt;/p&gt;
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="def"> AVATAR = &quot;/avatar.png&quot;
+</span><span class="def"> HOME1 = &quot;A hobbyist&apos;s notes on FOSS, linux toys and privacy tools&quot;
+</span><span class="def"> HOME2 = &quot;Welcome&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

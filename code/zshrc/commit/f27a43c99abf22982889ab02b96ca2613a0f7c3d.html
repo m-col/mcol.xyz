@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add user systemctl aliases; source machine-specific aliases from .config</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/f27a43c99abf22982889ab02b96ca2613a0f7c3d.html">f27a43c99abf22982889ab02b96ca2613a0f7c3d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/f607781c897e12738403fb02b6ae8e97c5b1832b.html">f607781c897e12738403fb02b6ae8e97c5b1832b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-03-14 16:13:50 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-03-14 16:13:50 +0000
+
+add user systemctl aliases; source machine-specific aliases from .config
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,13 +21,11 @@
+<span class="def"> HYPHEN_INSENSITIVE=&quot;true&quot;
+</span><span class="def"> COMPLETION_WAITING_DOTS=&quot;true&quot;
+</span><span class="def"> ZSH_COMPDUMP=&quot;$HOME/.zcompdump&quot;
+</span><span class="sub">-setopt CORRECT
+</span><span class="def"> 
+</span><span class="def"> # zsh history
+</span><span class="def"> HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span><span class="def"> HISTSIZE=2000
+</span><span class="def"> SAVEHIST=1000
+</span><span class="sub">-#setopt INC_APPEND_HISTORY
+</span><span class="def"> setopt SHARE_HISTORY
+</span><span class="def"> setopt HIST_IGNORE_ALL_DUPS
+</span><span class="def"> setopt HIST_REDUCE_BLANKS
+</span>@@ -40,8 +38,9 @@
+<span class="def"> 
+</span><span class="def"> so () { [[ -e $1 ]] &amp;&amp; source $1 }
+</span><span class="def"> 
+</span><span class="sub">-so $ZSH/aliases	    # general aliases
+</span><span class="sub">-so $HOME/.aliases   # machine-specific aliases
+</span><span class="add">+so $ZSH/aliases		    # general aliases
+</span><span class="add">+so $HOME/.aliases	    # machine-specific aliases
+</span><span class="add">+so $HOME/.config/aliases    # machine-specific aliases
+</span><span class="def"> 
+</span><span class="def"> ZSH_THEME=&quot;ban&quot;
+</span><span class="def"> so $ZSH/themes/$ZSH_THEME.zsh-theme
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,16 +14,27 @@
+<span class="def"> alias _=&quot;sudo&quot;
+</span><span class="def"> 
+</span><span class="def"> # systemd
+</span><span class="sub">-alias sc=&apos;sudo systemctl&apos;
+</span><span class="sub">-alias scs=&apos;sudo systemctl status&apos;
+</span><span class="sub">-alias scsta=&apos;sudo systemctl start&apos;
+</span><span class="sub">-alias scsto=&apos;sudo systemctl start&apos;
+</span><span class="sub">-alias scrsta=&apos;sudo systemctl restart&apos;
+</span><span class="sub">-alias sce=&apos;sudo systemctl enable&apos;
+</span><span class="sub">-alias scen=&apos;sudo systemctl enable --now&apos;
+</span><span class="sub">-alias scd=&apos;sudo systemctl disable&apos;
+</span><span class="sub">-alias scdr=&apos;sudo systemctl daemon-reload&apos;
+</span><span class="sub">-alias scc=&apos;sudo systemctl cat&apos;
+</span><span class="add">+alias sc=&apos;systemctl&apos;
+</span><span class="add">+alias scs=&apos;systemctl status&apos;
+</span><span class="add">+alias scsta=&apos;systemctl start&apos;
+</span><span class="add">+alias scsto=&apos;systemctl start&apos;
+</span><span class="add">+alias scr=&apos;systemctl restart&apos;
+</span><span class="add">+alias sce=&apos;systemctl enable&apos;
+</span><span class="add">+alias scen=&apos;systemctl enable --now&apos;
+</span><span class="add">+alias scd=&apos;systemctl disable&apos;
+</span><span class="add">+alias scdr=&apos;systemctl daemon-reload&apos;
+</span><span class="add">+alias scc=&apos;systemctl cat&apos;
+</span><span class="add">+
+</span><span class="add">+alias ssc=&apos;sudo systemctl&apos;
+</span><span class="add">+alias sscs=&apos;sudo systemctl status&apos;
+</span><span class="add">+alias sscsta=&apos;sudo systemctl start&apos;
+</span><span class="add">+alias sscsto=&apos;sudo systemctl start&apos;
+</span><span class="add">+alias sscr=&apos;sudo systemctl restart&apos;
+</span><span class="add">+alias ssce=&apos;sudo systemctl enable&apos;
+</span><span class="add">+alias sscen=&apos;sudo systemctl enable --now&apos;
+</span><span class="add">+alias sscd=&apos;sudo systemctl disable&apos;
+</span><span class="add">+alias sscdr=&apos;sudo systemctl daemon-reload&apos;
+</span><span class="add">+alias sscc=&apos;sudo systemctl cat&apos;
+</span><span class="def"> 
+</span><span class="def"> # networking
+</span><span class="def"> alias eduroam=&apos;nmcli con up eduroam&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

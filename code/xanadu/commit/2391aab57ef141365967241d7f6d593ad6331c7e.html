@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Add data type for items and save whether they are directories</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/2391aab57ef141365967241d7f6d593ad6331c7e.html">2391aab57ef141365967241d7f6d593ad6331c7e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/7f9f1ec87d854c31330f1c6aea3f7dc6ddf5269c.html">7f9f1ec87d854c31330f1c6aea3f7dc6ddf5269c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-21 13:07:58 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-21 13:07:58 +0100
+
+Add data type for items and save whether they are directories
+</pre><div class="diff">
+  <p>
+    <b>src/Icons.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,11 +2,12 @@
+<span class="def"> 
+</span><span class="def"> module Icons where
+</span><span class="def"> 
+</span><span class="add">+import Control.Applicative
+</span><span class="def"> import Control.Monad.IO.Class (liftIO)
+</span><span class="def"> import Control.Monad.Trans.Maybe
+</span><span class="def"> import Data.Maybe
+</span><span class="def"> import Data.Text (pack)
+</span><span class="sub">-import System.Directory (getDirectoryContents, getHomeDirectory)
+</span><span class="add">+import System.Directory (doesDirectoryExist, listDirectory, getHomeDirectory)
+</span><span class="def"> 
+</span><span class="def"> import Data.GI.Base
+</span><span class="def"> import qualified Data.GI.Base.GType as GType
+</span>@@ -30,23 +31,31 @@
+<span class="def">         ]
+</span><span class="def"> 
+</span><span class="def"> populate :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span><span class="sub">-populate listStore iconTheme root = ls root &gt;&gt;= mconcat . map (addItem listStore iconTheme)
+</span><span class="add">+populate listStore iconTheme root = getItems root &gt;&gt;= mconcat . map (addItem listStore iconTheme)
+</span><span class="def"> 
+</span><span class="sub">-addItem :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span><span class="sub">-addItem listStore iconTheme path = do
+</span><span class="add">+addItem :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; Item -&gt; IO ()
+</span><span class="add">+addItem listStore iconTheme item = do
+</span><span class="def">     iter &lt;- Gtk.listStoreAppend listStore
+</span><span class="sub">-    value &lt;- Gtk.toGValue $ Just path
+</span><span class="sub">-    icon &lt;- runMaybeT $ getIcon iconTheme path
+</span><span class="add">+    value &lt;- Gtk.toGValue . Just . itemPath $ item
+</span><span class="add">+    icon &lt;- runMaybeT $ getIcon iconTheme item
+</span><span class="def">     case icon of
+</span><span class="def">         Nothing -&gt; Gtk.listStoreSet listStore iter [0] [value]
+</span><span class="def">         (Just icon&apos;) -&gt; Gtk.listStoreSet listStore iter [0, 1] [value, icon&apos;]
+</span><span class="def"> 
+</span><span class="sub">-getIcon :: Gtk.IconTheme -&gt; FilePath -&gt; MaybeT IO GValue
+</span><span class="sub">-getIcon iconTheme path = do
+</span><span class="sub">-    contentType &lt;- Gio.contentTypeGuess (Just . pack $ path) Nothing
+</span><span class="add">+getIcon :: Gtk.IconTheme -&gt; Item -&gt; MaybeT IO GValue
+</span><span class="add">+getIcon iconTheme item = do
+</span><span class="add">+    contentType &lt;- Gio.contentTypeGuess (Just . pack $ itemPath item) Nothing
+</span><span class="def">     iconName &lt;- MaybeT $ Gio.contentTypeGetGenericIconName . fst $ contentType
+</span><span class="def">     pixbuf &lt;- Gtk.iconThemeLoadIcon iconTheme iconName 32 []
+</span><span class="def">     liftIO . Gtk.toGValue $ pixbuf
+</span><span class="def"> 
+</span><span class="sub">-ls :: FilePath -&gt; IO [FilePath]
+</span><span class="sub">-ls = fmap (filter (\f -&gt; f /= &quot;.&quot; &amp;&amp; f /= &quot;..&quot;)) . getDirectoryContents
+</span><span class="add">+data Item = Item
+</span><span class="add">+    { itemPath :: FilePath
+</span><span class="add">+    , itemIsDir :: Bool
+</span><span class="add">+    } deriving Show
+</span><span class="add">+
+</span><span class="add">+getItems :: FilePath -&gt; IO [Item]
+</span><span class="add">+getItems root = do
+</span><span class="add">+    path &lt;- listDirectory root
+</span><span class="add">+    isDir &lt;- sequence $ doesDirectoryExist . (&lt;&gt;) root &lt;$&gt; path
+</span><span class="add">+    return . getZipList $ Item &lt;$&gt; ZipList path &lt;*&gt; ZipList isDir
+</span></pre>
+</div></div>
+  </body>
+</html>

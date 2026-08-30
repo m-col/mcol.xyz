@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - y</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/880b591fccb697d49611f935f112f2f7e88cb5c6.html">880b591fccb697d49611f935f112f2f7e88cb5c6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/6d6187f43d6aadd5600a52567b5f70c14051e6f9.html">6d6187f43d6aadd5600a52567b5f70c14051e6f9</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2026-04-29 12:40:10 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2026-04-29 12:40:10 +0100
+
+y
+</pre><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -28,6 +28,14 @@
+<span class="def">     }
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="add">+function y() {
+</span><span class="add">+    local tmp=&quot;$(mktemp -t &quot;yazi-cwd.XXXXXX&quot;)&quot; cwd
+</span><span class="add">+    command yazi &quot;$@&quot; --cwd-file=&quot;$tmp&quot;
+</span><span class="add">+    IFS= read -r -d &apos;&apos; cwd &lt; &quot;$tmp&quot;
+</span><span class="add">+    [ &quot;$cwd&quot; != &quot;$PWD&quot; ] &amp;&amp; [ -d &quot;$cwd&quot; ] &amp;&amp; builtin cd -- &quot;$cwd&quot;
+</span><span class="add">+    rm -f -- &quot;$tmp&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> shebang() { # create new file, add shebang, and vim
+</span><span class="def">     touch $1
+</span><span class="def">     chmod +x $1
+</span></pre>
+</div></div>
+  </body>
+</html>

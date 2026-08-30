@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - moved tmux conf to vim-misc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/4d00ffb02a3c0f05fd1afa66c3d4f0a57aeea826.html">4d00ffb02a3c0f05fd1afa66c3d4f0a57aeea826</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/e0077204c6f1c321095ef806031b69d377b04187.html">e0077204c6f1c321095ef806031b69d377b04187</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-09 11:10:35 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-09 11:10:35 +0000
+
+moved tmux conf to vim-misc
+</pre><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,48 @@
+<span class="add">+# symlink this to ~/.tmux.conf
+</span><span class="add">+
+</span><span class="add">+# make C-a prefix
+</span><span class="add">+unbind C-b
+</span><span class="add">+set -g prefix C-a
+</span><span class="add">+bind C-a send-prefix
+</span><span class="add">+
+</span><span class="add">+# bindings
+</span><span class="add">+bind r source-file ~/.tmux.conf
+</span><span class="add">+bind-key C-a last-window
+</span><span class="add">+bind-key | split-window -h
+</span><span class="add">+bind-key - split-window -v
+</span><span class="add">+bind C-l send-keys &apos;C-l&apos;
+</span><span class="add">+
+</span><span class="add">+# general settings
+</span><span class="add">+set -g default-terminal &quot;tmux-256color&quot;
+</span><span class="add">+set -g mouse on
+</span><span class="add">+set -g history-limit 5000
+</span><span class="add">+set -s escape-time 0
+</span><span class="add">+set -g base-index 1
+</span><span class="add">+
+</span><span class="add">+# Vim bindings in copy-mode
+</span><span class="add">+bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel &quot;xclip -i -sel clip &gt; /dev/null&quot;
+</span><span class="add">+bind-key p run &quot;xclip -o -sel clip | tmux load-buffer - ; tmux paste-buffer&quot;
+</span><span class="add">+bind-key -T copy-mode-vi &apos;v&apos; send -X begin-selection
+</span><span class="add">+bind-key -T copy-mode-vi &apos;y&apos; send -X copy-selection
+</span><span class="add">+
+</span><span class="add">+# status bar
+</span><span class="add">+#setw -g window-status-current-attr bold
+</span><span class="add">+#setw -g window-status-current-format &apos; #I#[fg=colour7]:#[fg=colour8]#W#[fg=colour7]#F &apos;
+</span><span class="add">+#set -g status-right &apos;#[fg=colour8,bg=colour4,bold] %H:%M &apos;
+</span><span class="add">+#setw -g window-status-format &apos; #I#[fg=colour7]:#[fg=colour8]#W#[fg=colour7]#F &apos;
+</span><span class="add">+set -g status off
+</span><span class="add">+
+</span><span class="add">+# Smart pane switching with awareness of Vim splits.
+</span><span class="add">+# See: https://github.com/christoomey/vim-tmux-navigator
+</span><span class="add">+is_vim=&quot;ps -o state= -o comm= -t &apos;#{pane_tty}&apos; \
+</span><span class="add">+    | grep -iqE &apos;^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$&apos;&quot;
+</span><span class="add">+bind-key -n C-h if-shell &quot;$is_vim&quot; &quot;send-keys C-h&quot;  &quot;select-pane -L&quot;
+</span><span class="add">+bind-key -n C-j if-shell &quot;$is_vim&quot; &quot;send-keys C-j&quot;  &quot;select-pane -D&quot;
+</span><span class="add">+bind-key -n C-k if-shell &quot;$is_vim&quot; &quot;send-keys C-k&quot;  &quot;select-pane -U&quot;
+</span><span class="add">+bind-key -n C-l if-shell &quot;$is_vim&quot; &quot;send-keys C-l&quot;  &quot;select-pane -R&quot;
+</span><span class="add">+bind-key -n C-\ if-shell &quot;$is_vim&quot; &quot;send-keys C-\\&quot; &quot;select-pane -l&quot;
+</span><span class="add">+bind-key -T copy-mode-vi C-h select-pane -L
+</span><span class="add">+bind-key -T copy-mode-vi C-j select-pane -D
+</span><span class="add">+bind-key -T copy-mode-vi C-k select-pane -U
+</span><span class="add">+bind-key -T copy-mode-vi C-l select-pane -R
+</span><span class="add">+bind-key -T copy-mode-vi C-\ select-pane -l
+</span></pre>
+</div></div>
+  </body>
+</html>

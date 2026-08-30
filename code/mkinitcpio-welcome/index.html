@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <table id="log">
+    <thead>
+      <tr>
+        <td><b>Date</b></td>
+        <td><b>Commit message</b></td>
+        <td><b>Author</b></td>
+      </tr>
+    </thead>
+
+    <tbody>
+            <tr><td>2020-10-12 23:01</td><td><a href="commit/a44d09d615be514880b4ceca2cf229ab996fa146.html">remove WELCOME_BG, because filling in the background is flaky</a></td><td>mcol</td></tr>
+            <tr><td>2020-10-12 22:57</td><td><a href="commit/6e673e0c130b313a26c64be2a678da23a772d1fc.html">add message in readme about KMS/consolefont</a></td><td>mcol</td></tr>
+            <tr><td>2020-10-12 22:56</td><td><a href="commit/441f398acb4b0bc817b6610d28901da8e78d6482.html">don&apos;t run run_script twice</a></td><td>mcol</td></tr>
+            <tr><td>2020-10-12 21:37</td><td><a href="commit/12d0d18f070cbf4b2042eded10c7e82d19d91fff.html">add makefile to copy hooks into /usr/lib</a></td><td>mcol</td></tr>
+            <tr><td>2020-10-12 21:32</td><td><a href="commit/cf2e4f5bf42520863cc61534f69a4389c85c5ffb.html">Wrap the encrypt hook to simplify usage and control cursor position</a></td><td>mcol</td></tr>
+            <tr><td>2020-10-04 19:37</td><td><a href="commit/b5fe9a0fb6e3cc0fd16349654debf5c026f5cc15.html">add contact to readme</a></td><td>mcol</td></tr>
+            <tr><td>2020-07-01 11:14</td><td><a href="commit/66d59f08aecb72e3fa2f1785a9b18a7857bcc86c.html">fix regex to work with ash</a></td><td>mcol</td></tr>
+            <tr><td>2020-06-29 21:14</td><td><a href="commit/ffa2e5dbbb09f1fe76fec040bc3aa4a07049d1bf.html">add readme</a></td><td>mcol</td></tr>
+            <tr><td>2020-06-29 20:40</td><td><a href="commit/aeeffb4d09488ebaa183d533f1cfce3ea1742426.html">add poscursor hook</a></td><td>mcol</td></tr>
+            <tr><td>2020-06-29 20:38</td><td><a href="commit/bfd7ef9564851bce16d4da42ce920355f1207d4c.html">fix is_int function</a></td><td>mcol</td></tr>
+            <tr><td>2020-06-29 19:33</td><td><a href="commit/c8b3119a8699d94cb86c779595322fb2b89cd06e.html">move user configuration to /etc/vconsole.conf</a></td><td>mcol</td></tr>
+            <tr><td>2020-06-29 17:20</td><td><a href="commit/e1f548fbc48a28db86e9f114347d7788271edee6.html">init commit with working prototype hook</a></td><td>mcol</td></tr>
+          </tbody>
+  </table>
+</div>
+  </body>
+</html>

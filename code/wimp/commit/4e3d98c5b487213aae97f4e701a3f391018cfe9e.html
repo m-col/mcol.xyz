@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Add skeleton workspaces (desks) with configurable background colours</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/4e3d98c5b487213aae97f4e701a3f391018cfe9e.html">4e3d98c5b487213aae97f4e701a3f391018cfe9e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/6b6952f0add33e31f8dcab11167b0a011f27e0e4.html">6b6952f0add33e31f8dcab11167b0a011f27e0e4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-07 23:06:16 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-07 23:10:19 +0000
+
+Add skeleton workspaces (desks) with configurable background colours
+
+This cleans up handling of config reading, makes assign_colour a bit
+more flexible (i.e. with preceding &apos;#&apos;s), adds desk structs each with
+their own background colours, and keybound functions to move through
+desks.
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -29,7 +29,7 @@
+<span class="def">     struct wlr_xdg_shell *shell;
+</span><span class="def">     struct wl_listener new_xdg_surface_listener;
+</span><span class="def">     struct wl_list views;
+</span><span class="sub">-    float background[4];
+</span><span class="add">+    struct wl_list desks;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span>@@ -72,4 +72,12 @@
+<span class="def">     struct wl_listener key_listener;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+struct desk {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    struct server *server;
+</span><span class="add">+    float background[4];
+</span><span class="add">+    int x, y;
+</span><span class="add">+    int index;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,7 +3,6 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface);
+</span><span class="def"> void on_map(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_unmap(struct wl_listener *listener, void *data);
+</span>@@ -12,6 +11,10 @@
+<span class="def"> void on_request_move(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_request_resize(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_new_xdg_surface(struct wl_listener *listener, void *data);
+</span><span class="add">+void add_desk(struct server *server);
+</span><span class="add">+void remove_desk(struct desk *desk);
+</span><span class="add">+void next_desk(struct server *server);
+</span><span class="add">+void prev_desk(struct server *server);
+</span><span class="def"> void set_up_shell(struct server *server);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,6 @@
+<span class="def"> #include &lt;wlr/util/edges.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#include &quot;config.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span>@@ -126,6 +127,39 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static int desk_index = 0;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void add_desk(struct server *server) {
+</span><span class="add">+    struct desk *desk = calloc(1, sizeof(struct desk));
+</span><span class="add">+    wl_list_insert(server-&gt;desks.prev, &amp;desk-&gt;link);
+</span><span class="add">+    desk-&gt;server = server;
+</span><span class="add">+    assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="add">+    desk-&gt;index = desk_index;
+</span><span class="add">+    desk_index++;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void remove_desk(struct desk *desk) {
+</span><span class="add">+    wl_list_remove(&amp;desk-&gt;link);
+</span><span class="add">+    free(desk);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void next_desk(struct server *server) {
+</span><span class="add">+    struct wl_list *current = server-&gt;desks.next;
+</span><span class="add">+    wl_list_remove(current);
+</span><span class="add">+    wl_list_insert(server-&gt;desks.prev, current);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void prev_desk(struct server *server) {
+</span><span class="add">+    struct wl_list *prev = server-&gt;desks.prev;
+</span><span class="add">+    wl_list_remove(prev);
+</span><span class="add">+    wl_list_insert(&amp;server-&gt;desks, prev);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void set_up_shell(struct server *server) {
+</span><span class="def">     wl_list_init(&amp;server-&gt;views);
+</span><span class="def">     server-&gt;shell = wlr_xdg_shell_create(server-&gt;display);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -60,7 +60,8 @@
+<span class="def">     wlr_output_effective_resolution(output-&gt;wlr_output, &amp;width, &amp;height);
+</span><span class="def">     wlr_renderer_begin(renderer, width, height);
+</span><span class="def"> 
+</span><span class="sub">-    wlr_renderer_clear(renderer, output-&gt;server-&gt;background);
+</span><span class="add">+    struct desk *desk = wl_container_of(output-&gt;server-&gt;desks.next, desk, link);
+</span><span class="add">+    wlr_renderer_clear(renderer, desk-&gt;background);
+</span><span class="def"> 
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each_reverse(view, &amp;output-&gt;server-&gt;views, link) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -215,6 +215,14 @@
+<span class="def"> 	wl_list_insert(server-&gt;views.prev, &amp;current_view-&gt;link);
+</span><span class="def"> 	break;
+</span><span class="def"> 
+</span><span class="add">+    case XKB_KEY_Left:
+</span><span class="add">+	prev_desk(server);
+</span><span class="add">+	break;
+</span><span class="add">+
+</span><span class="add">+    case XKB_KEY_Right:
+</span><span class="add">+	next_desk(server);
+</span><span class="add">+	break;
+</span><span class="add">+
+</span><span class="def">     default:
+</span><span class="def"> 	return false;
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +1,4 @@
+<span class="def"> #ifndef DESKWM_DESKWM_H
+</span><span class="def"> #define DESKWM_DESKWM_H
+</span><span class="def"> 
+</span><span class="sub">-#include &quot;types.h&quot;
+</span><span class="sub">-
+</span><span class="sub">-struct server create_server();
+</span><span class="sub">-
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,5 @@
+<span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="add">+#include &lt;string.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> #include &lt;wlr/backend.h&gt;
+</span><span class="def"> #include &lt;wlr/render/wlr_renderer.h&gt;
+</span>@@ -15,34 +16,35 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-struct server create_server() {
+</span><span class="sub">-    struct server server;
+</span><span class="sub">-    server.display = wl_display_create();
+</span><span class="sub">-    server.backend = wlr_backend_autocreate(server.display, NULL);
+</span><span class="sub">-    server.renderer = wlr_backend_get_renderer(server.backend);
+</span><span class="sub">-    wlr_renderer_init_wl_display(server.renderer, server.display);
+</span><span class="sub">-    wlr_compositor_create(server.display, server.renderer);
+</span><span class="sub">-    wlr_data_device_manager_create(server.display);
+</span><span class="sub">-    return server;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> int main(int argc, char *argv[]) {
+</span><span class="def">     wlr_log_init(WLR_ERROR, NULL);
+</span><span class="def"> 
+</span><span class="def">     int opt;
+</span><span class="sub">-    while ((opt = getopt(argc, argv, &quot;d&quot;)) != -1) {
+</span><span class="add">+    char *config = NULL;
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;dc:&quot;)) != -1) {
+</span><span class="def">         switch (opt) {
+</span><span class="def"> 	    case &apos;d&apos;:
+</span><span class="def"> 		wlr_log_init(WLR_DEBUG, NULL);
+</span><span class="add">+		break;
+</span><span class="add">+	    case &apos;c&apos;:
+</span><span class="add">+		config = strdup(optarg);
+</span><span class="add">+		break;
+</span><span class="def">         }
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // create
+</span><span class="sub">-    struct server server = create_server();
+</span><span class="add">+    struct server server;
+</span><span class="add">+    server.display = wl_display_create();
+</span><span class="add">+    server.backend = wlr_backend_autocreate(server.display, NULL);
+</span><span class="add">+    server.renderer = wlr_backend_get_renderer(server.backend);
+</span><span class="add">+    wlr_renderer_init_wl_display(server.renderer, server.display);
+</span><span class="add">+    wlr_compositor_create(server.display, server.renderer);
+</span><span class="add">+    wlr_data_device_manager_create(server.display);
+</span><span class="add">+    wl_list_init(&amp;server.desks);
+</span><span class="def"> 
+</span><span class="def">     // read config
+</span><span class="sub">-    load_config(&amp;server);
+</span><span class="add">+    load_config(&amp;server, config);
+</span><span class="add">+    free(config);
+</span><span class="def"> 
+</span><span class="def">     // configure
+</span><span class="def">     set_up_outputs(&amp;server);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,7 +3,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="sub">-void load_config(struct server *server);
+</span><span class="add">+void assign_colour(char *hex, float dest[4]);
+</span><span class="add">+void load_config(struct server *server, char *config);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +1,11 @@
+<span class="def"> #include &lt;stdio.h&gt;
+</span><span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="def"> #include &lt;string.h&gt;
+</span><span class="add">+#include &lt;wordexp.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#include &quot;config.h&quot;
+</span><span class="add">+#include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -13,8 +16,10 @@
+<span class="def"> 	    break;
+</span><span class="def"> 	case 7:
+</span><span class="def"> 	case 9:
+</span><span class="sub">-	    hex++;
+</span><span class="sub">-	    break;
+</span><span class="add">+	    if (hex[0] == &apos;#&apos;) {
+</span><span class="add">+		hex++;
+</span><span class="add">+		break;
+</span><span class="add">+	    }
+</span><span class="def"> 	default:
+</span><span class="def"> 	    return;
+</span><span class="def">     }
+</span>@@ -28,22 +33,32 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void set_defaults(struct server *server) {
+</span><span class="sub">-    assign_colour(&quot;#5D479D&quot;, &amp;server-&gt;background);
+</span><span class="add">+static void set_defaults(struct server *server) {
+</span><span class="add">+    add_desk(server);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void load_config(struct server *server) {
+</span><span class="add">+void load_config(struct server *server, char *config) {
+</span><span class="def">     set_defaults(server);
+</span><span class="def"> 
+</span><span class="sub">-    char config[1024] = &quot;&quot;;
+</span><span class="sub">-    strcpy(config, getenv(&quot;HOME&quot;));
+</span><span class="sub">-    strcat(config, &quot;/.config/deskwm.conf&quot;);
+</span><span class="add">+    if (config == NULL) {
+</span><span class="add">+	char *xdg_config_home = getenv(&quot;XDG_CONFIG_HOME&quot;);
+</span><span class="add">+	if (xdg_config_home &amp;&amp; *xdg_config_home) {
+</span><span class="add">+	    config = &quot;$XDG_CONFIG_HOME/.config/deskwm.conf&quot;;
+</span><span class="add">+	} else {
+</span><span class="add">+	    config = &quot;$HOME/.config/deskwm.conf&quot;;
+</span><span class="add">+	}
+</span><span class="add">+    };
+</span><span class="add">+    wordexp_t p;
+</span><span class="add">+    wordexp(config, &amp;p, WRDE_NOCMD | WRDE_UNDEF);
+</span><span class="def"> 
+</span><span class="sub">-    if(access(config, R_OK) == -1) {
+</span><span class="add">+    if(access(p.we_wordv[0], R_OK) == -1) {
+</span><span class="add">+	wlr_log(WLR_INFO, &quot;%s not accessible. Using defaults.&quot;, p.we_wordv[0]);
+</span><span class="add">+	wordfree(&amp;p);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="sub">-    FILE *fd = fopen(config, &quot;r&quot;);
+</span><span class="add">+    FILE *fd = fopen(p.we_wordv[0], &quot;r&quot;);
+</span><span class="add">+    wordfree(&amp;p);
+</span><span class="def"> 
+</span><span class="def">     char *s;
+</span><span class="def">     char linebuf[1024];
+</span>@@ -51,9 +66,12 @@
+<span class="def"> 	if (!(s = strtok(linebuf, &quot; \t\n\r&quot;)) || s[0] == &apos;#&apos;) {
+</span><span class="def"> 	    continue;
+</span><span class="def"> 	}
+</span><span class="sub">-	if (!strcasecmp(s, &quot;background&quot;)) {
+</span><span class="add">+	if (!strcasecmp(s, &quot;add_desk&quot;)) {
+</span><span class="add">+	    add_desk(server);
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;background&quot;)) {
+</span><span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-		assign_colour(s, &amp;server-&gt;background);
+</span><span class="add">+		struct desk *desk = wl_container_of(server-&gt;desks.prev, desk, link);
+</span><span class="add">+		assign_colour(s, desk-&gt;background);
+</span><span class="def"> 	    }
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;modifier&quot;)) {
+</span><span class="def"> 	}
+</span></pre>
+</div></div>
+  </body>
+</html>

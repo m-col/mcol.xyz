@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add set_modifier option to choose modifier key for bindings</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/07664d034bc7a1d4eaeca6061d29c04d984eadad.html">07664d034bc7a1d4eaeca6061d29c04d984eadad</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/154e507eee6d26611ee30d94b7f0108789468bb2.html">154e507eee6d26611ee30d94b7f0108789468bb2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-20 23:49:14 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-20 23:49:14 +0000
+
+add set_modifier option to choose modifier key for bindings
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -47,6 +47,7 @@
+<span class="def">     struct wl_listener request_cursor_listener;
+</span><span class="def">     struct wl_listener request_set_selection_listener;
+</span><span class="def">     struct wl_list keyboards;
+</span><span class="add">+    enum wlr_keyboard_modifier mod;
+</span><span class="def">     enum cursor_mode cursor_mode;
+</span><span class="def">     struct view *grabbed_view;
+</span><span class="def">     double grab_x, grab_y;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+void set_modifier(struct server *server, char *modifier);
+</span><span class="def"> void process_cursor_move(struct server *server, uint32_t time, double zoom);
+</span><span class="def"> void process_cursor_resize(struct server *server, uint32_t time, double zoom);
+</span><span class="def"> bool view_at(
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,7 +10,24 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-enum wlr_keyboard_modifier MOD = WLR_MODIFIER_LOGO;
+</span><span class="add">+void set_modifier(struct server *server, char *mod) {
+</span><span class="add">+    if (strcasecmp(mod, &quot;shift&quot;) == 0)
+</span><span class="add">+	server-&gt;mod = WLR_MODIFIER_SHIFT;
+</span><span class="add">+    else if (strcasecmp(mod, &quot;caps&quot;) == 0)
+</span><span class="add">+	server-&gt;mod = WLR_MODIFIER_CAPS;
+</span><span class="add">+    else if (strcasecmp(mod, &quot;ctrl&quot;) == 0)
+</span><span class="add">+	server-&gt;mod = WLR_MODIFIER_CTRL;
+</span><span class="add">+    else if (strcasecmp(mod, &quot;alt&quot;) == 0)
+</span><span class="add">+	server-&gt;mod = WLR_MODIFIER_ALT;
+</span><span class="add">+    else if (strcasecmp(mod, &quot;mod2&quot;) == 0)
+</span><span class="add">+	server-&gt;mod = WLR_MODIFIER_MOD2;
+</span><span class="add">+    else if (strcasecmp(mod, &quot;mod3&quot;) == 0)
+</span><span class="add">+	server-&gt;mod = WLR_MODIFIER_MOD3;
+</span><span class="add">+    else if (strcasecmp(mod, &quot;mod4&quot;) == 0)
+</span><span class="add">+	server-&gt;mod = WLR_MODIFIER_LOGO;
+</span><span class="add">+    else if (strcasecmp(mod, &quot;mod5&quot;) == 0)
+</span><span class="add">+	server-&gt;mod = WLR_MODIFIER_MOD5;
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void process_cursor_move(struct server *server, uint32_t time, double zoom) {
+</span>@@ -198,7 +215,7 @@
+<span class="def"> 	keyboard-&gt;server-&gt;seat, &amp;keyboard-&gt;device-&gt;keyboard-&gt;modifiers
+</span><span class="def">     );
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-    if ((modifiers &amp; MOD)) {
+</span><span class="add">+    if ((modifiers &amp; keyboard-&gt;server-&gt;mod)) {
+</span><span class="def"> 	keyboard-&gt;server-&gt;cursor_mode = CURSOR_PAN;
+</span><span class="def">     } else {
+</span><span class="def"> 	keyboard-&gt;server-&gt;cursor_mode = CURSOR_PASSTHROUGH;
+</span>@@ -261,7 +278,7 @@
+<span class="def"> 
+</span><span class="def">     bool handled = false;
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-    if ((modifiers &amp; MOD) &amp;&amp; event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="add">+    if ((modifiers &amp; server-&gt;mod) &amp;&amp; event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="def"> 	for (int i = 0; i &lt; nsyms; i++) {
+</span><span class="def"> 	    handled = handle_keybinding(server, syms[i]);
+</span><span class="def"> 	}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,6 +8,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;input.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> #define is_decimal(s) (strspn(s, &quot;0123456789.&quot;) == strlen(s))
+</span>@@ -90,6 +91,8 @@
+<span class="def"> 	wl_container_of(server-&gt;desks.next, server-&gt;current_desk, link);
+</span><span class="def">     server-&gt;zoom_min = 0.5;
+</span><span class="def">     server-&gt;zoom_max = 3;
+</span><span class="add">+
+</span><span class="add">+    server-&gt;mod = WLR_MODIFIER_LOGO;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -127,6 +130,10 @@
+<span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="def"> 		set_wallpaper(server, s);
+</span><span class="def"> 	    }
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;set_modifier&quot;)) {
+</span><span class="add">+	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+		set_modifier(server, s);
+</span><span class="add">+	    }
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;zoom_min&quot;)) {
+</span><span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_decimal(s)) {
+</span><span class="def"> 		server-&gt;zoom_min = strtod(s, NULL);
+</span></pre>
+</div></div>
+  </body>
+</html>

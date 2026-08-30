@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - damage only necessary boxes when moving window</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/764d9cf329b641a2da4924235ac2d719ba8b3b35.html">764d9cf329b641a2da4924235ac2d719ba8b3b35</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/178ff3e9466340dbbba8b9585f29f7eb8ae77294.html">178ff3e9466340dbbba8b9585f29f7eb8ae77294</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-12 10:46:27 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-12 10:46:27 +0000
+
+damage only necessary boxes when moving window
+</pre><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -63,9 +63,28 @@
+<span class="def"> 	    return;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+    struct wlr_box damage = {
+</span><span class="add">+	.x = view-&gt;x,
+</span><span class="add">+	.y = view-&gt;y,
+</span><span class="add">+	.width = view-&gt;surface-&gt;geometry.width,
+</span><span class="add">+	.height = view-&gt;surface-&gt;geometry.height,
+</span><span class="add">+    };
+</span><span class="def">     struct motion motion = *(struct motion*)data;
+</span><span class="add">+    if (motion.dx &gt; 0) {
+</span><span class="add">+	damage.width += motion.dx;
+</span><span class="add">+    } else {
+</span><span class="add">+	damage.x -= motion.dx;
+</span><span class="add">+	damage.width -= motion.dx;
+</span><span class="add">+    }
+</span><span class="add">+    if (motion.dy &gt; 0) {
+</span><span class="add">+	damage.height += motion.dy;
+</span><span class="add">+    } else {
+</span><span class="add">+	damage.y -= motion.dy;
+</span><span class="add">+	damage.height -= motion.dy;
+</span><span class="add">+    }
+</span><span class="def">     view-&gt;x += motion.dx;
+</span><span class="def">     view-&gt;y += motion.dy;
+</span><span class="add">+    damage_box(&amp;damage, true);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

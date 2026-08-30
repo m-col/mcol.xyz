@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - oh-my-zsh/completion.zsh</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- oh-my-zsh/completion.zsh</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> # Load all stock functions (from $fpath files) called below.
+<a href="#l2" class="line" id="l2">      2</a> autoload -U compaudit compinit
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> if [[ $ZSH_DISABLE_COMPFIX != true ]]; then
+<a href="#l5" class="line" id="l5">      5</a>   # If completion insecurities exist, warn the user
+<a href="#l6" class="line" id="l6">      6</a>   if ! compaudit &amp;&gt;/dev/null; then
+<a href="#l7" class="line" id="l7">      7</a>     handle_completion_insecurities
+<a href="#l8" class="line" id="l8">      8</a>   fi
+<a href="#l9" class="line" id="l9">      9</a>   # Load only from secure directories
+<a href="#l10" class="line" id="l10">     10</a>   compinit -i -d &quot;${ZSH_COMPDUMP}&quot;
+<a href="#l11" class="line" id="l11">     11</a> else
+<a href="#l12" class="line" id="l12">     12</a>   # If the user wants it, load from all found directories
+<a href="#l13" class="line" id="l13">     13</a>   compinit -u -d &quot;${ZSH_COMPDUMP}&quot;
+<a href="#l14" class="line" id="l14">     14</a> fi
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> # fixme - the load process here seems a bit bizarre
+<a href="#l17" class="line" id="l17">     17</a> zmodload -i zsh/complist
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> WORDCHARS=&apos;&apos;
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a> unsetopt menu_complete   # do not autoselect the first completion entry
+<a href="#l22" class="line" id="l22">     22</a> unsetopt flowcontrol
+<a href="#l23" class="line" id="l23">     23</a> setopt auto_menu         # show completion menu on successive tab press
+<a href="#l24" class="line" id="l24">     24</a> setopt complete_in_word
+<a href="#l25" class="line" id="l25">     25</a> setopt always_to_end
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> # should this be in keybindings?
+<a href="#l28" class="line" id="l28">     28</a> bindkey -M menuselect &apos;^o&apos; accept-and-infer-next-history
+<a href="#l29" class="line" id="l29">     29</a> zstyle &apos;:completion:*:*:*:*:*&apos; menu select
+<a href="#l30" class="line" id="l30">     30</a> 
+<a href="#l31" class="line" id="l31">     31</a> # case insensitive (all), partial-word and substring completion
+<a href="#l32" class="line" id="l32">     32</a> if [[ &quot;$CASE_SENSITIVE&quot; = true ]]; then
+<a href="#l33" class="line" id="l33">     33</a>   zstyle &apos;:completion:*&apos; matcher-list &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+<a href="#l34" class="line" id="l34">     34</a> else
+<a href="#l35" class="line" id="l35">     35</a>   if [[ &quot;$HYPHEN_INSENSITIVE&quot; = true ]]; then
+<a href="#l36" class="line" id="l36">     36</a>     zstyle &apos;:completion:*&apos; matcher-list &apos;m:{a-zA-Z-_}={A-Za-z_-}&apos; &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+<a href="#l37" class="line" id="l37">     37</a>   else
+<a href="#l38" class="line" id="l38">     38</a>     zstyle &apos;:completion:*&apos; matcher-list &apos;m:{a-zA-Z}={A-Za-z}&apos; &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+<a href="#l39" class="line" id="l39">     39</a>   fi
+<a href="#l40" class="line" id="l40">     40</a> fi
+<a href="#l41" class="line" id="l41">     41</a> unset CASE_SENSITIVE HYPHEN_INSENSITIVE
+<a href="#l42" class="line" id="l42">     42</a> 
+<a href="#l43" class="line" id="l43">     43</a> # Complete . and .. special directories
+<a href="#l44" class="line" id="l44">     44</a> zstyle &apos;:completion:*&apos; special-dirs true
+<a href="#l45" class="line" id="l45">     45</a> 
+<a href="#l46" class="line" id="l46">     46</a> zstyle &apos;:completion:*&apos; list-colors &apos;&apos;
+<a href="#l47" class="line" id="l47">     47</a> zstyle &apos;:completion:*:*:kill:*:processes&apos; list-colors &apos;=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01&apos;
+<a href="#l48" class="line" id="l48">     48</a> 
+<a href="#l49" class="line" id="l49">     49</a> zstyle &apos;:completion:*:*:*:*:processes&apos; command &quot;ps -u $USER -o pid,user,comm -w -w&quot;
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> # disable named-directories autocompletion
+<a href="#l52" class="line" id="l52">     52</a> zstyle &apos;:completion:*:cd:*&apos; tag-order local-directories directory-stack path-directories
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a> # Use caching so that commands like apt and dpkg complete are useable
+<a href="#l55" class="line" id="l55">     55</a> zstyle &apos;:completion::complete:*&apos; use-cache 1
+<a href="#l56" class="line" id="l56">     56</a> zstyle &apos;:completion::complete:*&apos; cache-path $ZSH_CACHE_DIR
+<a href="#l57" class="line" id="l57">     57</a> 
+<a href="#l58" class="line" id="l58">     58</a> # Don&apos;t complete uninteresting users
+<a href="#l59" class="line" id="l59">     59</a> zstyle &apos;:completion:*:*:*:users&apos; ignored-patterns \
+<a href="#l60" class="line" id="l60">     60</a>         adm amanda apache at avahi avahi-autoipd beaglidx bin cacti canna \
+<a href="#l61" class="line" id="l61">     61</a>         clamav daemon dbus distcache dnsmasq dovecot fax ftp games gdm \
+<a href="#l62" class="line" id="l62">     62</a>         gkrellmd gopher hacluster haldaemon halt hsqldb ident junkbust kdm \
+<a href="#l63" class="line" id="l63">     63</a>         ldap lp mail mailman mailnull man messagebus  mldonkey mysql nagios \
+<a href="#l64" class="line" id="l64">     64</a>         named netdump news nfsnobody nobody nscd ntp nut nx obsrun openvpn \
+<a href="#l65" class="line" id="l65">     65</a>         operator pcap polkitd postfix postgres privoxy pulse pvm quagga radvd \
+<a href="#l66" class="line" id="l66">     66</a>         rpc rpcuser rpm rtkit scard shutdown squid sshd statd svn sync tftp \
+<a href="#l67" class="line" id="l67">     67</a>         usbmux uucp vcsa wwwrun xfs &apos;_*&apos;
+<a href="#l68" class="line" id="l68">     68</a> 
+<a href="#l69" class="line" id="l69">     69</a> # ... unless we really want to.
+<a href="#l70" class="line" id="l70">     70</a> zstyle &apos;*&apos; single-ignored show
+<a href="#l71" class="line" id="l71">     71</a> 
+<a href="#l72" class="line" id="l72">     72</a> if [[ $COMPLETION_WAITING_DOTS = true ]]; then
+<a href="#l73" class="line" id="l73">     73</a>   expand-or-complete-with-dots() {
+<a href="#l74" class="line" id="l74">     74</a>     # toggle line-wrapping off and back on again
+<a href="#l75" class="line" id="l75">     75</a>     [[ -n &quot;$terminfo[rmam]&quot; &amp;&amp; -n &quot;$terminfo[smam]&quot; ]] &amp;&amp; echoti rmam
+<a href="#l76" class="line" id="l76">     76</a>     print -Pn &quot;%{%F{red}......%f%}&quot;
+<a href="#l77" class="line" id="l77">     77</a>     [[ -n &quot;$terminfo[rmam]&quot; &amp;&amp; -n &quot;$terminfo[smam]&quot; ]] &amp;&amp; echoti smam
+<a href="#l78" class="line" id="l78">     78</a> 
+<a href="#l79" class="line" id="l79">     79</a>     zle expand-or-complete
+<a href="#l80" class="line" id="l80">     80</a>     zle redisplay
+<a href="#l81" class="line" id="l81">     81</a>   }
+<a href="#l82" class="line" id="l82">     82</a>   zle -N expand-or-complete-with-dots
+<a href="#l83" class="line" id="l83">     83</a>   bindkey &quot;^I&quot; expand-or-complete-with-dots
+<a href="#l84" class="line" id="l84">     84</a> fi
+<a href="#l85" class="line" id="l85">     85</a> 
+</pre>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Make Target.identify return FilePath</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/9885c412167b8ec53221a90fc240db67fe26e323.html">9885c412167b8ec53221a90fc240db67fe26e323</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/3d1fcf8e17a60adbb9f46350850773524ac8511c.html">3d1fcf8e17a60adbb9f46350850773524ac8511c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-03 23:56:23 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-03 23:56:23 +0100
+
+Make Target.identify return FilePath
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -192,15 +192,15 @@
+<span class="def"> genTarget can work on any target type.
+</span><span class="def"> -}
+</span><span class="def"> class ToGVal (Run SourcePos IO Html) a =&gt; Target a where
+</span><span class="sub">-    identify :: a -&gt; String
+</span><span class="add">+    identify :: a -&gt; FilePath
+</span><span class="def">     category :: a -&gt; FilePath
+</span><span class="def"> 
+</span><span class="def"> instance Target (Commit LgRepo) where
+</span><span class="sub">-    identify = unpack . renderObjOid . commitOid 
+</span><span class="add">+    identify = (++ &quot;.html&quot;) . unpack . renderObjOid . commitOid 
+</span><span class="def">     category = const &quot;commit&quot;
+</span><span class="def"> 
+</span><span class="def"> instance Target (TreeFile) where
+</span><span class="sub">-    identify = unpack . replace &quot;/&quot; &quot;.&quot; . decodeUtf8 . treeFilePath
+</span><span class="add">+    identify = (++ &quot;.html&quot;) . unpack . replace &quot;/&quot; &quot;.&quot; . decodeUtf8 . treeFilePath
+</span><span class="def">     category = const &quot;file&quot;
+</span><span class="def"> 
+</span><span class="def"> genTarget
+</span>@@ -212,7 +212,7 @@
+<span class="def">     -&gt; IO ()
+</span><span class="def"> genTarget _ _ Nothing _ = return ()
+</span><span class="def"> genTarget output scope (Just template) target = do
+</span><span class="sub">-    let template&apos; = template { templatePath = identify target ++ &quot;.html&quot; }
+</span><span class="add">+    let template&apos; = template { templatePath = identify target }
+</span><span class="def">     let scope&apos; = scope &lt;&gt; HashMap.fromList [(pack . category $ target, toGVal target)]
+</span><span class="def">     liftIO $ createDirectoryIfMissing True (output &lt;/&gt; category target)
+</span><span class="def">     generate (output &lt;/&gt; category target) scope&apos; template&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

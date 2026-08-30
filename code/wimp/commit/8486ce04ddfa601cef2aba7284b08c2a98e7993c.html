@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - use desk.{x,y} to calculate position of views</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/8486ce04ddfa601cef2aba7284b08c2a98e7993c.html">8486ce04ddfa601cef2aba7284b08c2a98e7993c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/9655c265f61a092b009d88562af8daa708cc5289.html">9655c265f61a092b009d88562af8daa708cc5289</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-08 21:05:28 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-08 21:05:28 +0000
+
+use desk.{x,y} to calculate position of views
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -59,7 +59,7 @@
+<span class="def">     struct wl_listener destroy_listener;
+</span><span class="def">     struct wl_listener request_move_listener;
+</span><span class="def">     struct wl_listener request_resize_listener;
+</span><span class="sub">-    int x, y;
+</span><span class="add">+    double x, y;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> struct keyboard {
+</span>@@ -75,7 +75,7 @@
+<span class="def">     struct server *server;
+</span><span class="def">     struct wl_list views;
+</span><span class="def">     float background[4];
+</span><span class="sub">-    int x, y;
+</span><span class="add">+    double x, y;
+</span><span class="def">     int index;
+</span><span class="def"> };
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,23 +12,29 @@
+<span class="def">     struct render_data *rdata = data;
+</span><span class="def">     struct view *view = rdata-&gt;view;
+</span><span class="def">     struct wlr_output *output = rdata-&gt;output;
+</span><span class="add">+    struct server *server = view-&gt;server;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_texture *texture = wlr_surface_get_texture(surface);
+</span><span class="def">     if (texture == NULL) {
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    // get output-relative coordinates
+</span><span class="sub">-    double ox = 0, oy = 0;
+</span><span class="sub">-    wlr_output_layout_output_coords(
+</span><span class="sub">-	view-&gt;server-&gt;output_layout, output, &amp;ox, &amp;oy
+</span><span class="sub">-    );
+</span><span class="sub">-    ox += view-&gt;x + sx, oy += view-&gt;y + sy;
+</span><span class="add">+    double x = 0, y = 0;
+</span><span class="add">+    struct wlr_output_layout_output *ol;
+</span><span class="add">+    wl_list_for_each(ol, &amp;server-&gt;output_layout-&gt;outputs, link) {
+</span><span class="add">+	if (ol-&gt;output == output) {
+</span><span class="add">+	    x = - (double)ol-&gt;x;
+</span><span class="add">+	    y = - (double)ol-&gt;y;
+</span><span class="add">+	    break;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    x += view-&gt;x + sx - server-&gt;current_desk-&gt;x;
+</span><span class="add">+    y += view-&gt;y + sy - server-&gt;current_desk-&gt;y;
+</span><span class="def"> 
+</span><span class="def">     // scale for HiDPI
+</span><span class="def">     struct wlr_box box = {
+</span><span class="sub">-	.x = ox * output-&gt;scale,
+</span><span class="sub">-	.y = oy * output-&gt;scale,
+</span><span class="add">+	.x = x * output-&gt;scale,
+</span><span class="add">+	.y = y * output-&gt;scale,
+</span><span class="def"> 	.width = surface-&gt;current.width * output-&gt;scale,
+</span><span class="def"> 	.height = surface-&gt;current.height * output-&gt;scale,
+</span><span class="def">     };
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -210,6 +210,14 @@
+<span class="def"> 	next_desk(server);
+</span><span class="def"> 	break;
+</span><span class="def"> 
+</span><span class="add">+    case XKB_KEY_Up:
+</span><span class="add">+	server-&gt;current_desk-&gt;y -= 10;
+</span><span class="add">+	break;
+</span><span class="add">+
+</span><span class="add">+    case XKB_KEY_Down:
+</span><span class="add">+	server-&gt;current_desk-&gt;y += 10;
+</span><span class="add">+	break;
+</span><span class="add">+
+</span><span class="def">     default:
+</span><span class="def"> 	return false;
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,6 +13,7 @@
+<span class="def">     desk-&gt;server = server;
+</span><span class="def">     wl_list_init(&amp;desk-&gt;views);
+</span><span class="def">     assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="add">+    desk-&gt;x = desk-&gt;y = 0;
+</span><span class="def">     desk-&gt;index = num_desks;
+</span><span class="def">     num_desks++;
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

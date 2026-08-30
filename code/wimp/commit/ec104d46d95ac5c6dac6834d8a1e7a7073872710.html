@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Implement mouse bindings with same configuration as key bindings</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/ec104d46d95ac5c6dac6834d8a1e7a7073872710.html">ec104d46d95ac5c6dac6834d8a1e7a7073872710</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/c0e6900f6170cd0639bc9bf742833caadf07bc90.html">c0e6900f6170cd0639bc9bf742833caadf07bc90</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-22 16:02:20 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-22 16:02:20 +0000
+
+Implement mouse bindings with same configuration as key bindings
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,11 +15,15 @@
+<span class="def"> 
+</span><span class="def"> enum cursor_mode {
+</span><span class="def">     CURSOR_PASSTHROUGH,
+</span><span class="sub">-    CURSOR_PAN,
+</span><span class="add">+    CURSOR_MOD,
+</span><span class="def">     CURSOR_MOVE,
+</span><span class="def">     CURSOR_RESIZE,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+struct server;
+</span><span class="add">+
+</span><span class="add">+typedef void (*action)(struct server *server, void *data);
+</span><span class="add">+
+</span><span class="def"> struct server {
+</span><span class="def">     struct wl_display *display;
+</span><span class="def">     struct wlr_backend *backend;
+</span>@@ -48,7 +52,10 @@
+<span class="def">     struct wl_listener request_set_selection_listener;
+</span><span class="def">     struct wl_list keyboards;
+</span><span class="def">     enum wlr_keyboard_modifier mod;
+</span><span class="sub">-    struct wl_list keybindings;
+</span><span class="add">+    struct wl_list key_bindings;
+</span><span class="add">+    struct wl_list mouse_bindings;
+</span><span class="add">+    action on_mouse_motion;
+</span><span class="add">+    action on_mouse_scroll;
+</span><span class="def">     enum cursor_mode cursor_mode;
+</span><span class="def">     struct view *grabbed_view;
+</span><span class="def">     double grab_x, grab_y;
+</span>@@ -77,4 +84,9 @@
+<span class="def">     struct wl_listener key_listener;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+struct motion {
+</span><span class="add">+    double dx;
+</span><span class="add">+    double dy;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -31,12 +31,10 @@
+<span class="def"> void set_up_cursor(struct server *server);
+</span><span class="def"> void set_up_keyboard(struct server *server);
+</span><span class="def"> 
+</span><span class="sub">-typedef void (*action)(struct server *server, void *data);
+</span><span class="sub">-
+</span><span class="sub">-struct keybinding {
+</span><span class="add">+struct key_binding {
+</span><span class="def">     struct wl_list link;
+</span><span class="def">     enum wlr_keyboard_modifier mods;
+</span><span class="sub">-    xkb_keysym_t key;
+</span><span class="add">+    uint32_t key;
+</span><span class="def">     action action;
+</span><span class="def">     void *data;
+</span><span class="def"> };
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -48,7 +48,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void assign_action(char *name, char *data, struct keybinding *kb) {
+</span><span class="add">+void assign_action(char *name, char *data, struct key_binding *kb) {
+</span><span class="def">     kb-&gt;data = NULL;
+</span><span class="def">     kb-&gt;action = NULL;
+</span><span class="def"> 
+</span>@@ -60,14 +60,26 @@
+<span class="def"> 	kb-&gt;action = &amp;next_desk;
+</span><span class="def">     else if (strcasecmp(name, &quot;prev_desk&quot;) == 0)
+</span><span class="def"> 	kb-&gt;action = &amp;prev_desk;
+</span><span class="add">+    else if (strcasecmp(name, &quot;pan_desk&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;pan_desk;
+</span><span class="def">     else if (strcasecmp(name, &quot;reset_pan&quot;) == 0)
+</span><span class="def"> 	kb-&gt;action = &amp;reset_pan;
+</span><span class="def">     else if (strcasecmp(name, &quot;save_pan&quot;) == 0)
+</span><span class="def"> 	kb-&gt;action = &amp;save_pan;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;zoom_desk&quot;) == 0) {
+</span><span class="add">+    else if (strcasecmp(name, &quot;zoom_in&quot;) == 0) {
+</span><span class="def"> 	kb-&gt;action = &amp;zoom_desk;
+</span><span class="def"> 	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="sub">-	*(int *)(kb-&gt;data) = atoi(data);
+</span><span class="add">+	*(int *)(kb-&gt;data) = 1;
+</span><span class="add">+    }
+</span><span class="add">+    else if (strcasecmp(name, &quot;zoom_out&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;zoom_desk;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="add">+	*(int *)(kb-&gt;data) = -1;
+</span><span class="add">+    }
+</span><span class="add">+    else if (strcasecmp(name, &quot;zoom_out&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;zoom_desk;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="add">+	*(int *)(kb-&gt;data) = -1;
+</span><span class="def">     }
+</span><span class="def">     else if (strcasecmp(name, &quot;exec&quot;) == 0) {
+</span><span class="def"> 	kb-&gt;action = &amp;exec_command;
+</span>@@ -77,12 +89,28 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+enum mouse_keys {
+</span><span class="add">+    MOTION,
+</span><span class="add">+    SCROLL,
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+enum mouse_keys mouse_key_from_name(char *name) {
+</span><span class="add">+    if (strcasecmp(name, &quot;motion&quot;) == 0)
+</span><span class="add">+	return MOTION;
+</span><span class="add">+    else if (strcasecmp(name, &quot;scroll&quot;) == 0)
+</span><span class="add">+	return SCROLL;
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void add_binding(struct server *server, char *data, int line) {
+</span><span class="sub">-    struct keybinding *kb = calloc(1, sizeof(struct keybinding));
+</span><span class="add">+    struct key_binding *kb = calloc(1, sizeof(struct key_binding));
+</span><span class="def">     enum wlr_keyboard_modifier mod;
+</span><span class="def">     char *s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="add">+    bool is_mouse_binding = false;
+</span><span class="def"> 
+</span><span class="sub">-    // modifiers
+</span><span class="add">+    // additional modifiers
+</span><span class="def">     kb-&gt;mods = 0;
+</span><span class="def">     for (int i = 0; i &lt; 8; i++) {
+</span><span class="def"> 	mod = modifier_by_name(s);
+</span>@@ -95,9 +123,13 @@
+<span class="def">     // key
+</span><span class="def">     kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_CASE_INSENSITIVE);
+</span><span class="def">     if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;Config line %i: No such key &apos;%s&apos;.&quot;, line, s);
+</span><span class="sub">-	free(kb);
+</span><span class="sub">-	return;
+</span><span class="add">+	kb-&gt;key = mouse_key_from_name(s);
+</span><span class="add">+	if (kb-&gt;key == 0) {
+</span><span class="add">+	    wlr_log(WLR_ERROR, &quot;Config line %i: No such key &apos;%s&apos;.&quot;, line, s);
+</span><span class="add">+	    free(kb);
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+	is_mouse_binding = true;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // action
+</span>@@ -109,15 +141,21 @@
+<span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    struct keybinding *kb_existing;
+</span><span class="sub">-    wl_list_for_each(kb_existing, &amp;server-&gt;keybindings, link) {
+</span><span class="add">+    struct key_binding *kb_existing;
+</span><span class="add">+    struct wl_list *bindings;
+</span><span class="add">+    if (is_mouse_binding) {
+</span><span class="add">+	bindings = &amp;server-&gt;mouse_bindings;
+</span><span class="add">+    } else {
+</span><span class="add">+	bindings = &amp;server-&gt;key_bindings;
+</span><span class="add">+    }
+</span><span class="add">+    wl_list_for_each(kb_existing, bindings, link) {
+</span><span class="def"> 	if (kb_existing-&gt;key == kb-&gt;key &amp;&amp; kb_existing-&gt;mods == kb-&gt;mods) {
+</span><span class="def"> 	    wlr_log(WLR_ERROR, &quot;Config line %i: binding exists for key combo.&quot;, line);
+</span><span class="def"> 	    free(kb);
+</span><span class="def"> 	    return;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="sub">-    wl_list_insert(&amp;server-&gt;keybindings, &amp;kb-&gt;link);
+</span><span class="add">+    wl_list_insert(bindings, &amp;kb-&gt;link);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -223,13 +261,14 @@
+<span class="def"> 	    }
+</span><span class="def"> 	    break;
+</span><span class="def"> 
+</span><span class="sub">-	case CURSOR_PAN:
+</span><span class="sub">-	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="sub">-		view-&gt;x += dx;
+</span><span class="sub">-		view-&gt;y += dy;
+</span><span class="add">+	case CURSOR_MOD:
+</span><span class="add">+	    if (server-&gt;on_mouse_motion) {
+</span><span class="add">+		struct motion motion = {
+</span><span class="add">+		    .dx = dx,
+</span><span class="add">+		    .dy = dy,
+</span><span class="add">+		};
+</span><span class="add">+		server-&gt;on_mouse_motion(server, &amp;motion);
+</span><span class="def"> 	    }
+</span><span class="sub">-	    server-&gt;current_desk-&gt;panned_x += dx;
+</span><span class="sub">-	    server-&gt;current_desk-&gt;panned_y += dy;
+</span><span class="def"> 	    break;
+</span><span class="def"> 
+</span><span class="def"> 	case CURSOR_MOVE:
+</span>@@ -283,8 +322,19 @@
+<span class="def"> void on_cursor_axis(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(listener, server, cursor_axis_listener);
+</span><span class="def">     struct wlr_event_pointer_axis *event = data;
+</span><span class="sub">-    if (server-&gt;cursor_mode == CURSOR_PAN) {
+</span><span class="sub">-	zoom_desk(server, &amp;event-&gt;delta);
+</span><span class="add">+    if (server-&gt;cursor_mode == CURSOR_MOD) {
+</span><span class="add">+	if (server-&gt;on_mouse_scroll) {
+</span><span class="add">+	    struct motion motion = {
+</span><span class="add">+		.dx = 0,
+</span><span class="add">+		.dy = 0,
+</span><span class="add">+	    };
+</span><span class="add">+	    if (event-&gt;orientation == WLR_AXIS_ORIENTATION_VERTICAL) {
+</span><span class="add">+		motion.dy = event-&gt;delta;
+</span><span class="add">+	    } else {
+</span><span class="add">+		motion.dx = event-&gt;delta;
+</span><span class="add">+	    };
+</span><span class="add">+	    server-&gt;on_mouse_scroll(server, &amp;motion);
+</span><span class="add">+	}
+</span><span class="def">     } else {
+</span><span class="def"> 	wlr_seat_pointer_notify_axis(
+</span><span class="def"> 	    server-&gt;seat, event-&gt;time_msec, event-&gt;orientation, event-&gt;delta,
+</span>@@ -302,15 +352,34 @@
+<span class="def"> 
+</span><span class="def"> void on_modifier(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct keyboard *keyboard = wl_container_of(listener, keyboard, modifier_listener);
+</span><span class="add">+    struct server *server = keyboard-&gt;server;
+</span><span class="def">     wlr_seat_keyboard_notify_modifiers(
+</span><span class="sub">-	keyboard-&gt;server-&gt;seat, &amp;keyboard-&gt;device-&gt;keyboard-&gt;modifiers
+</span><span class="add">+	server-&gt;seat, &amp;keyboard-&gt;device-&gt;keyboard-&gt;modifiers
+</span><span class="def">     );
+</span><span class="add">+
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-    if ((modifiers &amp; keyboard-&gt;server-&gt;mod)) {
+</span><span class="sub">-	keyboard-&gt;server-&gt;cursor_mode = CURSOR_PAN;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	keyboard-&gt;server-&gt;cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="add">+    struct key_binding *kb;
+</span><span class="add">+    bool handled = false;
+</span><span class="add">+    if ((modifiers &amp; server-&gt;mod)) {
+</span><span class="add">+	modifiers &amp;= ~server-&gt;mod;
+</span><span class="add">+	wl_list_for_each(kb, &amp;server-&gt;mouse_bindings, link) {
+</span><span class="add">+	    if (modifiers == kb-&gt;mods) {
+</span><span class="add">+		switch (kb-&gt;key) {
+</span><span class="add">+		    case MOTION:
+</span><span class="add">+			printf(&quot;MOTION\n&quot;);
+</span><span class="add">+			server-&gt;on_mouse_motion = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="add">+		    case SCROLL:
+</span><span class="add">+			server-&gt;on_mouse_scroll = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="add">+		}
+</span><span class="add">+		keyboard-&gt;server-&gt;cursor_mode = CURSOR_MOD;
+</span><span class="add">+		handled = true;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="add">+    if (!handled)
+</span><span class="add">+	keyboard-&gt;server-&gt;cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -329,11 +398,11 @@
+<span class="def"> 
+</span><span class="def">     bool handled = false;
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-    struct keybinding *kb;
+</span><span class="add">+    struct key_binding *kb;
+</span><span class="def">     if ((modifiers &amp; server-&gt;mod) &amp;&amp; event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="def"> 	modifiers &amp;= ~server-&gt;mod;
+</span><span class="def"> 	for (int i = 0; i &lt; nsyms; i++) {
+</span><span class="sub">-	    wl_list_for_each(kb, &amp;server-&gt;keybindings, link) {
+</span><span class="add">+	    wl_list_for_each(kb, &amp;server-&gt;key_bindings, link) {
+</span><span class="def"> 		if (syms[i] == kb-&gt;key &amp;&amp; modifiers == kb-&gt;mods) {
+</span><span class="def"> 		    kb-&gt;action(server, kb-&gt;data);
+</span><span class="def"> 		    handled = true;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,6 +7,7 @@
+<span class="def"> void remove_desk(struct desk *desk);
+</span><span class="def"> void next_desk(struct server *server, void *data);
+</span><span class="def"> void prev_desk(struct server *server, void *data);
+</span><span class="add">+void pan_desk(struct server *server, void *data);
+</span><span class="def"> void reset_pan(struct server *server, void *data);
+</span><span class="def"> void save_pan(struct server *server, void *data);
+</span><span class="def"> void zoom_desk(struct server *server, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -60,6 +60,21 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void pan_desk(struct server *server, void *data) {
+</span><span class="add">+    struct desk *desk = server-&gt;current_desk;
+</span><span class="add">+    struct motion motion = *(struct motion*)data;
+</span><span class="add">+    double dx = motion.dx;
+</span><span class="add">+    double dy = motion.dy;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="add">+	view-&gt;x += dx;
+</span><span class="add">+	view-&gt;y += dy;
+</span><span class="add">+    }
+</span><span class="add">+    desk-&gt;panned_x += dx;
+</span><span class="add">+    desk-&gt;panned_y += dy;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void reset_pan(struct server *server, void *data) {
+</span><span class="def">     struct desk *desk = server-&gt;current_desk;
+</span><span class="def">     struct view *view;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -93,7 +93,10 @@
+<span class="def">     server-&gt;zoom_max = 3;
+</span><span class="def"> 
+</span><span class="def">     server-&gt;mod = WLR_MODIFIER_LOGO;
+</span><span class="sub">-    wl_list_init(&amp;server-&gt;keybindings);
+</span><span class="add">+    wl_list_init(&amp;server-&gt;key_bindings);
+</span><span class="add">+    wl_list_init(&amp;server-&gt;mouse_bindings);
+</span><span class="add">+    server-&gt;on_mouse_motion = NULL;
+</span><span class="add">+    server-&gt;on_mouse_scroll = NULL;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,13 +20,13 @@
+<span class="def"> #zoom_max 3
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-## Keybindings
+</span><span class="add">+## Bindings
+</span><span class="def"> 
+</span><span class="sub">-# Set the modifier key used for keybindings
+</span><span class="add">+# Set the modifier key used for bindings
+</span><span class="def"> # Can be one of: Shift, Caps, Ctrl, Alt, Mod2, Mod3, Logo, Mod5
+</span><span class="def"> #set_modifier Logo
+</span><span class="def"> 
+</span><span class="sub">-# Define keybindings
+</span><span class="add">+# Define key bindings
+</span><span class="def"> # additional modifiers, key, action(, data)
+</span><span class="def"> bind	Ctrl	Escape		shutdown
+</span><span class="def"> bind	Ctrl	q		close_current_window
+</span>@@ -34,11 +34,15 @@
+<span class="def"> bind		ISO_Left_Tab	prev_desk
+</span><span class="def"> bind		r		save_pan
+</span><span class="def"> bind	Shift	r		reset_pan
+</span><span class="sub">-bind		i		zoom_desk  1
+</span><span class="sub">-bind		o		zoom_desk -1
+</span><span class="add">+bind		i		zoom_in
+</span><span class="add">+bind		o		zoom_out
+</span><span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="def"> bind		Return		exec wterm
+</span><span class="def"> 
+</span><span class="add">+# Possible mouse bindings: motion, scroll (+ additional modifiers)
+</span><span class="add">+bind		scroll		pan_desk
+</span><span class="add">+bind	Shift	scroll		zoom_desk
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> ## Configure desks
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

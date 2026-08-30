@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - remove amixer, backlight and Popup as they have upstreamed</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/991f20cc403d29863b530613972cae55cf85f235.html">991f20cc403d29863b530613972cae55cf85f235</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/9c4c4d72c82d704fee6b3aa0dcd176f5471dd280.html">9c4c4d72c82d704fee6b3aa0dcd176f5471dd280</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-09-04 22:46:28 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-09-04 22:46:28 +0100
+
+remove amixer, backlight and Popup as they have upstreamed
+</pre><div class="diff">
+  <p>
+    <b>qtools/backlight/backlight.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,88 +0,0 @@
+<span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-Qtile plugin to control the screen backlight.
+</span><span class="sub">-
+</span><span class="sub">-Example usage:
+</span><span class="sub">-
+</span><span class="sub">-    import qtools.backlight
+</span><span class="sub">-    backlight = qtools.backlight.Backlight()
+</span><span class="sub">-    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="sub">-        &apos;&lt;XF86MonBrightnessUp&gt;&apos;:    backlight.lazy_inc_brightness,
+</span><span class="sub">-        &apos;&lt;XF86MonBrightnessDown&gt;&apos;:  backlight.lazy_dec_brightness,
+</span><span class="sub">-    }.items()])
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-import os
+</span><span class="sub">-import time
+</span><span class="sub">-
+</span><span class="sub">-from libqtile.log_utils import logger
+</span><span class="sub">-from qtools import Notifier
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-class Backlight(Notifier):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    This class controls screen backlight by directly reading and writing to the
+</span><span class="sub">-    backlight device file in /sys.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    defaults = [
+</span><span class="sub">-        (&apos;summary&apos;, &apos;Backlight&apos;, &apos;Notification summary.&apos;),
+</span><span class="sub">-        (&apos;interval&apos;, 10, &apos;Percentage interval by which to change backlight&apos;),
+</span><span class="sub">-        (&apos;name&apos;, &apos;/sys/class/backlight/nv_backlight&apos;, &apos;Full path to backlight device.&apos;),
+</span><span class="sub">-        (&apos;smooth&apos;, True, &apos;Whether to smoothly change brightness level.&apos;),
+</span><span class="sub">-        (&apos;transition&apos;, 0.04, &apos;Step size in seconds when smoothly transitioning&apos;),
+</span><span class="sub">-    ]
+</span><span class="sub">-
+</span><span class="sub">-    def __init__(self, **config):
+</span><span class="sub">-        Notifier.__init__(self, **config)
+</span><span class="sub">-        self.add_defaults(Backlight.defaults)
+</span><span class="sub">-
+</span><span class="sub">-        if os.path.isdir(self.name):
+</span><span class="sub">-            self.file = os.path.join(self.name, &apos;brightness&apos;)
+</span><span class="sub">-            with open(os.path.join(self.name, &apos;max_brightness&apos;), &apos;r&apos;) as f:
+</span><span class="sub">-                self.max = int(f.read())
+</span><span class="sub">-
+</span><span class="sub">-        else:
+</span><span class="sub">-            logger.error(&apos;Path passed to Backlight plugin is invalid&apos;)
+</span><span class="sub">-            self.name = &apos;/dev/null&apos;
+</span><span class="sub">-            self.max = 100
+</span><span class="sub">-
+</span><span class="sub">-        self.interval = self.max * self.interval /100
+</span><span class="sub">-        self.smooth_step = int(self.max / 100)
+</span><span class="sub">-
+</span><span class="sub">-    def inc_brightness(self, qtile=None):
+</span><span class="sub">-        self.change(1)
+</span><span class="sub">-
+</span><span class="sub">-    def dec_brightness(self, qtile=None):
+</span><span class="sub">-        self.change(-1)
+</span><span class="sub">-
+</span><span class="sub">-    def change(self, direction):
+</span><span class="sub">-        start = self.get_brightness()
+</span><span class="sub">-        end = self.check_value(start + self.interval * direction)
+</span><span class="sub">-        self.show(int(100 * end / self.max))
+</span><span class="sub">-
+</span><span class="sub">-        if self.smooth:
+</span><span class="sub">-            for i in range(
+</span><span class="sub">-                start + direction,
+</span><span class="sub">-                end + direction,
+</span><span class="sub">-                direction * self.smooth_step,
+</span><span class="sub">-            ):
+</span><span class="sub">-                with open(self.file, &apos;w&apos;) as f:
+</span><span class="sub">-                    f.write(str(i))
+</span><span class="sub">-                time.sleep(self.transition)
+</span><span class="sub">-                logger.warning(&apos;brightness&apos;)
+</span><span class="sub">-        else:
+</span><span class="sub">-            with open(self.file, &apos;w&apos;) as f:
+</span><span class="sub">-                f.write(str(end))
+</span><span class="sub">-
+</span><span class="sub">-    def get_brightness(self):
+</span><span class="sub">-        with open(self.file, &apos;r&apos;) as f:
+</span><span class="sub">-            return int(f.read())
+</span><span class="sub">-
+</span><span class="sub">-    def check_value(self, value):
+</span><span class="sub">-        if value &gt; self.max:
+</span><span class="sub">-            value = self.max
+</span><span class="sub">-        elif value &lt; 0:
+</span><span class="sub">-            value = 0
+</span><span class="sub">-        elif value % self.interval:
+</span><span class="sub">-            value = self.interval * round(value / self.interval)
+</span><span class="sub">-        return int(value)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/backlight/__init__.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,2 +0,0 @@
+<span class="sub">-from .backlight import Backlight
+</span><span class="sub">-__all__ = (&apos;Backlight&apos;,)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/amixer/amixer.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,107 +0,0 @@
+<span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-Qtile plugin to control an ALSA device volume level.
+</span><span class="sub">-
+</span><span class="sub">-Example usage:
+</span><span class="sub">-
+</span><span class="sub">-    import qtools.amixer
+</span><span class="sub">-    vol = qtools.amixer.Volume()
+</span><span class="sub">-    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="sub">-        &apos;&lt;XF86AudioMute&gt;&apos;:        vol.lazy_mute,
+</span><span class="sub">-        &apos;&lt;XF86AudioRaiseVolume&gt;&apos;: vol.lazy_increase,
+</span><span class="sub">-        &apos;&lt;XF86AudioLowerVolume&gt;&apos;: vol.lazy_decrease,
+</span><span class="sub">-    }.items()])
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-import subprocess
+</span><span class="sub">-
+</span><span class="sub">-from libqtile.log_utils import logger
+</span><span class="sub">-from qtools import Notifier
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-class Volume(Notifier):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    This Notifier can be used to control ALSA mixer volume and muting, sending
+</span><span class="sub">-    notifications when operations are performed.
+</span><span class="sub">-
+</span><span class="sub">-    The &apos;mixer&apos; option should be set to the name of the ALSA mixer you use to control
+</span><span class="sub">-    the volume. By default this will also be used for mute/unmute operations.
+</span><span class="sub">-    Alternatively, if you use the Master mixer for muting instead of the mixer used for
+</span><span class="sub">-    volume control, set &apos;mute_master&apos; to true.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    defaults = [
+</span><span class="sub">-        (&apos;summary&apos;, &apos;Volume&apos;, &apos;Notification summary.&apos;),
+</span><span class="sub">-        (&apos;mixer&apos;, &apos;Master&apos;, &apos;ALSA mixer to control.&apos;),
+</span><span class="sub">-        (&apos;interval&apos;, 5, &apos;Percentage interval to change volume by.&apos;),
+</span><span class="sub">-        (&apos;mute_master&apos;, False, &apos;Use the Master mixer for mute operations&apos;),
+</span><span class="sub">-    ]
+</span><span class="sub">-
+</span><span class="sub">-    def __init__(self, **config):
+</span><span class="sub">-        Notifier.__init__(self, **config)
+</span><span class="sub">-        self.add_defaults(Volume.defaults)
+</span><span class="sub">-        if self.mute_master and self.mixer == &apos;Master&apos;:
+</span><span class="sub">-            self.mute_master = False
+</span><span class="sub">-
+</span><span class="sub">-    def increase(self, qtile=None):
+</span><span class="sub">-        stdout = _run([&apos;set&apos;, self.mixer, f&apos;{self.interval}%+&apos;])
+</span><span class="sub">-        volume = _get_volume(stdout)
+</span><span class="sub">-        self.show(self.interval * round(volume / self.interval))
+</span><span class="sub">-
+</span><span class="sub">-    def decrease(self, qtile=None):
+</span><span class="sub">-        stdout = _run([&apos;set&apos;, self.mixer, f&apos;{self.interval}%-&apos;])
+</span><span class="sub">-        volume = _get_volume(stdout)
+</span><span class="sub">-        self.show(self.interval * round(volume / self.interval))
+</span><span class="sub">-
+</span><span class="sub">-    def toggle(self, qtile=None):
+</span><span class="sub">-        stdout = _run(
+</span><span class="sub">-            [&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;toggle&apos;]
+</span><span class="sub">-        )
+</span><span class="sub">-        if _get_mute(stdout):
+</span><span class="sub">-            self.show(&apos;Muted&apos;)
+</span><span class="sub">-        else:
+</span><span class="sub">-            if self.mute_master:
+</span><span class="sub">-                stdout = _run([&apos;get&apos;, self.mixer])
+</span><span class="sub">-            volume = _get_volume(stdout)
+</span><span class="sub">-            self.show(self.interval * round(volume / self.interval))
+</span><span class="sub">-
+</span><span class="sub">-    def mute(self, qtile=None):
+</span><span class="sub">-        _run([&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;mute&apos;])
+</span><span class="sub">-        self.show(&apos;Muted&apos;)
+</span><span class="sub">-
+</span><span class="sub">-    def unmute(self, qtile=None):
+</span><span class="sub">-        _run([&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;unmute&apos;])
+</span><span class="sub">-        volume = _get_volume(_run([&apos;get&apos;, self.mixer]))
+</span><span class="sub">-        self.show(self.interval * round(volume / self.interval))
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def _get_mute(stdout):
+</span><span class="sub">-    if len(stdout) == 5:
+</span><span class="sub">-        if stdout[4].decode().split()[5][1:-1] == &apos;on&apos;:
+</span><span class="sub">-            muted = False
+</span><span class="sub">-        else:
+</span><span class="sub">-            muted = True
+</span><span class="sub">-    else:
+</span><span class="sub">-        muted = False
+</span><span class="sub">-        logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="sub">-    return muted
+</span><span class="sub">-
+</span><span class="sub">-def _get_volume(stdout):
+</span><span class="sub">-    if (stdlen:=len(stdout)) == 5:
+</span><span class="sub">-        vol = int(stdout[4].decode().split()[3][1:-2])
+</span><span class="sub">-    elif stdlen == 7:
+</span><span class="sub">-        vol = int(stdout[5].decode().split()[4][1:-2])
+</span><span class="sub">-    else:
+</span><span class="sub">-        logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="sub">-        vol = 0
+</span><span class="sub">-    return vol
+</span><span class="sub">-
+</span><span class="sub">-def _run(args):
+</span><span class="sub">-    cmd = [&apos;amixer&apos;]
+</span><span class="sub">-    cmd.extend(args)
+</span><span class="sub">-    try:
+</span><span class="sub">-        output = subprocess.run(cmd, stdout=subprocess.PIPE, check=False)
+</span><span class="sub">-    except subprocess.CalledProcessError as err:
+</span><span class="sub">-        logger.error(err.output.decode())
+</span><span class="sub">-        return &apos;&apos;
+</span><span class="sub">-    return output.stdout.splitlines()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/amixer/__init__.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,2 +0,0 @@
+<span class="sub">-from .amixer import Volume
+</span><span class="sub">-__all__ = (&apos;Volume&apos;,)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/__init__.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -97,156 +97,3 @@
+<span class="def">         playbin.set_state(Gst.State.NULL)
+</span><span class="def">     else:
+</span><span class="def">         logger.exception(&quot;qtools.play_sound failed with file: {0}&quot;.format(path))
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-ALIGNMENTS = {
+</span><span class="sub">-    &apos;left&apos;: pangocffi.pango.PANGO_ALIGN_LEFT,
+</span><span class="sub">-    &apos;center&apos;: pangocffi.pango.PANGO_ALIGN_CENTER,
+</span><span class="sub">-    &apos;right&apos;: pangocffi.pango.PANGO_ALIGN_RIGHT,
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-class Popup(configurable.Configurable):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    This base class can be used to create popup windows for a variety of purposes.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    defaults = [
+</span><span class="sub">-        (&apos;opacity&apos;, 1.0, &apos;Opacity of notifications.&apos;),
+</span><span class="sub">-        (&apos;foreground&apos;, &apos;#ffffff&apos;, &apos;Color of text.&apos;),
+</span><span class="sub">-        (&apos;background&apos;, &apos;#111111&apos;, &apos;Background color.&apos;),
+</span><span class="sub">-        (&apos;border&apos;, &apos;#111111&apos;, &apos;Border color.&apos;),
+</span><span class="sub">-        (&apos;border_width&apos;, 4, &apos;Line width of drawn borders.&apos;),
+</span><span class="sub">-        (&apos;corner_radius&apos;, None, &apos;Corner radius for round corners, or None.&apos;),
+</span><span class="sub">-        (&apos;font&apos;, &apos;sans&apos;, &apos;Font used in notifications.&apos;),
+</span><span class="sub">-        (&apos;fontsize&apos;, 14, &apos;Size of font.&apos;),
+</span><span class="sub">-        (&apos;fontshadow&apos;, None, &apos;Color for text shadows, or None for no shadows.&apos;),
+</span><span class="sub">-        (&apos;horizontal_padding&apos;, 0, &apos;Padding at sides of text.&apos;),
+</span><span class="sub">-        (&apos;vertical_padding&apos;, 0, &apos;Padding at top and bottom of text.&apos;),
+</span><span class="sub">-        (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+</span><span class="sub">-        (&apos;wrap&apos;, True, &apos;Whether to wrap text.&apos;),
+</span><span class="sub">-    ]
+</span><span class="sub">-
+</span><span class="sub">-    def __init__(self, qtile, x=50, y=50, width=256, height=64, **config):
+</span><span class="sub">-        configurable.Configurable.__init__(self, **config)
+</span><span class="sub">-        self.add_defaults(Popup.defaults)
+</span><span class="sub">-        self.qtile = qtile
+</span><span class="sub">-
+</span><span class="sub">-        win = qtile.conn.create_window(x, y, width, height)
+</span><span class="sub">-        win.set_property(&quot;QTILE_INTERNAL&quot;, 1)
+</span><span class="sub">-        self.win = window.Internal(win, qtile)
+</span><span class="sub">-        self.win.opacity = self.opacity
+</span><span class="sub">-        self.drawer = Drawer(
+</span><span class="sub">-            self.qtile, self.win.window.wid, width, height,
+</span><span class="sub">-        )
+</span><span class="sub">-        self.layout = self.drawer.textlayout(
+</span><span class="sub">-            text=&apos;&apos;,
+</span><span class="sub">-            colour=self.foreground,
+</span><span class="sub">-            font_family=self.font,
+</span><span class="sub">-            font_size=self.fontsize,
+</span><span class="sub">-            font_shadow=self.fontshadow,
+</span><span class="sub">-            wrap=self.wrap,
+</span><span class="sub">-            markup=True,
+</span><span class="sub">-        )
+</span><span class="sub">-        self.layout.layout.set_alignment(ALIGNMENTS[self.text_alignment])
+</span><span class="sub">-
+</span><span class="sub">-        if self.border_width:
+</span><span class="sub">-            self.win.window.configure(borderwidth=self.border_width)
+</span><span class="sub">-        if self.corner_radius:
+</span><span class="sub">-            self.win.window.round_corners(
+</span><span class="sub">-                width, height, self.corner_radius, self.border_width,
+</span><span class="sub">-            )
+</span><span class="sub">-
+</span><span class="sub">-        self.win.handle_Expose = self._handle_Expose
+</span><span class="sub">-        self.win.handle_KeyPress = self._handle_KeyPress
+</span><span class="sub">-        self.win.handle_ButtonPress = self._handle_ButtonPress
+</span><span class="sub">-        self.qtile.windows_map[self.win.window.wid] = self.win
+</span><span class="sub">-
+</span><span class="sub">-        self.x = self.win.x
+</span><span class="sub">-        self.y = self.win.y
+</span><span class="sub">-        if not self.border_width:
+</span><span class="sub">-            self.border = None
+</span><span class="sub">-
+</span><span class="sub">-    def _handle_Expose(self, e):
+</span><span class="sub">-        pass
+</span><span class="sub">-
+</span><span class="sub">-    def _handle_KeyPress(self, event):
+</span><span class="sub">-        pass
+</span><span class="sub">-
+</span><span class="sub">-    def _handle_ButtonPress(self, event):
+</span><span class="sub">-        if event.detail == 1:
+</span><span class="sub">-            self.hide()
+</span><span class="sub">-
+</span><span class="sub">-    @property
+</span><span class="sub">-    def width(self):
+</span><span class="sub">-        return self.win.width
+</span><span class="sub">-
+</span><span class="sub">-    @width.setter
+</span><span class="sub">-    def width(self, value):
+</span><span class="sub">-        self.win.width = value
+</span><span class="sub">-        self.drawer.width = value
+</span><span class="sub">-
+</span><span class="sub">-    @property
+</span><span class="sub">-    def height(self):
+</span><span class="sub">-        return self.win.height
+</span><span class="sub">-
+</span><span class="sub">-    @height.setter
+</span><span class="sub">-    def height(self, value):
+</span><span class="sub">-        self.win.height = value
+</span><span class="sub">-        self.drawer.height = value
+</span><span class="sub">-
+</span><span class="sub">-    @property
+</span><span class="sub">-    def text(self):
+</span><span class="sub">-        return self.layout.text
+</span><span class="sub">-
+</span><span class="sub">-    @text.setter
+</span><span class="sub">-    def text(self, value):
+</span><span class="sub">-        self.layout.text = value
+</span><span class="sub">-
+</span><span class="sub">-    @property
+</span><span class="sub">-    def foreground(self):
+</span><span class="sub">-        return self._foreground
+</span><span class="sub">-
+</span><span class="sub">-    @foreground.setter
+</span><span class="sub">-    def foreground(self, value):
+</span><span class="sub">-        self._foreground = value
+</span><span class="sub">-        if hasattr(self, &apos;layout&apos;):
+</span><span class="sub">-            self.layout.colour = value
+</span><span class="sub">-
+</span><span class="sub">-    def set_border(self, color):
+</span><span class="sub">-        self.win.window.set_attribute(borderpixel=color)
+</span><span class="sub">-
+</span><span class="sub">-    def clear(self):
+</span><span class="sub">-        self.drawer.clear(self.background)
+</span><span class="sub">-
+</span><span class="sub">-    def draw_text(self, x=None, y=None):
+</span><span class="sub">-        self.layout.draw(
+</span><span class="sub">-            x or self.horizontal_padding,
+</span><span class="sub">-            y or self.vertical_padding,
+</span><span class="sub">-        )
+</span><span class="sub">-
+</span><span class="sub">-    def draw(self):
+</span><span class="sub">-        self.drawer.draw()
+</span><span class="sub">-
+</span><span class="sub">-    def place(self):
+</span><span class="sub">-        self.win.place(
+</span><span class="sub">-            self.x, self.y, self.width, self.height,
+</span><span class="sub">-            self.border_width, self.border, above=True
+</span><span class="sub">-        )
+</span><span class="sub">-
+</span><span class="sub">-    def unhide(self):
+</span><span class="sub">-        self.win.unhide()
+</span><span class="sub">-        self.win.window.configure(stackmode=StackMode.Above)
+</span><span class="sub">-
+</span><span class="sub">-    def draw_image(self, image, x, y):
+</span><span class="sub">-        &quot;&quot;&quot;
+</span><span class="sub">-        Paint an image onto the window at point x, y. The image should be a surface e.g.
+</span><span class="sub">-        loaded from libqtile.images.Img.load_path.
+</span><span class="sub">-        &quot;&quot;&quot;
+</span><span class="sub">-        self.drawer.ctx.set_source_surface(image, x, y)
+</span><span class="sub">-        self.drawer.ctx.paint()
+</span><span class="sub">-
+</span><span class="sub">-    def hide(self):
+</span><span class="sub">-        self.win.hide()
+</span><span class="sub">-
+</span><span class="sub">-    def kill(self):
+</span><span class="sub">-        self.win.kill()
+</span></pre>
+</div></div>
+  </body>
+</html>

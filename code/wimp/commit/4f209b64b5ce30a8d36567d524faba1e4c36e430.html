@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add action to move window to other desk</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/4f209b64b5ce30a8d36567d524faba1e4c36e430.html">4f209b64b5ce30a8d36567d524faba1e4c36e430</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/a3db1001b57a3a58cb887ec2664e1728af5e358d.html">a3db1001b57a3a58cb887ec2664e1728af5e358d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 01:30:42 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 01:30:42 +0000
+
+add action to move window to other desk
+</pre><div class="diff">
+  <p>
+    <b>src/desk.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,5 +5,6 @@
+<span class="def"> 
+</span><span class="def"> void add_desk();
+</span><span class="def"> void set_desk(struct desk *desk);
+</span><span class="add">+void view_to_desk(struct view *view, int index);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -40,3 +40,19 @@
+<span class="def"> 	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void view_to_desk(struct view *view, int index) {
+</span><span class="add">+    struct desk *desk;
+</span><span class="add">+    wl_list_for_each(desk, &amp;wimp.desks, link) {
+</span><span class="add">+	if (desk-&gt;index == index) {
+</span><span class="add">+	    wl_list_remove(&amp;view-&gt;link);
+</span><span class="add">+	    if (desk == wimp.current_desk) {
+</span><span class="add">+		map_view(view);
+</span><span class="add">+	    } else {
+</span><span class="add">+		unmap_view(view);
+</span><span class="add">+	    }
+</span><span class="add">+	    wl_list_insert(&amp;desk-&gt;views, &amp;view-&gt;link);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -150,6 +150,7 @@
+<span class="def">     { &quot;toggle_fullscreen&quot;, &amp;toggle_fullscreen, NULL },
+</span><span class="def">     { &quot;halfimize&quot;, &amp;halfimize, &amp;dir_handler },
+</span><span class="def">     { &quot;reload_config&quot;, &amp;reload_config, NULL },
+</span><span class="add">+    { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> static const int num_actions = sizeof(action_map) / sizeof(action_map[0]);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,5 +22,6 @@
+<span class="def"> void toggle_fullscreen(void *data);
+</span><span class="def"> void halfimize(void *data);
+</span><span class="def"> void reload_config(void *data);
+</span><span class="add">+void send_to_desk(void *data);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -331,3 +331,10 @@
+<span class="def"> void reload_config(void *data) {
+</span><span class="def">     load_config();
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void send_to_desk(void *data) {
+</span><span class="add">+    struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="add">+    int index = *(int*)data;
+</span><span class="add">+    view_to_desk(view, index);
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

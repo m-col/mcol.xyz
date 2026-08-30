@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - content/posts/foss/mpop_msmtp.rst</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- content/posts/foss/mpop_msmtp.rst</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> mpop and msmtp: a minimalist match made in heaven
+<a href="#l2" class="line" id="l2">      2</a> =================================================
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> :date: 2019-05-28
+<a href="#l5" class="line" id="l5">      5</a> :summary: mpop and msmtp: a minimalist match made in heaven
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a> Like many sane people, I have a soft spot for little C programs with little
+<a href="#l8" class="line" id="l8">      8</a> config files that do exactly what they do and nothing else. `Martin Lambers&apos;
+<a href="#l9" class="line" id="l9">      9</a> &lt;https://marlam.de/&gt;`_ POP3 and SMTP clients, `mpop &lt;https://marlam.de/mpop/&gt;`_
+<a href="#l10" class="line" id="l10">     10</a> and `msmtp &lt;https://marlam.de/msmtp/&gt;`_, are perfect examples.
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> In my quest for a minimal and straight forward setup, these bad boys have
+<a href="#l13" class="line" id="l13">     13</a> become my daily email handlers, with :code:`mpop` downloading my emails into a
+<a href="#l14" class="line" id="l14">     14</a> Maildir at :code:`~/.mail`, :code:`mutt` being a mostly offline interface to
+<a href="#l15" class="line" id="l15">     15</a> deal with all the crap people send me, and :code:`msmtp` as the backend to send
+<a href="#l16" class="line" id="l16">     16</a> mail from mutt.
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> mpop can be run as a cronjob, downloading mail every 30 minutes, leaving no
+<a href="#l19" class="line" id="l19">     19</a> trace on the remote server (if I trust my provider, that is).
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a> setup
+<a href="#l22" class="line" id="l22">     22</a> -----
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> mpop and msmtp can be installed from your distributions repos via the usual
+<a href="#l25" class="line" id="l25">     25</a> route.
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> Both programs have sane defaults that would work well for a standard user, so
+<a href="#l28" class="line" id="l28">     28</a> the configuration files are very few lines and take only a minute to write.
+<a href="#l29" class="line" id="l29">     29</a> 
+<a href="#l30" class="line" id="l30">     30</a> On top of that, they both share a chunk of code and its corresponding options,
+<a href="#l31" class="line" id="l31">     31</a> resulting in a good bit of the two files sharing lines.
+<a href="#l32" class="line" id="l32">     32</a> 
+<a href="#l33" class="line" id="l33">     33</a> My config for mpop, for example, is simply:
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a> .. code-block:: haskell
+<a href="#l36" class="line" id="l36">     36</a> 
+<a href="#l37" class="line" id="l37">     37</a>     defaults
+<a href="#l38" class="line" id="l38">     38</a>     uidls_file &quot;~/.config/mpop/uidls_%U_at_%H&quot;
+<a href="#l39" class="line" id="l39">     39</a>     tls on
+<a href="#l40" class="line" id="l40">     40</a>     tls_starttls off
+<a href="#l41" class="line" id="l41">     41</a>     
+<a href="#l42" class="line" id="l42">     42</a>     account posteo
+<a href="#l43" class="line" id="l43">     43</a>     host &quot;posteo.de&quot;
+<a href="#l44" class="line" id="l44">     44</a>     user &quot;&lt;myemailaddress&gt;&quot;
+<a href="#l45" class="line" id="l45">     45</a>     passwordeval &quot;gpg --no-tty -q -d --for-your-eyes-only ~/.mail/posteo.gpg&quot;
+<a href="#l46" class="line" id="l46">     46</a>     delivery maildir &quot;~/.mail/posteo/INBOX&quot;
+<a href="#l47" class="line" id="l47">     47</a>     port 995
+<a href="#l48" class="line" id="l48">     48</a> 
+<a href="#l49" class="line" id="l49">     49</a> Compared to my nearly identical msmtp config:
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> .. code-block:: haskell
+<a href="#l52" class="line" id="l52">     52</a> 
+<a href="#l53" class="line" id="l53">     53</a>     defaults
+<a href="#l54" class="line" id="l54">     54</a>     auth on
+<a href="#l55" class="line" id="l55">     55</a>     tls on
+<a href="#l56" class="line" id="l56">     56</a>     tls_starttls off
+<a href="#l57" class="line" id="l57">     57</a> 
+<a href="#l58" class="line" id="l58">     58</a>     account posteo
+<a href="#l59" class="line" id="l59">     59</a>     host &quot;posteo.de&quot;
+<a href="#l60" class="line" id="l60">     60</a>     user &quot;&lt;myemailaddress&gt;&quot;
+<a href="#l61" class="line" id="l61">     61</a>     from &quot;&lt;myemailaddress&gt;&quot;
+<a href="#l62" class="line" id="l62">     62</a>     passwordeval &quot;gpg --no-tty -q -d --for-your-eyes-only ~/.mail/posteo.gpg&quot;
+<a href="#l63" class="line" id="l63">     63</a>     port 465
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a> The first 4 lines of each are the defaults, which apply to all email accounts
+<a href="#l66" class="line" id="l66">     66</a> that are set up. The second block is therefore my first account, in this case
+<a href="#l67" class="line" id="l67">     67</a> just named :code:`posteo` for my provider. Everything is simple and self
+<a href="#l68" class="line" id="l68">     68</a> explanatory.  Of note though is the passwordeval lines, which is simply a shell
+<a href="#l69" class="line" id="l69">     69</a> line executed that should give you the password for that account, in this case
+<a href="#l70" class="line" id="l70">     70</a> taking it from my gpg-agent.
+<a href="#l71" class="line" id="l71">     71</a> 
+<a href="#l72" class="line" id="l72">     72</a> torifying
+<a href="#l73" class="line" id="l73">     73</a> ---------
+<a href="#l74" class="line" id="l74">     74</a> 
+<a href="#l75" class="line" id="l75">     75</a> Both programs can be run straight through Tor with no trouble at all, just
+<a href="#l76" class="line" id="l76">     76</a> stick this into the defaults sections:
+<a href="#l77" class="line" id="l77">     77</a> 
+<a href="#l78" class="line" id="l78">     78</a> .. code-block:: haskell
+<a href="#l79" class="line" id="l79">     79</a> 
+<a href="#l80" class="line" id="l80">     80</a>     proxy_host localhost
+<a href="#l81" class="line" id="l81">     81</a>     proxy_port 9050
+<a href="#l82" class="line" id="l82">     82</a> 
+<a href="#l83" class="line" id="l83">     83</a> After 2 minutes of setup, these programs can work in the background and never
+<a href="#l84" class="line" id="l84">     84</a> ask for your attention again.
+<a href="#l85" class="line" id="l85">     85</a> 
+</pre>
+  </div>
+  </body>
+</html>

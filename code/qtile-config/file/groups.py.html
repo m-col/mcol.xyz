@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - groups.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- groups.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &quot;&quot;&quot;
+<a href="#l2" class="line" id="l2">      2</a> Groups
+<a href="#l3" class="line" id="l3">      3</a> ======
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a>  - 8 groups
+<a href="#l6" class="line" id="l6">      6</a>  - 4 bound to each screen when using two monitors
+<a href="#l7" class="line" id="l7">      7</a> 
+<a href="#l8" class="line" id="l8">      8</a> &quot;&quot;&quot;
+<a href="#l9" class="line" id="l9">      9</a> 
+<a href="#l10" class="line" id="l10">     10</a> from __future__ import annotations
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> import os
+<a href="#l13" class="line" id="l13">     13</a> from typing import TYPE_CHECKING
+<a href="#l14" class="line" id="l14">     14</a> 
+<a href="#l15" class="line" id="l15">     15</a> from libqtile import hook, qtile
+<a href="#l16" class="line" id="l16">     16</a> from libqtile.config import Group, Match
+<a href="#l17" class="line" id="l17">     17</a> from libqtile.lazy import lazy
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> if TYPE_CHECKING:
+<a href="#l20" class="line" id="l20">     20</a>     from typing import Any, Callable
+<a href="#l21" class="line" id="l21">     21</a> 
+<a href="#l22" class="line" id="l22">     22</a>     from libqtile.core.manager import Qtile
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> 
+<a href="#l25" class="line" id="l25">     25</a> mod = &quot;mod1&quot; if int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) else &quot;mod4&quot;
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> keys_group: list[tuple[list[str], str, Any, str]] = []
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a> 
+<a href="#l30" class="line" id="l30">     30</a> groups: list[Group] = [
+<a href="#l31" class="line" id="l31">     31</a>     Group(&quot;1&quot;, label=&quot;html&quot;),
+<a href="#l32" class="line" id="l32">     32</a>     Group(&quot;2&quot;, label=&quot;disc&quot;, matches=[Match(wm_class=&quot;discord&quot;)]),
+<a href="#l33" class="line" id="l33">     33</a>     Group(&quot;3&quot;, label=&quot;mail&quot;, matches=[Match(wm_class=&quot;evolution&quot;)]),
+<a href="#l34" class="line" id="l34">     34</a>     Group(&quot;4&quot;, label=&quot;tune&quot;, matches=[
+<a href="#l35" class="line" id="l35">     35</a>         Match(wm_class=&quot;dev.alextren.Spot&quot;), Match(title=&quot;Spotify&quot;),
+<a href="#l36" class="line" id="l36">     36</a>     ]),
+<a href="#l37" class="line" id="l37">     37</a>     Group(&quot;q&quot;, label=&quot;term&quot;),
+<a href="#l38" class="line" id="l38">     38</a>     Group(&quot;w&quot;, label=&quot;term&quot;),
+<a href="#l39" class="line" id="l39">     39</a>     Group(&quot;e&quot;, label=&quot;term&quot;),
+<a href="#l40" class="line" id="l40">     40</a>     Group(&quot;r&quot;, label=&quot;term&quot;),
+<a href="#l41" class="line" id="l41">     41</a> ]
+<a href="#l42" class="line" id="l42">     42</a> 
+<a href="#l43" class="line" id="l43">     43</a> 
+<a href="#l44" class="line" id="l44">     44</a> def _go_to_group(qtile: Qtile, name: str) -&gt; None:
+<a href="#l45" class="line" id="l45">     45</a>     &quot;&quot;&quot;
+<a href="#l46" class="line" id="l46">     46</a>     This creates lazy functions that jump to a given group. When there is more than one
+<a href="#l47" class="line" id="l47">     47</a>     screen, the first 4 and second 4 groups are kept on the first and second screen.
+<a href="#l48" class="line" id="l48">     48</a>     E.g. going to the fifth group when the first group (and first screen) is focussed
+<a href="#l49" class="line" id="l49">     49</a>     will also change the screen to the second screen.
+<a href="#l50" class="line" id="l50">     50</a>     &quot;&quot;&quot;
+<a href="#l51" class="line" id="l51">     51</a>     if len(qtile.screens) == 1:
+<a href="#l52" class="line" id="l52">     52</a>         qtile.groups_map[name].toscreen(toggle=True)
+<a href="#l53" class="line" id="l53">     53</a>         return
+<a href="#l54" class="line" id="l54">     54</a> 
+<a href="#l55" class="line" id="l55">     55</a>     old = qtile.current_screen.group.name
+<a href="#l56" class="line" id="l56">     56</a>     if name in &quot;1234&quot;:
+<a href="#l57" class="line" id="l57">     57</a>         qtile.focus_screen(0)
+<a href="#l58" class="line" id="l58">     58</a>         if old in &quot;1234&quot; or qtile.current_screen.group.name != name:
+<a href="#l59" class="line" id="l59">     59</a>             qtile.groups_map[name].toscreen(toggle=True)
+<a href="#l60" class="line" id="l60">     60</a>     else:
+<a href="#l61" class="line" id="l61">     61</a>         qtile.focus_screen(1)
+<a href="#l62" class="line" id="l62">     62</a>         if old in &quot;qwer&quot; or qtile.current_screen.group.name != name:
+<a href="#l63" class="line" id="l63">     63</a>             qtile.groups_map[name].toscreen(toggle=True)
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a> 
+<a href="#l66" class="line" id="l66">     66</a> for i in groups:
+<a href="#l67" class="line" id="l67">     67</a>     keys_group.extend(
+<a href="#l68" class="line" id="l68">     68</a>         [
+<a href="#l69" class="line" id="l69">     69</a>             (
+<a href="#l70" class="line" id="l70">     70</a>                 [mod],
+<a href="#l71" class="line" id="l71">     71</a>                 i.name,
+<a href="#l72" class="line" id="l72">     72</a>                 lazy.function(_go_to_group, i.name),
+<a href="#l73" class="line" id="l73">     73</a>                 f&quot;Go to group {i.name}&quot;,
+<a href="#l74" class="line" id="l74">     74</a>             ),
+<a href="#l75" class="line" id="l75">     75</a>             (
+<a href="#l76" class="line" id="l76">     76</a>                 [mod, &quot;shift&quot;],
+<a href="#l77" class="line" id="l77">     77</a>                 i.name,
+<a href="#l78" class="line" id="l78">     78</a>                 lazy.window.togroup(i.name),
+<a href="#l79" class="line" id="l79">     79</a>                 f&quot;Send window to group {i.name}&quot;,
+<a href="#l80" class="line" id="l80">     80</a>             ),
+<a href="#l81" class="line" id="l81">     81</a>         ]
+<a href="#l82" class="line" id="l82">     82</a>     )
+<a href="#l83" class="line" id="l83">     83</a> 
+<a href="#l84" class="line" id="l84">     84</a> 
+<a href="#l85" class="line" id="l85">     85</a> def _scroll_screen(qtile: Qtile, direction: int) -&gt; None:
+<a href="#l86" class="line" id="l86">     86</a>     &quot;&quot;&quot;
+<a href="#l87" class="line" id="l87">     87</a>     Scroll to the next/prev group of the subset allocated to a specific screen. This
+<a href="#l88" class="line" id="l88">     88</a>     will rotate between e.g. 1-&gt;2-&gt;3-&gt;4-&gt;1 when the first screen is focussed.
+<a href="#l89" class="line" id="l89">     89</a>     &quot;&quot;&quot;
+<a href="#l90" class="line" id="l90">     90</a>     if len(qtile.screens) == 1:
+<a href="#l91" class="line" id="l91">     91</a>         current = qtile.groups.index(qtile.current_group)
+<a href="#l92" class="line" id="l92">     92</a>         destination = (current + direction) % 8
+<a href="#l93" class="line" id="l93">     93</a>         qtile.groups[destination].toscreen()
+<a href="#l94" class="line" id="l94">     94</a>         return
+<a href="#l95" class="line" id="l95">     95</a> 
+<a href="#l96" class="line" id="l96">     96</a>     current = qtile.groups.index(qtile.current_group)
+<a href="#l97" class="line" id="l97">     97</a>     if current &lt; 4:
+<a href="#l98" class="line" id="l98">     98</a>         destination = (current + direction) % 4
+<a href="#l99" class="line" id="l99">     99</a>     else:
+<a href="#l100" class="line" id="l100">    100</a>         destination = ((current - 4 + direction) % 4) + 4
+<a href="#l101" class="line" id="l101">    101</a>     qtile.groups[destination].toscreen()
+<a href="#l102" class="line" id="l102">    102</a> 
+<a href="#l103" class="line" id="l103">    103</a> 
+<a href="#l104" class="line" id="l104">    104</a> keys_group.extend(
+<a href="#l105" class="line" id="l105">    105</a>     [
+<a href="#l106" class="line" id="l106">    106</a>         ([mod], &quot;m&quot;, lazy.function(_scroll_screen, 1), &quot;Screen groups forward&quot;),
+<a href="#l107" class="line" id="l107">    107</a>         ([mod], &quot;n&quot;, lazy.function(_scroll_screen, -1), &quot;Screen groups backward&quot;),
+<a href="#l108" class="line" id="l108">    108</a>     ]
+<a href="#l109" class="line" id="l109">    109</a> )
+<a href="#l110" class="line" id="l110">    110</a> 
+<a href="#l111" class="line" id="l111">    111</a> 
+<a href="#l112" class="line" id="l112">    112</a> @hook.subscribe.startup
+<a href="#l113" class="line" id="l113">    113</a> def _():
+<a href="#l114" class="line" id="l114">    114</a>     # Set initial groups
+<a href="#l115" class="line" id="l115">    115</a>     if len(qtile.screens) &gt; 1:
+<a href="#l116" class="line" id="l116">    116</a>         qtile.groups_map[&quot;1&quot;].toscreen(0, toggle=False)
+<a href="#l117" class="line" id="l117">    117</a>         qtile.groups_map[&quot;q&quot;].toscreen(1, toggle=False)
+<a href="#l118" class="line" id="l118">    118</a>         qtile.focus_screen(1)
+<a href="#l119" class="line" id="l119">    119</a> 
+<a href="#l120" class="line" id="l120">    120</a> 
+<a href="#l121" class="line" id="l121">    121</a> @hook.subscribe.screens_reconfigured
+<a href="#l122" class="line" id="l122">    122</a> def _():
+<a href="#l123" class="line" id="l123">    123</a>     # Set groups to screens
+<a href="#l124" class="line" id="l124">    124</a>     if len(qtile.screens) &gt; 1:
+<a href="#l125" class="line" id="l125">    125</a>         if qtile.screens[0].group.name not in &quot;1234&quot;:
+<a href="#l126" class="line" id="l126">    126</a>             qtile.groups_map[&quot;1&quot;].toscreen(0, toggle=False)
+<a href="#l127" class="line" id="l127">    127</a>         if qtile.screens[1].group.name in &quot;1234&quot;:
+<a href="#l128" class="line" id="l128">    128</a>             qtile.groups_map[&quot;q&quot;].toscreen(1, toggle=False)
+<a href="#l129" class="line" id="l129">    129</a> 
+</pre>
+  </div>
+  </body>
+</html>

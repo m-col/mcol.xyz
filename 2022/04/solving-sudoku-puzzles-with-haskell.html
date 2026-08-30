@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / solving sudoku puzzles with haskell</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2022/04/solving-sudoku-puzzles-with-haskell.html>solving sudoku puzzles with haskell</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>My weekend project was to implement an algorithm for solving <a class="reference external" href="https://en.wikipedia.org/wiki/Sudoku">sudoku</a> puzzles,
+and finally at 2am last night I had success.</p>
+<p>Solving sudoku puzzles is a common exercise in implementing recursive
+algorithms, much like the classic Fibonacci number algorithm, but unlike the
+latter it involves a very deeply nested decision space. An algorithm must
+traverse down an incorrect solution (exploring a given decision) in order to
+determine if it is incorrect. At that point, it must <a class="reference external" href="https://en.wikipedia.org/wiki/Backtracking">backtrack</a> and test out a
+different decision. <a class="footnote-reference" href="#footnote-1" id="footnote-reference-1">[1]</a></p>
+<p>This decision space can be represented as a tree, where each decision is a node
+with 9 children. Each of the 9x9 cells represents one <em>level</em> of the decision
+tree. The full decision tree therefore has <code>9^81</code> leaves <a class="footnote-reference" href="#footnote-2" id="footnote-reference-2">[2]</a>. A
+backtracking algorithm scans this decision tree with brute force, checking if a
+given decision is valid, and if it isn't then it prunes that decision's
+subtree. If all 9 children of a node are invalid based on the puzzle's rules,
+then we know that node must be invalid too, and we can prune it and test a
+sibling subtree. Iterating through the tree this way, we eventually reach the
+last level with our complete puzzle.</p>
+<p>Sounds simple enough! Implementation may be another thing...</p>
+<p>At this point if you haven't tried to implement a solution but want to give it
+a go, I suggest waiting until you have before reading on.</p>
+<p>My solution can be found at <a class="reference external" href="/code/sudoku-solver">/code/sudoku-solver</a>, and looks like this while
+it's running:</p>
+<img alt="GIF of a puzzle being solved." src="/static/sudoku_solver.gif" />
+<p>This problem sounds like a perfect fit for Haskell, like everything, but
+specifically because Haskell's laziness allows us to 'pretend' to represent the
+entire tree without actually requiring it ever be evaluated. For anybody who is
+not familiar with Haskell, a more simple demonstration of this behaviour is
+that we can use infinite lists, such as <code>posInts = [1..]</code>, and things
+work otherwise 'as you expect' because values are evaluated at access.</p>
+<p>Going back to the giant decision tree, when we are making our first decision --
+<em>&quot;what value should we put in the first (empty) cell?&quot;</em> -- we can simply map
+over all of the valid options with the same decision function recursively.
+Validity is determined by the known state of the puzzle (the initial values).</p>
+<p>To illustrate, here is semi-Pythonic pseudo-code:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">attempt</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">State</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">is_beyond_last_cell</span><span class="p">(</span><span class="n">cell</span><span class="p">):</span>
+        <span class="c1"># We need a way to check if the caller attempted to resolve the</span>
+        <span class="c1"># very last cell.</span>
+        <span class="k">return</span> <span class="n">state</span>
+
+    <span class="k">if</span> <span class="n">not_empty</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="n">cell</span><span class="p">]):</span>
+        <span class="c1"># This cell is filled, continue to find the next empty cell.</span>
+        <span class="k">return</span> <span class="n">attempt</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">cell</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Let&#39;s test values in this empty cell</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">valid_children</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">attempt</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">cell</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># We have found the answer!</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
+
+<span class="n">attempt</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+<p>OK, so what's going on?</p>
+<ol class="arabic simple">
+<li>First, we pass in the initial state -- our 9x9 grid with a small number of
+cells filled in -- and the coordinate for the first cell <code>(1, 1)</code>.</li>
+<li>Inside <code>attempt</code>, the first thing we do is check if we've gone beyond
+the last coordinate. If we have, the parent call has filled the grid, and we
+should just return the state.</li>
+<li>If that isn't the case, we check if the passed coordinate is completed. If
+it is, no problem, let's just continue to look at the next cell.</li>
+<li>If our cell of interest is empty, let's get its valid children. That is, if
+we stick in the numbers 1 though 9, which candidate states don't conflict
+with existing values? Then, recurse on <code>attempt</code> with those candidate
+states.</li>
+<li>In the case where no children states are valid, we return <code>None</code>, and
+the calling function continues its loop over sibling candidate states.</li>
+</ol>
+<p>If the initial state is valid, then one series of <code>attempt</code> calls will
+make a path down to the final cell and we'll be left with the complete state,
+which is returned all the way up the call stack!</p>
+<p>The 'backtracking' here is implicitly encoded within the optional return type.
+If a decision is made in a given stack frame and we find out that all
+grandchildren are invalid, a <code>None</code> is returned to us, and we continue
+with a new value in the current cell. If that was the last valid candidate at
+this level, this frame returns <code>None</code> to backtrack to the parent.</p>
+<p>Haskell's lazy evaluation helps us keep the code concise because we can
+declaratively describe the traversal of our algorithm over the decision tree,
+and then only when we ask, for instance, for the first result, does evaluation
+proceed until we get it. If we asked for another result, traversal would need
+to continue to the very end before it could determine that there are no more
+possible results. This could be implemented in Python with generators, which
+similarly defer evaluation until an item is needed.</p>
+<p>This was one of those exercises that is really fun to reason about, and often
+funny at the end when you realise the final implementation is much simpler than
+many of the ideas you come up with while figuring it out. If you have any other
+interesting problems I'd love to hear them so I can give them a go!</p>
+<hr class="docutils" />
+<table class="docutils footnote" frame="void" id="footnote-1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-1">[1]</a></td><td>I should note that there are non-backtracking algorithms for solving
+sudoku puzzles too. See:
+<a class="reference external" href="https://en.wikipedia.org/wiki/Sudoku_solving_algorithms">https://en.wikipedia.org/wiki/Sudoku_solving_algorithms</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="footnote-2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-2">[2]</a></td><td>That's 196627050475552913618075908526912116283103450944214766927315415537966391196809!</td></tr>
+</tbody>
+</table>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2022-04-03T00:00:00+00:00">2022-04-03</time>
+in <a href="/category/programming.html">programming</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

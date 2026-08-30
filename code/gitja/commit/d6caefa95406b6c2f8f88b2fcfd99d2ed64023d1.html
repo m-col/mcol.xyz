@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - untag commits when rendering in templates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/d6caefa95406b6c2f8f88b2fcfd99d2ed64023d1.html">d6caefa95406b6c2f8f88b2fcfd99d2ed64023d1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/4d164eaf5f88344562b09defd16c2b532c36bae5.html">4d164eaf5f88344562b09defd16c2b532c36bae5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-04 23:06:57 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-04 23:06:57 +0100
+
+untag commits when rendering in templates
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -154,7 +154,7 @@
+<span class="def"> 
+</span><span class="def"> commitAsLookup :: Commit LgRepo -&gt; Text -&gt; Maybe (GVal m)
+</span><span class="def"> commitAsLookup commit = \case
+</span><span class="sub">-    &quot;id&quot; -&gt; Just . toGVal . show . commitOid $ commit
+</span><span class="add">+    &quot;id&quot; -&gt; Just . toGVal . show . untag . commitOid $ commit
+</span><span class="def">     &quot;title&quot; -&gt; Just . toGVal . strip . T.takeWhile (/= &apos;\n&apos;) . commitLog $ commit
+</span><span class="def">     &quot;body&quot; -&gt; Just . toGVal . strip . T.dropWhile (/= &apos;\n&apos;) . commitLog $ commit
+</span><span class="def">     &quot;message&quot; -&gt; Just . toGVal . strip . commitLog $ commit
+</span>@@ -221,7 +221,7 @@
+<span class="def">     category :: a -&gt; FilePath
+</span><span class="def"> 
+</span><span class="def"> instance Target (Commit LgRepo) where
+</span><span class="sub">-    identify = (++ &quot;.html&quot;) . show . commitOid
+</span><span class="add">+    identify = (++ &quot;.html&quot;) . show . untag . commitOid
+</span><span class="def">     category = const &quot;commit&quot;
+</span><span class="def"> 
+</span><span class="def"> instance Target TreeFile where
+</span></pre>
+</div></div>
+  </body>
+</html>

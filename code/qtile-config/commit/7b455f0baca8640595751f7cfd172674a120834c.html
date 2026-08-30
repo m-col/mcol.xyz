@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/7b455f0baca8640595751f7cfd172674a120834c.html">7b455f0baca8640595751f7cfd172674a120834c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/0c3406ca5b983a5eb574e467dd33a6ad6c945362.html">0c3406ca5b983a5eb574e467dd33a6ad6c945362</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-10 18:24:51 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-10 18:24:51 +0100
+
+updates
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -40,7 +40,8 @@
+<span class="def">     from libqtile.backend.wayland import InputConfig
+</span><span class="def">     wayland_libinput_config = {
+</span><span class="def">             &quot;type:pointer&quot;: InputConfig(pointer_accel=-0.7),
+</span><span class="sub">-            &quot;1267:12377:ELAN1300:00 04F3:3059 Touchpad&quot;: InputConfig(drag=True, tap=True, pointer_accel=0.4),
+</span><span class="add">+            &quot;1267:12377:ELAN1300:00 04F3:3059 Touchpad&quot;: InputConfig(drag=True,
+</span><span class="add">+                tap=True, swt=False, pointer_accel=0.4),
+</span><span class="def">     }
+</span><span class="def"> except ImportError:
+</span><span class="def">     wayland_libinput_config = None
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -129,9 +129,6 @@
+<span class="def">     ([mod, alt],        &apos;l&apos;,        lazy.layout.grow_right(),           &quot;Grow right&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;r&apos;,        lazy.reload_config(),               &quot;Reload the config&quot;),
+</span><span class="def">     ([mod, &apos;control&apos;],  &apos;r&apos;,        lazy.restart(),                     &quot;Restart Qtile&quot;),
+</span><span class="sub">-    ([mod],             &apos;Tab&apos;,      lazy.next_layout(),                 &quot;Next layout&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;],  &apos;h&apos;,        lazy.window.toggle_minimize(),      &quot;Minimise window&quot;),
+</span><span class="sub">-    ([mod],             &apos;s&apos;,        lazy.window.static(),               &quot;Make window static&quot;),
+</span><span class="def">     ([mod, &apos;control&apos;],  &apos;Escape&apos;,   lazy.shutdown(),                    &quot;Shutdown Qtile&quot;),
+</span><span class="def"> 
+</span><span class="def">     # Volume control - MyVolume widget is defined further down
+</span>@@ -184,14 +181,14 @@
+<span class="def"> layouts = [
+</span><span class="def">     layout.Columns(
+</span><span class="def">         insert_position=1,
+</span><span class="sub">-        border_width=bw,
+</span><span class="add">+        border_width=12,
+</span><span class="def">         border_focus=border_focus,
+</span><span class="def">         border_normal=border_normal,
+</span><span class="sub">-        border_on_single=False,
+</span><span class="add">+        border_on_single=True,
+</span><span class="def">         wrap_focus_columns=False,
+</span><span class="def">         wrap_focus_rows=False,
+</span><span class="sub">-        margin=inner_gaps,
+</span><span class="sub">-        margin_on_single=0,
+</span><span class="add">+        margin=0,
+</span><span class="add">+        #margin_on_single=0,
+</span><span class="def">         corner_radius=cw,
+</span><span class="def">     ),
+</span><span class="def"> ]
+</span>@@ -201,6 +198,8 @@
+<span class="def">     border_focus=border_focus,
+</span><span class="def">     border_normal=border_normal,
+</span><span class="def">     corner_radius=cw,
+</span><span class="add">+    #fullscreen_border_width=12,
+</span><span class="add">+    fullscreen_border_width=0,
+</span><span class="def">     float_rules=[
+</span><span class="def">         Match(title=&apos;Open File&apos;),
+</span><span class="def">         Match(title=&apos;Unlock Database - KeePassXC&apos;),  # Wayland
+</span>@@ -349,10 +348,7 @@
+<span class="def">     update_interval=60,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="sub">-if IS_WAYLAND:
+</span><span class="sub">-    systray = widget.TextBox(&apos;&apos;)
+</span><span class="sub">-else:
+</span><span class="sub">-    systray = widget.Systray(padding=20)
+</span><span class="add">+systray = widget.StatusNotifier(padding=20)
+</span><span class="def"> 
+</span><span class="def"> wlan = widget.Wlan(
+</span><span class="def">     format=&apos;&apos;,
+</span></pre>
+</div></div>
+  </body>
+</html>

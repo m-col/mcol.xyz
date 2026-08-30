@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - add -x and -y opts to loop only 1 axis</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/1141cb917b36c2e8ab71b166b86936a79bddc5d4.html">1141cb917b36c2e8ab71b166b86936a79bddc5d4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/011a6da5cd9794307b165b7021e06e5a18f7efd0.html">011a6da5cd9794307b165b7021e06e5a18f7efd0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-09-03 19:43:53 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-09-03 19:43:53 +0100
+
+add -x and -y opts to loop only 1 axis
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,6 +38,7 @@
+<span class="def"> 
+</span><span class="def"> int debug = 0;
+</span><span class="def"> int randr_base = 0;
+</span><span class="add">+uint32_t axis = 0; /* 0: both, 1: x, 2: y, 3: both specified */
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void set_window_type() {
+</span>@@ -98,7 +99,11 @@
+<span class="def"> 
+</span><span class="def"> void set_window_shape(uint16_t width, uint16_t height)
+</span><span class="def"> {
+</span><span class="sub">-
+</span><span class="add">+    if (axis == 1) {
+</span><span class="add">+	height += 2;
+</span><span class="add">+    } else if (axis == 2) {
+</span><span class="add">+	width += 2;
+</span><span class="add">+    };
+</span><span class="def">     uint32_t dimensions[2] = {width, height};
+</span><span class="def">     xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, dimensions);
+</span><span class="def"> 
+</span>@@ -156,16 +161,27 @@
+<span class="def"> 	values = value_list_debug;
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="add">+    int16_t x, y = 0;
+</span><span class="add">+    uint16_t width = screen-&gt;width_in_pixels;
+</span><span class="add">+    uint16_t height = screen-&gt;height_in_pixels;
+</span><span class="add">+    if (axis == 1) {
+</span><span class="add">+	y = -1;
+</span><span class="add">+	height += 2;
+</span><span class="add">+    } else if (axis == 2) {
+</span><span class="add">+	x = -1;
+</span><span class="add">+	width += 2;
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="def">     wid = xcb_generate_id(conn);
+</span><span class="def">     xcb_create_window(
+</span><span class="def"> 	conn,
+</span><span class="def"> 	XCB_COPY_FROM_PARENT,
+</span><span class="def"> 	wid,
+</span><span class="def"> 	screen-&gt;root,
+</span><span class="sub">-	0,
+</span><span class="sub">-	0,
+</span><span class="sub">-	screen-&gt;width_in_pixels,
+</span><span class="sub">-	screen-&gt;height_in_pixels,
+</span><span class="add">+	x,
+</span><span class="add">+	y,
+</span><span class="add">+	width,
+</span><span class="add">+	height,
+</span><span class="def"> 	0,
+</span><span class="def"> 	class,
+</span><span class="def"> 	XCB_COPY_FROM_PARENT,
+</span>@@ -260,6 +276,8 @@
+<span class="def"> 	PROGNAME &quot; [-h|-f|-d]\n&quot;
+</span><span class="def"> 	&quot;\n&quot;
+</span><span class="def"> 	&quot;    -h    print help\n&quot;
+</span><span class="add">+	&quot;    -x    xoop only the x axis\n&quot;
+</span><span class="add">+	&quot;    -y    xoop only the y axis\n&quot;
+</span><span class="def"> 	&quot;    -f    fork\n&quot;
+</span><span class="def"> 	&quot;    -d    print debug information\n&quot;
+</span><span class="def">     );
+</span>@@ -272,7 +290,7 @@
+<span class="def">     int to_fork = 0;
+</span><span class="def">     int pid;
+</span><span class="def"> 
+</span><span class="sub">-    while ((opt = getopt(argc, argv, &quot;hfd&quot;)) != -1) {
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;hfdxy&quot;)) != -1) {
+</span><span class="def">         switch (opt) {
+</span><span class="def"> 	    case &apos;h&apos;:
+</span><span class="def"> 		print_help();
+</span>@@ -283,9 +301,20 @@
+<span class="def"> 	    case &apos;d&apos;:
+</span><span class="def"> 		debug = 1;
+</span><span class="def"> 		break;
+</span><span class="add">+	    case &apos;x&apos;:
+</span><span class="add">+		axis += 1;
+</span><span class="add">+		break;
+</span><span class="add">+	    case &apos;y&apos;:
+</span><span class="add">+		axis += 2;
+</span><span class="add">+		break;
+</span><span class="def">         }
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    if (axis == 3) {
+</span><span class="add">+	printf(&quot;You specified -x and -y but can only specify one.\n&quot;);
+</span><span class="add">+	exit(EXIT_FAILURE);
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="def">     conn = xcb_connect(NULL, NULL);
+</span><span class="def">     if (xcb_connection_has_error(conn))
+</span><span class="def"> 	exit(EXIT_FAILURE);
+</span></pre>
+</div></div>
+  </body>
+</html>

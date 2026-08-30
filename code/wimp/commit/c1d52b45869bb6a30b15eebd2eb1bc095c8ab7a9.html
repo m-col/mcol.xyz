@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Reset original window dimensions when unsetting fullscreen</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/c1d52b45869bb6a30b15eebd2eb1bc095c8ab7a9.html">c1d52b45869bb6a30b15eebd2eb1bc095c8ab7a9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/24863ef9f0533fcf3247d2ef342bce80490885a7.html">24863ef9f0533fcf3247d2ef342bce80490885a7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-20 00:23:45 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-20 00:23:45 +0000
+
+Reset original window dimensions when unsetting fullscreen
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,10 +44,14 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void fullscreen_xdg_surface(struct server *server, struct wlr_xdg_surface *xdg_surface) {
+</span><span class="sub">-
+</span><span class="add">+    struct wlr_box geo;
+</span><span class="def">     struct wlr_xdg_surface *prev_surface = server-&gt;current_desk-&gt;fullscreened;
+</span><span class="add">+
+</span><span class="def">     if (prev_surface) {
+</span><span class="def"> 	wlr_xdg_toplevel_set_fullscreen(prev_surface, false);
+</span><span class="add">+	geo = server-&gt;current_desk-&gt;fullscreened_saved_geo;
+</span><span class="add">+	xdg_surface-&gt;toplevel-&gt;server_pending.width = geo.width;
+</span><span class="add">+	xdg_surface-&gt;toplevel-&gt;server_pending.height = geo.height;
+</span><span class="def"> 	if (prev_surface == xdg_surface) {
+</span><span class="def"> 	    server-&gt;current_desk-&gt;fullscreened = NULL;
+</span><span class="def"> 	    return;
+</span>@@ -56,6 +60,10 @@
+<span class="def"> 
+</span><span class="def">     wlr_xdg_toplevel_set_fullscreen(xdg_surface, true);
+</span><span class="def">     server-&gt;current_desk-&gt;fullscreened = xdg_surface;
+</span><span class="add">+    server-&gt;current_desk-&gt;fullscreened_saved_geo.width = xdg_surface-&gt;geometry.width;
+</span><span class="add">+    server-&gt;current_desk-&gt;fullscreened_saved_geo.height = xdg_surface-&gt;geometry.height;
+</span><span class="add">+    xdg_surface-&gt;toplevel-&gt;server_pending.width = 1000;
+</span><span class="add">+    xdg_surface-&gt;toplevel-&gt;server_pending.height = 1000;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

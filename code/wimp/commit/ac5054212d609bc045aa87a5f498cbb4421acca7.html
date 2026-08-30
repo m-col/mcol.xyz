@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - implement first steps in layer shell protocol</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/ac5054212d609bc045aa87a5f498cbb4421acca7.html">ac5054212d609bc045aa87a5f498cbb4421acca7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/0894e052ab127adb3c3a9a9aa6b415a22aace330.html">0894e052ab127adb3c3a9a9aa6b415a22aace330</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-25 23:39:01 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-25 23:39:01 +0000
+
+implement first steps in layer shell protocol
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -54,6 +54,9 @@
+<span class="def">     struct wl_listener decoration_listener;
+</span><span class="def">     struct wlr_server_decoration_manager *server_decoration_manager;
+</span><span class="def"> 
+</span><span class="add">+    struct wlr_layer_shell_v1 *layer_shell;
+</span><span class="add">+    struct wl_listener layer_shell_surface_listener;
+</span><span class="add">+
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span><span class="def">     struct wl_listener cursor_motion_listener;
+</span>@@ -99,10 +102,20 @@
+<span class="def"> 
+</span><span class="def"> struct output {
+</span><span class="def">     struct wl_list link;
+</span><span class="add">+    struct wl_list layer_views;
+</span><span class="def">     struct wlr_output *wlr_output;
+</span><span class="def">     struct wl_listener frame_listener;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+struct layer_view {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    struct wlr_layer_surface_v1 *surface;
+</span><span class="add">+    struct wl_listener map_listener;
+</span><span class="add">+    struct wl_listener unmap_listener;
+</span><span class="add">+    struct wl_listener destroy_listener;
+</span><span class="add">+    struct output *output;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> struct keyboard {
+</span><span class="def">     struct wl_list link;
+</span><span class="def">     struct wlr_input_device *device;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,5 @@
+<span class="def"> #include &lt;time.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_layer_shell_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_matrix.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> 
+</span>@@ -9,10 +10,12 @@
+<span class="def"> struct render_data {
+</span><span class="def">     struct wlr_output *output;
+</span><span class="def">     struct wlr_renderer *renderer;
+</span><span class="sub">-    struct view *view;
+</span><span class="add">+    struct wlr_surface *bordered;
+</span><span class="def">     struct timespec *when;
+</span><span class="def">     double zoom;
+</span><span class="def">     bool is_focussed;
+</span><span class="add">+    int x;
+</span><span class="add">+    int y;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -20,7 +23,6 @@
+<span class="def">     struct wlr_surface *surface, int sx, int sy, void *data
+</span><span class="def"> ) {
+</span><span class="def">     struct render_data *rdata = data;
+</span><span class="sub">-    struct view *view = rdata-&gt;view;
+</span><span class="def">     struct wlr_output *output = rdata-&gt;output;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_texture *texture = wlr_surface_get_texture(surface);
+</span>@@ -37,13 +39,13 @@
+<span class="def"> 	    break;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="sub">-    x = (x + view-&gt;x + sx) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="sub">-    y = (y + view-&gt;y + sy) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="add">+    x = (x + rdata-&gt;x + sx) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="add">+    y = (y + rdata-&gt;y + sy) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="def">     int width = surface-&gt;current.width * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="def">     int height = surface-&gt;current.height * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="sub">-    int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="def"> 
+</span><span class="sub">-    if (view-&gt;surface-&gt;surface == surface) {
+</span><span class="add">+    if (rdata-&gt;bordered == surface) {
+</span><span class="add">+	int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="def"> 	struct wlr_box borders = {
+</span><span class="def"> 	    .x = x - border_width,
+</span><span class="def"> 	    .y = y - border_width,
+</span>@@ -93,6 +95,17 @@
+<span class="def">     wlr_renderer_begin(renderer, width, height);
+</span><span class="def">     wlr_renderer_clear(renderer, desk-&gt;background);
+</span><span class="def"> 
+</span><span class="add">+    struct render_data rdata = {
+</span><span class="add">+	.output = output-&gt;wlr_output,
+</span><span class="add">+	.renderer = renderer,
+</span><span class="add">+	.bordered = NULL,
+</span><span class="add">+	.when = &amp;now,
+</span><span class="add">+	.zoom = zoom,
+</span><span class="add">+	.is_focussed = false,
+</span><span class="add">+	.x = 0,
+</span><span class="add">+	.y = 0,
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="def">     // paint wallpaper
+</span><span class="def">     struct wallpaper *wallpaper = desk-&gt;wallpaper;
+</span><span class="def">     if (wallpaper != NULL) {
+</span>@@ -108,21 +121,53 @@
+<span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    // paint background and bottom layers
+</span><span class="add">+    struct layer_view *lview;
+</span><span class="add">+    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="add">+	if (lview-&gt;surface-&gt;current.layer == ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND) {
+</span><span class="add">+	    wlr_surface_for_each_surface(
+</span><span class="add">+		lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="add">+	    );
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="add">+	if (lview-&gt;surface-&gt;current.layer == ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM) {
+</span><span class="add">+	    wlr_surface_for_each_surface(
+</span><span class="add">+		lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="add">+	    );
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     // paint clients
+</span><span class="def">     struct view *view;
+</span><span class="def">     struct view *focussed = wl_container_of(wimp.current_desk-&gt;views.next, focussed, link);
+</span><span class="def">     wl_list_for_each_reverse(view, &amp;desk-&gt;views, link) {
+</span><span class="sub">-	struct render_data rdata = {
+</span><span class="sub">-	    .output = output-&gt;wlr_output,
+</span><span class="sub">-	    .view = view,
+</span><span class="sub">-	    .renderer = renderer,
+</span><span class="sub">-	    .when = &amp;now,
+</span><span class="sub">-	    .zoom = zoom,
+</span><span class="sub">-	    .is_focussed = (view == focussed),
+</span><span class="sub">-	};
+</span><span class="sub">-	wlr_xdg_surface_for_each_surface(
+</span><span class="sub">-	    view-&gt;surface, render_surface, &amp;rdata
+</span><span class="sub">-	);
+</span><span class="add">+	rdata.x = view-&gt;x;
+</span><span class="add">+	rdata.y = view-&gt;y;
+</span><span class="add">+	rdata.is_focussed = (view == focussed);
+</span><span class="add">+	rdata.bordered = view-&gt;surface-&gt;surface;
+</span><span class="add">+	wlr_xdg_surface_for_each_surface(view-&gt;surface, render_surface, &amp;rdata);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    rdata.bordered = NULL;
+</span><span class="add">+    rdata.is_focussed = false;
+</span><span class="add">+    rdata.x = 0;
+</span><span class="add">+    rdata.y = 0;
+</span><span class="add">+
+</span><span class="add">+    // paint top and overlay layers
+</span><span class="add">+    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="add">+	if (lview-&gt;surface-&gt;current.layer == ZWLR_LAYER_SHELL_V1_LAYER_TOP) {
+</span><span class="add">+	    wlr_surface_for_each_surface(
+</span><span class="add">+		lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="add">+	    );
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="add">+	if (lview-&gt;surface-&gt;current.layer == ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY) {
+</span><span class="add">+	    wlr_surface_for_each_surface(
+</span><span class="add">+		lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="add">+	    );
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // paint mark indicator
+</span>@@ -155,10 +200,14 @@
+<span class="def"> 
+</span><span class="def">     struct output *output = calloc(1, sizeof(struct output));
+</span><span class="def">     output-&gt;wlr_output = wlr_output;
+</span><span class="add">+    wlr_output-&gt;data = output;
+</span><span class="add">+
+</span><span class="def">     output-&gt;frame_listener.notify = on_frame;
+</span><span class="def">     wl_signal_add(&amp;wlr_output-&gt;events.frame, &amp;output-&gt;frame_listener);
+</span><span class="def">     wl_list_insert(&amp;wimp.outputs, &amp;output-&gt;link);
+</span><span class="def">     wlr_output_layout_add_auto(wimp.output_layout, wlr_output);
+</span><span class="add">+
+</span><span class="add">+    wl_list_init(&amp;output-&gt;layer_views);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,6 +16,7 @@
+<span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;main.h&quot;
+</span><span class="def"> #include &quot;keyboard.h&quot;
+</span><span class="add">+#include &quot;layer_shell.h&quot;
+</span><span class="def"> #include &quot;log.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span>@@ -74,7 +75,12 @@
+<span class="def">     };
+</span><span class="def"> 
+</span><span class="def">     struct output *output, *toutput;
+</span><span class="add">+    struct layer_view *lview, *tlview;
+</span><span class="def">     wl_list_for_each_safe(output, toutput, &amp;wimp.outputs, link) {
+</span><span class="add">+	wl_list_for_each_safe(lview, tlview, &amp;output-&gt;layer_views, link) {
+</span><span class="add">+	    wl_list_remove(&amp;lview-&gt;link);
+</span><span class="add">+	    free(lview);
+</span><span class="add">+	};
+</span><span class="def"> 	wl_list_remove(&amp;output-&gt;link);
+</span><span class="def"> 	free(output);
+</span><span class="def">     };
+</span>@@ -147,6 +153,7 @@
+<span class="def">     set_up_cursor();
+</span><span class="def">     set_up_keyboard();
+</span><span class="def">     set_up_decorations();
+</span><span class="add">+    set_up_layer_shell();
+</span><span class="def"> 
+</span><span class="def">     // start
+</span><span class="def">     const char *socket = wl_display_add_socket_auto(wimp.display);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/layer_shell.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,8 @@
+<span class="add">+#ifndef DESKWM_LAYER_SHELL_H
+</span><span class="add">+#define DESKWM_LAYER_SHELL_H
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+void set_up_layer_shell();
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/layer_shell.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,82 @@
+<span class="add">+#include &lt;wlr/types/wlr_layer_shell_v1.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;layer_shell.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void layer(struct output *output) {
+</span><span class="add">+    struct layer_view *lview;
+</span><span class="add">+    struct wlr_layer_surface_v1 *surface;
+</span><span class="add">+    struct wlr_layer_surface_v1_state *state;
+</span><span class="add">+
+</span><span class="add">+    if (wl_list_empty(&amp;output-&gt;layer_views)) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="add">+	surface = lview-&gt;surface;
+</span><span class="add">+	state = &amp;surface-&gt;current;
+</span><span class="add">+	wlr_layer_surface_v1_configure(surface, state-&gt;desired_width, state-&gt;desired_height);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_destroy(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct layer_view *lview = wl_container_of(listener, lview, destroy_listener);
+</span><span class="add">+    struct output *output = lview-&gt;output;
+</span><span class="add">+
+</span><span class="add">+    wl_list_remove(&amp;lview-&gt;destroy_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;lview-&gt;map_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;lview-&gt;unmap_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;lview-&gt;link);
+</span><span class="add">+    free(lview);
+</span><span class="add">+    layer(output);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct layer_view *lview = wl_container_of(listener, lview, unmap_listener);
+</span><span class="add">+    lview-&gt;surface-&gt;mapped = false;
+</span><span class="add">+    layer(lview-&gt;output);
+</span><span class="add">+    wlr_surface_send_enter(lview-&gt;surface-&gt;surface, lview-&gt;surface-&gt;output);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_map(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct layer_view *lview = wl_container_of(listener, lview, map_listener);
+</span><span class="add">+    lview-&gt;surface-&gt;mapped = true;
+</span><span class="add">+    layer(lview-&gt;output);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_new_surface(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_layer_surface_v1 *surface = data;
+</span><span class="add">+
+</span><span class="add">+    struct layer_view *lview = calloc(1, sizeof(struct view));
+</span><span class="add">+    lview-&gt;surface = surface;
+</span><span class="add">+    surface-&gt;data = lview;
+</span><span class="add">+
+</span><span class="add">+    lview-&gt;map_listener.notify = on_map;
+</span><span class="add">+    lview-&gt;unmap_listener.notify = on_unmap;
+</span><span class="add">+    lview-&gt;destroy_listener.notify = on_destroy;
+</span><span class="add">+    wl_signal_add(&amp;surface-&gt;events.map, &amp;lview-&gt;map_listener);
+</span><span class="add">+    wl_signal_add(&amp;surface-&gt;events.unmap, &amp;lview-&gt;unmap_listener);
+</span><span class="add">+    wl_signal_add(&amp;surface-&gt;events.destroy, &amp;lview-&gt;destroy_listener);
+</span><span class="add">+    
+</span><span class="add">+    if (!surface-&gt;output) {
+</span><span class="add">+	surface-&gt;output = wlr_output_layout_output_at(
+</span><span class="add">+	    wimp.output_layout, wimp.cursor-&gt;x, wimp.cursor-&gt;y
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="add">+    struct output *output = surface-&gt;output-&gt;data;
+</span><span class="add">+    lview-&gt;output = output;
+</span><span class="add">+    wl_list_insert(&amp;output-&gt;layer_views, &amp;lview-&gt;link);
+</span><span class="add">+
+</span><span class="add">+    layer(lview-&gt;output);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_up_layer_shell() {
+</span><span class="add">+    wimp.layer_shell = wlr_layer_shell_v1_create(wimp.display);
+</span><span class="add">+    wimp.layer_shell_surface_listener.notify = on_new_surface;
+</span><span class="add">+    wl_signal_add(&amp;wimp.layer_shell-&gt;events.new_surface, &amp;wimp.layer_shell_surface_listener);
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>protocols/wlr-layer-shell-unstable-v1.xml</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,311 @@
+<span class="add">+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+</span><span class="add">+&lt;protocol name=&quot;wlr_layer_shell_unstable_v1&quot;&gt;
+</span><span class="add">+  &lt;copyright&gt;
+</span><span class="add">+    Copyright © 2017 Drew DeVault
+</span><span class="add">+
+</span><span class="add">+    Permission to use, copy, modify, distribute, and sell this
+</span><span class="add">+    software and its documentation for any purpose is hereby granted
+</span><span class="add">+    without fee, provided that the above copyright notice appear in
+</span><span class="add">+    all copies and that both that copyright notice and this permission
+</span><span class="add">+    notice appear in supporting documentation, and that the name of
+</span><span class="add">+    the copyright holders not be used in advertising or publicity
+</span><span class="add">+    pertaining to distribution of the software without specific,
+</span><span class="add">+    written prior permission.  The copyright holders make no
+</span><span class="add">+    representations about the suitability of this software for any
+</span><span class="add">+    purpose.  It is provided &quot;as is&quot; without express or implied
+</span><span class="add">+    warranty.
+</span><span class="add">+
+</span><span class="add">+    THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS
+</span><span class="add">+    SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+</span><span class="add">+    FITNESS, IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY
+</span><span class="add">+    SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+</span><span class="add">+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+</span><span class="add">+    AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+</span><span class="add">+    ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+</span><span class="add">+    THIS SOFTWARE.
+</span><span class="add">+  &lt;/copyright&gt;
+</span><span class="add">+
+</span><span class="add">+  &lt;interface name=&quot;zwlr_layer_shell_v1&quot; version=&quot;3&quot;&gt;
+</span><span class="add">+    &lt;description summary=&quot;create surfaces that are layers of the desktop&quot;&gt;
+</span><span class="add">+      Clients can use this interface to assign the surface_layer role to
+</span><span class="add">+      wl_surfaces. Such surfaces are assigned to a &quot;layer&quot; of the output and
+</span><span class="add">+      rendered with a defined z-depth respective to each other. They may also be
+</span><span class="add">+      anchored to the edges and corners of a screen and specify input handling
+</span><span class="add">+      semantics. This interface should be suitable for the implementation of
+</span><span class="add">+      many desktop shell components, and a broad number of other applications
+</span><span class="add">+      that interact with the desktop.
+</span><span class="add">+    &lt;/description&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;get_layer_surface&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;create a layer_surface from a surface&quot;&gt;
+</span><span class="add">+        Create a layer surface for an existing surface. This assigns the role of
+</span><span class="add">+        layer_surface, or raises a protocol error if another role is already
+</span><span class="add">+        assigned.
+</span><span class="add">+
+</span><span class="add">+        Creating a layer surface from a wl_surface which has a buffer attached
+</span><span class="add">+        or committed is a client error, and any attempts by a client to attach
+</span><span class="add">+        or manipulate a buffer prior to the first layer_surface.configure call
+</span><span class="add">+        must also be treated as errors.
+</span><span class="add">+
+</span><span class="add">+        You may pass NULL for output to allow the compositor to decide which
+</span><span class="add">+        output to use. Generally this will be the one that the user most
+</span><span class="add">+        recently interacted with.
+</span><span class="add">+
+</span><span class="add">+        Clients can specify a namespace that defines the purpose of the layer
+</span><span class="add">+        surface.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;id&quot; type=&quot;new_id&quot; interface=&quot;zwlr_layer_surface_v1&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;surface&quot; type=&quot;object&quot; interface=&quot;wl_surface&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;output&quot; type=&quot;object&quot; interface=&quot;wl_output&quot; allow-null=&quot;true&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;layer&quot; type=&quot;uint&quot; enum=&quot;layer&quot; summary=&quot;layer to add this surface to&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;namespace&quot; type=&quot;string&quot; summary=&quot;namespace for the layer surface&quot;/&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;enum name=&quot;error&quot;&gt;
+</span><span class="add">+      &lt;entry name=&quot;role&quot; value=&quot;0&quot; summary=&quot;wl_surface has another role&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;invalid_layer&quot; value=&quot;1&quot; summary=&quot;layer value is invalid&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;already_constructed&quot; value=&quot;2&quot; summary=&quot;wl_surface has a buffer attached or committed&quot;/&gt;
+</span><span class="add">+    &lt;/enum&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;enum name=&quot;layer&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;available layers for surfaces&quot;&gt;
+</span><span class="add">+        These values indicate which layers a surface can be rendered in. They
+</span><span class="add">+        are ordered by z depth, bottom-most first. Traditional shell surfaces
+</span><span class="add">+        will typically be rendered between the bottom and top layers.
+</span><span class="add">+        Fullscreen shell surfaces are typically rendered at the top layer.
+</span><span class="add">+        Multiple surfaces can share a single layer, and ordering within a
+</span><span class="add">+        single layer is undefined.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+
+</span><span class="add">+      &lt;entry name=&quot;background&quot; value=&quot;0&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;bottom&quot; value=&quot;1&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;top&quot; value=&quot;2&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;overlay&quot; value=&quot;3&quot;/&gt;
+</span><span class="add">+    &lt;/enum&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;!-- Version 3 additions --&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;destroy&quot; type=&quot;destructor&quot; since=&quot;3&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;destroy the layer_shell object&quot;&gt;
+</span><span class="add">+        This request indicates that the client will not use the layer_shell
+</span><span class="add">+        object any more. Objects that have been created through this instance
+</span><span class="add">+        are not affected.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+  &lt;/interface&gt;
+</span><span class="add">+
+</span><span class="add">+  &lt;interface name=&quot;zwlr_layer_surface_v1&quot; version=&quot;3&quot;&gt;
+</span><span class="add">+    &lt;description summary=&quot;layer metadata interface&quot;&gt;
+</span><span class="add">+      An interface that may be implemented by a wl_surface, for surfaces that
+</span><span class="add">+      are designed to be rendered as a layer of a stacked desktop-like
+</span><span class="add">+      environment.
+</span><span class="add">+
+</span><span class="add">+      Layer surface state (layer, size, anchor, exclusive zone,
+</span><span class="add">+      margin, interactivity) is double-buffered, and will be applied at the
+</span><span class="add">+      time wl_surface.commit of the corresponding wl_surface is called.
+</span><span class="add">+    &lt;/description&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;set_size&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;sets the size of the surface&quot;&gt;
+</span><span class="add">+        Sets the size of the surface in surface-local coordinates. The
+</span><span class="add">+        compositor will display the surface centered with respect to its
+</span><span class="add">+        anchors.
+</span><span class="add">+
+</span><span class="add">+        If you pass 0 for either value, the compositor will assign it and
+</span><span class="add">+        inform you of the assignment in the configure event. You must set your
+</span><span class="add">+        anchor to opposite edges in the dimensions you omit; not doing so is a
+</span><span class="add">+        protocol error. Both values are 0 by default.
+</span><span class="add">+
+</span><span class="add">+        Size is double-buffered, see wl_surface.commit.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;width&quot; type=&quot;uint&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;height&quot; type=&quot;uint&quot;/&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;set_anchor&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;configures the anchor point of the surface&quot;&gt;
+</span><span class="add">+        Requests that the compositor anchor the surface to the specified edges
+</span><span class="add">+        and corners. If two orthogonal edges are specified (e.g. &apos;top&apos; and
+</span><span class="add">+        &apos;left&apos;), then the anchor point will be the intersection of the edges
+</span><span class="add">+        (e.g. the top left corner of the output); otherwise the anchor point
+</span><span class="add">+        will be centered on that edge, or in the center if none is specified.
+</span><span class="add">+
+</span><span class="add">+        Anchor is double-buffered, see wl_surface.commit.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;anchor&quot; type=&quot;uint&quot; enum=&quot;anchor&quot;/&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;set_exclusive_zone&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;configures the exclusive geometry of this surface&quot;&gt;
+</span><span class="add">+        Requests that the compositor avoids occluding an area with other
+</span><span class="add">+        surfaces. The compositor&apos;s use of this information is
+</span><span class="add">+        implementation-dependent - do not assume that this region will not
+</span><span class="add">+        actually be occluded.
+</span><span class="add">+
+</span><span class="add">+        A positive value is only meaningful if the surface is anchored to one
+</span><span class="add">+        edge or an edge and both perpendicular edges. If the surface is not
+</span><span class="add">+        anchored, anchored to only two perpendicular edges (a corner), anchored
+</span><span class="add">+        to only two parallel edges or anchored to all edges, a positive value
+</span><span class="add">+        will be treated the same as zero.
+</span><span class="add">+
+</span><span class="add">+        A positive zone is the distance from the edge in surface-local
+</span><span class="add">+        coordinates to consider exclusive.
+</span><span class="add">+
+</span><span class="add">+        Surfaces that do not wish to have an exclusive zone may instead specify
+</span><span class="add">+        how they should interact with surfaces that do. If set to zero, the
+</span><span class="add">+        surface indicates that it would like to be moved to avoid occluding
+</span><span class="add">+        surfaces with a positive exclusive zone. If set to -1, the surface
+</span><span class="add">+        indicates that it would not like to be moved to accommodate for other
+</span><span class="add">+        surfaces, and the compositor should extend it all the way to the edges
+</span><span class="add">+        it is anchored to.
+</span><span class="add">+
+</span><span class="add">+        For example, a panel might set its exclusive zone to 10, so that
+</span><span class="add">+        maximized shell surfaces are not shown on top of it. A notification
+</span><span class="add">+        might set its exclusive zone to 0, so that it is moved to avoid
+</span><span class="add">+        occluding the panel, but shell surfaces are shown underneath it. A
+</span><span class="add">+        wallpaper or lock screen might set their exclusive zone to -1, so that
+</span><span class="add">+        they stretch below or over the panel.
+</span><span class="add">+
+</span><span class="add">+        The default value is 0.
+</span><span class="add">+
+</span><span class="add">+        Exclusive zone is double-buffered, see wl_surface.commit.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;zone&quot; type=&quot;int&quot;/&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;set_margin&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;sets a margin from the anchor point&quot;&gt;
+</span><span class="add">+        Requests that the surface be placed some distance away from the anchor
+</span><span class="add">+        point on the output, in surface-local coordinates. Setting this value
+</span><span class="add">+        for edges you are not anchored to has no effect.
+</span><span class="add">+
+</span><span class="add">+        The exclusive zone includes the margin.
+</span><span class="add">+
+</span><span class="add">+        Margin is double-buffered, see wl_surface.commit.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;top&quot; type=&quot;int&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;right&quot; type=&quot;int&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;bottom&quot; type=&quot;int&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;left&quot; type=&quot;int&quot;/&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;set_keyboard_interactivity&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;requests keyboard events&quot;&gt;
+</span><span class="add">+        Set to 1 to request that the seat send keyboard events to this layer
+</span><span class="add">+        surface. For layers below the shell surface layer, the seat will use
+</span><span class="add">+        normal focus semantics. For layers above the shell surface layers, the
+</span><span class="add">+        seat will always give exclusive keyboard focus to the top-most layer
+</span><span class="add">+        which has keyboard interactivity set to true.
+</span><span class="add">+
+</span><span class="add">+        Layer surfaces receive pointer, touch, and tablet events normally. If
+</span><span class="add">+        you do not want to receive them, set the input region on your surface
+</span><span class="add">+        to an empty region.
+</span><span class="add">+
+</span><span class="add">+        Events is double-buffered, see wl_surface.commit.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;keyboard_interactivity&quot; type=&quot;uint&quot;/&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;get_popup&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;assign this layer_surface as an xdg_popup parent&quot;&gt;
+</span><span class="add">+        This assigns an xdg_popup&apos;s parent to this layer_surface.  This popup
+</span><span class="add">+        should have been created via xdg_surface::get_popup with the parent set
+</span><span class="add">+        to NULL, and this request must be invoked before committing the popup&apos;s
+</span><span class="add">+        initial state.
+</span><span class="add">+
+</span><span class="add">+        See the documentation of xdg_popup for more details about what an
+</span><span class="add">+        xdg_popup is and how it is used.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;popup&quot; type=&quot;object&quot; interface=&quot;xdg_popup&quot;/&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;ack_configure&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;ack a configure event&quot;&gt;
+</span><span class="add">+        When a configure event is received, if a client commits the
+</span><span class="add">+        surface in response to the configure event, then the client
+</span><span class="add">+        must make an ack_configure request sometime before the commit
+</span><span class="add">+        request, passing along the serial of the configure event.
+</span><span class="add">+
+</span><span class="add">+        If the client receives multiple configure events before it
+</span><span class="add">+        can respond to one, it only has to ack the last configure event.
+</span><span class="add">+
+</span><span class="add">+        A client is not required to commit immediately after sending
+</span><span class="add">+        an ack_configure request - it may even ack_configure several times
+</span><span class="add">+        before its next surface commit.
+</span><span class="add">+
+</span><span class="add">+        A client may send multiple ack_configure requests before committing, but
+</span><span class="add">+        only the last request sent before a commit indicates which configure
+</span><span class="add">+        event the client really is responding to.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;serial&quot; type=&quot;uint&quot; summary=&quot;the serial from the configure event&quot;/&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;destroy&quot; type=&quot;destructor&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;destroy the layer_surface&quot;&gt;
+</span><span class="add">+        This request destroys the layer surface.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;event name=&quot;configure&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;suggest a surface change&quot;&gt;
+</span><span class="add">+        The configure event asks the client to resize its surface.
+</span><span class="add">+
+</span><span class="add">+        Clients should arrange their surface for the new states, and then send
+</span><span class="add">+        an ack_configure request with the serial sent in this configure event at
+</span><span class="add">+        some point before committing the new surface.
+</span><span class="add">+
+</span><span class="add">+        The client is free to dismiss all but the last configure event it
+</span><span class="add">+        received.
+</span><span class="add">+
+</span><span class="add">+        The width and height arguments specify the size of the window in
+</span><span class="add">+        surface-local coordinates.
+</span><span class="add">+
+</span><span class="add">+        The size is a hint, in the sense that the client is free to ignore it if
+</span><span class="add">+        it doesn&apos;t resize, pick a smaller size (to satisfy aspect ratio or
+</span><span class="add">+        resize in steps of NxM pixels). If the client picks a smaller size and
+</span><span class="add">+        is anchored to two opposite anchors (e.g. &apos;top&apos; and &apos;bottom&apos;), the
+</span><span class="add">+        surface will be centered on this axis.
+</span><span class="add">+
+</span><span class="add">+        If the width or height arguments are zero, it means the client should
+</span><span class="add">+        decide its own window dimension.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;serial&quot; type=&quot;uint&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;width&quot; type=&quot;uint&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;height&quot; type=&quot;uint&quot;/&gt;
+</span><span class="add">+    &lt;/event&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;event name=&quot;closed&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;surface should be closed&quot;&gt;
+</span><span class="add">+        The closed event is sent by the compositor when the surface will no
+</span><span class="add">+        longer be shown. The output may have been destroyed or the user may
+</span><span class="add">+        have asked for it to be removed. Further changes to the surface will be
+</span><span class="add">+        ignored. The client should destroy the resource after receiving this
+</span><span class="add">+        event, and create a new surface if they so choose.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+    &lt;/event&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;enum name=&quot;error&quot;&gt;
+</span><span class="add">+      &lt;entry name=&quot;invalid_surface_state&quot; value=&quot;0&quot; summary=&quot;provided surface state is invalid&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;invalid_size&quot; value=&quot;1&quot; summary=&quot;size is invalid&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;invalid_anchor&quot; value=&quot;2&quot; summary=&quot;anchor bitfield is invalid&quot;/&gt;
+</span><span class="add">+    &lt;/enum&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;enum name=&quot;anchor&quot; bitfield=&quot;true&quot;&gt;
+</span><span class="add">+      &lt;entry name=&quot;top&quot; value=&quot;1&quot; summary=&quot;the top edge of the anchor rectangle&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;bottom&quot; value=&quot;2&quot; summary=&quot;the bottom edge of the anchor rectangle&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;left&quot; value=&quot;4&quot; summary=&quot;the left edge of the anchor rectangle&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;right&quot; value=&quot;8&quot; summary=&quot;the right edge of the anchor rectangle&quot;/&gt;
+</span><span class="add">+    &lt;/enum&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;!-- Version 2 additions --&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;request name=&quot;set_layer&quot; since=&quot;2&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;change the layer of the surface&quot;&gt;
+</span><span class="add">+        Change the layer that the surface is rendered on.
+</span><span class="add">+
+</span><span class="add">+        Layer is double-buffered, see wl_surface.commit.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+      &lt;arg name=&quot;layer&quot; type=&quot;uint&quot; enum=&quot;zwlr_layer_shell_v1.layer&quot; summary=&quot;layer to move this surface to&quot;/&gt;
+</span><span class="add">+    &lt;/request&gt;
+</span><span class="add">+  &lt;/interface&gt;
+</span><span class="add">+&lt;/protocol&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,7 +10,7 @@
+<span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span><span class="def"> 
+</span><span class="sub">-${OUT}: xdg-shell-protocol.h xdg-shell-protocol.c ${OBJECTS}
+</span><span class="add">+${OUT}: xdg-shell-protocol wlr-layer-shell-unstable-v1-protocol ${OBJECTS}
+</span><span class="def"> 	@$(CC) -o ${OUT} $(OBJECTS) $(LDFLAGS)
+</span><span class="def"> 
+</span><span class="def"> %.o: %.c %.h
+</span>@@ -19,11 +19,13 @@
+<span class="def"> WAYLAND_PROTOCOLS=$(shell pkg-config --variable=pkgdatadir wayland-protocols)
+</span><span class="def"> WAYLAND_SCANNER=$(shell pkg-config --variable=wayland_scanner wayland-scanner)
+</span><span class="def"> 
+</span><span class="sub">-xdg-shell-protocol.h:
+</span><span class="sub">-	@$(WAYLAND_SCANNER) server-header $(WAYLAND_PROTOCOLS)/stable/xdg-shell/xdg-shell.xml $@
+</span><span class="add">+xdg-shell-protocol:
+</span><span class="add">+	@$(WAYLAND_SCANNER) server-header $(WAYLAND_PROTOCOLS)/stable/xdg-shell/xdg-shell.xml $@.h
+</span><span class="add">+	@$(WAYLAND_SCANNER) private-code $(WAYLAND_PROTOCOLS)/stable/xdg-shell/xdg-shell.xml $@.c
+</span><span class="def"> 
+</span><span class="sub">-xdg-shell-protocol.c: xdg-shell-protocol.h
+</span><span class="sub">-	@$(WAYLAND_SCANNER) private-code $(WAYLAND_PROTOCOLS)/stable/xdg-shell/xdg-shell.xml $@
+</span><span class="add">+wlr-layer-shell-unstable-v1-protocol:
+</span><span class="add">+	@$(WAYLAND_SCANNER) server-header protocols/wlr-layer-shell-unstable-v1.xml $@.h
+</span><span class="add">+	@$(WAYLAND_SCANNER) private-code protocols/wlr-layer-shell-unstable-v1.xml $@.c
+</span><span class="def"> 
+</span><span class="def"> clean:
+</span><span class="def"> 	rm -f ${OUT} xdg-shell-protocol.h xdg-shell-protocol.c ${OBJECTS}
+</span></pre>
+</div></div>
+  </body>
+</html>

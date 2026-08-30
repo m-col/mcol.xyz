@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - content/posts/foss/quick_n_dirty_permissions_container.rst</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- content/posts/foss/quick_n_dirty_permissions_container.rst</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> a quick and dirty permissions container
+<a href="#l2" class="line" id="l2">      2</a> =======================================
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> :date: 2020-03-29
+<a href="#l6" class="line" id="l6">      6</a> :summary: A quick and dirty permissions container for a single program
+<a href="#l7" class="line" id="l7">      7</a> 
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> Although the vast majority of the software installed on my Linux daily driver
+<a href="#l10" class="line" id="l10">     10</a> is fully free and open source, and in general is trustworthy, over time I&apos;ve
+<a href="#l11" class="line" id="l11">     11</a> had to make use of some programs that are closed source and created by entities
+<a href="#l12" class="line" id="l12">     12</a> who I wouldn&apos;t want to trust on my system.
+<a href="#l13" class="line" id="l13">     13</a> 
+<a href="#l14" class="line" id="l14">     14</a> The quick and easy (lazy) solution I&apos;ve opted for is to give these programs
+<a href="#l15" class="line" id="l15">     15</a> their own user and home directory and access to my normal user&apos;s X session.
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a> For example, we can create a user and home directory for steam (as root):
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> .. code-block:: sh
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a>    useradd --create-home steam
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> We probably want our normal user to be able to launch the program with its user
+<a href="#l24" class="line" id="l24">     24</a> without needing to enter a password every time. To do this, we need to add a
+<a href="#l25" class="line" id="l25">     25</a> line equivalent to this to our sudoers rules:
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> .. code-block:: sh
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a>    mcol ALL=(steam) NOPASSWD: /usr/bin/steam
+<a href="#l30" class="line" id="l30">     30</a> 
+<a href="#l31" class="line" id="l31">     31</a> If we were to launch it now, it wouldn&apos;t have access to the running X session
+<a href="#l32" class="line" id="l32">     32</a> owned by our normal user. We can use :code:`xhost` to give the new steam user
+<a href="#l33" class="line" id="l33">     33</a> access to the X session. This is best wrapped in a script that looks like:
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a> .. code-block:: sh
+<a href="#l36" class="line" id="l36">     36</a> 
+<a href="#l37" class="line" id="l37">     37</a>    #!/usr/bin/env bash
+<a href="#l38" class="line" id="l38">     38</a>    xhost +SI:localuser:steam
+<a href="#l39" class="line" id="l39">     39</a>    sudo --set-home -u steam /usr/bin/steam $@
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a> I call this script :code:`steam` and put it in a folder on my path inside my
+<a href="#l42" class="line" id="l42">     42</a> home folder. This way, I can just execute :code:`steam` as my normal user and
+<a href="#l43" class="line" id="l43">     43</a> the program runs as expected in my X session, but its permissions keep it
+<a href="#l44" class="line" id="l44">     44</a> restricted to its own home folder.
+<a href="#l45" class="line" id="l45">     45</a> 
+<a href="#l46" class="line" id="l46">     46</a> This setup also lets us set firewall rules specific to the program, as nftables
+<a href="#l47" class="line" id="l47">     47</a> and iptables support the configuration of rules that match a user&apos;s UID. For
+<a href="#l48" class="line" id="l48">     48</a> example, if we wanted nftables to block connections from steam that weren&apos;t
+<a href="#l49" class="line" id="l49">     49</a> going through a VPN we could add this line to our outbound chain:
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> .. code-block:: sh
+<a href="#l52" class="line" id="l52">     52</a> 
+<a href="#l53" class="line" id="l53">     53</a>    oifname $vpn_interface skuid steam accept
+<a href="#l54" class="line" id="l54">     54</a>    oifname != $vpn_interface skuid steam reject
+<a href="#l55" class="line" id="l55">     55</a> 
+<a href="#l56" class="line" id="l56">     56</a> Simple and great for those who wear tinfoil hats!
+<a href="#l57" class="line" id="l57">     57</a> 
+</pre>
+  </div>
+  </body>
+</html>

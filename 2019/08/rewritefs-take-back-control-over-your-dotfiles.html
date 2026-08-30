@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / rewritefs: take back control over your dotfiles</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2019/08/rewritefs-take-back-control-over-your-dotfiles.html>rewritefs: take back control over your dotfiles</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>Many of us have had the unfortunate inevitability of using a program written by
+a sadistic programmer who sticks their program's files right into your neatly
+organised home folder. Fortunately, some rebels against the
+what-are-<a class="reference external" href="https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html">XDG-directory-standards</a>
+cabal have come up with clever solutions to force all of your hidden
+files to stay within the bounds of your .config folder.</p>
+<p>Inspired by the likes of Apache and nginx, <a class="reference external" href="https://github.com/sloonz/rewritefs">rewritefs</a> uses arbitrary regex rules to rewrite
+(surprise surprise) paths accessed in a mount point. Using a <a class="reference external" href="https://en.wikipedia.org/wiki/Filesystem_in_Userspace">FUSE</a> approach, rewritefs
+simply mounts a user's a folder and the rest of the functionality is invisible.</p>
+<p>This example ruleset is provided to solve the problem of dotfiles clogging your
+home directory:</p>
+<div class="highlight"><pre><span></span><span class="nv">m</span><span class="err">#</span><span class="o">^(?!</span><span class="err">\.</span><span class="o">)</span><span class="err">#</span><span class="w"> </span><span class="err">.</span>
+<span class="nv">m</span><span class="err">#</span><span class="o">^</span><span class="err">\.</span><span class="o">(</span><span class="nv">cache</span><span class="o">|</span><span class="nv">config</span><span class="o">|</span><span class="nv">local</span><span class="o">)</span><span class="err">#</span><span class="w"> </span><span class="err">.</span>
+<span class="nv">m</span><span class="err">#</span><span class="o">^</span><span class="err">\.#</span><span class="w"> </span><span class="err">.</span><span class="nv">config</span><span class="o">/</span>
+</pre></div>
+<p>We have one rule per line, rewriting strings matched by the first part to the
+content of the second part, with the special rule <code>.</code> meaning 'do not
+rewrite'. E.g. <code>.vimrc</code> becomes <code>.config/vimrc</code>.</p>
+<p>To use these rules all we have to do is mount the directory, in this example
+our home directory from <code>/mnt</code> into <code>/home</code>, i.e.:</p>
+<div class="highlight"><pre><span></span>rewritefs<span class="w"> </span>-o<span class="w"> </span><span class="nv">config</span><span class="o">=</span>/mnt/home/me/.config/rewritefs<span class="w"> </span>/mnt/home/me<span class="w"> </span>/home/me
+</pre></div>
+<p>It's worth spending a bit of time going through all the junk in $HOME while
+setting up a ruleset, as many folders might be more appropriate going into
+<code>.cache</code> or <code>.local</code>.</p>
+<p>A massive plus of careful rulesetting and rewriting the appropriate files into
+<code>.config</code> is that you can backup or version <code>.config</code> in its
+entirety while putting things you don't care so much about into <code>.cache</code>
+or elsewhere. This is much tidier than having to deal with scripting symlinks
+into <code>$HOME</code> from your dotfiles repo, and more out-of-the-way than
+version tracking your home directory directly.</p>
+<p>Another nifty feature is the ability to specify rules on a per-application
+basis. For example, you could use this rule to make your annoying colleague's
+vim mysteriously replace the letter s for the letter z:</p>
+<div class="highlight"><pre><span></span><span class="o">-</span><span class="w"> </span><span class="o">/^</span><span class="err">\</span><span class="nv">S</span><span class="o">*</span><span class="nv">vim</span><span class="o">/</span>
+<span class="o">/</span><span class="nv">s</span><span class="o">/</span><span class="w"> </span><span class="nv">z</span>
+</pre></div>
+<p>In such a rule, the line starting with - match the program name, and any
+following lines apply only to that scope.</p>
+<p>With great power comes great responsibility, so one must be careful with the
+power of rewritefs. Despite its power, however, there do seem to be only few
+real applications for such functionality. I would definitely be interested in
+hearing what other use people have made for this program.</p>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2019-08-17T00:00:00+00:00">2019-08-17</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - add gitja</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/435edd3df59f88ad71ebe31b7d3068338bf9d3f2.html">435edd3df59f88ad71ebe31b7d3068338bf9d3f2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/1cfbe84d5094f8d0ac24918d245c065cdda93052.html">1cfbe84d5094f8d0ac24918d245c065cdda93052</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-03-01 18:34:34 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-03-01 18:34:34 +0000
+
+add gitja
+</pre><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,7 +16,6 @@
+<span class="def"> 
+</span><span class="def"> FTP_USER=mcol@mcol.xyz
+</span><span class="def"> FTP_HOST=mcol.xyz
+</span><span class="sub">-FTP_TARGET_DIR=/
+</span><span class="def"> 
+</span><span class="def"> DEBUG ?= 0
+</span><span class="def"> ifeq ($(DEBUG), 1)
+</span>@@ -89,7 +88,11 @@
+<span class="def"> 	    $(OUTPUTDIR)/ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
+</span><span class="def"> 
+</span><span class="def"> ftp_upload: publish
+</span><span class="sub">-	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) $(FTP_TARGET_DIR) $(OUTPUTDIR)/*
+</span><span class="add">+	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) / $(OUTPUTDIR)/*
+</span><span class="add">+
+</span><span class="add">+code:
+</span><span class="add">+	gitja -c gitja.dhall
+</span><span class="add">+	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) /code/ output-gitja/*
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> .PHONY: html help clean regenerate serve serve-global devserver stopserver publish ssh_upload rsync_upload ftp_upload
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja.dhall</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,39 @@
+<span class="add">+let repos = &quot;..&quot;
+</span><span class="add">+
+</span><span class="add">+let folders =
+</span><span class="add">+    [ &quot;${repos}/gitja&quot;
+</span><span class="add">+    , &quot;${repos}/AUR-qtile-git&quot;
+</span><span class="add">+    , &quot;${repos}/bdf2flf&quot;
+</span><span class="add">+    , &quot;${repos}/gitja&quot;
+</span><span class="add">+    , &quot;${repos}/mcol.xyz&quot;
+</span><span class="add">+    , &quot;${repos}/mini-theme&quot;
+</span><span class="add">+    , &quot;${repos}/mkinitcpio-welcome&quot;
+</span><span class="add">+    , &quot;${repos}/pelican-microfeed&quot;
+</span><span class="add">+    , &quot;${repos}/pelican-minify-fontawesome&quot;
+</span><span class="add">+    , &quot;${repos}/pixels&quot;
+</span><span class="add">+    , &quot;${repos}/pixels-analysis&quot;
+</span><span class="add">+    , &quot;${repos}/pywayland&quot;
+</span><span class="add">+    , &quot;${repos}/pywlroots&quot;
+</span><span class="add">+    , &quot;${repos}/qtile&quot;
+</span><span class="add">+    , &quot;${repos}/qtile-examples&quot;
+</span><span class="add">+    , &quot;${repos}/qtools&quot;
+</span><span class="add">+    , &quot;${repos}/reach&quot;
+</span><span class="add">+    , &quot;${repos}/screenshot-gallery-generator&quot;
+</span><span class="add">+    , &quot;${repos}/sudoku-solver&quot;
+</span><span class="add">+    , &quot;${repos}/tide&quot;
+</span><span class="add">+    , &quot;${repos}/unix.sexy-react&quot;
+</span><span class="add">+    , &quot;${repos}/wimp&quot;
+</span><span class="add">+    , &quot;${repos}/xanadu&quot;
+</span><span class="add">+    , &quot;${repos}/xoop&quot;
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+let config =
+</span><span class="add">+    { repos = folders
+</span><span class="add">+    , scan = False
+</span><span class="add">+    , template = &quot;./gitja-template&quot;
+</span><span class="add">+    , output = &quot;./output-gitja&quot;
+</span><span class="add">+    , host = &quot;https://mcol.xyz&quot;
+</span><span class="add">+    --, host = &quot;http://localhost:8000&quot;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+in config
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/template.html.include</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,18 @@
+<span class="add">+{#- Style credit goes to stagit. -#}
+</span><span class="add">+
+</span><span class="add">+&lt;!doctype html&gt;
+</span><span class="add">+&lt;html lang=&quot;en&quot;&gt;
+</span><span class="add">+  &lt;head&gt;
+</span><span class="add">+    &lt;meta charset=&quot;utf-8&quot;&gt;
+</span><span class="add">+    &lt;meta http-equiv=&quot;x-ua-compatible&quot; content=&quot;ie=edge&quot;&gt;
+</span><span class="add">+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+</span><span class="add">+    &lt;title&gt;{% block title %}{% endblock %}&lt;/title&gt;
+</span><span class="add">+    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;{{ host }}/code/style.css&quot;/&gt;
+</span><span class="add">+    &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;{{ host }}/favicon.png&quot;/&gt;
+</span><span class="add">+  &lt;/head&gt;
+</span><span class="add">+  &lt;body&gt;
+</span><span class="add">+
+</span><span class="add">+  {% block body %}
+</span><span class="add">+  {% endblock %}
+</span><span class="add">+  &lt;/body&gt;
+</span><span class="add">+&lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/style.css</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,177 @@
+<span class="add">+/*
+</span><span class="add">+Credit to much of the styling here goes to stagit: https://codemadness.org/git/stagit/
+</span><span class="add">+*/
+</span><span class="add">+
+</span><span class="add">+@viewport {
+</span><span class="add">+    width: device-width;
+</span><span class="add">+    zoom: 1.0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+html {
+</span><span class="add">+    color: #000;
+</span><span class="add">+    font-family: monospace;
+</span><span class="add">+    font-size: 1em;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+body {
+</span><span class="add">+    max-width: 900px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+p {
+</span><span class="add">+    margin: 15px 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+li {
+</span><span class="add">+    list-style-type: square;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+h1, h2 {
+</span><span class="add">+    font-size: 1em;
+</span><span class="add">+    margin: 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+h2 {
+</span><span class="add">+    font-weight: bold;
+</span><span class="add">+    text-decoration: underline;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+::selection {
+</span><span class="add">+    background: #5D479D;
+</span><span class="add">+    color: #fff;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+table td {
+</span><span class="add">+    padding: 0 0.4em;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+td.link {
+</span><span class="add">+    text-align: right;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+a:target {
+</span><span class="add">+    background-color: #ddd;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#avatar {
+</span><span class="add">+    width: 32px;
+</span><span class="add">+    height: 32px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+a.d, a.h, a.i, a.line {
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#blob a, .desc {
+</span><span class="add">+    color: #777;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#blob a:hover {
+</span><span class="add">+    color: blue;
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+table thead td {
+</span><span class="add">+    font-weight: bold;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#content table td {
+</span><span class="add">+    vertical-align: top;
+</span><span class="add">+    white-space: nowrap;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#head {
+</span><span class="add">+    width: 100%;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#branches tr:hover td,
+</span><span class="add">+#tags tr:hover td,
+</span><span class="add">+#index tr:hover td,
+</span><span class="add">+#log tr:hover td,
+</span><span class="add">+#files tr:hover td {
+</span><span class="add">+    background-color: #eee;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#index tr td:nth-child(2),
+</span><span class="add">+#tags tr td:nth-child(3),
+</span><span class="add">+#branches tr td:nth-child(3),
+</span><span class="add">+#log tr td:nth-child(2) {
+</span><span class="add">+    white-space: normal;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+td.num {
+</span><span class="add">+    text-align: right;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+hr {
+</span><span class="add">+    border: 0;
+</span><span class="add">+    border-top: 1px solid #777;
+</span><span class="add">+    height: 1px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+pre a.h {
+</span><span class="add">+    color: #00a;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.A,
+</span><span class="add">+span.i,
+</span><span class="add">+pre a.i {
+</span><span class="add">+    color: #070;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.D,
+</span><span class="add">+span.d,
+</span><span class="add">+pre a.d {
+</span><span class="add">+    color: #e00;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+pre a.h:hover,
+</span><span class="add">+pre a.i:hover,
+</span><span class="add">+pre a.d:hover {
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.highlight, code {
+</span><span class="add">+    background: #eeeeef;
+</span><span class="add">+    color: black;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.highlight {
+</span><span class="add">+    white-space: pre-wrap;
+</span><span class="add">+    word-wrap: break-word;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.c, .ch, .cm, .cp, .cpf, .c1, .gh, .gp
+</span><span class="add">+{ color: #5D479D } /* comments */
+</span><span class="add">+
+</span><span class="add">+.err, .se, .o
+</span><span class="add">+{ color: #a53c21 } /* dark red */
+</span><span class="add">+
+</span><span class="add">+.sh, .si, .sx, .sr, .s1, .ss, .cs, .gd, .dl,
+</span><span class="add">+.s2, .nc, .vc, .vg, .vi, .vm, .nv, .sc, .s
+</span><span class="add">+{ color: #8f4ff0 } /* bright pink */
+</span><span class="add">+
+</span><span class="add">+.kn, .nb, .mb, .mf, .mh, .mi, .mo, .bp, .il, .m
+</span><span class="add">+{ color: #406794 } /* keywords (exit, eval) */
+</span><span class="add">+
+</span><span class="add">+.kt
+</span><span class="add">+{ color: #3e3e73 } /* light grey */
+</span><span class="add">+
+</span><span class="add">+.kc, .k, .ow, .kp, .kr
+</span><span class="add">+{ color: #406794 } /* key words */
+</span><span class="add">+
+</span><span class="add">+.esc, .l, .n, .x, .p, .gs, .ld, .na, .no, .ge
+</span><span class="add">+.nd, .ni, .nf, .nl, .nn, .nx, .py, .nt, .w, .fm, .g
+</span><span class="add">+{ color: black }
+</span><span class="add">+
+</span><span class="add">+.ne { color: #5fd75f }
+</span><span class="add">+
+</span><span class="add">+.gh, .gp, .cs, .gu, .ne, .cs
+</span><span class="add">+{ font-weight: bold }
+</span><span class="add">+
+</span><span class="add">+.diff .add {
+</span><span class="add">+    color: #0a0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.diff .sub {
+</span><span class="add">+    color: #a00;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/tree.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,29 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ name }} - target
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;table id=&quot;files&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Mode&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for file in tree %}
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;{{ file.mode_symbolic }}&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ file.href }}&quot;&gt;{{ file.path }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/repo-table-header.html.include</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,24 @@
+<span class="add">+{#- This block is rendered at the top of every page. -#}
+</span><span class="add">+
+</span><span class="add">+&lt;table id=&quot;head&quot;&gt;
+</span><span class="add">+  &lt;tr&gt;
+</span><span class="add">+    &lt;td width=&quot;32px&quot; rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;&lt;img src=&quot;{{ host }}/avatar.png&quot; id=&quot;avatar&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+    &lt;td rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;{{ host }}&lt;/a&gt; / &lt;a href=&quot;{{ host }}/code/&quot;&gt;code&lt;/a&gt; / &lt;a href=&quot;{{ host }}/code/{{ name }}&quot;&gt;{{ name }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+    &lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/posts.html&quot;&gt;posts&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+  &lt;/tr&gt;
+</span><span class="add">+  &lt;tr&gt;
+</span><span class="add">+    &lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/about.html&quot;&gt;about&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+  &lt;/tr&gt;
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+&lt;hr&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;table&gt;
+</span><span class="add">+  &lt;tr&gt;&lt;td&gt;&lt;span class=&quot;desc&quot;&gt;{{ description }}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+  &lt;tr class=&quot;url&quot;&gt;&lt;td&gt;git clone &lt;a href=&quot;{{ host }}/code/{{ name }}&quot;&gt;{{ host }}/code/{{ name }}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+  &lt;tr&gt;&lt;td&gt;
+</span><span class="add">+    &lt;a href=&quot;{{ host }}/code/{{ name }}/tree.html&quot;&gt;Files&lt;/a&gt; | &lt;a href=&quot;{{ host }}/code/{{ name }}/refs.html&quot;&gt;Refs&lt;/a&gt;
+</span><span class="add">+    {% if readme %} | &lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ readme.href }}&quot;&gt;Readme&lt;/a&gt;{% endif %}
+</span><span class="add">+    {% if license %} | &lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ license.href }}&quot;&gt;License&lt;/a&gt;{% endif %}
+</span><span class="add">+  &lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+&lt;hr&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/refs.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,37 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ name }} - Refs
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include  &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;h2&gt;Branches&lt;/h2&gt;
+</span><span class="add">+  &lt;table id=&quot;branches&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for branch in branches %}
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;{{ branch.name }}&lt;/td&gt;&lt;td&gt;{{ branch.authored[:16] }}&lt;/td&gt;&lt;td&gt;{{ branch.title }}&lt;/td&gt;&lt;td&gt;{{ branch.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+
+</span><span class="add">+  &lt;br&gt;
+</span><span class="add">+
+</span><span class="add">+  &lt;h2&gt;Tags&lt;/h2&gt;
+</span><span class="add">+  &lt;table id=&quot;tags&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for tag in tags %}
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;{{ tag.name }}&lt;/td&gt;&lt;td&gt;{{ tag.authored[:16] }}&lt;/td&gt;&lt;td&gt;{{ tag.title }}&lt;/td&gt;&lt;td&gt;{{ tag.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/index.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,27 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ description }}
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;table id=&quot;log&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Date&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Commit message&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for commit in commits[:50] %}
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;{{ commit.authored[:16] }}&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;commit/{{ commit.id }}.html&quot;&gt;{{ commit.title }}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;{{ commit.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/file.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,41 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ name }} - {{ file }}
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;p&gt;{{ file.mode_symbolic }} {{ file }}&lt;/p&gt;&lt;hr&gt;
+</span><span class="add">+
+</span><span class="add">+{% if file.is_directory %}
+</span><span class="add">+  &lt;table id=&quot;files&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Mode&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for child in file.contents %}
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;{{ child.mode_symbolic }}&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ child.href }}&quot;&gt;{{ child.path }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+{% else %}
+</span><span class="add">+  {% if file.is_binary %}
+</span><span class="add">+  (File is binary)
+</span><span class="add">+  {% else %}
+</span><span class="add">+&lt;pre id=&quot;blob&quot;&gt;{% for line in split(file.contents, &apos;\n&apos;) %}
+</span><span class="add">+&lt;a href=&quot;#l{{ loop.index }}&quot; class=&quot;line&quot; id=&quot;l{{ loop.index }}&quot;&gt;{{ printf(&quot;%7v&quot;, loop.index) }}&lt;/a&gt; {{ line }}
+</span><span class="add">+{% endfor %}&lt;/pre&gt;
+</span><span class="add">+  {% endif %}
+</span><span class="add">+{% endif %}
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/commit.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,46 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ name }} - {{ commit.title }}
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;pre&gt;&lt;b&gt;Commit&lt;/b&gt; &lt;a href=&quot;{{ host }}/code/{{ name }}/commit/{{ commit.id }}.html&quot;&gt;{{ commit.id }}&lt;/a&gt;
+</span><span class="add">+&lt;b&gt;Parent:&lt;/b&gt; &lt;a href=&quot;{{ host }}/code/{{ name }}/commit/{{ commit.parent }}.html&quot;&gt;{{ commit.parent }}&lt;/a&gt;
+</span><span class="add">+&lt;b&gt;Author:&lt;/b&gt; {{ commit.author }} &amp;lt;&lt;a href=&quot;mailto:{{ commit.author_email }}&quot;&gt;{{ commit.author_email }}&lt;/a&gt;&amp;gt;
+</span><span class="add">+&lt;b&gt;Date:&lt;/b&gt; {{ commit.authored }}
+</span><span class="add">+&lt;b&gt;Committer:&lt;/b&gt; {{ commit.committer }} &amp;lt;&lt;a href=&quot;mailto:{{ commit.committer_email }}&quot;&gt;{{ commit.committer_email }}&lt;/a&gt;&amp;gt;
+</span><span class="add">+&lt;b&gt;Committed:&lt;/b&gt; {{ commit.committed }}
+</span><span class="add">+
+</span><span class="add">+{{ commit.message }}
+</span><span class="add">+&lt;/pre&gt;
+</span><span class="add">+
+</span><span class="add">+{%- for diff in commit.diffs -%}
+</span><span class="add">+&lt;div class=&quot;diff&quot;&gt;
+</span><span class="add">+  &lt;p&gt;
+</span><span class="add">+    &lt;b&gt;{{ diff.new_file }}&lt;/b&gt;
+</span><span class="add">+    &lt;span class=&quot;status&quot;&gt;{{ diff.status }}&lt;/span&gt;
+</span><span class="add">+  &lt;/p&gt;
+</span><span class="add">+
+</span><span class="add">+  {% if diff.newfile != diff.oldfile %}
+</span><span class="add">+  &lt;p&gt;Renamed from {{ diff.old_file }}&lt;/p&gt;
+</span><span class="add">+  {% endif %}
+</span><span class="add">+
+</span><span class="add">+  &lt;pre&gt;
+</span><span class="add">+  {%- for hunk in diff.hunks -%}
+</span><span class="add">+  {{ hunk.header }}
+</span><span class="add">+
+</span><span class="add">+    {%- for line in hunk.lines -%}
+</span><span class="add">+      &lt;span class=&quot;{{ line.class }}&quot;&gt;{{ line.text }}&lt;/span&gt;
+</span><span class="add">+    {%- endfor -%}
+</span><span class="add">+
+</span><span class="add">+  {%- endfor -%}
+</span><span class="add">+  &lt;/pre&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{%- endfor -%}
+</span><span class="add">+
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/index.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,28 @@
+<span class="add">+{% extends &quot;template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+mcol.xyz / code
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+&lt;table id=&quot;head&quot;&gt;
+</span><span class="add">+  &lt;tr&gt;&lt;td width=&quot;32px&quot; rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;&lt;img src=&quot;{{ host }}/avatar.png&quot; id=&quot;avatar&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+    &lt;td rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;{{ host }}&lt;/a&gt; / &lt;a href=&quot;{{ host }}/code&quot;&gt;code&lt;/a&gt;&lt;/td&gt;&lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/posts.html&quot;&gt;posts&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/about.html&quot;&gt;about&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;hr&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;table id=&quot;index&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for repo in sort(repositories, by=&quot;updated&quot;, reverse=1) %}
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;a href=&quot;{{ repo.name }}&quot;&gt;{{ repo.name }}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;{{ repo.description }}&lt;/td&gt;&lt;td&gt;{{ repo.updated[:16] }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,4 +2,5 @@
+<span class="def"> drafts
+</span><span class="def"> fontawesome-*
+</span><span class="def"> output
+</span><span class="add">+output-gitja
+</span><span class="def"> content/screenshots
+</span></pre>
+</div></div>
+  </body>
+</html>

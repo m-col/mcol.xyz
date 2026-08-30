@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Add old XKB_KEY_FX keysyms for VT switching for when mod is MOD4</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/e69f4e02ebeebfed7833c14a938fb090ac0b0bee.html">e69f4e02ebeebfed7833c14a938fb090ac0b0bee</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/f04c54e1adaabb654bde392a9ffa26e7f09c8b30.html">f04c54e1adaabb654bde392a9ffa26e7f09c8b30</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-18 23:24:04 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-18 23:24:04 +0000
+
+Add old XKB_KEY_FX keysyms for VT switching for when mod is MOD4
+
+XKB_KEY_XF86Switch_VT_X may be emitted when mod is set to ALT, but when
+mod is set to MOD4 then for VT switching, XKB_KEY_FX keys must be used.
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -242,7 +242,15 @@
+<span class="def">     if (!server-&gt;vt_switching)
+</span><span class="def"> 	return;
+</span><span class="def"> 
+</span><span class="add">+    /* Depending on what the user sets the mod key to, either func keys or
+</span><span class="add">+     * direct VT key combo &quot;keys&quot; will be matched, so configure both. */
+</span><span class="def">     uint32_t func_keys[] = {
+</span><span class="add">+	XKB_KEY_F1,
+</span><span class="add">+	XKB_KEY_F2,
+</span><span class="add">+	XKB_KEY_F3,
+</span><span class="add">+	XKB_KEY_F4,
+</span><span class="add">+	XKB_KEY_F5,
+</span><span class="add">+	XKB_KEY_F6,
+</span><span class="def"> 	XKB_KEY_XF86Switch_VT_1,
+</span><span class="def"> 	XKB_KEY_XF86Switch_VT_2,
+</span><span class="def"> 	XKB_KEY_XF86Switch_VT_3,
+</span>@@ -252,13 +260,13 @@
+<span class="def">     };
+</span><span class="def">     struct binding *kb;
+</span><span class="def"> 
+</span><span class="sub">-    for (unsigned i = 0; i &lt; 6; i++) {
+</span><span class="add">+    for (unsigned i = 0; i &lt; 12; i++) {
+</span><span class="def"> 	kb = calloc(1, sizeof(struct binding));
+</span><span class="def"> 	kb-&gt;mods = WLR_MODIFIER_CTRL;
+</span><span class="def"> 	kb-&gt;key = func_keys[i];
+</span><span class="def"> 	kb-&gt;action = &amp;change_vt;
+</span><span class="def"> 	kb-&gt;data = calloc(1, sizeof(unsigned));
+</span><span class="sub">-	*(unsigned *)(kb-&gt;data) = i + 1;
+</span><span class="add">+	*(unsigned *)(kb-&gt;data) = (i + 1) % 6;
+</span><span class="def"> 	wl_list_insert(server-&gt;key_bindings.prev, &amp;kb-&gt;link);
+</span><span class="def">     }
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

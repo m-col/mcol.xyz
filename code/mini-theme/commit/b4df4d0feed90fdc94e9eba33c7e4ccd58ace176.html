@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mini-theme - reorganise syntax highlighting</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mini-theme">mini-theme</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A mini theme for the pelican static site generator</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mini-theme">https://github.com/m-col/mini-theme</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mini-theme/tree.html">Files</a> | <a href="https://mcol.xyz/code/mini-theme/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mini-theme/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mini-theme/commit/b4df4d0feed90fdc94e9eba33c7e4ccd58ace176.html">b4df4d0feed90fdc94e9eba33c7e4ccd58ace176</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mini-theme/commit/7d6892417d5dee5e3df774ddbda298433c44fdff.html">7d6892417d5dee5e3df774ddbda298433c44fdff</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-07 00:43:47 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-07 00:43:47 +0100
+
+reorganise syntax highlighting
+</pre><div class="diff">
+  <p>
+    <b>static/css/main.css</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,18 +1,5 @@
+<span class="def"> /* 🐱  🐭  */
+</span><span class="def"> 
+</span><span class="sub">-:root {
+</span><span class="sub">-    --trim: #5D479D; /* purple */
+</span><span class="sub">-
+</span><span class="sub">-    /* code colours */
+</span><span class="sub">-    --c0: #030405; /* dark */
+</span><span class="sub">-    --c1: #8742a5; /* red */
+</span><span class="sub">-    --c2: #FFFFFF; /* green */
+</span><span class="sub">-    --c3: #406794; /* yellow */
+</span><span class="sub">-    --c4: #8f4ff0; /* blue */
+</span><span class="sub">-    --c5: var(--trim); /* purple */
+</span><span class="sub">-    --c6: var(--text2); /* cyan */
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="def"> @viewport {
+</span><span class="def">     width: device-width;
+</span><span class="def">     zoom: 1.0;
+</span>@@ -43,7 +30,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> ::selection {
+</span><span class="sub">-    background: var(--trim);
+</span><span class="add">+    background: #5D479D;
+</span><span class="def">     color: #fff;
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -160,81 +147,40 @@
+<span class="def">     text-decoration: none;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+.highlight, code {
+</span><span class="add">+    background: #eeeeef;
+</span><span class="add">+    color: black;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> .highlight {
+</span><span class="sub">-    background: #dedefe;
+</span><span class="def">     white-space: pre-wrap;
+</span><span class="def">     word-wrap: break-word;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-code {
+</span><span class="sub">-    background: #dedefe;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-.err { color: var(--c1); } /* Error */
+</span><span class="sub">-.o { color: var(--c1); } /* Operator */
+</span><span class="sub">-.c { color: var(--c4); } /* Comment */
+</span><span class="sub">-.ch { color: var(--c4); } /* Comment.Hashbang */
+</span><span class="sub">-.cm { color: var(--c4); } /* Comment.Multiline */
+</span><span class="sub">-.cp { color: var(--c4); } /* Comment.Preproc */
+</span><span class="sub">-.cpf{ color: var(--c4); } /* Comment.PreprocFile */
+</span><span class="sub">-.c1 { color: var(--c4); } /* Comment.Single */
+</span><span class="sub">-.cs { color: var(--c4); font-weight: bold } /* Comment.Special */
+</span><span class="sub">-.gd { color: var(--c1); } /* Generic.Deleted */
+</span><span class="sub">-.ge { font-style: italic; } /* Generic.Emph */
+</span><span class="sub">-.gr { color: var(--c1); } /* Generic.Error */
+</span><span class="sub">-.gh { color: var(--c0); font-weight: bold } /* Generic.Heading */
+</span><span class="sub">-.gi { color: var(--c0); } /* Generic.Inserted */
+</span><span class="sub">-.go { color: var(--c0); } /* Generic.Output */
+</span><span class="sub">-.gp { color: var(--c0); font-weight: bold; } /* Generic.Prompt */
+</span><span class="sub">-.gs { font-weight: bold; } /* Generic.Strong */
+</span><span class="sub">-.gu { color: var(--c0); font-weight: bold; } /* Generic.Subheading */
+</span><span class="sub">-.gt { color: var(--c0); } /* Generic.Traceback */
+</span><span class="sub">-.k  { color: var(--c3); } /* Keyword */
+</span><span class="sub">-.kc { color: var(--c3); font-weight: bold } /* Keyword.Constant */
+</span><span class="sub">-.kd { color: var(--c3); font-weight: bold } /* Keyword.Declaration */
+</span><span class="sub">-.kn { color: var(--c3); font-weight: bold } /* Keyword.Namespace */
+</span><span class="sub">-.kp { color: var(--c3); font-weight: bold } /* Keyword.Pseudo */
+</span><span class="sub">-.kr { color: var(--c3); font-weight: bold } /* Keyword.Reserved */
+</span><span class="sub">-.kt { color: var(--c3); font-weight: bold } /* Keyword.Type */
+</span><span class="sub">-.n  { color: var(--text); } /* Name */
+</span><span class="sub">-.na { color: var(--c3); } /* Name.Attribute */
+</span><span class="sub">-.nb { color: var(--c3); } /* Name.Builtin */
+</span><span class="sub">-.nc { color: var(--c2); font-weight: bold; } /* Name.Class */
+</span><span class="sub">-.no { color: var(--c2); font-weight: bold; } /* Name.Constant */
+</span><span class="sub">-.nd { color: var(--c2); font-weight: bold; } /* Name.Decorator */
+</span><span class="sub">-.ni { color: var(--c2); font-weight: bold; } /* Name.Entity */
+</span><span class="sub">-.ne { color: var(--c2); font-weight: bold; } /* Name.Exception */
+</span><span class="sub">-.nf { color: var(--c2); } /* Name.Function - used in conf code blocks */
+</span><span class="sub">-.nl { color: var(--c2); font-weight: bold; } /* Name.Label */
+</span><span class="sub">-.nn { color: var(--c2); font-weight: bold; } /* Name.Namespace */
+</span><span class="sub">-.nt { color: var(--text); } /* Name.Tag */
+</span><span class="sub">-.nv { color: var(--text); } /* Name.Variable */
+</span><span class="sub">-.ow { color: #000000; font-weight: bold; } /* Operator.Word */
+</span><span class="sub">-.w  { } /* Text.Whitespace */
+</span><span class="sub">-.s  { color: var(--c5); } /* Literal.String */
+</span><span class="sub">-.m  { color: var(--c3); } /* Literal.Number */
+</span><span class="sub">-.mb { color: var(--c3); } /* Literal.Number.Bin */
+</span><span class="sub">-.mf { color: var(--c3); } /* Literal.Number.Float */
+</span><span class="sub">-.mh { color: var(--c3); } /* Literal.Number.Hex */
+</span><span class="sub">-.mi { color: var(--c3); } /* Literal.Number.Integer */
+</span><span class="sub">-.mo { color: var(--c6); font-weight: bold; } /* Literal.Number.Oct */
+</span><span class="sub">-.sa { background-color: var(--c5) } /* Literal.String.Affix */
+</span><span class="sub">-.sb { background-color: var(--c5) } /* Literal.String.Backtick */
+</span><span class="sub">-.sc { color: var(--c5) } /* Literal.String.Char */
+</span><span class="sub">-.dl { background-color: var(--c2) } /* Literal.String.Delimiter */
+</span><span class="sub">-.sd { color: var(--c5); } /* Literal.String.Doc */
+</span><span class="sub">-.s2 { color: var(--c5) } /* Literal.String.Double */
+</span><span class="sub">-.se { color: var(--c5) font-weight: bold; } /* Literal.String.Escape */
+</span><span class="sub">-.sh { color: var(--c5)} /* Literal.String.Heredoc */
+</span><span class="sub">-.si { color: var(--c4); } /* Literal.String.Interpol */
+</span><span class="sub">-.sx { color: var(--c4); } /* Literal.String.Other */
+</span><span class="sub">-.sr { color: var(--c4); } /* Literal.String.Regex */
+</span><span class="sub">-.s1 { color: var(--c4); } /* Literal.String.Single */
+</span><span class="sub">-.ss { color: var(--c4); } /* Literal.String.Symbol */
+</span><span class="sub">-.bp { color: var(--c2) } /* Name.Builtin.Pseudo */
+</span><span class="sub">-.fm { color: var(--c2); font-weight: bold } /* Name.Function.Magic */
+</span><span class="sub">-.vc { color: var(--c2) } /* Name.Variable.Class */
+</span><span class="sub">-.vg { color: var(--c2); font-weight: bold } /* Name.Variable.Global */
+</span><span class="sub">-.vi { color: var(--c2) } /* Name.Variable.Instance */
+</span><span class="sub">-.vm { color: var(--c2) } /* Name.Variable.Magic */
+</span><span class="sub">-.il { color: var(--c2); font-weight: bold } /* Literal.Number.Integer.Long */
+</span><span class="add">+.c, .ch, .cm, .cp, .cpf, .c1, .gh, .gp
+</span><span class="add">+{ color: #5D479D } /* comments */
+</span><span class="add">+
+</span><span class="add">+.err, .se, .o
+</span><span class="add">+{ color: #a53c21 } /* dark red */
+</span><span class="add">+
+</span><span class="add">+.sh, .si, .sx, .sr, .s1, .ss, .cs, .gd, .dl,
+</span><span class="add">+.s2, .nc, .vc, .vg, .vi, .vm, .nv, .sc, .s
+</span><span class="add">+{ color: #8f4ff0 } /* bright pink */
+</span><span class="add">+
+</span><span class="add">+.kn, .nb, .mb, .mf, .mh, .mi, .mo, .bp, .il, .m
+</span><span class="add">+{ color: #406794 } /* keywords (exit, eval) */
+</span><span class="add">+
+</span><span class="add">+.kt
+</span><span class="add">+{ color: #3e3e73 } /* light grey */
+</span><span class="add">+
+</span><span class="add">+.kc, .k, .ow, .kp, .kr
+</span><span class="add">+{ color: #406794 } /* key words */
+</span><span class="add">+
+</span><span class="add">+.esc, .l, .n, .x, .p, .gs, .ld, .na, .no, .ge
+</span><span class="add">+.nd, .ni, .nf, .nl, .nn, .nx, .py, .nt, .w, .fm, .g
+</span><span class="add">+{ color: black }
+</span><span class="add">+
+</span><span class="add">+.ne { color: #5fd75f }
+</span><span class="add">+
+</span><span class="add">+.gh, .gp, .cs, .gu, .ne, .cs
+</span><span class="add">+{ font-weight: bold }
+</span></pre>
+</div></div>
+  </body>
+</html>

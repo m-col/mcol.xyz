@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Run the deploy schedule daily instead of every 6 hours</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/4d467e8002faadbc51d8aca9b8cc785b6e1a7074.html">4d467e8002faadbc51d8aca9b8cc785b6e1a7074</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/49934ae23a602a1f21ac241b3435e93fb80f39ab.html">49934ae23a602a1f21ac241b3435e93fb80f39ab</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 18:33:55 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 18:33:55 +0000
+
+Run the deploy schedule daily instead of every 6 hours
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_012RfZTyHvxLyVp4yaWmNvhN
+</pre><div class="diff">
+  <p>
+    <b>.github/workflows/deploy.yaml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,10 +4,7 @@
+<span class="def">   push:
+</span><span class="def">     branches: [master]
+</span><span class="def">   schedule:
+</span><span class="sub">-    # Repos listed in gitja/config.dhall get new commits independently of
+</span><span class="sub">-    # this repo, so rebuild periodically to pick those up. gitja only
+</span><span class="sub">-    # regenerates pages that have actually changed, so this is cheap.
+</span><span class="sub">-    - cron: &quot;0 */6 * * *&quot;
+</span><span class="add">+    - cron: &quot;0 0 * * *&quot;
+</span><span class="def">   workflow_dispatch:
+</span><span class="def"> 
+</span><span class="def"> concurrency:
+</span></pre>
+</div></div>
+  </body>
+</html>

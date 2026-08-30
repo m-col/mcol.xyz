@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - make notification subclass from Popup</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/dbda507e9faba5661419f2faebb37c7a182e10a6.html">dbda507e9faba5661419f2faebb37c7a182e10a6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/94e9f6b814c9e96ed81993dca0f85e3e52e5e56f.html">94e9f6b814c9e96ed81993dca0f85e3e52e5e56f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-25 00:08:10 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-25 00:08:10 +0000
+
+make notification subclass from Popup
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,32 +14,13 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-from xcffib.xproto import StackMode
+</span><span class="sub">-
+</span><span class="def"> from libqtile import configurable, pangocffi, window
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.notify import notifier
+</span><span class="def"> from libqtile.drawer import Drawer
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="sub">-ALIGNMENTS = {
+</span><span class="sub">-    &apos;left&apos;: pangocffi.pango.PANGO_ALIGN_LEFT,
+</span><span class="sub">-    &apos;center&apos;: pangocffi.pango.PANGO_ALIGN_CENTER,
+</span><span class="sub">-    &apos;right&apos;: pangocffi.pango.PANGO_ALIGN_RIGHT,
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-class Popup:
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    These represent a single pop-up window. These are (re)cycled, so if we have a
+</span><span class="sub">-    maximum of two windows visible at once, we keep two of these and re-draw and present
+</span><span class="sub">-    them.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    def __init__(self, win, drawer, layout):
+</span><span class="sub">-        self.win = win
+</span><span class="sub">-        self.drawer = drawer
+</span><span class="sub">-        self.layout = layout
+</span><span class="sub">-        self.id = None
+</span><span class="add">+from qtools import Popup
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> class Server(configurable.Configurable):
+</span>@@ -53,15 +34,17 @@
+<span class="def">         - overflow
+</span><span class="def">         - spacing between lines
+</span><span class="def">         - replace_id
+</span><span class="sub">-        - notifications moving up to first position if possible
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="def">     defaults = [
+</span><span class="sub">-        (&apos;x&apos;, 96, &apos;X position of notifications.&apos;),
+</span><span class="sub">-        (&apos;y&apos;, 96, &apos;Y position of notifications.&apos;),
+</span><span class="sub">-        (&apos;width&apos;, 256, &apos;Width of notifications.&apos;),
+</span><span class="sub">-        (&apos;height&apos;, 64, &apos;Height of notifications.&apos;),
+</span><span class="add">+        (&apos;format&apos;, &apos;{summary}\n{body}&apos;, &apos;Text format.&apos;),
+</span><span class="def">         (&apos;opacity&apos;, 1.0, &apos;Opacity of notifications.&apos;),
+</span><span class="add">+        (&apos;border_width&apos;, 4, &apos;Line width of drawn borders.&apos;),
+</span><span class="add">+        (&apos;corner_radius&apos;, None, &apos;Corner radius for round corners, or None.&apos;),
+</span><span class="add">+        (&apos;font&apos;, &apos;sans&apos;, &apos;Font used in notifications.&apos;),
+</span><span class="add">+        (&apos;fontsize&apos;, 14, &apos;Size of font.&apos;),
+</span><span class="add">+        (&apos;fontshadow&apos;, None, &apos;Color for text shadows, or None for no shadows.&apos;),
+</span><span class="add">+        (&apos;padding&apos;, None, &apos;Padding at sides of text.&apos;),
+</span><span class="add">+        (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+</span><span class="def">         (
+</span><span class="def">             &apos;foreground&apos;,
+</span><span class="def">             (&apos;#ffffff&apos;, &apos;#ffffff&apos;, &apos;#ffffff&apos;),
+</span>@@ -77,14 +60,6 @@
+<span class="def">             (&apos;#111111&apos;, &apos;#111111&apos;, &apos;#111111&apos;),
+</span><span class="def">             &apos;Border colours in ascending order of urgency. Or None for none.&apos;,
+</span><span class="def">         ),
+</span><span class="sub">-        (&apos;border_width&apos;, 4, &apos;Line width of drawn borders.&apos;),
+</span><span class="sub">-        (&apos;corner_radius&apos;, None, &apos;Corner radius for round corners, or None.&apos;),
+</span><span class="sub">-        (&apos;font&apos;, &apos;sans&apos;, &apos;Font used in notifications.&apos;),
+</span><span class="sub">-        (&apos;fontsize&apos;, 14, &apos;Size of font.&apos;),
+</span><span class="sub">-        (&apos;fontshadow&apos;, None, &apos;Color for text shadows, or None for no shadows.&apos;),
+</span><span class="sub">-        (&apos;padding&apos;, None, &apos;Padding at sides of text.&apos;),
+</span><span class="sub">-        (&apos;format&apos;, &apos;{summary}\n{body}&apos;, &apos;Text format.&apos;),
+</span><span class="sub">-        (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+</span><span class="def">         (
+</span><span class="def">             &apos;timeout&apos;,
+</span><span class="def">             (5000, 5000, 0),
+</span>@@ -107,6 +82,7 @@
+<span class="def">         self._hidden = []
+</span><span class="def">         self._shown = []
+</span><span class="def">         self._queue = []
+</span><span class="add">+        self._positions = []
+</span><span class="def"> 
+</span><span class="def">         self._make_attr_list(&apos;foreground&apos;)
+</span><span class="def">         self._make_attr_list(&apos;background&apos;)
+</span>@@ -133,7 +109,7 @@
+<span class="def">     def configure(self, qtile):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         This method needs to be called to set up the Server with the Qtile manager and
+</span><span class="sub">-        reorganise some configuration options.
+</span><span class="add">+        create the required popup windows.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         self.qtile = qtile
+</span><span class="def"> 
+</span>@@ -141,64 +117,26 @@
+<span class="def">             self.padding = self.fontsize / 2
+</span><span class="def">         if self.border_width:
+</span><span class="def">             self.border = [self.qtile.color_pixel(c) for c in self.border]
+</span><span class="add">+
+</span><span class="add">+        self._popup_config = {}
+</span><span class="add">+        for opt in Popup.defaults:
+</span><span class="add">+            key = opt[0]
+</span><span class="add">+            if hasattr(self, key):
+</span><span class="add">+                value = getattr(self, key)
+</span><span class="add">+                if isinstance(value, (tuple, list)):
+</span><span class="add">+                    self._popup_config[key] = value[1]
+</span><span class="add">+                else:
+</span><span class="add">+                    self._popup_config[key] = value
+</span><span class="add">+
+</span><span class="def">         for win in range(self.max_windows):
+</span><span class="sub">-            popup = self._create_window(win)
+</span><span class="add">+            popup = Popup(self.qtile, **self._popup_config)
+</span><span class="def">             self._popups.append(popup)
+</span><span class="def">             self._hidden.append(popup)
+</span><span class="sub">-
+</span><span class="sub">-        notifier.register(self._notify)
+</span><span class="sub">-
+</span><span class="sub">-    def _create_window(self, win):
+</span><span class="sub">-        &quot;&quot;&quot;
+</span><span class="sub">-        Get a Popup instance to maintain a window, drawer and textlayout with a specific
+</span><span class="sub">-        configuration.
+</span><span class="sub">-        &quot;&quot;&quot;
+</span><span class="sub">-        win = window.Internal.create(
+</span><span class="sub">-            self.qtile,
+</span><span class="sub">-            self.x,
+</span><span class="sub">-            self.y + (self.height + self.gap) * win,
+</span><span class="sub">-            self.width, self.height,
+</span><span class="sub">-            self.opacity,
+</span><span class="sub">-        )
+</span><span class="sub">-        drawer = Drawer(
+</span><span class="sub">-            self.qtile, win.window.wid, self.width, self.height,
+</span><span class="sub">-        )
+</span><span class="sub">-        layout = drawer.textlayout(
+</span><span class="sub">-            text=&apos;&apos;,
+</span><span class="sub">-            colour=self.foreground[1],
+</span><span class="sub">-            font_family=self.font,
+</span><span class="sub">-            font_size=self.fontsize,
+</span><span class="sub">-            font_shadow=self.fontshadow,
+</span><span class="sub">-            wrap=True if self.overflow == &apos;extend_y&apos; else False,
+</span><span class="sub">-            markup=True,
+</span><span class="sub">-        )
+</span><span class="sub">-        layout.layout.set_alignment(ALIGNMENTS[self.text_alignment])
+</span><span class="sub">-
+</span><span class="sub">-        if self.border_width:
+</span><span class="sub">-            win.window.configure(borderwidth=self.border_width)
+</span><span class="sub">-        if self.corner_radius:
+</span><span class="sub">-            win.window.round_corners(
+</span><span class="sub">-                self.width, self.height, self.corner_radius, self.border_width,
+</span><span class="add">+            self._positions.append(
+</span><span class="add">+                (self.x, self.y + win * (self.height + self.border_width * 3 + self.gap))
+</span><span class="def">             )
+</span><span class="def"> 
+</span><span class="sub">-        popup = Popup(win, drawer, layout)
+</span><span class="sub">-        win.handle_Expose = self._handle_Expose
+</span><span class="sub">-        win.handle_KeyPress = self._handle_KeyPress
+</span><span class="sub">-        win.handle_ButtonPress = self._get_popup_ButtonPress(popup)
+</span><span class="sub">-        self.qtile.windows_map[win.window.wid] = win
+</span><span class="sub">-        return popup
+</span><span class="sub">-
+</span><span class="sub">-    def _handle_Expose(self, e):
+</span><span class="sub">-        pass
+</span><span class="sub">-
+</span><span class="sub">-    def _handle_KeyPress(self, event):
+</span><span class="sub">-        pass
+</span><span class="sub">-
+</span><span class="sub">-    def _get_popup_ButtonPress(self, popup):
+</span><span class="sub">-        def _inner(event):
+</span><span class="sub">-            if event.detail == 1:
+</span><span class="sub">-                self._close(popup)
+</span><span class="sub">-        return _inner
+</span><span class="add">+        notifier.register(self._notify)
+</span><span class="def"> 
+</span><span class="def">     def _notify(self, notif):
+</span><span class="def">         &quot;&quot;&quot;
+</span>@@ -206,11 +144,7 @@
+<span class="def">         received via dbus. They will either be drawn now or queued to be drawn soon.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         if self._hidden:
+</span><span class="sub">-            for popup in self._popups:
+</span><span class="sub">-                if popup in self._hidden:
+</span><span class="sub">-                    break
+</span><span class="sub">-            self._hidden.remove(popup)
+</span><span class="sub">-            self._send(notif, popup)
+</span><span class="add">+            self._send(notif, self._hidden.pop())
+</span><span class="def">         else:
+</span><span class="def">             self._queue.append(notif)
+</span><span class="def"> 
+</span>@@ -224,20 +158,19 @@
+<span class="def">             summary = pangocffi.markup_escape_text(notif.summary)
+</span><span class="def">         if notif.body:
+</span><span class="def">             body = pangocffi.markup_escape_text(notif.body)
+</span><span class="sub">-        text = self.format.format(summary=summary, body=body)
+</span><span class="def">         urgency = notif.hints.get(&apos;urgency&apos;, 1)
+</span><span class="def"> 
+</span><span class="sub">-        popup.drawer.clear(self.background[urgency])
+</span><span class="sub">-        popup.layout.colour = self.foreground[urgency]
+</span><span class="sub">-        popup.layout.text = text
+</span><span class="sub">-        popup.layout.draw(
+</span><span class="sub">-            self.padding, (popup.win.height - popup.layout.height) / 2,
+</span><span class="sub">-        )
+</span><span class="add">+        popup.x, popup.y = self._positions[len(self._shown)]
+</span><span class="add">+        popup.background = self.background[urgency]
+</span><span class="add">+        popup.foreground = self.foreground[urgency]
+</span><span class="add">+        popup.text = self.format.format(summary=summary, body=body)
+</span><span class="add">+        popup.clear()
+</span><span class="add">+        popup.draw_text()
+</span><span class="def">         if self.border_width:
+</span><span class="sub">-            popup.win.window.set_attribute(borderpixel=self.border[urgency])
+</span><span class="sub">-        popup.win.unhide()
+</span><span class="sub">-        popup.drawer.draw()
+</span><span class="sub">-        popup.win.window.configure(stackmode=StackMode.Above)
+</span><span class="add">+            popup.set_border(self.border[urgency])
+</span><span class="add">+        popup.place()
+</span><span class="add">+        popup.unhide()
+</span><span class="add">+        popup.draw_window()
+</span><span class="def">         popup.id = notif.id
+</span><span class="def"> 
+</span><span class="def">         if notif.timeout is None or notif.timeout &lt; 0:
+</span>@@ -252,25 +185,35 @@
+<span class="def">         &quot;&quot;&quot;
+</span><span class="def">         Close the specified Popup instance.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="sub">-        if nid is not None and popup.id != nid:
+</span><span class="sub">-            return
+</span><span class="sub">-
+</span><span class="def">         if popup in self._shown:
+</span><span class="def">             self._shown.remove(popup)
+</span><span class="add">+            if nid is not None and popup.id != nid:
+</span><span class="add">+                return
+</span><span class="add">+            popup.hide()
+</span><span class="def">             if self._queue:
+</span><span class="def">                 self._send(self._queue.pop(0), popup)
+</span><span class="def">             else:
+</span><span class="sub">-                popup.win.hide()
+</span><span class="def">                 self._hidden.append(popup)
+</span><span class="def"> 
+</span><span class="add">+        for index, shown in enumerate(self._shown):
+</span><span class="add">+            shown.x, shown.y = self._positions[index]
+</span><span class="add">+            shown.place()
+</span><span class="add">+
+</span><span class="def">     def close(self, qtile=None):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="sub">-        This method can be bound to keys to close the oldest of any visible notification
+</span><span class="sub">-        windows.
+</span><span class="add">+        Close the oldest of all visible popup windows.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         if self._shown:
+</span><span class="def">             self._close(self._shown[0])
+</span><span class="def"> 
+</span><span class="add">+    def close_all(self, qtile=None):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Close all popup windows.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        self._queue.clear()
+</span><span class="add">+        for popup in self._shown:
+</span><span class="add">+            self._close(popup)
+</span><span class="add">+
+</span><span class="def">     #def prev(self, qtile=None):
+</span><span class="def">     #    self._notify(notifier.notifications[self._current_id])
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

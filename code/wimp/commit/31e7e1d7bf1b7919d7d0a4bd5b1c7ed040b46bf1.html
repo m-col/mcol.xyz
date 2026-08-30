@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add help message</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/31e7e1d7bf1b7919d7d0a4bd5b1c7ed040b46bf1.html">31e7e1d7bf1b7919d7d0a4bd5b1c7ed040b46bf1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/6e2474370330555234037bfa66ec81e77df994fe.html">6e2474370330555234037bfa66ec81e77df994fe</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-23 22:01:45 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-23 22:01:45 +0000
+
+add help message
+</pre><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,22 +16,35 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static const char usage[] =
+</span><span class="add">+    &quot;usage: deskwm [options...]\n&quot;
+</span><span class="add">+    &quot;    -h         show this help message\n&quot;
+</span><span class="add">+    &quot;    -c &lt;file&gt;  specify config file\n&quot;
+</span><span class="add">+    &quot;    -d         set logging to debug mode\n&quot;
+</span><span class="add">+    &quot;    -i         set logging to info mode\n&quot;
+</span><span class="add">+;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> int main(int argc, char *argv[]) {
+</span><span class="def">     wlr_log_init(WLR_ERROR, NULL);
+</span><span class="def"> 
+</span><span class="def">     int opt;
+</span><span class="def">     char *config = NULL;
+</span><span class="sub">-    while ((opt = getopt(argc, argv, &quot;dic:&quot;)) != -1) {
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;hcdi:&quot;)) != -1) {
+</span><span class="def">         switch (opt) {
+</span><span class="add">+	    case &apos;h&apos;:
+</span><span class="add">+		printf(usage);
+</span><span class="add">+		return EXIT_SUCCESS;
+</span><span class="add">+		break;
+</span><span class="add">+	    case &apos;c&apos;:
+</span><span class="add">+		config = strdup(optarg);
+</span><span class="add">+		break;
+</span><span class="def"> 	    case &apos;d&apos;:
+</span><span class="def"> 		wlr_log_init(WLR_DEBUG, NULL);
+</span><span class="def"> 		break;
+</span><span class="def"> 	    case &apos;i&apos;:
+</span><span class="def"> 		wlr_log_init(WLR_INFO, NULL);
+</span><span class="def"> 		break;
+</span><span class="sub">-	    case &apos;c&apos;:
+</span><span class="sub">-		config = strdup(optarg);
+</span><span class="sub">-		break;
+</span><span class="def">         }
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

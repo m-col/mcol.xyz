@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add pythonrc to repo</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/f0d2bde6961f5920ebbb08cb4c1d270a87eee681.html">f0d2bde6961f5920ebbb08cb4c1d270a87eee681</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/dbe0c04fc9ae3575ddf791aa26089087b49341e3.html">dbe0c04fc9ae3575ddf791aa26089087b49341e3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2024-12-21 19:42:32 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2024-12-21 19:42:32 +0000
+
+add pythonrc to repo
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -66,7 +66,8 @@
+<span class="def">     LANG=en_GB.UTF-8 \
+</span><span class="def">     LC_CTYPE=en_GB.UTF-8 \
+</span><span class="def">     PAGER=&quot;less --mouse&quot; \
+</span><span class="sub">-    RANGER_LOAD_DEFAULT_RC=FALSE
+</span><span class="add">+    RANGER_LOAD_DEFAULT_RC=FALSE \
+</span><span class="add">+    PYTHONSTARTUP=~/.zsh/pythonrc.py
+</span><span class="def"> 
+</span><span class="def"> # ensure that the prompt is redrawn when the terminal size changes.
+</span><span class="def"> TRAPWINCH () { zle &amp;&amp;  zle -R }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>pythonrc.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,19 @@
+<span class="add">+import os
+</span><span class="add">+import sys
+</span><span class="add">+from pprint import pprint
+</span><span class="add">+
+</span><span class="add">+try:
+</span><span class="add">+    from ptpython.repl import embed as _embed
+</span><span class="add">+except ImportError:
+</span><span class="add">+    print(&quot;ptpython is not available: falling back to standard prompt&quot;)
+</span><span class="add">+else:
+</span><span class="add">+    sys.exit(
+</span><span class="add">+        _embed(
+</span><span class="add">+            globals(),
+</span><span class="add">+            locals(),
+</span><span class="add">+            vi_mode=True,
+</span><span class="add">+            history_filename=os.environ.get(
+</span><span class="add">+                &quot;PYTHON_HISTORY&quot;, os.path.expanduser(&quot;~/.python_history&quot;)
+</span><span class="add">+            ),
+</span><span class="add">+        )
+</span><span class="add">+    )
+</span></pre>
+</div></div>
+  </body>
+</html>

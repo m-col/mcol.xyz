@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - clean up following flake8</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/91bde6e792150e42f9a3efae107ec8b6d6ebe858.html">91bde6e792150e42f9a3efae107ec8b6d6ebe858</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/24dc6f308087392fe8b5ca315e3fa2afb4318755.html">24dc6f308087392fe8b5ca315e3fa2afb4318755</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-11 22:03:08 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-11 22:03:08 +0000
+
+clean up following flake8
+</pre><div class="diff">
+  <p>
+    <b>qtools/xresources/xresources.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,7 @@
+<span class="def"> import xcffib.xproto
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-def get(DISPLAY, defaults={}):
+</span><span class="add">+def get(DISPLAY, defaults=None):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     Get the X resources in an X servers resource manager.
+</span><span class="def"> 
+</span>@@ -15,7 +15,7 @@
+<span class="def">     ==========
+</span><span class="def">     DISPLAY : str
+</span><span class="def">         DISPLAY name to query.
+</span><span class="sub">-    
+</span><span class="add">+
+</span><span class="def">     defaults : dict (optional)
+</span><span class="def">         Default values to act as a fallback for missing values or in the event of a
+</span><span class="def">         failed connection.
+</span>@@ -31,7 +31,7 @@
+<span class="def">     try:
+</span><span class="def">         conn = xcffib.connect(display=DISPLAY)
+</span><span class="def">     except xcffib.ConnectionException:
+</span><span class="sub">-        return defaults
+</span><span class="add">+        return defaults if defaults else {}
+</span><span class="def"> 
+</span><span class="def">     root = conn.get_setup().roots[0].root
+</span><span class="def">     atom = conn.core.InternAtom(False, 16, &apos;RESOURCE_MANAGER&apos;).reply().atom
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/mpc/mpc.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,6 +13,7 @@
+<span class="def">     }.items()])
+</span><span class="def"> 
+</span><span class="def"> &quot;&quot;&quot;
+</span><span class="add">+# pylint: disable=no-member
+</span><span class="def"> 
+</span><span class="def"> from functools import wraps
+</span><span class="def"> 
+</span>@@ -55,6 +56,7 @@
+<span class="def">         (&apos;host&apos;, &apos;127.0.0.1&apos;, &apos;IP address of MPD server.&apos;),
+</span><span class="def">         (&apos;port&apos;, &apos;6600&apos;, &apos;Port of MPD server.&apos;),
+</span><span class="def">     ]
+</span><span class="add">+
+</span><span class="def">     def __init__(self, **config):
+</span><span class="def">         Notifier.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Client.defaults)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/backlight/backlight.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,7 +19,10 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> class Backlight(Notifier):
+</span><span class="sub">-
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This class controls screen backlight by directly reading and writing to the
+</span><span class="add">+    backlight device file in /sys.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="def">     defaults = [
+</span><span class="def">         (&apos;summary&apos;, &apos;Backlight&apos;, &apos;Notification summary.&apos;),
+</span><span class="def">         (&apos;interval&apos;, 10, &apos;Percentage interval by which to change backlight&apos;),
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/amixer/amixer.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,21 +26,22 @@
+<span class="def">         (&apos;mixer&apos;, &apos;Master&apos;, &apos;ALSA mixer to control.&apos;),
+</span><span class="def">         (&apos;interval&apos;, 5, &apos;Percentage interval to change volume by.&apos;),
+</span><span class="def">     ]
+</span><span class="add">+
+</span><span class="def">     def __init__(self, **config):
+</span><span class="def">         Notifier.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Volume.defaults)
+</span><span class="def"> 
+</span><span class="def">     def increase(self, qtile=None):
+</span><span class="def">         volume = self._run(f&apos;{self.interval}%+&apos;)
+</span><span class="sub">-        self.show(self.interval * round(volume/self.interval))
+</span><span class="add">+        self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="def">     def decrease(self, qtile=None):
+</span><span class="def">         volume = self._run(f&apos;{self.interval}%-&apos;)
+</span><span class="sub">-        self.show(self.interval * round(volume/self.interval))
+</span><span class="add">+        self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="def">     def toggle(self, qtile=None):
+</span><span class="def">         volume = self._run(&apos;toggle&apos;)
+</span><span class="sub">-        self.show(self.interval * round(volume/self.interval))
+</span><span class="add">+        self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="def">     def mute(self, qtile=None):
+</span><span class="def">         self._run(&apos;mute&apos;)
+</span></pre>
+</div></div>
+  </body>
+</html>

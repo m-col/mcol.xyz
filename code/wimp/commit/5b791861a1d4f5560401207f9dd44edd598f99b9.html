@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Fix send_to_desk crash and add action to example config</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/5b791861a1d4f5560401207f9dd44edd598f99b9.html">5b791861a1d4f5560401207f9dd44edd598f99b9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/d592e880797c7010d79ff2f15323576fe021b2de.html">d592e880797c7010d79ff2f15323576fe021b2de</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 18:25:28 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 18:25:28 +0000
+
+Fix send_to_desk crash and add action to example config
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -59,6 +59,8 @@
+<span class="def"> bind		h		focus left
+</span><span class="def"> bind		l		focus right
+</span><span class="def"> bind		f		toggle_fullscreen
+</span><span class="add">+bind	Shift	1		send_to_desk 1
+</span><span class="add">+bind	Shift	2		send_to_desk 2
+</span><span class="def"> 
+</span><span class="def"> # These give the focussed window half of the screen
+</span><span class="def"> bind	Shift	j		halfimize down
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -70,15 +70,20 @@
+<span class="def"> 
+</span><span class="def"> void view_to_desk(struct view *view, int index) {
+</span><span class="def">     struct desk *desk;
+</span><span class="add">+    wimp.can_steal_focus = false;
+</span><span class="add">+
+</span><span class="def">     wl_list_for_each(desk, &amp;wimp.desks, link) {
+</span><span class="def"> 	if (desk-&gt;index == index) {
+</span><span class="def"> 	    wl_list_remove(&amp;view-&gt;link);
+</span><span class="sub">-	    if (desk == wimp.current_desk) {
+</span><span class="sub">-		map_view(view);
+</span><span class="sub">-	    } else {
+</span><span class="sub">-		unmap_view(view);
+</span><span class="sub">-	    }
+</span><span class="add">+	    desk == wimp.current_desk ? map_view(view) : unmap_view(view);
+</span><span class="def"> 	    wl_list_insert(&amp;desk-&gt;views, &amp;view-&gt;link);
+</span><span class="add">+	    break;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+
+</span><span class="add">+    wimp.can_steal_focus = true;
+</span><span class="add">+    if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="add">+	struct view *next_view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="add">+	focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -350,6 +350,6 @@
+<span class="def"> 
+</span><span class="def"> void send_to_desk(void *data) {
+</span><span class="def">     struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="sub">-    int index = *(int*)data;
+</span><span class="add">+    int index = *(double*)data - 1;
+</span><span class="def">     view_to_desk(view, index);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Backlight not to maintain own value, in case changed elsewhere</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/a199c440605e99bebad2262a7903ba220579d2d2.html">a199c440605e99bebad2262a7903ba220579d2d2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/24f2167c05001ccb990532f6ba47b04c66b14538.html">24f2167c05001ccb990532f6ba47b04c66b14538</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-10 22:20:40 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-10 22:20:40 +0000
+
+Backlight not to maintain own value, in case changed elsewhere
+</pre><div class="diff">
+  <p>
+    <b>backlight/backlight.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -34,27 +34,30 @@
+<span class="def">         Notifier.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Backlight.defaults)
+</span><span class="def"> 
+</span><span class="sub">-        if os.path.isfile(self.path):
+</span><span class="sub">-            self.brightness = self.read()
+</span><span class="sub">-        else:
+</span><span class="add">+        if not os.path.isfile(self.path):
+</span><span class="def">             logger.error(&apos;Path passed to Backlight plugin is invalid&apos;)
+</span><span class="def">             self.path = &apos;/dev/null&apos;
+</span><span class="sub">-            self.brightness = 0
+</span><span class="def"> 
+</span><span class="sub">-    def read(self):
+</span><span class="add">+    @property
+</span><span class="add">+    def brightness(self):
+</span><span class="def">         with open(self.path, &apos;r&apos;) as f:
+</span><span class="def">             return int(f.read())
+</span><span class="def"> 
+</span><span class="sub">-    def write(self, string):
+</span><span class="add">+    @brightness.setter
+</span><span class="add">+    def brightness(self, value):
+</span><span class="add">+        if value &gt; 100:
+</span><span class="add">+            value = 100
+</span><span class="add">+        elif value &lt; 0:
+</span><span class="add">+            value = 0
+</span><span class="add">+        elif value % self.interval:
+</span><span class="add">+            value = self.interval * round(value / self.interval)
+</span><span class="add">+
+</span><span class="def">         with open(self.path, &apos;w&apos;) as f:
+</span><span class="sub">-            f.write(string)
+</span><span class="sub">-        self.update(string)
+</span><span class="sub">-        self.show()
+</span><span class="add">+            f.write(str(value))
+</span><span class="add">+        self.show(value)
+</span><span class="def"> 
+</span><span class="def">     def inc_brightness(self, qtile=None):
+</span><span class="sub">-        self.brightness = min(self.brightness + self.interval, 100)
+</span><span class="sub">-        self.write(str(self.brightness))
+</span><span class="add">+        self.brightness += self.interval
+</span><span class="def"> 
+</span><span class="def">     def dec_brightness(self, qtile=None):
+</span><span class="sub">-        self.brightness = max(self.brightness - self.interval, 0)
+</span><span class="sub">-        self.write(str(self.brightness))
+</span><span class="add">+        self.brightness -= self.interval
+</span></pre>
+</div></div>
+  </body>
+</html>

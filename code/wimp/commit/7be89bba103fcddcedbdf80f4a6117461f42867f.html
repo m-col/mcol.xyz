@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - keyboard.c -&gt; input.c</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/7be89bba103fcddcedbdf80f4a6117461f42867f.html">7be89bba103fcddcedbdf80f4a6117461f42867f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/73375f3abeaa9564f2bd12594f9a454cded220b3.html">73375f3abeaa9564f2bd12594f9a454cded220b3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-10 23:23:50 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-10 23:23:50 +0000
+
+keyboard.c -&gt; input.c
+</pre><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,6 +6,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_output_damage.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_management_v1.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_screencopy_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xdg_output_v1.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;output.h&quot;
+</span>@@ -406,6 +407,7 @@
+<span class="def">     wimp.new_output_listener.notify = on_new_output;
+</span><span class="def">     wl_signal_add(&amp;wimp.backend-&gt;events.new_output, &amp;wimp.new_output_listener);
+</span><span class="def"> 
+</span><span class="add">+    wlr_screencopy_manager_v1_create(wimp.display);
+</span><span class="def">     wlr_xdg_output_manager_v1_create(wimp.display, wimp.output_layout);
+</span><span class="def"> 
+</span><span class="def">     wimp.output_manager = wlr_output_manager_v1_create(wimp.display);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,9 +4,6 @@
+<span class="def"> #include &lt;wlr/backend.h&gt;
+</span><span class="def"> #include &lt;wlr/render/wlr_renderer.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_primary_selection_v1.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_screencopy_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span>@@ -15,7 +12,7 @@
+<span class="def"> #include &quot;decorations.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;main.h&quot;
+</span><span class="sub">-#include &quot;keyboard.h&quot;
+</span><span class="add">+#include &quot;input.h&quot;
+</span><span class="def"> #include &quot;layer_shell.h&quot;
+</span><span class="def"> #include &quot;log.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span>@@ -151,11 +148,6 @@
+<span class="def">     wlr_renderer_init_wl_display(wimp.renderer, wimp.display);
+</span><span class="def">     wlr_compositor_create(wimp.display, wimp.renderer);
+</span><span class="def"> 
+</span><span class="sub">-    // add some managers
+</span><span class="sub">-    wlr_screencopy_manager_v1_create(wimp.display);
+</span><span class="sub">-    wlr_data_device_manager_create(wimp.display);
+</span><span class="sub">-    wlr_primary_selection_v1_device_manager_create(wimp.display);
+</span><span class="sub">-
+</span><span class="def">     // initialise
+</span><span class="def">     wl_list_init(&amp;wimp.desks);
+</span><span class="def">     wl_list_init(&amp;wimp.key_bindings);
+</span>@@ -166,10 +158,10 @@
+<span class="def">     // configure
+</span><span class="def">     locate_config();
+</span><span class="def">     load_config();
+</span><span class="add">+    set_up_inputs();
+</span><span class="def">     set_up_outputs();
+</span><span class="def">     set_up_shell();
+</span><span class="def">     set_up_cursor();
+</span><span class="sub">-    set_up_keyboard();
+</span><span class="def">     set_up_decorations();
+</span><span class="def">     set_up_layer_shell();
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keyboard.h</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +0,0 @@
+<span class="sub">-#ifndef DESKWM_KEYBOARD_H
+</span><span class="sub">-#define DESKWM_KEYBOARD_H
+</span><span class="sub">-
+</span><span class="sub">-#include &quot;types.h&quot;
+</span><span class="sub">-
+</span><span class="sub">-void set_up_keyboard();
+</span><span class="sub">-
+</span><span class="sub">-#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keyboard.c</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,216 +0,0 @@
+<span class="sub">-#include &lt;inttypes.h&gt;
+</span><span class="sub">-#include &lt;unistd.h&gt;
+</span><span class="sub">-#include &lt;wayland-server-protocol.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_keyboard.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_virtual_keyboard_v1.h&gt;
+</span><span class="sub">-
+</span><span class="sub">-#include &quot;action.h&quot;
+</span><span class="sub">-#include &quot;cursor.h&quot;
+</span><span class="sub">-#include &quot;shell.h&quot;
+</span><span class="sub">-#include &quot;types.h&quot;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void on_modifier(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    struct keyboard *keyboard = wl_container_of(listener, keyboard, modifier_listener);
+</span><span class="sub">-    wlr_seat_keyboard_notify_modifiers(
+</span><span class="sub">-	wimp.seat, &amp;keyboard-&gt;device-&gt;keyboard-&gt;modifiers
+</span><span class="sub">-    );
+</span><span class="sub">-
+</span><span class="sub">-    uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-    bool handled = false;
+</span><span class="sub">-    struct binding *kb;
+</span><span class="sub">-    if ((modifiers &amp; wimp.mod)) {
+</span><span class="sub">-	modifiers &amp;= ~wimp.mod;
+</span><span class="sub">-	wl_list_for_each(kb, &amp;wimp.mouse_bindings, link) {
+</span><span class="sub">-	    if (modifiers == kb-&gt;mods) {
+</span><span class="sub">-		switch (kb-&gt;key) {
+</span><span class="sub">-		    case MOTION:
+</span><span class="sub">-			wimp.on_mouse_motion = kb-&gt;action;
+</span><span class="sub">-			break;
+</span><span class="sub">-		    case SCROLL:
+</span><span class="sub">-			wimp.on_mouse_scroll = kb-&gt;action;
+</span><span class="sub">-			break;
+</span><span class="sub">-		    case DRAG1:
+</span><span class="sub">-			wimp.on_drag1 = kb-&gt;action;
+</span><span class="sub">-			break;
+</span><span class="sub">-		    case DRAG2:
+</span><span class="sub">-			wimp.on_drag2 = kb-&gt;action;
+</span><span class="sub">-			break;
+</span><span class="sub">-		    case DRAG3:
+</span><span class="sub">-			wimp.on_drag3 = kb-&gt;action;
+</span><span class="sub">-			break;
+</span><span class="sub">-		    case PINCH:
+</span><span class="sub">-			wimp.on_pinch = kb-&gt;action;
+</span><span class="sub">-			wimp.on_pinch_begin = kb-&gt;begin;
+</span><span class="sub">-			break;
+</span><span class="sub">-		}
+</span><span class="sub">-		wimp.cursor_mode = CURSOR_MOD;
+</span><span class="sub">-		handled = true;
+</span><span class="sub">-	    }
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    if (!handled){
+</span><span class="sub">-	wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="sub">-    }
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void on_key(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    struct wlr_event_keyboard_key *event = data;
+</span><span class="sub">-
+</span><span class="sub">-    if (event-&gt;state == WL_KEYBOARD_KEY_STATE_PRESSED) {
+</span><span class="sub">-	const xkb_keysym_t *syms;
+</span><span class="sub">-	xkb_keycode_t keycode = event-&gt;keycode + 8;
+</span><span class="sub">-	struct keyboard *keyboard = wl_container_of(listener, keyboard, key_listener);
+</span><span class="sub">-	struct wlr_keyboard *wlr_kb = keyboard-&gt;device-&gt;keyboard;
+</span><span class="sub">-
+</span><span class="sub">-	if (wimp.mark_waiting) {
+</span><span class="sub">-	    struct mark *mark;
+</span><span class="sub">-	    wimp.mark_waiting = false;
+</span><span class="sub">-	    xkb_state_key_get_syms(wlr_kb-&gt;xkb_state, keycode, &amp;syms);
+</span><span class="sub">-	    mark = wl_container_of(wimp.marks.next, mark, link);
+</span><span class="sub">-	    if (mark-&gt;key == 0) {
+</span><span class="sub">-		actually_set_mark(syms[0]);
+</span><span class="sub">-	    } else {
+</span><span class="sub">-		actually_go_to_mark(syms[0]);
+</span><span class="sub">-	    }
+</span><span class="sub">-	    return;
+</span><span class="sub">-	}
+</span><span class="sub">-
+</span><span class="sub">-	uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-	struct binding *kb;
+</span><span class="sub">-	if ((modifiers &amp; wimp.mod)) {
+</span><span class="sub">-	    xkb_layout_index_t layout_index = xkb_state_key_get_layout(wlr_kb-&gt;xkb_state, keycode);
+</span><span class="sub">-	    int nsyms = xkb_keymap_key_get_syms_by_level(
+</span><span class="sub">-		wlr_kb-&gt;keymap, keycode, layout_index, 0, &amp;syms
+</span><span class="sub">-	    );
+</span><span class="sub">-
+</span><span class="sub">-	    modifiers &amp;= ~wimp.mod;
+</span><span class="sub">-	    for (int i = 0; i &lt; nsyms; i++) {
+</span><span class="sub">-		wl_list_for_each(kb, &amp;wimp.key_bindings, link) {
+</span><span class="sub">-		    if (syms[i] == kb-&gt;key &amp;&amp; modifiers == kb-&gt;mods) {
+</span><span class="sub">-			kb-&gt;action(kb-&gt;data);
+</span><span class="sub">-			return;
+</span><span class="sub">-		    }
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    // forward to client
+</span><span class="sub">-    wlr_seat_keyboard_notify_key(
+</span><span class="sub">-	wimp.seat, event-&gt;time_msec, event-&gt;keycode, event-&gt;state
+</span><span class="sub">-    );
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void on_keyboard_destroy(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    struct keyboard *keyboard = wl_container_of(listener, keyboard, destroy_listener);
+</span><span class="sub">-
+</span><span class="sub">-    wl_list_remove(&amp;keyboard-&gt;link);
+</span><span class="sub">-    wl_list_remove(&amp;keyboard-&gt;modifier_listener.link);
+</span><span class="sub">-    wl_list_remove(&amp;keyboard-&gt;key_listener.link);
+</span><span class="sub">-    wl_list_remove(&amp;keyboard-&gt;destroy_listener.link);
+</span><span class="sub">-    free(keyboard);
+</span><span class="sub">-
+</span><span class="sub">-    if (!wl_list_empty(&amp;wimp.keyboards)) {
+</span><span class="sub">-	keyboard = wl_container_of(wimp.keyboards.next, keyboard, link);
+</span><span class="sub">-	wlr_seat_set_keyboard(wimp.seat, keyboard-&gt;device);
+</span><span class="sub">-    }
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void on_new_keyboard(struct wlr_input_device *device) {
+</span><span class="sub">-    struct keyboard *keyboard = calloc(1, sizeof(struct keyboard));
+</span><span class="sub">-    keyboard-&gt;device = device;
+</span><span class="sub">-
+</span><span class="sub">-    // currently assumes default &quot;us&quot;
+</span><span class="sub">-    struct xkb_rule_names rules = { 0 };
+</span><span class="sub">-    struct xkb_context *context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+</span><span class="sub">-    struct xkb_keymap *keymap = xkb_map_new_from_names(context, &amp;rules,
+</span><span class="sub">-	XKB_KEYMAP_COMPILE_NO_FLAGS);
+</span><span class="sub">-
+</span><span class="sub">-    wlr_keyboard_set_keymap(device-&gt;keyboard, keymap);
+</span><span class="sub">-    xkb_keymap_unref(keymap);
+</span><span class="sub">-    xkb_context_unref(context);
+</span><span class="sub">-    wlr_keyboard_set_repeat_info(device-&gt;keyboard, 25, 600);
+</span><span class="sub">-
+</span><span class="sub">-    keyboard-&gt;key_listener.notify = on_key;
+</span><span class="sub">-    keyboard-&gt;destroy_listener.notify = on_keyboard_destroy;
+</span><span class="sub">-    keyboard-&gt;modifier_listener.notify = on_modifier;
+</span><span class="sub">-    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.key, &amp;keyboard-&gt;key_listener);
+</span><span class="sub">-    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.destroy, &amp;keyboard-&gt;destroy_listener);
+</span><span class="sub">-    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.modifiers, &amp;keyboard-&gt;modifier_listener);
+</span><span class="sub">-
+</span><span class="sub">-    wlr_seat_set_keyboard(wimp.seat, device);
+</span><span class="sub">-    wl_list_insert(&amp;wimp.keyboards, &amp;keyboard-&gt;link);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void on_request_set_selection(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    struct wlr_seat_request_set_selection_event *event = data;
+</span><span class="sub">-    wlr_seat_set_selection(wimp.seat, event-&gt;source, event-&gt;serial);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void on_request_cursor(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    struct wlr_seat_pointer_request_set_cursor_event *event = data;
+</span><span class="sub">-    struct wlr_seat_client *focused_client =
+</span><span class="sub">-	wimp.seat-&gt;pointer_state.focused_client;
+</span><span class="sub">-
+</span><span class="sub">-    if (focused_client == event-&gt;seat_client) {
+</span><span class="sub">-	wlr_cursor_set_surface(
+</span><span class="sub">-	    wimp.cursor, event-&gt;surface, event-&gt;hotspot_x, event-&gt;hotspot_y
+</span><span class="sub">-	);
+</span><span class="sub">-    }
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void on_new_input(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    struct wlr_input_device *device = data;
+</span><span class="sub">-    switch (device-&gt;type) {
+</span><span class="sub">-	case WLR_INPUT_DEVICE_KEYBOARD:
+</span><span class="sub">-	    on_new_keyboard(device);
+</span><span class="sub">-	    break;
+</span><span class="sub">-	case WLR_INPUT_DEVICE_POINTER:
+</span><span class="sub">-	    wlr_cursor_attach_input_device(wimp.cursor, device);
+</span><span class="sub">-	    break;
+</span><span class="sub">-	default:
+</span><span class="sub">-	    break;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    uint32_t capabilities = WL_SEAT_CAPABILITY_POINTER;
+</span><span class="sub">-    if (!wl_list_empty(&amp;wimp.keyboards))
+</span><span class="sub">-	capabilities |= WL_SEAT_CAPABILITY_KEYBOARD;
+</span><span class="sub">-    wlr_seat_set_capabilities(wimp.seat, capabilities);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void on_new_virtual_keyboard(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    struct wlr_virtual_keyboard_v1 *keyboard = data;
+</span><span class="sub">-    struct wlr_input_device *device = &amp;keyboard-&gt;input_device;
+</span><span class="sub">-    on_new_keyboard(device);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void set_up_keyboard() {
+</span><span class="sub">-    wl_list_init(&amp;wimp.keyboards);
+</span><span class="sub">-
+</span><span class="sub">-    wimp.new_input_listener.notify = on_new_input;
+</span><span class="sub">-    wl_signal_add(&amp;wimp.backend-&gt;events.new_input, &amp;wimp.new_input_listener);
+</span><span class="sub">-
+</span><span class="sub">-    wimp.seat = wlr_seat_create(wimp.display, &quot;seat0&quot;);
+</span><span class="sub">-    wimp.request_cursor_listener.notify = on_request_cursor;
+</span><span class="sub">-    wl_signal_add(&amp;wimp.seat-&gt;events.request_set_cursor, &amp;wimp.request_cursor_listener);
+</span><span class="sub">-
+</span><span class="sub">-    wimp.request_set_selection_listener.notify = on_request_set_selection;
+</span><span class="sub">-    wl_signal_add(&amp;wimp.seat-&gt;events.request_set_selection,
+</span><span class="sub">-	&amp;wimp.request_set_selection_listener);
+</span><span class="sub">-
+</span><span class="sub">-    wimp.virtual_keyboard = wlr_virtual_keyboard_manager_v1_create(wimp.display);
+</span><span class="sub">-    wimp.new_virtual_keyboard_listener.notify = on_new_virtual_keyboard;
+</span><span class="sub">-    wl_signal_add(&amp;wimp.virtual_keyboard-&gt;events.new_virtual_keyboard,
+</span><span class="sub">-	&amp;wimp.new_virtual_keyboard_listener);
+</span><span class="sub">-}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,8 @@
+<span class="add">+#ifndef DESKWM_KEYBOARD_H
+</span><span class="add">+#define DESKWM_KEYBOARD_H
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+void set_up_inputs();
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,203 @@
+<span class="add">+#include &lt;inttypes.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="add">+#include &lt;wayland-server-protocol.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_keyboard.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_primary_selection_v1.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_virtual_keyboard_v1.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;action.h&quot;
+</span><span class="add">+#include &quot;cursor.h&quot;
+</span><span class="add">+#include &quot;shell.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_modifier(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct keyboard *keyboard = wl_container_of(listener, keyboard, modifier_listener);
+</span><span class="add">+    wlr_seat_keyboard_notify_modifiers(
+</span><span class="add">+	wimp.seat, &amp;keyboard-&gt;device-&gt;keyboard-&gt;modifiers
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="add">+    bool handled = false;
+</span><span class="add">+    struct binding *kb;
+</span><span class="add">+    if ((modifiers &amp; wimp.mod)) {
+</span><span class="add">+	modifiers &amp;= ~wimp.mod;
+</span><span class="add">+	wl_list_for_each(kb, &amp;wimp.mouse_bindings, link) {
+</span><span class="add">+	    if (modifiers == kb-&gt;mods) {
+</span><span class="add">+		switch (kb-&gt;key) {
+</span><span class="add">+		    case MOTION:
+</span><span class="add">+			wimp.on_mouse_motion = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="add">+		    case SCROLL:
+</span><span class="add">+			wimp.on_mouse_scroll = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="add">+		    case DRAG1:
+</span><span class="add">+			wimp.on_drag1 = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="add">+		    case DRAG2:
+</span><span class="add">+			wimp.on_drag2 = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="add">+		    case DRAG3:
+</span><span class="add">+			wimp.on_drag3 = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="add">+		    case PINCH:
+</span><span class="add">+			wimp.on_pinch = kb-&gt;action;
+</span><span class="add">+			wimp.on_pinch_begin = kb-&gt;begin;
+</span><span class="add">+			break;
+</span><span class="add">+		}
+</span><span class="add">+		wimp.cursor_mode = CURSOR_MOD;
+</span><span class="add">+		handled = true;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (!handled){
+</span><span class="add">+	wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_key(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_event_keyboard_key *event = data;
+</span><span class="add">+
+</span><span class="add">+    if (event-&gt;state == WL_KEYBOARD_KEY_STATE_PRESSED) {
+</span><span class="add">+	const xkb_keysym_t *syms;
+</span><span class="add">+	xkb_keycode_t keycode = event-&gt;keycode + 8;
+</span><span class="add">+	struct keyboard *keyboard = wl_container_of(listener, keyboard, key_listener);
+</span><span class="add">+	struct wlr_keyboard *wlr_kb = keyboard-&gt;device-&gt;keyboard;
+</span><span class="add">+
+</span><span class="add">+	if (wimp.mark_waiting) {
+</span><span class="add">+	    struct mark *mark;
+</span><span class="add">+	    wimp.mark_waiting = false;
+</span><span class="add">+	    xkb_state_key_get_syms(wlr_kb-&gt;xkb_state, keycode, &amp;syms);
+</span><span class="add">+	    mark = wl_container_of(wimp.marks.next, mark, link);
+</span><span class="add">+	    if (mark-&gt;key == 0) {
+</span><span class="add">+		actually_set_mark(syms[0]);
+</span><span class="add">+	    } else {
+</span><span class="add">+		actually_go_to_mark(syms[0]);
+</span><span class="add">+	    }
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="add">+	struct binding *kb;
+</span><span class="add">+	if ((modifiers &amp; wimp.mod)) {
+</span><span class="add">+	    xkb_layout_index_t layout_index = xkb_state_key_get_layout(wlr_kb-&gt;xkb_state, keycode);
+</span><span class="add">+	    int nsyms = xkb_keymap_key_get_syms_by_level(
+</span><span class="add">+		wlr_kb-&gt;keymap, keycode, layout_index, 0, &amp;syms
+</span><span class="add">+	    );
+</span><span class="add">+
+</span><span class="add">+	    modifiers &amp;= ~wimp.mod;
+</span><span class="add">+	    for (int i = 0; i &lt; nsyms; i++) {
+</span><span class="add">+		wl_list_for_each(kb, &amp;wimp.key_bindings, link) {
+</span><span class="add">+		    if (syms[i] == kb-&gt;key &amp;&amp; modifiers == kb-&gt;mods) {
+</span><span class="add">+			kb-&gt;action(kb-&gt;data);
+</span><span class="add">+			return;
+</span><span class="add">+		    }
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // forward to client
+</span><span class="add">+    wlr_seat_keyboard_notify_key(
+</span><span class="add">+	wimp.seat, event-&gt;time_msec, event-&gt;keycode, event-&gt;state
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_keyboard_destroy(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct keyboard *keyboard = wl_container_of(listener, keyboard, destroy_listener);
+</span><span class="add">+
+</span><span class="add">+    wl_list_remove(&amp;keyboard-&gt;link);
+</span><span class="add">+    wl_list_remove(&amp;keyboard-&gt;modifier_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;keyboard-&gt;key_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;keyboard-&gt;destroy_listener.link);
+</span><span class="add">+    free(keyboard);
+</span><span class="add">+
+</span><span class="add">+    if (!wl_list_empty(&amp;wimp.keyboards)) {
+</span><span class="add">+	keyboard = wl_container_of(wimp.keyboards.next, keyboard, link);
+</span><span class="add">+	wlr_seat_set_keyboard(wimp.seat, keyboard-&gt;device);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_new_keyboard(struct wlr_input_device *device) {
+</span><span class="add">+    struct keyboard *keyboard = calloc(1, sizeof(struct keyboard));
+</span><span class="add">+    keyboard-&gt;device = device;
+</span><span class="add">+
+</span><span class="add">+    // currently assumes default &quot;us&quot;
+</span><span class="add">+    struct xkb_rule_names rules = { 0 };
+</span><span class="add">+    struct xkb_context *context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+</span><span class="add">+    struct xkb_keymap *keymap = xkb_map_new_from_names(context, &amp;rules,
+</span><span class="add">+	XKB_KEYMAP_COMPILE_NO_FLAGS);
+</span><span class="add">+
+</span><span class="add">+    wlr_keyboard_set_keymap(device-&gt;keyboard, keymap);
+</span><span class="add">+    xkb_keymap_unref(keymap);
+</span><span class="add">+    xkb_context_unref(context);
+</span><span class="add">+    wlr_keyboard_set_repeat_info(device-&gt;keyboard, 25, 600);
+</span><span class="add">+
+</span><span class="add">+    keyboard-&gt;key_listener.notify = on_key;
+</span><span class="add">+    keyboard-&gt;destroy_listener.notify = on_keyboard_destroy;
+</span><span class="add">+    keyboard-&gt;modifier_listener.notify = on_modifier;
+</span><span class="add">+    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.key, &amp;keyboard-&gt;key_listener);
+</span><span class="add">+    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.destroy, &amp;keyboard-&gt;destroy_listener);
+</span><span class="add">+    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.modifiers, &amp;keyboard-&gt;modifier_listener);
+</span><span class="add">+
+</span><span class="add">+    wlr_seat_set_keyboard(wimp.seat, device);
+</span><span class="add">+    wl_list_insert(&amp;wimp.keyboards, &amp;keyboard-&gt;link);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_request_set_selection(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_seat_request_set_selection_event *event = data;
+</span><span class="add">+    wlr_seat_set_selection(wimp.seat, event-&gt;source, event-&gt;serial);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_new_input(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_input_device *device = data;
+</span><span class="add">+    switch (device-&gt;type) {
+</span><span class="add">+	case WLR_INPUT_DEVICE_KEYBOARD:
+</span><span class="add">+	    on_new_keyboard(device);
+</span><span class="add">+	    break;
+</span><span class="add">+	case WLR_INPUT_DEVICE_POINTER:
+</span><span class="add">+	    wlr_cursor_attach_input_device(wimp.cursor, device);
+</span><span class="add">+	    break;
+</span><span class="add">+	default:
+</span><span class="add">+	    break;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    uint32_t capabilities = WL_SEAT_CAPABILITY_POINTER;
+</span><span class="add">+    if (!wl_list_empty(&amp;wimp.keyboards))
+</span><span class="add">+	capabilities |= WL_SEAT_CAPABILITY_KEYBOARD;
+</span><span class="add">+    wlr_seat_set_capabilities(wimp.seat, capabilities);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_new_virtual_keyboard(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_virtual_keyboard_v1 *keyboard = data;
+</span><span class="add">+    struct wlr_input_device *device = &amp;keyboard-&gt;input_device;
+</span><span class="add">+    on_new_keyboard(device);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_up_inputs() {
+</span><span class="add">+    wimp.seat = wlr_seat_create(wimp.display, &quot;seat0&quot;);
+</span><span class="add">+    wlr_data_device_manager_create(wimp.display);
+</span><span class="add">+    wlr_primary_selection_v1_device_manager_create(wimp.display);
+</span><span class="add">+    wl_list_init(&amp;wimp.keyboards);
+</span><span class="add">+
+</span><span class="add">+    wimp.new_input_listener.notify = on_new_input;
+</span><span class="add">+    wl_signal_add(&amp;wimp.backend-&gt;events.new_input, &amp;wimp.new_input_listener);
+</span><span class="add">+
+</span><span class="add">+    wimp.request_set_selection_listener.notify = on_request_set_selection;
+</span><span class="add">+    wl_signal_add(&amp;wimp.seat-&gt;events.request_set_selection,
+</span><span class="add">+	&amp;wimp.request_set_selection_listener);
+</span><span class="add">+
+</span><span class="add">+    wimp.virtual_keyboard = wlr_virtual_keyboard_manager_v1_create(wimp.display);
+</span><span class="add">+    wimp.new_virtual_keyboard_listener.notify = on_new_virtual_keyboard;
+</span><span class="add">+    wl_signal_add(&amp;wimp.virtual_keyboard-&gt;events.new_virtual_keyboard,
+</span><span class="add">+	&amp;wimp.new_virtual_keyboard_listener);
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,6 +22,19 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void on_request_cursor(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_seat_pointer_request_set_cursor_event *event = data;
+</span><span class="add">+    struct wlr_seat_client *focused_client =
+</span><span class="add">+	wimp.seat-&gt;pointer_state.focused_client;
+</span><span class="add">+
+</span><span class="add">+    if (focused_client == event-&gt;seat_client) {
+</span><span class="add">+	wlr_cursor_set_surface(
+</span><span class="add">+	    wimp.cursor, event-&gt;surface, event-&gt;hotspot_x, event-&gt;hotspot_y
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void process_cursor_move(uint32_t time, double zoom) {
+</span><span class="def">     wimp.grabbed_view-&gt;x = (wimp.cursor-&gt;x - wimp.grab_x) / zoom;
+</span><span class="def">     wimp.grabbed_view-&gt;y = (wimp.cursor-&gt;y - wimp.grab_y) / zoom;
+</span>@@ -359,6 +372,9 @@
+<span class="def">     wimp.cursor_manager = wlr_xcursor_manager_create(NULL, 24);
+</span><span class="def">     wlr_xcursor_manager_load(wimp.cursor_manager, 1);
+</span><span class="def"> 
+</span><span class="add">+    wimp.request_cursor_listener.notify = on_request_cursor;
+</span><span class="add">+    wl_signal_add(&amp;wimp.seat-&gt;events.request_set_cursor, &amp;wimp.request_cursor_listener);
+</span><span class="add">+
+</span><span class="def">     wimp.cursor_axis_listener.notify = on_cursor_axis;
+</span><span class="def">     wimp.cursor_frame_listener.notify = on_cursor_frame;
+</span><span class="def">     wimp.cursor_button_listener.notify = on_cursor_button;
+</span></pre>
+</div></div>
+  </body>
+</html>

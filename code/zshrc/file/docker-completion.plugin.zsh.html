@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - docker-completion.plugin.zsh</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- docker-completion.plugin.zsh</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> # Copyright 2020 Christian Fritz &lt;mail at chr-fritz dot de&gt;
+<a href="#l2" class="line" id="l2">      2</a> #
+<a href="#l3" class="line" id="l3">      3</a> # Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<a href="#l4" class="line" id="l4">      4</a> # you may not use this file except in compliance with the License.
+<a href="#l5" class="line" id="l5">      5</a> # You may obtain a copy of the License at
+<a href="#l6" class="line" id="l6">      6</a> #
+<a href="#l7" class="line" id="l7">      7</a> #     http://www.apache.org/licenses/LICENSE-2.0
+<a href="#l8" class="line" id="l8">      8</a> #
+<a href="#l9" class="line" id="l9">      9</a> # Unless required by applicable law or agreed to in writing, software
+<a href="#l10" class="line" id="l10">     10</a> # distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<a href="#l11" class="line" id="l11">     11</a> # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<a href="#l12" class="line" id="l12">     12</a> # See the License for the specific language governing permissions and
+<a href="#l13" class="line" id="l13">     13</a> # limitations under the License.
+<a href="#l14" class="line" id="l14">     14</a> 
+<a href="#l15" class="line" id="l15">     15</a> # Adds the given file to the zsh variable fpath.
+<a href="#l16" class="line" id="l16">     16</a> # Before adding it, it checks if the file exists.
+<a href="#l17" class="line" id="l17">     17</a> __dockerCompletion_linkIfNeeded() {
+<a href="#l18" class="line" id="l18">     18</a>     local file=$1
+<a href="#l19" class="line" id="l19">     19</a>     local target=&quot;/usr/local/share/zsh/site-functions/$2&quot;
+<a href="#l20" class="line" id="l20">     20</a>     if [[ -f &quot;${file}&quot; &amp;&amp; ! -e &quot;${target}&quot; ]]; then
+<a href="#l21" class="line" id="l21">     21</a>         ln -s &quot;${file}&quot; &quot;${target}&quot;
+<a href="#l22" class="line" id="l22">     22</a>     fi
+<a href="#l23" class="line" id="l23">     23</a> }
+<a href="#l24" class="line" id="l24">     24</a> 
+<a href="#l25" class="line" id="l25">     25</a> # Get the base path of the Docker for Mac installation.
+<a href="#l26" class="line" id="l26">     26</a> # It assumes that the completions are relative to the real path of the docker command.
+<a href="#l27" class="line" id="l27">     27</a> # This is the normal case for all Docker for Mac installations.
+<a href="#l28" class="line" id="l28">     28</a> __dockerCompletion_basePath() {
+<a href="#l29" class="line" id="l29">     29</a>     docker_loc=$(which docker)
+<a href="#l30" class="line" id="l30">     30</a>     dirname $(dirname ${docker_loc:A})
+<a href="#l31" class="line" id="l31">     31</a> }
+<a href="#l32" class="line" id="l32">     32</a> 
+<a href="#l33" class="line" id="l33">     33</a> # Registers the docker completions from the Docker for Mac installation.
+<a href="#l34" class="line" id="l34">     34</a> __dockerCompletion_registerCompletion(){
+<a href="#l35" class="line" id="l35">     35</a>     basePath=&quot;$(__dockerCompletion_basePath)&quot;
+<a href="#l36" class="line" id="l36">     36</a>     __dockerCompletion_linkIfNeeded &quot;${basePath}/etc/docker.zsh-completion&quot; &quot;_docker&quot;
+<a href="#l37" class="line" id="l37">     37</a>     __dockerCompletion_linkIfNeeded &quot;${basePath}/etc/docker-machine.zsh-completion&quot; &quot;_docker-machine&quot;
+<a href="#l38" class="line" id="l38">     38</a>     __dockerCompletion_linkIfNeeded &quot;${basePath}/etc/docker-compose.zsh-completion&quot; &quot;_docker-compose&quot;
+<a href="#l39" class="line" id="l39">     39</a> }
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a> __dockerCompletion_registerCompletion &amp;&gt;/dev/null
+<a href="#l42" class="line" id="l42">     42</a> 
+</pre>
+  </div>
+  </body>
+</html>

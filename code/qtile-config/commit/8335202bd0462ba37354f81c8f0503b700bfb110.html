@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Move initial groups hook into group.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/8335202bd0462ba37354f81c8f0503b700bfb110.html">8335202bd0462ba37354f81c8f0503b700bfb110</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/54d7075e9d3eef589a6b711c989e7334ed857f4e.html">54d7075e9d3eef589a6b711c989e7334ed857f4e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-16 00:07:35 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-16 00:11:37 +0100
+
+Move initial groups hook into group.py
+</pre><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,6 +12,7 @@
+<span class="def"> import os
+</span><span class="def"> from typing import TYPE_CHECKING
+</span><span class="def"> 
+</span><span class="add">+from libqtile import hook, qtile
+</span><span class="def"> from libqtile.config import Group, Match
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> 
+</span>@@ -94,3 +95,20 @@
+<span class="def">     ([mod], &apos;m&apos;, lazy.function(_scroll_screen(1)),  &quot;Screen groups forward&quot;),
+</span><span class="def">     ([mod], &apos;n&apos;, lazy.function(_scroll_screen(-1)), &quot;Screen groups backward&quot;),
+</span><span class="def"> ])
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+@hook.subscribe.startup
+</span><span class="add">+def _():
+</span><span class="add">+    # Set initial groups
+</span><span class="add">+    if len(qtile.screens) &gt; 1:
+</span><span class="add">+        qtile.groups_map[&apos;1&apos;].cmd_toscreen(0, toggle=False)
+</span><span class="add">+        qtile.groups_map[&apos;q&apos;].cmd_toscreen(1, toggle=False)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+@hook.subscribe.screen_change
+</span><span class="add">+def _():
+</span><span class="add">+    # Set groups to screens
+</span><span class="add">+    if len(qtile.screens) &gt; 1:
+</span><span class="add">+        if qtile.screens[0].group.name not in &apos;123&apos;:
+</span><span class="add">+            qtile.groups_map[&apos;1&apos;].cmd_toscreen(0, toggle=False)
+</span><span class="add">+        qtile.groups_map[&apos;q&apos;].cmd_toscreen(1, toggle=False)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -402,6 +402,26 @@
+<span class="def">     widget.GroupBox(**groupbox_config, visible_groups=[&apos;q&apos;, &apos;w&apos;, &apos;e&apos;]),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="add">+@hook.subscribe.startup
+</span><span class="add">+def _():
+</span><span class="add">+    # Set up initial GroupBox visible groups
+</span><span class="add">+    if len(qtile.screens) &gt; 1:
+</span><span class="add">+        groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;]
+</span><span class="add">+    else:
+</span><span class="add">+        groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;, &apos;q&apos;, &apos;w&apos;, &apos;e&apos;]
+</span><span class="add">+
+</span><span class="add">+@hook.subscribe.screen_change
+</span><span class="add">+async def _(_):
+</span><span class="add">+    # Reconfigure GroupBox visible groups
+</span><span class="add">+    await asyncio.sleep(1)  # Am I gonna fix this?
+</span><span class="add">+    if len(qtile.screens) &gt; 1:
+</span><span class="add">+        groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;]
+</span><span class="add">+    else:
+</span><span class="add">+        groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;, &apos;q&apos;, &apos;w&apos;, &apos;e&apos;]
+</span><span class="add">+    if hasattr(groupboxes[0], &apos;bar&apos;):
+</span><span class="add">+        groupboxes[0].bar.draw()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> screens = [
+</span><span class="def">     Screen(
+</span><span class="def">         bottom=bar.Bar(
+</span>@@ -436,17 +456,6 @@
+<span class="def"> 
+</span><span class="def"> # Hooks
+</span><span class="def"> 
+</span><span class="sub">-@hook.subscribe.startup
+</span><span class="sub">-def _():
+</span><span class="sub">-    # Set initial groups
+</span><span class="sub">-    if len(qtile.screens) &gt; 1:
+</span><span class="sub">-        qtile.groups_map[&apos;1&apos;].cmd_toscreen(0, toggle=False)
+</span><span class="sub">-        qtile.groups_map[&apos;q&apos;].cmd_toscreen(1, toggle=False)
+</span><span class="sub">-        groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;]
+</span><span class="sub">-    else:
+</span><span class="sub">-        groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;, &apos;q&apos;, &apos;w&apos;, &apos;e&apos;]
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="def">     from libqtile.backend.wayland.window import Window
+</span><span class="def">     @hook.subscribe.client_new
+</span>@@ -471,21 +480,6 @@
+<span class="def">             window.floating = True
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-@hook.subscribe.screen_change
+</span><span class="sub">-async def _(_):
+</span><span class="sub">-    # Set up GroupBox visible groups
+</span><span class="sub">-    await asyncio.sleep(1)
+</span><span class="sub">-    if len(qtile.screens) &gt; 1:
+</span><span class="sub">-        groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;]
+</span><span class="sub">-        if qtile.screens[0].group.name not in &quot;123&quot;:
+</span><span class="sub">-            qtile.groups_map[&apos;1&apos;].cmd_toscreen(0, toggle=False)
+</span><span class="sub">-        qtile.groups_map[&apos;q&apos;].cmd_toscreen(1, toggle=False)
+</span><span class="sub">-    else:
+</span><span class="sub">-        groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;, &apos;q&apos;, &apos;w&apos;, &apos;e&apos;]
+</span><span class="sub">-    if hasattr(groupboxes[0], &apos;bar&apos;):
+</span><span class="sub">-        groupboxes[0].bar.draw()
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> ## Startup script for Wayland
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="def">     @hook.subscribe.startup_once
+</span></pre>
+</div></div>
+  </body>
+</html>

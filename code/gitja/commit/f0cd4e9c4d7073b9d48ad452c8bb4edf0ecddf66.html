@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add newlines around where block functions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/f0cd4e9c4d7073b9d48ad452c8bb4edf0ecddf66.html">f0cd4e9c4d7073b9d48ad452c8bb4edf0ecddf66</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/46cab4e4c92887baaeee45890602f1c07b41ee87.html">46cab4e4c92887baaeee45890602f1c07b41ee87</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-12-04 12:47:32 +0300
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-12-04 12:47:32 +0300
+
+Add newlines around where block functions
+</pre><div class="diff">
+  <p>
+    <b>src/Templates.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -206,6 +206,7 @@
+<span class="def">         let isRepo = (toFilePath . dirname $ p) == &quot;repo/&quot;
+</span><span class="def">         isLink &lt;- pathIsSymbolicLink . toFilePath $ p
+</span><span class="def">         return $ not isRepo || isLink
+</span><span class="add">+
+</span><span class="def">     copy :: Path Abs Dir -&gt; IO ()
+</span><span class="def">     copy p = do
+</span><span class="def">         let output&apos; = output &lt;/&gt; dirname p
+</span>@@ -226,6 +227,7 @@
+<span class="def">         let isTemplate = FP.takeExtension fp `elem` [&quot;.html&quot;, &quot;.include&quot;]
+</span><span class="def">         isLink &lt;- pathIsSymbolicLink fp
+</span><span class="def">         return $ not isTemplate || isLink
+</span><span class="add">+
+</span><span class="def">     copy :: Path Abs File -&gt; IO ()
+</span><span class="def">     copy p = do
+</span><span class="def">         let fp = toFilePath p
+</span></pre>
+</div></div>
+  </body>
+</html>

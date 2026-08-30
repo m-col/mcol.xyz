@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / haskell study: pointfree rules, and the blackbird</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2021/09/haskell-study-pointfree-rules-and-the-blackbird.html>haskell study: pointfree rules, and the blackbird</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>Since I started learning Haskell (not too long ago) it was never really clear
+to me the benefits of writing functions in a pointfree style. It seemed that
+doing so for relatively simple functions that would require minimal changes
+made sense, such as the example from the Haskell <a class="reference external" href="https://wiki.haskell.org/Pointfree">pointfree wiki page</a>:</p>
+<div class="highlight"><pre><span></span><span class="nf">sum</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldr</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="p">)</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">xs</span>
+<span class="c1">-- and pointfree:</span>
+<span class="nf">sum&#39;</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldr</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="p">)</span><span class="w"> </span><span class="mi">0</span>
+</pre></div>
+<p>Here, all it takes to make the function pointfree is omitting the argument.
+Doing so removes some visual noise but it otherwise looks identical.</p>
+<p>The thing is, this small change -- omitting the arguments while keeping the
+rest unchanged -- is often not the only thing required to rewrite a function in
+a pointfree form. For this reason I haven't had much drive to use pointfree
+style for most functions that I write.</p>
+<p>What changed my mind was Amar Shah's articles titled <a class="reference external" href="https://amar47shah.github.io/posts/2016-08-28-point-free-part-2.html">Point-Free or Die</a> (and
+<a class="reference external" href="https://www.youtube.com/watch?v=seVSlKazsNk">YouTube video</a>). I won't repeat
+things from there (much) but I highly recommend reading those articles or
+watching the video.</p>
+<p>While all of what he says is really interesting and worth reading, the crux of
+the matter is that one can learn to recognise common function shapes so that
+writing them in a pointfree style simply involves using something to map a
+concise pointfree form to that shape. The blackbird (or B1) combinator is the
+'something' that Amar identifies as what he needs to write his function in a
+clear and elegant way:</p>
+<div class="highlight"><pre><span></span><span class="nf">blackbird</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">d</span>
+<span class="nf">blackbird</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">g</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+<p>The shape taken by a function that would make use of the blackbird is a
+function that takes two arguments (<code>a</code> and <code>b</code> above) and inputs
+these into one function and pipes the output of that into another function.
+Without using this combinator, the pointfree version is otherwise left in this
+more obscure form:</p>
+<div class="highlight"><pre><span></span><span class="nf">func</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">d</span>
+<span class="nf">func</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="o">.</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">g</span>
+</pre></div>
+<p>While one could argue that bringing another object into the mix complicates
+things further, being aware of this and <a class="reference external" href="https://hackage.haskell.org/package/data-aviary-0.4.0/docs/Data-Aviary-Birds.html">other such combinators</a> means that
+when familiar shapes appear in your functions there is a go-to combinator in
+your toolbox to represent that shape. Together, these combinators account for a
+wide variety of function shapes, letting us write many more functions elegantly
+in pointfree style with only a little extra work.</p>
+<p>Plus, isn't it pretty?:</p>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="o">.:</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">blackbird</span><span class="w">  </span><span class="c1">-- A common blackbird infix operator</span>
+<span class="nf">func</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">.:</span><span class="w"> </span><span class="n">g</span>
+</pre></div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2021-09-30T00:00:00+00:00">2021-09-30</time>
+in <a href="/category/programming.html">programming</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

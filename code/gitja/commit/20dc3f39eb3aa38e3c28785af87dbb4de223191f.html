@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Create haskell.yml</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/20dc3f39eb3aa38e3c28785af87dbb4de223191f.html">20dc3f39eb3aa38e3c28785af87dbb4de223191f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/49ab2b08792c9f4fea3805bdfe7114c923165870.html">49ab2b08792c9f4fea3805bdfe7114c923165870</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:44536113+m-col@users.noreply.github.com">44536113+m-col@users.noreply.github.com</a>&gt;
+<b>Date:</b> 2021-11-18 21:23:49 +0000
+<b>Committer:</b> GitHub &lt;<a href="mailto:noreply@github.com">noreply@github.com</a>&gt;
+<b>Committed:</b> 2021-11-18 21:23:49 +0000
+
+Create haskell.yml
+</pre><div class="diff">
+  <p>
+    <b>.github/workflows/haskell.yml</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,40 @@
+<span class="add">+name: Haskell CI
+</span><span class="add">+
+</span><span class="add">+on:
+</span><span class="add">+  push:
+</span><span class="add">+    branches: [ master ]
+</span><span class="add">+  pull_request:
+</span><span class="add">+    branches: [ master ]
+</span><span class="add">+
+</span><span class="add">+jobs:
+</span><span class="add">+  build:
+</span><span class="add">+
+</span><span class="add">+    runs-on: ubuntu-latest
+</span><span class="add">+
+</span><span class="add">+    steps:
+</span><span class="add">+    - uses: actions/checkout@v2
+</span><span class="add">+    - uses: actions/setup-haskell@v1
+</span><span class="add">+      with:
+</span><span class="add">+        ghc-version: &apos;8.10.3&apos;
+</span><span class="add">+        cabal-version: &apos;3.2&apos;
+</span><span class="add">+
+</span><span class="add">+    - name: Cache
+</span><span class="add">+      uses: actions/cache@v1
+</span><span class="add">+      env:
+</span><span class="add">+        cache-name: cache-cabal
+</span><span class="add">+      with:
+</span><span class="add">+        path: ~/.cabal
+</span><span class="add">+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles(&apos;**/*.cabal&apos;) }}-${{ hashFiles(&apos;**/cabal.project&apos;) }}
+</span><span class="add">+        restore-keys: |
+</span><span class="add">+          ${{ runner.os }}-build-${{ env.cache-name }}-
+</span><span class="add">+          ${{ runner.os }}-build-
+</span><span class="add">+          ${{ runner.os }}-
+</span><span class="add">+
+</span><span class="add">+    - name: Install dependencies
+</span><span class="add">+      run: |
+</span><span class="add">+        cabal update
+</span><span class="add">+        cabal build --only-dependencies --enable-tests --enable-benchmarks
+</span><span class="add">+    - name: Build
+</span><span class="add">+      run: cabal build --enable-tests --enable-benchmarks all
+</span><span class="add">+    - name: Run tests
+</span><span class="add">+      run: cabal test all
+</span></pre>
+</div></div>
+  </body>
+</html>

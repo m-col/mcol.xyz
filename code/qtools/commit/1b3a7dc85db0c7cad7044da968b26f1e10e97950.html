@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add line_spacing and sticky_history options to notification server</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/1b3a7dc85db0c7cad7044da968b26f1e10e97950.html">1b3a7dc85db0c7cad7044da968b26f1e10e97950</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/18c50bc0606ab3876c498dd498847170c37bb465.html">18c50bc0606ab3876c498dd498847170c37bb465</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-26 18:20:58 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-26 18:20:58 +0000
+
+add line_spacing and sticky_history options to notification server
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -70,7 +70,7 @@
+<span class="def">         (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+</span><span class="def">         (&apos;horizonal_padding&apos;, None, &apos;Padding at sides of text.&apos;),
+</span><span class="def">         (&apos;vertical_padding&apos;, None, &apos;Padding at top and bottom of text.&apos;),
+</span><span class="sub">-        (&apos;line_spacing&apos;, None, &apos;Space between lines. If None, the drawer decides.&apos;),
+</span><span class="add">+        (&apos;line_spacing&apos;, 4, &apos;Space between lines.&apos;),
+</span><span class="def">         (
+</span><span class="def">             &apos;overflow&apos;,
+</span><span class="def">             &apos;more_width&apos;,
+</span>@@ -78,6 +78,7 @@
+<span class="def">         ),
+</span><span class="def">         (&apos;max_windows&apos;, 2, &apos;Maximum number of windows to show at once.&apos;),
+</span><span class="def">         (&apos;gap&apos;, 12, &apos;Vertical gap between popup windows.&apos;),
+</span><span class="add">+        (&apos;sticky_history&apos;, True, &apos;Disable timeout when browsing history.&apos;),
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def">     def __init__(self, **config):
+</span>@@ -179,7 +180,7 @@
+<span class="def">         else:
+</span><span class="def">             self._queue.append(notif)
+</span><span class="def"> 
+</span><span class="sub">-    def _send(self, notif, popup):
+</span><span class="add">+    def _send(self, notif, popup, timeout=None):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         Draw the desired notification using the specified Popup instance.
+</span><span class="def">         &quot;&quot;&quot;
+</span>@@ -193,14 +194,10 @@
+<span class="def">         popup.background = self.background[urgency]
+</span><span class="def">         popup.foreground = self.foreground[urgency]
+</span><span class="def">         popup.clear()
+</span><span class="sub">-        if self.line_spacing:
+</span><span class="sub">-            for num, line in enumerate(text.split(&apos;\n&apos;)):
+</span><span class="sub">-                popup.text = line
+</span><span class="sub">-                y = self.vertical_padding + num * (popup.layout.height + self.line_spacing)
+</span><span class="sub">-                popup.draw_text(y=y)
+</span><span class="sub">-        else:
+</span><span class="sub">-            popup.text = text
+</span><span class="sub">-            popup.draw_text()
+</span><span class="add">+        for num, line in enumerate(text.split(&apos;\n&apos;)):
+</span><span class="add">+            popup.text = line
+</span><span class="add">+            y = self.vertical_padding + num * (popup.layout.height + self.line_spacing)
+</span><span class="add">+            popup.draw_text(y=y)
+</span><span class="def">         if self.border_width:
+</span><span class="def">             popup.set_border(self.border[urgency])
+</span><span class="def">         popup.place()
+</span>@@ -208,10 +205,13 @@
+<span class="def">         popup.draw_window()
+</span><span class="def">         popup.replaces_id = notif.replaces_id
+</span><span class="def"> 
+</span><span class="sub">-        if notif.timeout is None or notif.timeout &lt; 0:
+</span><span class="add">+        if timeout is None:
+</span><span class="add">+            if notif.timeout is None or notif.timeout &lt; 0:
+</span><span class="add">+                timeout = self.timeout[urgency]
+</span><span class="add">+            else:
+</span><span class="add">+                timeout = notif.timeout
+</span><span class="add">+        elif timeout &lt; 0:
+</span><span class="def">             timeout = self.timeout[urgency]
+</span><span class="sub">-        else:
+</span><span class="sub">-            timeout = notif.timeout
+</span><span class="def">         if timeout &gt; 0:
+</span><span class="def">             self.qtile.call_later(
+</span><span class="def">                 timeout / 1000, self._close, popup, self._current_id
+</span>@@ -283,6 +283,7 @@
+<span class="def">             self._send(
+</span><span class="def">                 notifier.notifications[self._notif_id],
+</span><span class="def">                 self._scroll_popup,
+</span><span class="add">+                0 if self.sticky_history else None,
+</span><span class="def">             )
+</span><span class="def"> 
+</span><span class="def">     def next(self, qtile=None):
+</span>@@ -297,6 +298,7 @@
+<span class="def">             self._send(
+</span><span class="def">                 notifier.notifications[self._notif_id],
+</span><span class="def">                 self._scroll_popup,
+</span><span class="add">+                0 if self.sticky_history else None,
+</span><span class="def">             )
+</span><span class="def"> 
+</span><span class="def">     def pause(self, qtile=None):
+</span></pre>
+</div></div>
+  </body>
+</html>

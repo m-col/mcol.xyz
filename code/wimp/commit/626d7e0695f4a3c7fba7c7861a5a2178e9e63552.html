@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - centre cursor position when resetting zoom</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/626d7e0695f4a3c7fba7c7861a5a2178e9e63552.html">626d7e0695f4a3c7fba7c7861a5a2178e9e63552</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/881484955c2a528e79832f6360c6ab1658c1327f.html">881484955c2a528e79832f6360c6ab1658c1327f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-13 14:18:21 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-13 14:18:21 +0000
+
+centre cursor position when resetting zoom
+
+Closes #32
+</pre><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -178,28 +178,6 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void reset_zoom(void *data) {
+</span><span class="sub">-    struct desk *desk = wimp.current_desk;
+</span><span class="sub">-    double f = 1 / desk-&gt;zoom;
+</span><span class="sub">-    if (f == 1) {
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="sub">-    unfullscreen();
+</span><span class="sub">-    struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span><span class="sub">-    double fx = extents-&gt;width * (f - 1) / 2;
+</span><span class="sub">-    double fy = extents-&gt;height * (f - 1) / 2;
+</span><span class="sub">-    struct view *view;
+</span><span class="sub">-    wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="sub">-	view-&gt;x -= fx;
+</span><span class="sub">-	view-&gt;y -= fy;
+</span><span class="sub">-    }
+</span><span class="sub">-    desk-&gt;panned_x -= fx;
+</span><span class="sub">-    desk-&gt;panned_y -= fy;
+</span><span class="sub">-    desk-&gt;zoom = 1;
+</span><span class="sub">-    damage_all_outputs();
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void zoom(void *data) {
+</span><span class="def">     /* Passed value (data) is the percentage step (+ve or -ve) */
+</span><span class="def">     struct desk *desk = wimp.current_desk;
+</span>@@ -226,6 +204,12 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void reset_zoom(void *data) {
+</span><span class="add">+    double dz = 100 * 1 / wimp.current_desk-&gt;zoom - 100;
+</span><span class="add">+    zoom(&amp;dz);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void zoom_scroll(void *data) {
+</span><span class="def">     struct motion motion = *(struct motion*)data;
+</span><span class="def">     double dz = - motion.dx - motion.dy;
+</span></pre>
+</div></div>
+  </body>
+</html>

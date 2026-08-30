@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - focus: increase minimal distance to focus</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/63243929c7468d0bf5bd8d0850920dead38e65ad.html">63243929c7468d0bf5bd8d0850920dead38e65ad</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/4d5855043b6278b513a5c982903c510cf29b3daf.html">4d5855043b6278b513a5c982903c510cf29b3daf</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-09-04 22:43:14 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-09-04 22:43:14 +0100
+
+focus: increase minimal distance to focus
+</pre><div class="diff">
+  <p>
+    <b>qtools/focus/focus.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -73,7 +73,7 @@
+<span class="def">         if isinstance(w, Screen) or not w.minimized:
+</span><span class="def">             pos = getattr(w, axis) + getattr(w, dim) / 2
+</span><span class="def">             gap = dir * (pos - cur_pos)
+</span><span class="sub">-            if gap &gt; 0:
+</span><span class="add">+            if gap &gt; 5:
+</span><span class="def">                 band_pos = getattr(w, band_axis) + getattr(w, band_dim) / 2
+</span><span class="def">                 if band_min &lt; band_pos &lt; band_max:
+</span><span class="def">                     if gap &lt; dist:
+</span></pre>
+</div></div>
+  </body>
+</html>

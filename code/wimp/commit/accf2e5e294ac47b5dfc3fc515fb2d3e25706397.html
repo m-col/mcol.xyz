@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Draw borders as hollow box</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/accf2e5e294ac47b5dfc3fc515fb2d3e25706397.html">accf2e5e294ac47b5dfc3fc515fb2d3e25706397</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/e0f847b4502a2b5c1a7dd393abefb971ec1f1442.html">e0f847b4502a2b5c1a7dd393abefb971ec1f1442</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-13 22:07:41 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-13 22:07:41 +0000
+
+Draw borders as hollow box
+
+Fixes #30
+</pre><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -43,36 +43,38 @@
+<span class="def">     int height = surface-&gt;current.height * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="def"> 
+</span><span class="def">     if (rdata-&gt;bordered == surface) {
+</span><span class="sub">-	int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="sub">-	if (border_width &gt; 0) {
+</span><span class="sub">-	    int remainder = ceil(border_width * 2 * rdata-&gt;zoom);
+</span><span class="sub">-	    struct wlr_box borders = {
+</span><span class="sub">-		.x = x - border_width * rdata-&gt;zoom,
+</span><span class="sub">-		.y = y - border_width * rdata-&gt;zoom,
+</span><span class="sub">-		.width = width + remainder,
+</span><span class="sub">-		.height = height + remainder,
+</span><span class="sub">-	    };
+</span><span class="sub">-	    wlr_render_rect(
+</span><span class="sub">-		rdata-&gt;renderer,
+</span><span class="sub">-		&amp;borders,
+</span><span class="sub">-		rdata-&gt;is_focussed ? wimp.current_desk-&gt;border_focus : wimp.current_desk-&gt;border_normal,
+</span><span class="sub">-		output-&gt;transform_matrix
+</span><span class="sub">-	    );
+</span><span class="sub">-	    struct wlr_box corners = {
+</span><span class="sub">-		.x = borders.x,
+</span><span class="sub">-		.y = borders.y,
+</span><span class="sub">-		.width = CORNER,
+</span><span class="sub">-		.height = CORNER,
+</span><span class="sub">-	    };
+</span><span class="sub">-	    float *corner = rdata-&gt;is_focussed ?
+</span><span class="add">+	if (wimp.current_desk-&gt;border_width &gt; 0) {
+</span><span class="add">+	    double border_width = ceil(wimp.current_desk-&gt;border_width * rdata-&gt;zoom);
+</span><span class="add">+	    float *colour = rdata-&gt;is_focussed ?
+</span><span class="def"> 		wimp.current_desk-&gt;corner_focus : wimp.current_desk-&gt;corner_normal;
+</span><span class="sub">-	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="sub">-	    corners.x = borders.x + borders.width - CORNER;
+</span><span class="sub">-	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="sub">-	    corners.y = borders.y + borders.height - CORNER;
+</span><span class="sub">-	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="sub">-	    corners.x = borders.x;
+</span><span class="sub">-	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="add">+	    struct wlr_box border = {
+</span><span class="add">+		.x = x - border_width,
+</span><span class="add">+		.y = y - border_width,
+</span><span class="add">+		.width = width + border_width * 2,
+</span><span class="add">+		.height = border_width,
+</span><span class="add">+	    };
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;border, colour, output-&gt;transform_matrix);
+</span><span class="add">+	    border.y = y + height;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;border, colour, output-&gt;transform_matrix);
+</span><span class="add">+	    border.y = y - border_width;
+</span><span class="add">+	    border.width = border_width;
+</span><span class="add">+	    border.height = height + border_width * 2;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;border, colour, output-&gt;transform_matrix);
+</span><span class="add">+	    border.x = x + width;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;border, colour, output-&gt;transform_matrix);
+</span><span class="add">+	    colour = rdata-&gt;is_focussed ? wimp.current_desk-&gt;border_focus : wimp.current_desk-&gt;border_normal;
+</span><span class="add">+	    border.y += CORNER;
+</span><span class="add">+	    border.height -= CORNER * 2;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;border, colour, output-&gt;transform_matrix);
+</span><span class="add">+	    border.x = x - border_width;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;border, colour, output-&gt;transform_matrix);
+</span><span class="add">+	    border.y = y - border_width;
+</span><span class="add">+	    border.x += CORNER;
+</span><span class="add">+	    border.height = border_width;
+</span><span class="add">+	    border.width = width + border_width * 2 - CORNER * 2;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;border, colour, output-&gt;transform_matrix);
+</span><span class="add">+	    border.y = y + height;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;border, colour, output-&gt;transform_matrix);
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

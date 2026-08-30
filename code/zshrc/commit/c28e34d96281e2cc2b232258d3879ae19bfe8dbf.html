@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - -i to vgr</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/c28e34d96281e2cc2b232258d3879ae19bfe8dbf.html">c28e34d96281e2cc2b232258d3879ae19bfe8dbf</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/a377e15353a3f5d3ff86d63d015b506212818a92.html">a377e15353a3f5d3ff86d63d015b506212818a92</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Date:</b> 2025-05-20 11:40:09 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-05-20 11:40:09 +0100
+
+-i to vgr
+</pre><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,7 +15,7 @@
+<span class="def"> alias import=&apos;echo you forgot to enter python&apos;
+</span><span class="def"> alias rg=&apos;grep -r&apos;
+</span><span class="def"> alias pth=&apos;echo &quot;${PATH//:/\n}&quot;&apos;
+</span><span class="sub">-vgr() { nvim `grep -lr &quot;$@&quot;`; }
+</span><span class="add">+vgr() { nvim `grep -lri &quot;$@&quot;`; }
+</span><span class="def"> alias va=&quot;source venv/bin/activate&quot;
+</span><span class="def"> alias vd=&quot;deactivate&quot;
+</span><span class="def"> alias dc=docker-compose
+</span></pre>
+</div></div>
+  </body>
+</html>

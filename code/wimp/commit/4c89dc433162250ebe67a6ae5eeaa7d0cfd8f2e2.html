@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Draw borders around windows and allow configuration per desk</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/4c89dc433162250ebe67a6ae5eeaa7d0cfd8f2e2.html">4c89dc433162250ebe67a6ae5eeaa7d0cfd8f2e2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/d184232071f0b0a77988fd5e996e33b1774a0464.html">d184232071f0b0a77988fd5e996e33b1774a0464</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 14:04:20 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 14:04:20 +0000
+
+Draw borders around windows and allow configuration per desk
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -115,6 +115,9 @@
+<span class="def">     struct server *server;
+</span><span class="def">     struct wl_list views;
+</span><span class="def">     float background[4];
+</span><span class="add">+    float border_normal[4];
+</span><span class="add">+    float border_focus[4];
+</span><span class="add">+    int border_width;
+</span><span class="def">     struct wallpaper *wallpaper;
+</span><span class="def">     double panned_x, panned_y;
+</span><span class="def">     int index;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,6 +20,7 @@
+<span class="def">     struct view *view;
+</span><span class="def">     struct timespec *when;
+</span><span class="def">     double zoom;
+</span><span class="add">+    bool is_focussed;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -45,25 +46,40 @@
+<span class="def"> 	    break;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="sub">-    x += view-&gt;x + sx;
+</span><span class="sub">-    y += view-&gt;y + sy;
+</span><span class="add">+    x = (x + view-&gt;x + sx) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="add">+    y = (y + view-&gt;y + sy) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="add">+    int width = surface-&gt;current.width * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="add">+    int height = surface-&gt;current.height * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="add">+    int border_width = server-&gt;current_desk-&gt;border_width;
+</span><span class="add">+
+</span><span class="add">+    if (view-&gt;surface-&gt;surface == surface) {
+</span><span class="add">+	struct wlr_box borders = {
+</span><span class="add">+	    .x = x - border_width,
+</span><span class="add">+	    .y = y - border_width,
+</span><span class="add">+	    .width = width + border_width * 2,
+</span><span class="add">+	    .height = height + border_width * 2,
+</span><span class="add">+	};
+</span><span class="add">+	wlr_render_rect(
+</span><span class="add">+	    rdata-&gt;renderer,
+</span><span class="add">+	    &amp;borders,
+</span><span class="add">+	    rdata-&gt;is_focussed ? server-&gt;current_desk-&gt;border_focus : server-&gt;current_desk-&gt;border_normal,
+</span><span class="add">+	    output-&gt;transform_matrix
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-    // scale for HiDPI
+</span><span class="def">     struct wlr_box box = {
+</span><span class="sub">-	.x = x * output-&gt;scale * rdata-&gt;zoom,
+</span><span class="sub">-	.y = y * output-&gt;scale * rdata-&gt;zoom,
+</span><span class="sub">-	.width = surface-&gt;current.width * output-&gt;scale * rdata-&gt;zoom,
+</span><span class="sub">-	.height = surface-&gt;current.height * output-&gt;scale * rdata-&gt;zoom,
+</span><span class="add">+	.x = x,
+</span><span class="add">+	.y = y,
+</span><span class="add">+	.width = width,
+</span><span class="add">+	.height = height,
+</span><span class="def">     };
+</span><span class="sub">-
+</span><span class="sub">-    // this is where any rendering magic might happen
+</span><span class="def">     float matrix[9];
+</span><span class="def">     enum wl_output_transform transform =
+</span><span class="def"> 	wlr_output_transform_invert(surface-&gt;current.transform);
+</span><span class="def">     wlr_matrix_project_box(matrix, &amp;box, transform, 0,
+</span><span class="def"> 	output-&gt;transform_matrix);
+</span><span class="sub">-
+</span><span class="def">     wlr_render_texture_with_matrix(rdata-&gt;renderer, texture, matrix, 1);
+</span><span class="add">+
+</span><span class="def">     wlr_surface_send_frame_done(surface, rdata-&gt;when);
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -104,6 +120,7 @@
+<span class="def"> 
+</span><span class="def">     // paint clients
+</span><span class="def">     struct view *view;
+</span><span class="add">+    struct view *focussed = wl_container_of(server-&gt;current_desk-&gt;views.next, focussed, link);
+</span><span class="def">     wl_list_for_each_reverse(view, &amp;desk-&gt;views, link) {
+</span><span class="def"> 	struct render_data rdata = {
+</span><span class="def"> 	    .output = output-&gt;wlr_output,
+</span>@@ -111,6 +128,7 @@
+<span class="def"> 	    .renderer = renderer,
+</span><span class="def"> 	    .when = &amp;now,
+</span><span class="def"> 	    .zoom = zoom,
+</span><span class="add">+	    .is_focussed = (view == focussed),
+</span><span class="def"> 	};
+</span><span class="def"> 	wlr_xdg_surface_for_each_surface(
+</span><span class="def"> 	    view-&gt;surface, render_surface, &amp;rdata
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,6 +10,9 @@
+<span class="def">     desk-&gt;server = server;
+</span><span class="def">     wl_list_init(&amp;desk-&gt;views);
+</span><span class="def">     assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="add">+    assign_colour(&quot;#3e3e73&quot;, desk-&gt;border_normal);
+</span><span class="add">+    assign_colour(&quot;#998dd1&quot;, desk-&gt;border_focus);
+</span><span class="add">+    desk-&gt;border_width = 4;
+</span><span class="def">     desk-&gt;wallpaper = NULL;
+</span><span class="def">     desk-&gt;index = server-&gt;desk_count;
+</span><span class="def">     desk-&gt;zoom = 1;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -345,6 +345,16 @@
+<span class="def"> 		server-&gt;vt_switching = false;
+</span><span class="def"> 	    else if (!strcasecmp(s, &quot;on&quot;))
+</span><span class="def"> 		server-&gt;vt_switching = true;
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;borders&quot;)) {
+</span><span class="add">+	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+	    struct desk *desk = wl_container_of(server-&gt;desks.prev, desk, link);
+</span><span class="add">+	    if (!strcasecmp(s, &quot;normal&quot;))
+</span><span class="add">+		assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_normal);
+</span><span class="add">+	    else if (!strcasecmp(s, &quot;focus&quot;))
+</span><span class="add">+		assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_focus);
+</span><span class="add">+	    else if (!strcasecmp(s, &quot;width&quot;))
+</span><span class="add">+		if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s))
+</span><span class="add">+		    desk-&gt;border_width = strtod(s, NULL);
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;scroll_direction&quot;)) {
+</span><span class="def"> 	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def"> 	    if (!strcasecmp(s, &quot;natural&quot;))
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,7 +14,6 @@
+<span class="def"> This project is still new, and will not be useful.
+</span><span class="def"> 
+</span><span class="def"> To do list:
+</span><span class="sub">- - border decorations
+</span><span class="def">  - make configuration much nicer and remove all the strcmps
+</span><span class="def">  - fix issue where Shift-using key bindings require pre-shifted key in config
+</span><span class="def">  - pan desk when focussing window in direction that isn&apos;t in view
+</span>@@ -22,4 +21,3 @@
+<span class="def">  - functions to shift desk view
+</span><span class="def">  - pinch gestures for desk zooming
+</span><span class="def">  - draw rect with mouse when zoomed out to set new view
+</span><span class="sub">- - xdg-decoration protocol?
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -84,6 +84,14 @@
+<span class="def"> # This can be a path to a png image, or a colour in the form #rrggbb.
+</span><span class="def"> background ~/pattern.png
+</span><span class="def"> 
+</span><span class="add">+# window border colors
+</span><span class="add">+borders normal #998dd1
+</span><span class="add">+borders focus #3e3e73
+</span><span class="add">+borders width 4
+</span><span class="add">+
+</span><span class="def"> # This adds another desk. Following commands will apply to this desk.
+</span><span class="def"> add_desk
+</span><span class="def"> background #f9f9fb
+</span><span class="add">+borders normal #1f1c32
+</span><span class="add">+borders focus #406794
+</span><span class="add">+borders width 5
+</span></pre>
+</div></div>
+  </body>
+</html>

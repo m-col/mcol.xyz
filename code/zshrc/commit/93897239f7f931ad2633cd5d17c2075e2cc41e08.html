@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - vim -&gt; nvim</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/93897239f7f931ad2633cd5d17c2075e2cc41e08.html">93897239f7f931ad2633cd5d17c2075e2cc41e08</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/e3d6600c1a6fd95c18c9d5d88caac15362da6be6.html">e3d6600c1a6fd95c18c9d5d88caac15362da6be6</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2024-10-12 23:01:09 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2024-10-12 23:01:09 +0100
+
+vim -&gt; nvim
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -59,8 +59,8 @@
+<span class="def"> bindkey &apos;^A&apos; autosuggest-execute
+</span><span class="def"> 
+</span><span class="def"> export \
+</span><span class="sub">-    SUDO_EDITOR=vim \
+</span><span class="sub">-    EDITOR=vim \
+</span><span class="add">+    SUDO_EDITOR=nvim \
+</span><span class="add">+    EDITOR=nvim \
+</span><span class="def">     AUR_PAGER=ranger \
+</span><span class="def">     TERM=xterm \
+</span><span class="def">     LANG=en_US.UTF-8 \
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>fzf.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,19 @@
+<span class="add">+#
+</span><span class="add">+# fzf settings
+</span><span class="add">+#
+</span><span class="add">+
+</span><span class="add">+if type fzf &gt; /dev/null
+</span><span class="add">+then
+</span><span class="add">+    # I considered disabling ctrl-t to set it to type out fz, but the default
+</span><span class="add">+    # ctrl-t can be helpful for e.g. pytest, selecting and pasting paths.
+</span><span class="add">+    #bindkey -s &apos;^t&apos; &quot;fv\n&quot;
+</span><span class="add">+    #export FZF_CTRL_T_COMMAND=&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+    export FZF_DEFAULT_OPTS=&quot;
+</span><span class="add">+	--preview &apos;bat -n --color=always {}&apos;
+</span><span class="add">+	--bind &apos;ctrl-/:change-preview-window(down|hidden|)&apos;
+</span><span class="add">+	--tmux
+</span><span class="add">+	--walker-skip .git,node_modules,target,.mypy_cache,.venv,__pycache__,.DS_Store
+</span><span class="add">+	&quot;
+</span><span class="add">+    source &lt;(fzf --zsh)
+</span><span class="add">+fi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,10 +14,12 @@
+<span class="def"> alias import=&apos;echo you forgot to enter python&apos;
+</span><span class="def"> alias rg=&apos;grep -r&apos;
+</span><span class="def"> alias pth=&apos;echo &quot;${PATH//:/\n}&quot;&apos;
+</span><span class="sub">-vgr() { vim `grep -lr &quot;$@&quot;`; }
+</span><span class="add">+vgr() { nvim `grep -lr &quot;$@&quot;`; }
+</span><span class="def"> alias va=&quot;source venv/bin/activate&quot;
+</span><span class="def"> alias vd=&quot;deactivate&quot;
+</span><span class="def"> alias dc=docker-compose
+</span><span class="add">+alias vim=nvim
+</span><span class="add">+alias fv=&quot;fzf --print0 | xargs -0 -o nvim&quot;
+</span><span class="def"> 
+</span><span class="def"> if [[ -n &quot;$WAYLAND_DISPLAY&quot; ]]
+</span><span class="def"> then
+</span>@@ -61,7 +63,7 @@
+<span class="def"> 
+</span><span class="def"> # launchers
+</span><span class="def"> alias ra=&apos;ranger&apos;
+</span><span class="sub">-alias v=&apos;vim&apos;
+</span><span class="add">+alias v=&apos;nvim&apos;
+</span><span class="def"> alias tmux=&apos;tmux -u&apos;
+</span><span class="def"> alias ta=&apos;tmux attach&apos;
+</span><span class="def"> 
+</span>@@ -97,6 +99,8 @@
+<span class="def"> alias cl=&apos;git clone&apos;
+</span><span class="def"> alias chp=&apos;git cherry-pick&apos;
+</span><span class="def"> alias rs=&apos;git restore&apos;
+</span><span class="add">+alias rsp=&apos;git restore --patch&apos;
+</span><span class="add">+alias rss=&apos;git restore --staged&apos;
+</span><span class="def"> alias st=&apos;git stash&apos;
+</span><span class="def"> alias stl=&apos;git stash list&apos;
+</span><span class="def"> alias stp=&apos;git stash pop&apos;
+</span>@@ -108,7 +112,7 @@
+<span class="def"> pdif() {
+</span><span class="def">     git diff --name-only --diff-filter=${1:-M}
+</span><span class="def"> }
+</span><span class="sub">-alias vimd=&apos;vim `pdif`&apos;
+</span><span class="add">+alias vimd=&apos;nvim `pdif`&apos;
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span>@@ -119,11 +123,10 @@
+<span class="def"> alias mc=&apos;make clean&apos;
+</span><span class="def"> 
+</span><span class="def"> # quick edits
+</span><span class="sub">-alias modalia=&apos;vim $HOME/.config/aliases &amp;&amp; source $HOME/.config/aliases&apos;
+</span><span class="sub">-alias modaliaz=&apos;vim $ZSH/aliases &amp;&amp; source $ZSH/aliases&apos;
+</span><span class="sub">-alias vimrc=&apos;vim $HOME/.vim/bundle/vim-misc/vimrc&apos;
+</span><span class="sub">-alias zshrc=&apos;vim $HOME/.zsh/zshrc&apos;
+</span><span class="sub">-alias modrc=&apos;vim $HOME/.config/ranger/rc.conf&apos;
+</span><span class="add">+alias modalia=&apos;nvim $HOME/.config/aliases &amp;&amp; source $HOME/.config/aliases&apos;
+</span><span class="add">+alias modaliaz=&apos;nvim $ZSH/aliases &amp;&amp; source $ZSH/aliases&apos;
+</span><span class="add">+alias zshrc=&apos;nvim $HOME/.zsh/zshrc&apos;
+</span><span class="add">+alias modrc=&apos;nvim $HOME/.config/ranger/rc.conf&apos;
+</span><span class="def"> 
+</span><span class="def"> # shortcuts
+</span><span class="def"> alias gc=&apos;cd $HOME/.config&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

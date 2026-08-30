@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add template index file</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/15b9b6cda67a37977780fe192777b5b676df8c6d.html">15b9b6cda67a37977780fe192777b5b676df8c6d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/cfdb7417a77b558368a7b8d2ea9ec6004e35ffad.html">cfdb7417a77b558368a7b8d2ea9ec6004e35ffad</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-25 01:07:50 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-25 01:07:50 +0100
+
+Add template index file
+</pre><div class="diff">
+  <p>
+    <b>templates/index.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,19 @@
+<span class="add">+&lt;!doctype html&gt;
+</span><span class="add">+&lt;html lang=&quot;en&quot;&gt;
+</span><span class="add">+  &lt;head&gt;
+</span><span class="add">+    &lt;meta charset=&quot;utf-8&quot;&gt;
+</span><span class="add">+    &lt;meta http-equiv=&quot;x-ua-compatible&quot; content=&quot;ie=edge&quot;&gt;
+</span><span class="add">+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+</span><span class="add">+    &lt;title&gt;{{ name }}&lt;/title&gt;
+</span><span class="add">+    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{- host }}/style.css&quot; /&gt;
+</span><span class="add">+  &lt;/head&gt;
+</span><span class="add">+
+</span><span class="add">+  &lt;body&gt;
+</span><span class="add">+    &lt;p&gt;{{- name }}&lt;/p&gt;
+</span><span class="add">+    &lt;hr&gt;
+</span><span class="add">+    &lt;p&gt;{{- description }}&lt;/p&gt;
+</span><span class="add">+    &lt;p&gt;git clone {{ host }}/{{- name }}&lt;/p&gt;
+</span><span class="add">+		&lt;p&gt;&lt;a href=&quot;./log.html&quot;&gt;Log&lt;/a&gt;&lt;/p&gt;
+</span><span class="add">+		&lt;p&gt;&lt;a href=&quot;./tree.html&quot;&gt;Tree&lt;/a&gt;&lt;/p&gt;
+</span><span class="add">+  &lt;/body&gt;
+</span><span class="add">+&lt;/html&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

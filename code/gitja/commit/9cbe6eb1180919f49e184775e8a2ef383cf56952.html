@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - handle existing symlinks in output more robustly</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/9cbe6eb1180919f49e184775e8a2ef383cf56952.html">9cbe6eb1180919f49e184775e8a2ef383cf56952</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/4813a57bdfb2349f0bcc3c01591278bef42e11d4.html">4813a57bdfb2349f0bcc3c01591278bef42e11d4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-28 18:05:09 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-28 18:05:09 +0000
+
+handle existing symlinks in output more robustly
+</pre><div class="diff">
+  <p>
+    <b>src/Templates.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,16 +13,15 @@
+<span class="def"> import Control.Monad.IO.Class (liftIO)
+</span><span class="def"> import Control.Monad.Trans.Reader (ReaderT)
+</span><span class="def"> import qualified Data.HashMap.Strict as HashMap
+</span><span class="sub">-import Data.Maybe (catMaybes)
+</span><span class="add">+import Data.Maybe (catMaybes, fromMaybe)
+</span><span class="def"> import Data.Text (Text, unpack)
+</span><span class="def"> import Git.Libgit2 (LgRepo)
+</span><span class="def"> import Path (Abs, Dir, File, Path, Rel, dirname, filename, parseAbsDir, toFilePath, (&lt;/&gt;))
+</span><span class="sub">-import Path.IO (copyDirRecur, copyFile, doesDirExist, ensureDir, listDir)
+</span><span class="add">+import Path.IO (copyDirRecur, copyFile, doesDirExist, ensureDir, forgivingAbsence, isSymlink, listDir)
+</span><span class="def"> import System.Directory (
+</span><span class="def">     canonicalizePath,
+</span><span class="def">     createDirectoryLink,
+</span><span class="def">     createFileLink,
+</span><span class="sub">-    doesPathExist,
+</span><span class="def">     getSymbolicLinkTarget,
+</span><span class="def">     pathIsSymbolicLink,
+</span><span class="def">     removeFile,
+</span>@@ -215,7 +214,8 @@
+<span class="def">         if isLink
+</span><span class="def">             then do
+</span><span class="def">                 target &lt;- getSymbolicLinkTarget fp
+</span><span class="sub">-                exists &lt;- doesPathExist . toFilePath $ output&apos;
+</span><span class="add">+                maybeExists &lt;- forgivingAbsence . isSymlink $ output&apos;
+</span><span class="add">+                let exists = fromMaybe False maybeExists
+</span><span class="def">                 when exists . removeFile . toFilePath $ output&apos;
+</span><span class="def">                 createFileLink target . toFilePath $ output&apos;
+</span><span class="def">             else copyFile p output&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

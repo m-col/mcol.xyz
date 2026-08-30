@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Create output folder for repo if it doesn&apos;t exist</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/89f88018a8a2e54ed3be646ef2873693bbf3e30d.html">89f88018a8a2e54ed3be646ef2873693bbf3e30d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/02caf075c48c382a507fa89983d40e45636a3821.html">02caf075c48c382a507fa89983d40e45636a3821</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-18 21:36:38 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-18 21:36:38 +0100
+
+Create output folder for repo if it doesn&apos;t exist
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,10 +9,11 @@
+<span class="def"> import Data.Tagged
+</span><span class="def"> import Git
+</span><span class="def"> import Git.Libgit2 (lgFactory)
+</span><span class="sub">-import System.FilePath (takeFileName)
+</span><span class="add">+import System.Directory (createDirectoryIfMissing)
+</span><span class="add">+import System.FilePath ((&lt;/&gt;), takeFileName)
+</span><span class="def"> import Text.Ginger (easyRender)
+</span><span class="def"> 
+</span><span class="sub">-import Config (Config, repoPaths)
+</span><span class="add">+import Config (Config, repoPaths, outputDirectory)
+</span><span class="def"> import Templates (Template, templateGinger, templatePath)
+</span><span class="def"> 
+</span><span class="def"> {-
+</span>@@ -21,7 +22,7 @@
+<span class="def"> templates.
+</span><span class="def"> -}
+</span><span class="def"> run :: Config -&gt; [Template] -&gt; IO ()
+</span><span class="sub">-run config templates = foldMap (processRepo templates) . repoPaths $ config
+</span><span class="add">+run config templates = foldMap (processRepo templates $ outputDirectory config) . repoPaths $ config
+</span><span class="def"> 
+</span><span class="def"> ----------------------------------------------------------------------------------------
+</span><span class="def"> 
+</span>@@ -30,14 +31,17 @@
+<span class="def"> repository doesn&apos;t exist or is unreadable in any way we can forget about it and move on
+</span><span class="def"> (after informing the user of course).
+</span><span class="def"> -}
+</span><span class="sub">-processRepo :: [Template] -&gt; FilePath -&gt; IO ()
+</span><span class="sub">-processRepo templates path = withRepository lgFactory path $ do
+</span><span class="add">+processRepo :: [Template] -&gt; FilePath -&gt; FilePath -&gt; IO ()
+</span><span class="add">+processRepo templates outputDirectory path = withRepository lgFactory path $ do
+</span><span class="add">+    return $ createDirectoryIfMissing True outPath
+</span><span class="def">     maybeObjID &lt;- resolveReference &quot;HEAD&quot;
+</span><span class="def">     case maybeObjID of
+</span><span class="def">         Just commitID -&gt; do
+</span><span class="def">             headCommit &lt;- lookupCommit (Tagged commitID)
+</span><span class="def">             liftIO $ print $ commitLog headCommit
+</span><span class="def">         _ -&gt; liftIO $ print $ &quot;gitserve: &quot; &lt;&gt; (takeFileName path) &lt;&gt; &quot;: Failed to resolve HEAD.&quot;
+</span><span class="add">+  where
+</span><span class="add">+    outPath = outputDirectory &lt;/&gt; (takeFileName path)
+</span><span class="def"> 
+</span><span class="def"> -- Variables:
+</span><span class="def"> title = &quot;gitserve&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

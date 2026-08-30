@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add rofi_searx plugin</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/f03bb06d135d30d73b37530d9ea03166baf124a5.html">f03bb06d135d30d73b37530d9ea03166baf124a5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/91bde6e792150e42f9a3efae107ec8b6d6ebe858.html">91bde6e792150e42f9a3efae107ec8b6d6ebe858</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-11 22:03:20 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-11 22:03:20 +0000
+
+add rofi_searx plugin
+</pre><div class="diff">
+  <p>
+    <b>qtools/rofi_searx/searx.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,99 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile plugin to use rofi to execute a process using the URL for a randomised searx
+</span><span class="add">+instance.
+</span><span class="add">+
+</span><span class="add">+Example usage:
+</span><span class="add">+
+</span><span class="add">+    import qtools.rofi_searx
+</span><span class="add">+    searx = qtools.rofi_searx.Searx()
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;M-s&apos;:   searx.lazy_search,
+</span><span class="add">+        &apos;M-C-s&apos;: searx.lazy_remove_last_used,
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import random
+</span><span class="add">+import shlex
+</span><span class="add">+import subprocess
+</span><span class="add">+
+</span><span class="add">+from qtools import Notifier
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Searx(Notifier):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This plugin opens a rofi prompt to get a search query from the user, then randomly
+</span><span class="add">+    selects a searx instance from a provided list and opens a browser to carry out the
+</span><span class="add">+    web search.
+</span><span class="add">+
+</span><span class="add">+    Searx instances can be provided directly as a list, or alternatively an
+</span><span class="add">+    instances_file path can be provided to load the list of searx instances from a file
+</span><span class="add">+    containing line-separated full URLs to searx instances.
+</span><span class="add">+
+</span><span class="add">+    Searx.remove_last_used can be used to remove the previously used searx instance from
+</span><span class="add">+    the instance list. If an instance_file was provided, the last instance will simply
+</span><span class="add">+    be commented out in the file and ignored, but not removed. New instances can be
+</span><span class="add">+    added by adding to the file, and either restarting Qtile or binding
+</span><span class="add">+    Searx.lazy_load_instances to a key.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;summary&apos;, &apos;Searx&apos;, &apos;Notification summary.&apos;),
+</span><span class="add">+        (&apos;instances&apos;, [&apos;https://searx.me&apos;], &apos;List of searx instance base URLs.&apos;),
+</span><span class="add">+        (&apos;instances_file&apos;, None, &apos;File containing list of searx instances. If specified&apos;
+</span><span class="add">+                                 &apos; instances passed directly are ignored.&apos;),
+</span><span class="add">+        (&apos;prompt&apos;, &apos;Search the web&apos;, &apos;Prompt displayed by rofi.&apos;),
+</span><span class="add">+        (&apos;theme&apos;, None, &apos;rofi theme to use.&apos;),
+</span><span class="add">+        (&apos;launcher&apos;, &apos;tor-browser --allow-remote {url}&apos;, &apos;Command used to open web &apos;
+</span><span class="add">+                     &apos;browser. Requires {url} to place the search url.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        Notifier.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Searx.defaults)
+</span><span class="add">+        self.last_used = None
+</span><span class="add">+
+</span><span class="add">+        self.command = [&apos;rofi&apos;, &apos;-dmenu&apos;, &apos;-l&apos;, &apos;0&apos;]
+</span><span class="add">+        if self.prompt:
+</span><span class="add">+            self.command.extend([&apos;-p&apos;, self.prompt])
+</span><span class="add">+        if self.theme:
+</span><span class="add">+            self.command.extend([&apos;-theme&apos;, self.theme])
+</span><span class="add">+
+</span><span class="add">+        if self.instances_file:
+</span><span class="add">+            self.load_instances()
+</span><span class="add">+
+</span><span class="add">+    def search(self, qtile=None):
+</span><span class="add">+        output = subprocess.run(
+</span><span class="add">+            self.command,
+</span><span class="add">+            stdout=subprocess.PIPE,
+</span><span class="add">+            universal_newlines=True,
+</span><span class="add">+        )
+</span><span class="add">+        if output.stdout and not output.returncode:
+</span><span class="add">+            if self.instances_file:
+</span><span class="add">+                instance = random.choice(
+</span><span class="add">+                    [i for i in self.instances if not i.startswith(&apos;#&apos;)]
+</span><span class="add">+                )
+</span><span class="add">+            else:
+</span><span class="add">+                instance = random.choice(self.instances)
+</span><span class="add">+
+</span><span class="add">+            query = output.stdout.strip()
+</span><span class="add">+            url = f&quot;&apos;{instance}/?q={query}&amp;categories=general&amp;language=en-US&apos;&quot;
+</span><span class="add">+            command = self.launcher.format(url=url)
+</span><span class="add">+            subprocess.Popen(shlex.split(command))
+</span><span class="add">+            self.last_used = instance
+</span><span class="add">+
+</span><span class="add">+    def remove_last_used(self, qtile=None):
+</span><span class="add">+        if self.last_used:
+</span><span class="add">+            self.instances.remove(self.last_used)
+</span><span class="add">+            if self.instances_file:
+</span><span class="add">+                self.instances.append(f&apos;#{self.last_used}&apos;)
+</span><span class="add">+                self.save_instances()
+</span><span class="add">+            self.last_used = None
+</span><span class="add">+
+</span><span class="add">+    def load_instances(self, qtile=None):
+</span><span class="add">+        with open(self.instances_file, &apos;r&apos;) as f:
+</span><span class="add">+            self.instances = f.read().split()
+</span><span class="add">+
+</span><span class="add">+    def save_instances(self):
+</span><span class="add">+        with open(self.instances_file, &apos;w&apos;) as f:
+</span><span class="add">+            f.write(&apos;\n&apos;.join(self.instances))
+</span></pre>
+</div></div>
+  </body>
+</html>

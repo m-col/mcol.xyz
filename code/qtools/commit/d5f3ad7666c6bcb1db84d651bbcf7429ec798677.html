@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add xresources plugin to query X resources from X server</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/d5f3ad7666c6bcb1db84d651bbcf7429ec798677.html">d5f3ad7666c6bcb1db84d651bbcf7429ec798677</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/e4d3b1585cd6accd15c77e0ec167ad55c9913405.html">e4d3b1585cd6accd15c77e0ec167ad55c9913405</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-10 18:41:23 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-10 18:41:23 +0000
+
+add xresources plugin to query X resources from X server
+</pre><div class="diff">
+  <p>
+    <b>xresources/xresources.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,54 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile helper to get X resources from the root window.
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import xcffib
+</span><span class="add">+import xcffib.xproto
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def get(DISPLAY, defaults={}):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Get the X resources in an X servers resource manager.
+</span><span class="add">+
+</span><span class="add">+    Parameters
+</span><span class="add">+    ==========
+</span><span class="add">+    DISPLAY : str
+</span><span class="add">+        DISPLAY name to query.
+</span><span class="add">+    
+</span><span class="add">+    defaults : dict (optional)
+</span><span class="add">+        Default values to act as a fallback for missing values or in the event of a
+</span><span class="add">+        failed connection.
+</span><span class="add">+
+</span><span class="add">+    Returns
+</span><span class="add">+    =======
+</span><span class="add">+    resources: dict
+</span><span class="add">+        Dictionary containing all (available) X resources. Resources that are specified
+</span><span class="add">+        in an Xresources/Xdefaults file as wildcards e.g. &apos;*.color1&apos; have the leading
+</span><span class="add">+        &apos;*.&apos; stripped.
+</span><span class="add">+
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    try:
+</span><span class="add">+        conn = xcffib.connect(display=DISPLAY)
+</span><span class="add">+    except xcffib.ConnectionException:
+</span><span class="add">+        return defaults
+</span><span class="add">+
+</span><span class="add">+    root = conn.get_setup().roots[0].root
+</span><span class="add">+    atom = conn.core.InternAtom(False, 16, &apos;RESOURCE_MANAGER&apos;).reply().atom
+</span><span class="add">+
+</span><span class="add">+    reply = conn.core.GetProperty(
+</span><span class="add">+        False, root, atom,
+</span><span class="add">+        xcffib.xproto.Atom.STRING,
+</span><span class="add">+        0, (2 ** 32) - 1
+</span><span class="add">+    ).reply()
+</span><span class="add">+    conn.disconnect()
+</span><span class="add">+
+</span><span class="add">+    resource_string = reply.value.buf().decode(&quot;utf-8&quot;)
+</span><span class="add">+    resource_list = filter(None, resource_string.split(&apos;\n&apos;))
+</span><span class="add">+    resources = {}
+</span><span class="add">+
+</span><span class="add">+    for resource in resource_list:
+</span><span class="add">+        key, value = resource.split(&apos;:\t&apos;)
+</span><span class="add">+        resources[key.strip(&apos;*.&apos;)] = value
+</span><span class="add">+
+</span><span class="add">+    return resources
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>xresources/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+from .xresources import get
+</span></pre>
+</div></div>
+  </body>
+</html>

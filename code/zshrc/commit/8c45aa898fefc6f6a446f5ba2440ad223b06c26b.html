@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - added tmux prompt segment</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/8c45aa898fefc6f6a446f5ba2440ad223b06c26b.html">8c45aa898fefc6f6a446f5ba2440ad223b06c26b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/a36182838cb270d5b1d1e8167c4f0d2d556e699a.html">a36182838cb270d5b1d1e8167c4f0d2d556e699a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 12:41:17 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 12:41:17 +0000
+
+added tmux prompt segment
+</pre><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,9 +26,9 @@
+<span class="def">     [[ -n $1 ]] &amp;&amp; bg=&quot;%K{$1}&quot; || bg=&quot;%k&quot;
+</span><span class="def">     [[ -n $2 ]] &amp;&amp; fg=&quot;%F{$2}&quot; || fg=&quot;%f&quot;
+</span><span class="def">     if [[ $CURRENT_BG != &apos;NONE&apos; &amp;&amp; $1 != $CURRENT_BG ]]; then
+</span><span class="sub">-	echo -n &quot; %{$bg%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR%{$fg%} &quot;
+</span><span class="add">+	echo -n &quot;%{$bg%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR%{$fg%}&quot;
+</span><span class="def">     else
+</span><span class="sub">-	echo -n &quot;%{$bg%}%{$fg%} &quot;
+</span><span class="add">+	echo -n &quot;%{$bg%}%{$fg%}&quot;
+</span><span class="def">     fi
+</span><span class="def">     CURRENT_BG=$1
+</span><span class="def">     [[ -n $3 ]] &amp;&amp; echo -n $3
+</span>@@ -37,7 +37,7 @@
+<span class="def"> # End the prompt, closing any open segments
+</span><span class="def"> prompt_end() {
+</span><span class="def">     if [[ -n $CURRENT_BG ]]; then
+</span><span class="sub">-	echo -n &quot; %{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR&quot;
+</span><span class="add">+	echo -n &quot;%{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR&quot;
+</span><span class="def">     else
+</span><span class="def"> 	echo -n &quot;%{%k%}&quot;
+</span><span class="def">     fi
+</span>@@ -47,7 +47,7 @@
+<span class="def"> 
+</span><span class="def"> prompt_context() {
+</span><span class="def">     if $is_ssh; then
+</span><span class="sub">-	prompt_segment green black &quot;%(!.%{%F{yellow}%}.)$USER@$HOST&quot;
+</span><span class="add">+	prompt_segment green black &quot; %(!.%{%F{yellow}%}.)$USER@$HOST &quot;
+</span><span class="def">     fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -90,41 +90,52 @@
+<span class="def">     zstyle &apos;:vcs_info:*&apos; formats &apos; %u%c&apos;
+</span><span class="def">     zstyle &apos;:vcs_info:*&apos; actionformats &apos; %u%c&apos;
+</span><span class="def">     vcs_info
+</span><span class="sub">-    echo -n &quot;${ref/refs\/heads\//$PL_BRANCH_CHAR }${vcs_info_msg_0_%% }${mode}&quot;
+</span><span class="add">+    echo -n &quot; ${ref/refs\/heads\//$PL_BRANCH_CHAR }${vcs_info_msg_0_%% }${mode} &quot;
+</span><span class="def"> fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-# Dir: current working directory
+</span><span class="add">+
+</span><span class="def"> prompt_dir() {
+</span><span class="sub">-    prompt_segment magenta black &apos;%3~&apos;
+</span><span class="add">+    prompt_segment magenta black &apos; %3~ &apos;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> prompt_mes() {
+</span><span class="sub">-    [[ $RETVAL -ne 0 ]] &amp;&amp; prompt_segment red black &apos;&gt;&apos;
+</span><span class="sub">-    [[ $RETVAL -eq 0 ]] &amp;&amp; prompt_segment blue black &apos;&gt;&apos;
+</span><span class="add">+    [[ $RETVAL -ne 0 ]] &amp;&amp; prompt_segment red black &apos; &gt; &apos;
+</span><span class="add">+    [[ $RETVAL -eq 0 ]] &amp;&amp; prompt_segment blue black &apos; &gt; &apos;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-# Virtualenv: current working virtualenv
+</span><span class="add">+
+</span><span class="def"> prompt_virtualenv() {
+</span><span class="def">     local virtualenv_path=&quot;$VIRTUAL_ENV&quot;
+</span><span class="def">     if [[ -n $virtualenv_path &amp;&amp; -n $VIRTUAL_ENV_DISABLE_PROMPT ]]; then
+</span><span class="sub">-	prompt_segment red black &quot;(`basename $virtualenv_path`)&quot;
+</span><span class="add">+	prompt_segment red black &quot; (`basename $virtualenv_path`) &quot;
+</span><span class="def">     fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> prompt_status() {
+</span><span class="def">     local symbols
+</span><span class="def">     symbols=()
+</span><span class="def">     [[ $RETVAL -ne 0 ]] &amp;&amp; symbols+=&quot;%{%F{red}%}x&quot;
+</span><span class="def">     [[ $UID -eq 0 ]] &amp;&amp; symbols+=&quot;%{%F{yellow}%}⚡&quot;
+</span><span class="def">     [[ $(jobs -l | wc -l) -gt 0 ]] &amp;&amp; symbols+=&quot;%{%F{cyan}%}⚙&quot;
+</span><span class="sub">-
+</span><span class="def">     [[ -n &quot;$symbols&quot; ]] &amp;&amp; prompt_segment black default &quot;$symbols&quot;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-##### vi mode
+</span><span class="sub">-#VIM_PROMPT=&quot;--INSERT--&quot;
+</span><span class="add">+prompt_tmux() {
+</span><span class="add">+    local tmux_indicator
+</span><span class="add">+    if [[ -n &quot;$TMUX&quot; ]]
+</span><span class="add">+    then
+</span><span class="add">+	tmux_indicator=$&apos;\ue0b0&apos;
+</span><span class="add">+    else
+</span><span class="add">+	tmux_indicator=&apos;&apos;
+</span><span class="add">+    fi
+</span><span class="add">+    [[ -n &quot;$tmux_indicator&quot; ]] &amp;&amp; prompt_segment magenta 11 &quot;$tmux_indicator&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> export KEYTIMEOUT=1	# reduce delay to 0.1s
+</span><span class="def"> bindkey -v
+</span><span class="def"> prompt_vi(){
+</span>@@ -133,12 +144,13 @@
+<span class="def"> }
+</span><span class="def"> zle-line-init() { zle -K viins; }
+</span><span class="def"> zle -N zle-line-init
+</span><span class="sub">-######
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> ## Main left prompt
+</span><span class="def"> build_prompt() {
+</span><span class="def">     RETVAL=$?
+</span><span class="def">     local SEGMENT_SEPARATOR=$SEGMENT_SEPARATOR_L
+</span><span class="add">+    prompt_tmux
+</span><span class="def">     prompt_context
+</span><span class="def">     prompt_dir
+</span><span class="def">     prompt_mes
+</span>@@ -161,7 +173,7 @@
+<span class="def"> zle-keymap-select() {
+</span><span class="def">     if [ $KEYMAP = vicmd ]; then
+</span><span class="def"> 	printf &quot;\033[2 q&quot; # block cursor
+</span><span class="sub">-	VIM_PROMPT=&quot;-- NORMAL --&quot;
+</span><span class="add">+	VIM_PROMPT=&quot; -- NORMAL -- &quot;
+</span><span class="def">     else
+</span><span class="def"> 	printf &quot;\033[4 q&quot; # underline. Change 4 to 6 for vertical line
+</span><span class="def"> 	VIM_PROMPT=&quot;&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

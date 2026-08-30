@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - Add typer&apos;s zfunc folder to fpath</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/cf80d8f458a62bcbca36303eeeaa255ad1c87736.html">cf80d8f458a62bcbca36303eeeaa255ad1c87736</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/c21b1f7f8dcae46f4470d1bd75e26d53f2c53231.html">c21b1f7f8dcae46f4470d1bd75e26d53f2c53231</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-16 15:52:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-16 15:52:36 +0000
+
+Add typer&apos;s zfunc folder to fpath
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,6 +22,7 @@
+<span class="def"> COMPLETION_WAITING_DOTS=&quot;true&quot;
+</span><span class="def"> ZSH_COMPDUMP=&quot;$HOME/.zcompdump&quot;
+</span><span class="def"> setopt NO_nomatch
+</span><span class="add">+fpath=(~/.zfunc $fpath)
+</span><span class="def"> 
+</span><span class="def"> # zsh history
+</span><span class="def"> HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>set_groot.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,16 @@
+<span class="add">+#
+</span><span class="add">+# Set ~g to point to current git root
+</span><span class="add">+#
+</span><span class="add">+
+</span><span class="add">+#function _set_groot() {
+</span><span class="add">+#    local groot
+</span><span class="add">+#    if groot=$(git rev-parse --show-toplevel 2&gt; /dev/null)
+</span><span class="add">+#    then
+</span><span class="add">+#	hash -d g=&quot;$groot&quot;
+</span><span class="add">+#    else
+</span><span class="add">+#	disable g
+</span><span class="add">+#    fi
+</span><span class="add">+#}
+</span><span class="add">+#
+</span><span class="add">+#autoload -Uz add-zsh-hook
+</span><span class="add">+#add-zsh-hook precmd _set_groot
+</span></pre>
+</div></div>
+  </body>
+</html>

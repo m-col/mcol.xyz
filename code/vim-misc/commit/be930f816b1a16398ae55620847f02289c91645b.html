@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - drop markdown fold</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/be930f816b1a16398ae55620847f02289c91645b.html">be930f816b1a16398ae55620847f02289c91645b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/9ce9a896027f36fe67b580941c8b07d4359aa3ab.html">9ce9a896027f36fe67b580941c8b07d4359aa3ab</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-07-31 22:37:07 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-07-31 22:37:07 +0100
+
+drop markdown fold
+</pre><div class="diff">
+  <p>
+    <b>start/self/ftplugin/markdown.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,6 +7,8 @@
+<span class="def"> &quot;setlocal formatoptions+=a
+</span><span class="def"> &quot;setlocal spell spelllang=en_gb
+</span><span class="def"> 
+</span><span class="add">+let g:markdown_fold_override_foldtext = 0
+</span><span class="add">+
+</span><span class="def"> &quot; format folded section header text
+</span><span class="def"> function! GenericFoldText()
+</span><span class="def">     let line = getline(v:foldstart)
+</span></pre>
+</div></div>
+  </body>
+</html>

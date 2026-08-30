@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / bye cgit, hello stagit</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2020/10/bye-cgit-hello-stagit.html>bye cgit, hello stagit</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>It was only around 2 months ago when I <a class="reference external" href="../../2020/08/bye-gitea-hello-cgit.html">replaced my gitea instance</a> with <a class="reference external" href="https://git.zx2c4.com/cgit">cgit</a>,
+but now I've replaced it with an even simpler alternative: <a class="reference external" href="https://git.codemadness.org/stagit">stagit</a>.</p>
+<p>cgit, as per the name, is an application that uses <a class="reference external" href="https://en.wikipedia.org/wiki/Common_Gateway_Interface">Common Gateway Interface</a>
+(CGI) to serve dynamically generated web pages displaying information about the
+remote git repositories on your server. The CGI approach lets cgit check for
+updates to repositories when pages are requested in order to update these pages
+and its cache.</p>
+<p>stagit, on the other hand, is a command that generates static HTML pages from a
+repository just once when called. This reduces load on the server, as the pages
+can then be served directly without any dynamic page generation. The author has
+a blog post with some more information <a class="reference external" href="https://codemadness.org/stagit.html">here</a>.</p>
+<p>As the scope of stagit is limited to generation of HTML pages, any requests on
+the server from git commands -- i.e. fetching or pushing -- must be handled by
+something else if they are to be supported. For this I am using
+<a class="reference external" href="https://git-scm.com/docs/git-http-backend">git-http-backend</a>, to which nginx forwards requests that contain specific query
+strings.</p>
+<div class="section" id="git-hooks-and-regeneration">
+<h2>git hooks and regeneration</h2>
+<p>But how to update the pages? As stagit is a simple command invoked just to
+create new pages, it needs to called when git repositories are updated. For
+this, we can write a simple post-receive hook and link it into each of our
+repositories. Something like this, where our repos are in <code>/var/git</code> and
+the output HTML files are saved into <code>/var/www/code</code>:</p>
+<div class="highlight"><pre><span></span><span class="c1"># /var/git/&lt;repo&gt;/hooks/post-receive.d/update-stagit</span>
+<span class="nv">REPO</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>
+<span class="nv">REPONAME</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="nv">$REPO</span><span class="k">)</span>
+<span class="nb">cd</span><span class="w"> </span>/var/www/code/<span class="nv">$REPONAME</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/var/www/code/<span class="si">${</span><span class="nv">REPONAME</span><span class="p">//.git</span><span class="si">}</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+stagit<span class="w"> </span><span class="nv">$REPO</span>
+stagit-index<span class="w"> </span>/var/git/*<span class="w"> </span>&gt;<span class="w"> </span>/var/www/code/index.html
+</pre></div>
+<p>This will be executed at the end of every <code>git push</code> that updates the
+repository, regenerating both the index page and the pages that pertain to the
+that repository.</p>
+</div>
+<div class="section" id="ordering-the-index-page">
+<h2>ordering the index page</h2>
+<p>You'll notice in the above snippet that there is a dedicated command for
+generating the index page, <code>stagit-index</code>. The order of the repos on the
+index page is determined by the order of the arguments passed to this. To order
+these by most recent commit, I made a quick Python wrapper:</p>
+<div class="highlight"><pre><span></span><span class="c1"># stagit-index.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">git</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">REPOS</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">COMMAND</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/usr/local/bin/stagit-index&quot;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/var/git&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;**/objects&#39;</span><span class="p">):</span>
+    <span class="n">REPOS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">git</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">committed_date</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="n">COMMAND</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">REPOS</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">COMMAND</span><span class="p">)</span>
+</pre></div>
+<p>Then all I need to do is run this little script and the index page will display
+the repositories with the most recent updates first.</p>
+</div>
+<div class="section" id="hacking-the-source">
+<h2>hacking the source</h2>
+<p>As the source code is neat and simple, it's very easy to make changes to
+customise the behaviour. For example, I wanted every page to use the same
+global stylesheet, rather than using a hard-coded path beside the given page. I
+also removed the &quot;Owner&quot; column from the index page. Changes such as these --
+essentially modifying the HTML template used -- are unfortunately impossible
+with cgit, although some larger forges such as gitea do have full HTML template
+systems.</p>
+<p>Indeed, reading the source code it is clear that it would not be too difficult
+to create a similar program that does exactly what you want. Though, if a
+similar program took advantage of an HTML templating engine, then hacks such as
+these may no longer be necessary. That would be more flexible... but where's
+the fun in that?</p>
+</div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2020-10-04T00:00:00+00:00">2020-10-04</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - grab window when moving so it doesnt get dropped by fast motion</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/13c16c0fd4d24757e553feef04ff3590ad583042.html">13c16c0fd4d24757e553feef04ff3590ad583042</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/31bba27e9af42c41a8323a60771331fc1ac04105.html">31bba27e9af42c41a8323a60771331fc1ac04105</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-28 18:54:58 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-28 18:54:58 +0000
+
+grab window when moving so it doesnt get dropped by fast motion
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -162,8 +162,12 @@
+<span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="def"> 	wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="add">+	if (wimp.grabbed_view) {
+</span><span class="add">+	    wimp.grabbed_view = NULL;
+</span><span class="add">+	}
+</span><span class="def"> 
+</span><span class="def">     } else if (wimp.cursor_mode == CURSOR_MOD) {
+</span><span class="add">+	bool grab = true;
+</span><span class="def"> 	switch (event-&gt;button) {
+</span><span class="def"> 	    case BTN_LEFT:
+</span><span class="def"> 		wimp.on_mouse_motion = wimp.on_drag1;
+</span>@@ -174,8 +178,14 @@
+<span class="def"> 	    case BTN_RIGHT:
+</span><span class="def"> 		wimp.on_mouse_motion = wimp.on_drag3;
+</span><span class="def"> 		break;
+</span><span class="add">+	    default:
+</span><span class="add">+		grab = false;
+</span><span class="add">+	}
+</span><span class="add">+	if (grab) {
+</span><span class="add">+	    struct wlr_surface *surface;
+</span><span class="add">+	    double sx, sy;
+</span><span class="add">+	    wimp.grabbed_view = view_at(wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy);
+</span><span class="def"> 	}
+</span><span class="sub">-
+</span><span class="def"> 
+</span><span class="def">     } else {
+</span><span class="def"> 	double sx, sy;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -48,11 +48,15 @@
+<span class="def"> void move_window(void *data) {
+</span><span class="def">     struct wlr_surface *surface;
+</span><span class="def">     double sx, sy;
+</span><span class="sub">-    struct view *view = view_at(
+</span><span class="sub">-	wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy
+</span><span class="sub">-    );
+</span><span class="sub">-    if (!view) {
+</span><span class="sub">-	return;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+
+</span><span class="add">+    if (wimp.grabbed_view) {
+</span><span class="add">+	view = wimp.grabbed_view;
+</span><span class="add">+    } else {
+</span><span class="add">+	view = view_at(wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy);
+</span><span class="add">+	if (!view) {
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def">     struct motion motion = *(struct motion*)data;
+</span><span class="def">     view-&gt;x += motion.dx;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - wayland.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- wayland.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &quot;&quot;&quot;
+<a href="#l2" class="line" id="l2">      2</a> Wayland-specific configuration
+<a href="#l3" class="line" id="l3">      3</a> &quot;&quot;&quot;
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> import asyncio
+<a href="#l6" class="line" id="l6">      6</a> import os
+<a href="#l7" class="line" id="l7">      7</a> import subprocess
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> from libqtile import hook, qtile
+<a href="#l10" class="line" id="l10">     10</a> from libqtile.backend.wayland import InputConfig
+<a href="#l11" class="line" id="l11">     11</a> from libqtile.backend.wayland.xdgwindow import XdgWindow
+<a href="#l12" class="line" id="l12">     12</a> from libqtile.backend.wayland.xwindow import XWindow
+<a href="#l13" class="line" id="l13">     13</a> from libqtile.backend.wayland.layer import LayerStatic
+<a href="#l14" class="line" id="l14">     14</a> from libqtile.lazy import lazy
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> IS_XEPHYR = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0))
+<a href="#l17" class="line" id="l17">     17</a> mod = &quot;mod1&quot; if IS_XEPHYR else &quot;mod4&quot;
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> term = &quot;footclient&quot;
+<a href="#l20" class="line" id="l20">     20</a> keys_backend = []
+<a href="#l21" class="line" id="l21">     21</a> 
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> # Keys to change VT
+<a href="#l24" class="line" id="l24">     24</a> keys_backend.extend(
+<a href="#l25" class="line" id="l25">     25</a>     [
+<a href="#l26" class="line" id="l26">     26</a>         ([mod], &quot;F1&quot;, lazy.core.change_vt(1), &quot;Change to VT 1&quot;),
+<a href="#l27" class="line" id="l27">     27</a>         ([mod], &quot;F2&quot;, lazy.core.change_vt(2), &quot;Change to VT 2&quot;),
+<a href="#l28" class="line" id="l28">     28</a>         ([mod], &quot;F3&quot;, lazy.core.change_vt(3), &quot;Change to VT 3&quot;),
+<a href="#l29" class="line" id="l29">     29</a>         ([mod], &quot;F4&quot;, lazy.core.change_vt(4), &quot;Change to VT 4&quot;),
+<a href="#l30" class="line" id="l30">     30</a>     ]
+<a href="#l31" class="line" id="l31">     31</a> )
+<a href="#l32" class="line" id="l32">     32</a> 
+<a href="#l33" class="line" id="l33">     33</a> # Inputs configuration
+<a href="#l34" class="line" id="l34">     34</a> wl_input_rules = {
+<a href="#l35" class="line" id="l35">     35</a>     &quot;type:keyboard&quot;: InputConfig(
+<a href="#l36" class="line" id="l36">     36</a>         kb_options=&quot;caps:swapescape,altwin:swap_alt_win&quot;,
+<a href="#l37" class="line" id="l37">     37</a>         kb_layout=&quot;gb&quot;,
+<a href="#l38" class="line" id="l38">     38</a>         kb_repeat_rate=50,
+<a href="#l39" class="line" id="l39">     39</a>         kb_repeat_delay=250,
+<a href="#l40" class="line" id="l40">     40</a>     ),
+<a href="#l41" class="line" id="l41">     41</a>     # All touchpads
+<a href="#l42" class="line" id="l42">     42</a>     &quot;type:touchpad&quot;: InputConfig(drag=True, tap=True, dwt=False, pointer_accel=0.3),
+<a href="#l43" class="line" id="l43">     43</a>     # Roccat Kiro mouse
+<a href="#l44" class="line" id="l44">     44</a>     &quot;7805:11320:ROCCAT ROCCAT Kiro Mouse&quot;: InputConfig(
+<a href="#l45" class="line" id="l45">     45</a>         #left_handed=True,
+<a href="#l46" class="line" id="l46">     46</a>         pointer_accel=-1.0,
+<a href="#l47" class="line" id="l47">     47</a>     ),
+<a href="#l48" class="line" id="l48">     48</a>     # Anker mouse
+<a href="#l49" class="line" id="l49">     49</a>     &quot;7119:5:USB Optical Mouse&quot;: InputConfig(pointer_accel=-1.0),
+<a href="#l50" class="line" id="l50">     50</a> }
+<a href="#l51" class="line" id="l51">     51</a> 
+<a href="#l52" class="line" id="l52">     52</a> 
+<a href="#l53" class="line" id="l53">     53</a> # Shadows configuration
+<a href="#l54" class="line" id="l54">     54</a> # wl_shadows = {
+<a href="#l55" class="line" id="l55">     55</a> #    &quot;radius&quot;: 12,
+<a href="#l56" class="line" id="l56">     56</a> #    &quot;color&quot;: &quot;#05001088&quot;,
+<a href="#l57" class="line" id="l57">     57</a> #    &quot;offset&quot;: (-6, -6),
+<a href="#l58" class="line" id="l58">     58</a> # }
+<a href="#l59" class="line" id="l59">     59</a> wl_shadows = {
+<a href="#l60" class="line" id="l60">     60</a>     &quot;radius&quot;: 5,
+<a href="#l61" class="line" id="l61">     61</a>     &quot;color&quot;: &quot;#ff000044&quot;,
+<a href="#l62" class="line" id="l62">     62</a>     &quot;offset&quot;: (0, 0),
+<a href="#l63" class="line" id="l63">     63</a> }
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a> 
+<a href="#l66" class="line" id="l66">     66</a> @hook.subscribe.client_new
+<a href="#l67" class="line" id="l67">     67</a> def _(win):
+<a href="#l68" class="line" id="l68">     68</a>     # Auto-float some windows
+<a href="#l69" class="line" id="l69">     69</a>     if isinstance(win, XdgWindow):
+<a href="#l70" class="line" id="l70">     70</a>         max_width = win.surface.toplevel._ptr.current.max_width
+<a href="#l71" class="line" id="l71">     71</a>         if 0 &lt; max_width &lt; 1920:
+<a href="#l72" class="line" id="l72">     72</a>             win.floating = True
+<a href="#l73" class="line" id="l73">     73</a>     elif isinstance(win, XWindow):
+<a href="#l74" class="line" id="l74">     74</a>         if hints := win.surface.size_hints:
+<a href="#l75" class="line" id="l75">     75</a>             max_width = hints.max_width
+<a href="#l76" class="line" id="l76">     76</a>             if 0 &lt; max_width &lt; 1920:
+<a href="#l77" class="line" id="l77">     77</a>                 win.floating = True
+<a href="#l78" class="line" id="l78">     78</a> 
+<a href="#l79" class="line" id="l79">     79</a> 
+<a href="#l80" class="line" id="l80">     80</a> @hook.subscribe.client_managed
+<a href="#l81" class="line" id="l81">     81</a> async def _(win):
+<a href="#l82" class="line" id="l82">     82</a>     # Some other miscellaneous rules
+<a href="#l83" class="line" id="l83">     83</a>     if win.name == &quot;Firefox — Sharing Indicator&quot;:
+<a href="#l84" class="line" id="l84">     84</a>         win.place(win.x + win.borderwidth, 0, win.width, win.height, 0, None)
+<a href="#l85" class="line" id="l85">     85</a>         return
+<a href="#l86" class="line" id="l86">     86</a> 
+<a href="#l87" class="line" id="l87">     87</a>     wm_class = win.get_wm_class() or []
+<a href="#l88" class="line" id="l88">     88</a>     if win.name == &quot;Navigator&quot; and &quot;libreoffice-startcenter&quot; in wm_class:
+<a href="#l89" class="line" id="l89">     89</a>         x = qtile.current_screen.x
+<a href="#l90" class="line" id="l90">     90</a>         win.place(x, 240, 450, 600, win.borderwidth, win.bordercolor)
+<a href="#l91" class="line" id="l91">     91</a>         return
+<a href="#l92" class="line" id="l92">     92</a> 
+<a href="#l93" class="line" id="l93">     93</a>     if &quot;mpv&quot; in wm_class:
+<a href="#l94" class="line" id="l94">     94</a>         # Resizing mpv if it&apos;s sized itself too big to fit on screen
+<a href="#l95" class="line" id="l95">     95</a>         sw = qtile.current_screen.width
+<a href="#l96" class="line" id="l96">     96</a>         sh = qtile.current_screen.height
+<a href="#l97" class="line" id="l97">     97</a>         x = y = w = h = None
+<a href="#l98" class="line" id="l98">     98</a>         if win.height &gt; sh:
+<a href="#l99" class="line" id="l99">     99</a>             h = sh
+<a href="#l100" class="line" id="l100">    100</a>             y = qtile.current_screen.y
+<a href="#l101" class="line" id="l101">    101</a>         if win.width &gt; sw:
+<a href="#l102" class="line" id="l102">    102</a>             w = sw
+<a href="#l103" class="line" id="l103">    103</a>             x = qtile.current_screen.x
+<a href="#l104" class="line" id="l104">    104</a>         if w is not None or h is not None:
+<a href="#l105" class="line" id="l105">    105</a>             if h is None:
+<a href="#l106" class="line" id="l106">    106</a>                 h = win.height
+<a href="#l107" class="line" id="l107">    107</a>                 y = win.y
+<a href="#l108" class="line" id="l108">    108</a>             else:
+<a href="#l109" class="line" id="l109">    109</a>                 w = win.width
+<a href="#l110" class="line" id="l110">    110</a>                 x = win.x
+<a href="#l111" class="line" id="l111">    111</a>             bw = win.borderwidth
+<a href="#l112" class="line" id="l112">    112</a>             win.place(x - bw, y - bw, w + 2 * bw, h + 2 * bw, 0, None)
+<a href="#l113" class="line" id="l113">    113</a>         return
+<a href="#l114" class="line" id="l114">    114</a> 
+<a href="#l115" class="line" id="l115">    115</a> 
+<a href="#l116" class="line" id="l116">    116</a> @hook.subscribe.startup_once
+<a href="#l117" class="line" id="l117">    117</a> async def _():
+<a href="#l118" class="line" id="l118">    118</a>     # Run a startup script
+<a href="#l119" class="line" id="l119">    119</a>     HOME = os.path.expanduser(&quot;~&quot;)
+<a href="#l120" class="line" id="l120">    120</a>     p = subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;)
+<a href="#l121" class="line" id="l121">    121</a>     hook.subscribe.shutdown(p.terminate)
+<a href="#l122" class="line" id="l122">    122</a> 
+<a href="#l123" class="line" id="l123">    123</a> 
+<a href="#l124" class="line" id="l124">    124</a> ## I don&apos;t use this monitor, but keep this around for testing
+<a href="#l125" class="line" id="l125">    125</a> #
+<a href="#l126" class="line" id="l126">    126</a> #@hook.subscribe.screen_change
+<a href="#l127" class="line" id="l127">    127</a> #def _(*_):
+<a href="#l128" class="line" id="l128">    128</a> #    # Temporary hacky fix for the dell monitor on my desk which for some mysterious
+<a href="#l129" class="line" id="l129">    129</a> #    # reason doesn&apos;t advertise that it supports any HD mode. Qtile does support setting
+<a href="#l130" class="line" id="l130">    130</a> #    # custom modes via the protocol, but neither kanshi nor wdisplays do. So instead,
+<a href="#l131" class="line" id="l131">    131</a> #    # I&apos;ll detect if that monitor is present and set the desired custom mode here.
+<a href="#l132" class="line" id="l132">    132</a> #    for output in qtile.core.outputs:
+<a href="#l133" class="line" id="l133">    133</a> #        wlr_output = output.wlr_output
+<a href="#l134" class="line" id="l134">    134</a> #        # Not only does this monitor not report modes correctly, it ALSO doesn&apos;t report
+<a href="#l135" class="line" id="l135">    135</a> #        # a make or model.
+<a href="#l136" class="line" id="l136">    136</a> #        if wlr_output.make == wlr_output.model == &quot;&lt;Unknown&gt;&quot;:
+<a href="#l137" class="line" id="l137">    137</a> #            if wlr_output.current_mode.width == 1024:
+<a href="#l138" class="line" id="l138">    138</a> #                break
+<a href="#l139" class="line" id="l139">    139</a> #    else:
+<a href="#l140" class="line" id="l140">    140</a> #        return
+<a href="#l141" class="line" id="l141">    141</a> #
+<a href="#l142" class="line" id="l142">    142</a> #    wlr_output.set_custom_mode(1920, 1080, 0)
+<a href="#l143" class="line" id="l143">    143</a> #    # Lastly, while reconfigure_screens will be fired right after this hook, as it
+<a href="#l144" class="line" id="l144">    144</a> #    # gets subscribed to this hook right after the config is loaded, the backend doesn&apos;t
+<a href="#l145" class="line" id="l145">    145</a> #    # get a chance to actually apply the mode, so let&apos;s flush it.
+<a href="#l146" class="line" id="l146">    146</a> #    qtile.core.flush()
+<a href="#l147" class="line" id="l147">    147</a> 
+<a href="#l148" class="line" id="l148">    148</a> 
+<a href="#l149" class="line" id="l149">    149</a> ## UNNECESSARY? The backend should update the output with reconfigre_screens=True
+<a href="#l150" class="line" id="l150">    150</a> #
+<a href="#l151" class="line" id="l151">    151</a> #if IS_XEPHYR:
+<a href="#l152" class="line" id="l152">    152</a> #    # To adapt to whatever window size it was given
+<a href="#l153" class="line" id="l153">    153</a> #    @hook.subscribe.startup_once
+<a href="#l154" class="line" id="l154">    154</a> #    async def _():
+<a href="#l155" class="line" id="l155">    155</a> #        await asyncio.sleep(0.5)
+<a href="#l156" class="line" id="l156">    156</a> #        qtile.reconfigure_screens()
+<a href="#l157" class="line" id="l157">    157</a> 
+</pre>
+  </div>
+  </body>
+</html>

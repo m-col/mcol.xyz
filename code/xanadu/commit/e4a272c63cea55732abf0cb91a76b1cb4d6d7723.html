@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Clean up nested Maybe cases with MaybeT block</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/e4a272c63cea55732abf0cb91a76b1cb4d6d7723.html">e4a272c63cea55732abf0cb91a76b1cb4d6d7723</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/02b5e0ddf681699309f4f1d576312d8ac0d5953f.html">02b5e0ddf681699309f4f1d576312d8ac0d5953f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-21 01:01:32 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-21 01:01:32 +0100
+
+Clean up nested Maybe cases with MaybeT block
+</pre><div class="diff">
+  <p>
+    <b>xanadu.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,3 +24,4 @@
+<span class="def">                      , gi-gtk
+</span><span class="def">                      , haskell-gi-base
+</span><span class="def">                      , text
+</span><span class="add">+                     , transformers
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,8 @@
+<span class="def"> 
+</span><span class="def"> module Main where
+</span><span class="def"> 
+</span><span class="add">+import Control.Monad.IO.Class (liftIO)
+</span><span class="add">+import Control.Monad.Trans.Maybe
+</span><span class="def"> import Data.Functor (void)
+</span><span class="def"> import Data.Maybe
+</span><span class="def"> import Data.Text (pack)
+</span>@@ -51,22 +53,21 @@
+<span class="def"> populate :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span><span class="def"> populate listStore iconTheme root = ls root &gt;&gt;= mconcat . map (addItem listStore iconTheme)
+</span><span class="def"> 
+</span><span class="sub">--- The Gtk is working, but that&apos;s some ugly haskell
+</span><span class="def"> addItem :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span><span class="def"> addItem listStore iconTheme path = do
+</span><span class="def">     iter &lt;- Gtk.listStoreAppend listStore
+</span><span class="def">     value &lt;- Gtk.toGValue $ Just path
+</span><span class="sub">-    contentType &lt;- Gio.contentTypeGuess (Just . pack $ path) Nothing
+</span><span class="sub">-    iconName &lt;- Gio.contentTypeGetGenericIconName $ fst contentType
+</span><span class="sub">-    case iconName of
+</span><span class="add">+    icon &lt;- runMaybeT $ getIcon iconTheme path
+</span><span class="add">+    case icon of
+</span><span class="def">         Nothing -&gt; Gtk.listStoreSet listStore iter [0] [value]
+</span><span class="sub">-        (Just iconName&apos;) -&gt; do
+</span><span class="sub">-            maybePixbuf &lt;- Gtk.iconThemeLoadIcon iconTheme iconName&apos; 32 []
+</span><span class="sub">-            case maybePixbuf of
+</span><span class="sub">-                Nothing -&gt; Gtk.listStoreSet listStore iter [0] [value]
+</span><span class="sub">-                pixbuf -&gt; do
+</span><span class="sub">-                    pixbuf&apos; &lt;- Gtk.toGValue pixbuf
+</span><span class="sub">-                    Gtk.listStoreSet listStore iter [0, 1] [value, pixbuf&apos;]
+</span><span class="add">+        (Just icon&apos;) -&gt; Gtk.listStoreSet listStore iter [0, 1] [value, icon&apos;]
+</span><span class="add">+
+</span><span class="add">+getIcon :: Gtk.IconTheme -&gt; FilePath -&gt; MaybeT IO GValue
+</span><span class="add">+getIcon iconTheme path = do
+</span><span class="add">+    contentType &lt;- Gio.contentTypeGuess (Just . pack $ path) Nothing
+</span><span class="add">+    iconName &lt;- MaybeT $ Gio.contentTypeGetGenericIconName . fst $ contentType
+</span><span class="add">+    pixbuf &lt;- Gtk.iconThemeLoadIcon iconTheme iconName 32 []
+</span><span class="add">+    liftIO . Gtk.toGValue $ pixbuf
+</span><span class="def"> 
+</span><span class="def"> ls :: FilePath -&gt; IO [FilePath]
+</span><span class="def"> ls = fmap (filter (\f -&gt; f /= &quot;.&quot; &amp;&amp; f /= &quot;..&quot;)) . getDirectoryContents
+</span></pre>
+</div></div>
+  </body>
+</html>

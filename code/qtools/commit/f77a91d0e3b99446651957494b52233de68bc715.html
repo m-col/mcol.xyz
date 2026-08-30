@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - move notification icon decoder into Server method</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/f77a91d0e3b99446651957494b52233de68bc715.html">f77a91d0e3b99446651957494b52233de68bc715</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/5b45f1633695d4cb7a5c24b8a240b5006f605a03.html">5b45f1633695d4cb7a5c24b8a240b5006f605a03</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-02-29 10:16:15 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-02-29 10:16:15 +0000
+
+move notification icon decoder into Server method
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,11 +14,10 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-from libqtile import configurable, hook, images, pangocffi, window
+</span><span class="add">+from libqtile import configurable, hook, images, pangocffi
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="sub">-from libqtile.notify import notifier
+</span><span class="sub">-from libqtile.drawer import Drawer
+</span><span class="def"> from libqtile.log_utils import logger
+</span><span class="add">+from libqtile.notify import notifier
+</span><span class="def"> 
+</span><span class="def"> from qtools import Popup
+</span><span class="def"> 
+</span>@@ -48,7 +47,6 @@
+<span class="def">         - overflow
+</span><span class="def">         - select screen / follow mouse/keyboard focus
+</span><span class="def">         - critical notifications to replace any visible non-critical notifs immediately?
+</span><span class="sub">-        - icons position (left/right/None)
+</span><span class="def">         - hints: image-path, desktop-entry (for icon)
+</span><span class="def">         - hints: Server parameters set for single notification?
+</span><span class="def">         - hints: progress value e.g. int:value:42 with drawing
+</span>@@ -337,10 +335,11 @@
+<span class="def">                         img.resize(width=self.icon_size)
+</span><span class="def">                     else:
+</span><span class="def">                         img.resize(height=self.icon_size)
+</span><span class="sub">-                    self._icons[notif.app_icon] = _decode_image(
+</span><span class="add">+                    surface, _ = images._decode_to_image_surface(
+</span><span class="def">                         img.bytes_img, img.width, img.height
+</span><span class="def">                     )
+</span><span class="sub">-                except (FileNotFoundError, libqtile.images.LoadingError) as e :
+</span><span class="add">+                    self._icons[notif.app_icon] = surface, surface.get_height()
+</span><span class="add">+                except (FileNotFoundError, images.LoadingError, IsADirectoryError) as e:
+</span><span class="def">                     logger.exception(e)
+</span><span class="def">                     self._icons[notif.app_icon] = None
+</span><span class="def">                 return self._icons[notif.app_icon]
+</span>@@ -408,12 +407,3 @@
+<span class="def">             self._paused = True
+</span><span class="def">             while self._shown:
+</span><span class="def">                 self._close(self._shown[0])
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def _decode_image(bytes_img, width, height):
+</span><span class="sub">-    try:
+</span><span class="sub">-        surface, _ = images._decode_to_image_surface(bytes_img, width, height)
+</span><span class="sub">-        return surface, surface.get_height()
+</span><span class="sub">-    except Exception as e:
+</span><span class="sub">-        logger.exception(f&apos;Could not load notification icon&apos;)
+</span><span class="sub">-        return None
+</span></pre>
+</div></div>
+  </body>
+</html>

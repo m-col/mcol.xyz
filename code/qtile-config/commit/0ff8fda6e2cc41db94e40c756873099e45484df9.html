@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Add tags prototype</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/0ff8fda6e2cc41db94e40c756873099e45484df9.html">0ff8fda6e2cc41db94e40c756873099e45484df9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/46f968e7fb740ca12dc6ec6d238648a060a3178f.html">46f968e7fb740ca12dc6ec6d238648a060a3178f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-12-23 19:06:19 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-12-23 19:06:19 +0000
+
+Add tags prototype
+</pre><div class="diff">
+  <p>
+    <b>tags.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,73 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Tags
+</span><span class="add">+====
+</span><span class="add">+
+</span><span class="add">+This workflow replaces groups. There is only one group defined per (possible) screen. No
+</span><span class="add">+keybindings are defined to switch between groups or to move windows between groups. If
+</span><span class="add">+only one monitor is connected then only the first group is ever used, etc.
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+from __future__ import annotations
+</span><span class="add">+
+</span><span class="add">+import os
+</span><span class="add">+from collections import defaultdict
+</span><span class="add">+from typing import TYPE_CHECKING
+</span><span class="add">+
+</span><span class="add">+from libqtile import hook, qtile
+</span><span class="add">+from libqtile.backend.base import Window
+</span><span class="add">+from libqtile.config import Group, Match
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+
+</span><span class="add">+if TYPE_CHECKING:
+</span><span class="add">+    from typing import List, Tuple
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+groups: List[Group] = [Group(&quot;&quot;)]
+</span><span class="add">+
+</span><span class="add">+tags: List[Tuple[str, Match, List[Window]]] = [
+</span><span class="add">+    (&quot;terms&quot;, Match(wm_class=&quot;foot&quot;), []),
+</span><span class="add">+    (&quot;firefox&quot;, Match(wm_class=&quot;firefox&quot;), []),
+</span><span class="add">+    (&quot;thunar&quot;, Match(wm_class=&quot;thunar&quot;), []),
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+@hook.subscribe.client_new
+</span><span class="add">+def _(window):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This adds windows to any tags that match it.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    if isinstance(window, Window):  # Static windows ignored
+</span><span class="add">+        for name, match, windows in tags:
+</span><span class="add">+            if match.compare(window):
+</span><span class="add">+                windows.append(window)
+</span><span class="add">+                tag_hidden = windows[0].minimized
+</span><span class="add">+                window.minimized = tag_hidden
+</span><span class="add">+                qtile.current_screen.group.add(
+</span><span class="add">+                    window, focus=window.can_steal_focus and tag_hidden
+</span><span class="add">+                )
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def _toggle_tag(_qtile, to_toggle: str):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This is bound to keys to show/hide all windows of a given tag. It toggles their
+</span><span class="add">+    minimized state.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    for name, match, windows in tags:
+</span><span class="add">+        if name == to_toggle:
+</span><span class="add">+            for window in windows:
+</span><span class="add">+                window.cmd_toggle_minimize()
+</span><span class="add">+            return
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+mod = &quot;mod1&quot; if int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) else &quot;mod4&quot;
+</span><span class="add">+
+</span><span class="add">+keys_group: Tuple[List[str], str, Any, str] = []
+</span><span class="add">+
+</span><span class="add">+for i, (name, _, _) in enumerate(tags):
+</span><span class="add">+    keys_group.extend(
+</span><span class="add">+        [
+</span><span class="add">+            ([mod], str(i + 1), lazy.function(_toggle_tag, name), f&quot;Toggle tag {name}&quot;),
+</span><span class="add">+        ]
+</span><span class="add">+    )
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -30,10 +30,17 @@
+<span class="def">     if module in sys.modules:
+</span><span class="def">         importlib.reload(sys.modules[module])
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> import traverse
+</span><span class="def"> 
+</span><span class="sub">-reload(&quot;groups&quot;)
+</span><span class="sub">-from groups import groups, keys_group
+</span><span class="add">+use_tags = False
+</span><span class="add">+
+</span><span class="add">+if use_tags:
+</span><span class="add">+    reload(&quot;tags&quot;)
+</span><span class="add">+    from tags import groups, keys_group
+</span><span class="add">+else:
+</span><span class="add">+    reload(&quot;groups&quot;)
+</span><span class="add">+    from groups import groups, keys_group
+</span><span class="def"> 
+</span><span class="def"> reload(&quot;scratchpad&quot;)
+</span><span class="def"> from scratchpad import keys_scratchpad, scratchpad
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - fixed a bunch of things</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/3d0b1d3f5bdd02193a3bf759d86b89eb1930fe44.html">3d0b1d3f5bdd02193a3bf759d86b89eb1930fe44</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/f2efd56d3fdc577b0aacf4ffeaaff96be6c7655b.html">f2efd56d3fdc577b0aacf4ffeaaff96be6c7655b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-02 00:19:50 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-02 00:19:50 +0000
+
+fixed a bunch of things
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -41,8 +41,7 @@
+<span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="def"> set hidden			&quot; allow opening new buffers without saving first
+</span><span class="sub">-set lazyredraw			&quot; dont update screen during macros/scripts
+</span><span class="sub">-&quot;set showmatch			&quot; Highlight matching brace
+</span><span class="add">+&quot;set lazyredraw			&quot; dont update screen during macros/scripts
+</span><span class="def"> set hlsearch			&quot; Highlight all search results - toggled by &lt;Leader&gt;h
+</span><span class="def"> set smartcase			&quot; searches ignore case only if all lower case
+</span><span class="def"> set incsearch			&quot; Searches for strings while typing search term
+</span>@@ -58,20 +57,21 @@
+<span class="def"> set formatoptions+=j		&quot; Delete comment characters when joining lines.
+</span><span class="def"> autocmd FileType * setlocal formatoptions-=cro    &quot; disable autocommenting
+</span><span class="def"> 
+</span><span class="sub">-set undolevels=100		&quot; Number of undo levels
+</span><span class="sub">-set dir^=~/.cache/vim/swap//	&quot; where to store swapfiles
+</span><span class="sub">-set backupdir=~/.cache/vim	&quot; where to store backups
+</span><span class="add">+set undolevels=50		&quot; Number of undo levels
+</span><span class="add">+set dir^=~/.vim/swap//		&quot; where to store swapfiles
+</span><span class="add">+set backupdir=~/.vim/backups/	&quot; where to store backups
+</span><span class="def"> 
+</span><span class="def"> set splitbelow			&quot; default new sp window goes below
+</span><span class="def"> set splitright			&quot; default new vsp window goes right
+</span><span class="sub">-set scrolloff=15		&quot; keep x lines at top and bottom visible when scrolling
+</span><span class="add">+set scrolloff=12		&quot; keep x lines at top and bottom visible when scrolling
+</span><span class="def"> autocmd VimResized * wincmd =	&quot; keep splits equal size when resizing window
+</span><span class="def"> 
+</span><span class="def"> syntax on			&quot; enable syntax highlighting
+</span><span class="def"> set mouse=a			&quot; enable mouse
+</span><span class="def"> set t_Co=16			&quot; use the 16 terminal colours
+</span><span class="def"> 
+</span><span class="sub">-set sessionoptions-=options	&quot; do not store global and local values in a session
+</span><span class="add">+set sessionoptions=buffers,folds,tabpages
+</span><span class="add">+set viewoptions=folds,cursor
+</span><span class="def"> 
+</span><span class="def"> set wildmenu			&quot; enable wildmenu for tab completion of commands
+</span><span class="def"> set wildmode=longest:list,full	&quot; format wildmenu to expand and scroll with tab
+</span>@@ -115,15 +115,11 @@
+<span class="def"> 
+</span><span class="def"> &quot; mlint code checking 
+</span><span class="def"> if hostname() == &quot;zenbook&quot;
+</span><span class="sub">-    let g:mlint_path_to_mlint = &quot;/home/mlv/applications/MATLAB/R2018b/bin/glnxa64/mlint&quot;
+</span><span class="add">+    let g:mlint_path_to_mlint = expand(&quot;$HOME&quot;) . &quot;/applications/MATLAB/R2018b/bin/glnxa64/mlint&quot;
+</span><span class="def"> else
+</span><span class="def">     let g:mlint_path_to_mlint = &quot;to be filled in later&quot;
+</span><span class="def"> endif
+</span><span class="def"> let g:mlint_hover = 0
+</span><span class="def"> 
+</span><span class="def"> &quot; session saving
+</span><span class="sub">-let g:vimlab_session = &quot;~/.cache/vim/sessions/matlab-session.vim&quot;
+</span><span class="sub">-
+</span><span class="sub">-&quot; I am using this for debugging
+</span><span class="sub">-cmap test echo synIDattr(synIDtrans(synID(line(&quot;.&quot;), col(&quot;.&quot;), 0)), &quot;name&quot;)&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="add">+let g:vimlab_session = &quot;~/.vim/sessions/matlab-session.vim&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,7 +13,6 @@
+<span class="def"> nnoremap &lt;Leader&gt;v :ls&lt;CR&gt;:vert sb&lt;space&gt;
+</span><span class="def"> nnoremap &lt;Leader&gt;j :bnext&lt;CR&gt; 
+</span><span class="def"> nnoremap &lt;Leader&gt;k :bprevious&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;BS&gt; :bdelete&lt;CR&gt;
+</span><span class="def"> nnoremap &lt;Leader&gt;&lt;BS&gt; :w&lt;CR&gt;:bdelete&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; move between tabs
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/bclose.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -75,21 +75,13 @@
+<span class="def"> command! -bang -complete=buffer -nargs=? Bclose call s:Bclose(&apos;&lt;bang&gt;&apos;, &apos;&lt;args&gt;&apos;)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-&quot;&quot;&quot;&quot;&quot; These are left in case the above is not ideal
+</span><span class="sub">-&quot;function! CloseIfLastBuffer()
+</span><span class="sub">-&quot;    if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;buflisted(v:val)&apos;)) == 1 
+</span><span class="sub">-&quot;    let g:fromFile=expand(&apos;%:p&apos;)
+</span><span class="sub">-&quot;    execute &quot;q&quot;
+</span><span class="sub">-&quot;    execute &quot;bd&quot;
+</span><span class="sub">-&quot;endfunction
+</span><span class="sub">-&quot;nnoremap &lt;BS&gt; :call CloseIfLastBuffer()&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="sub">-&quot;autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;buflisted(v:val)&apos;)) == 1 | quit | endif
+</span><span class="sub">-&quot;autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;! empty(bufname(v:val)) &amp;&amp; buflisted(v:val)&apos;)) == 1 | quit | endif
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="sub">-if v:this_session == expand(&quot;$HOME&quot;) . &quot;.cache/vim/sessions/matlab-session.vim&quot;
+</span><span class="sub">-    nnoremap &lt;buffer&gt; &lt;silent&gt; &lt;BS&gt; :Bclose&lt;CR&gt;
+</span><span class="add">+if v:servername == &quot;VIMLAB&quot;
+</span><span class="add">+    nnoremap &lt;buffer&gt; &lt;silent&gt; &lt;BS&gt; &lt;Plug&gt;Kwbd
+</span><span class="add">+else
+</span><span class="add">+    autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;empty(bufname(v:val)) &amp;&amp; buflisted(v:val)&apos;)) == 1 &amp;&amp; v:servername != &quot;VIMLAB&quot; | quit | endif
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;BS&gt; :Bclose&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/autohighlight.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,6 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="def"> &quot; Highlight all instances of word under cursor, when idle.
+</span><span class="sub">-nnoremap &lt;bar&gt; :if AutoHighlightToggle()&lt;Bar&gt;set hls&lt;Bar&gt;endif&lt;CR&gt;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="def"> function! AutoHighlightToggle()
+</span><span class="def">   let @/ = &apos;&apos;
+</span><span class="def">   if exists(&apos;#auto_highlight&apos;)
+</span>@@ -18,3 +19,5 @@
+<span class="def">     return 1
+</span><span class="def">   endif
+</span><span class="def"> endfunction
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;bar&gt; :if AutoHighlightToggle()&lt;Bar&gt;set hls&lt;Bar&gt;endif&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

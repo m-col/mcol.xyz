@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Merge pull request #13 from m-col/claude/dotfiles-article-tasks-maxnnf</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/839d338a741f14deb04867d21d00080c38d16fb5.html">839d338a741f14deb04867d21d00080c38d16fb5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/e9623a49a49927b79f24a26a546ea5da61deb099.html">e9623a49a49927b79f24a26a546ea5da61deb099</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2026-08-30 20:32:02 +0100
+<b>Committer:</b> GitHub &lt;<a href="mailto:noreply@github.com">noreply@github.com</a>&gt;
+<b>Committed:</b> 2026-08-30 20:32:02 +0100
+
+Merge pull request #13 from m-col/claude/dotfiles-article-tasks-maxnnf
+
+Deploy workflow fixes: redundant CI, Node 20 warning, shallow-clone bug
+</pre><div class="diff">
+  <p>
+    <b>.github/workflows/deploy.yaml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,6 +19,12 @@
+<span class="def">     runs-on: ubuntu-latest
+</span><span class="def">     steps:
+</span><span class="def">       - uses: actions/checkout@v4
+</span><span class="add">+        with:
+</span><span class="add">+          # gitja walks each repo&apos;s full commit history, and libgit2 (which
+</span><span class="add">+          # gitja uses) doesn&apos;t handle git&apos;s shallow-clone boundary the way
+</span><span class="add">+          # native git does - a shallow fetch here makes it error out
+</span><span class="add">+          # trying to look up commits that were never downloaded.
+</span><span class="add">+          fetch-depth: 0
+</span><span class="def"> 
+</span><span class="def">       - name: Install uv
+</span><span class="def">         uses: astral-sh/setup-uv@v4
+</span>@@ -39,8 +45,9 @@
+<span class="def">         with:
+</span><span class="def">           repository: m-col/gitja
+</span><span class="def">           path: gitja-src
+</span><span class="add">+          fetch-depth: 0
+</span><span class="def"> 
+</span><span class="sub">-      - uses: actions/cache@v4
+</span><span class="add">+      - uses: actions/cache@v5
+</span><span class="def">         with:
+</span><span class="def">           path: ~/.stack
+</span><span class="def">           key: ${{ runner.os }}-stack-${{ hashFiles(&apos;gitja-src/stack.yaml.lock&apos;) }}
+</span>@@ -69,7 +76,8 @@
+<span class="def">               # already checked out to build the gitja binary itself).
+</span><span class="def">               mcol.xyz | gitja) continue ;;
+</span><span class="def">             esac
+</span><span class="sub">-            git clone --depth 100 &quot;https://github.com/m-col/$repo&quot; &quot;$repo&quot;
+</span><span class="add">+            # Full clone, not shallow - see the fetch-depth comment above.
+</span><span class="add">+            git clone &quot;https://github.com/m-col/$repo&quot; &quot;$repo&quot;
+</span><span class="def">           done
+</span><span class="def"> 
+</span><span class="def">       - name: Write repo descriptions
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.github/workflows/build.yml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +1,6 @@
+<span class="def"> name: build
+</span><span class="def"> 
+</span><span class="def"> on:
+</span><span class="sub">-  push:
+</span><span class="sub">-    branches: [master]
+</span><span class="def">   pull_request:
+</span><span class="def"> 
+</span><span class="def"> jobs:
+</span></pre>
+</div></div>
+  </body>
+</html>

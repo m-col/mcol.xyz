@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add python setup.py shortcuts, remove hidden files from ranger and l</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/1b5d648de04046ecc9f9ffc4d0aa356a209f7806.html">1b5d648de04046ecc9f9ffc4d0aa356a209f7806</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/d94d2659ac66a2dc2c9103cc93691eea4113eb10.html">d94d2659ac66a2dc2c9103cc93691eea4113eb10</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-08-09 15:13:35 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-08-09 15:13:35 +0100
+
+add python setup.py shortcuts, remove hidden files from ranger and l
+</pre><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,7 +26,7 @@
+<span class="def"> set hidden_filter ^\.|\.(?:pyc|pyo|bak|swp)$|^lost\+found$|^__(py)?cache__$
+</span><span class="def"> 
+</span><span class="def"> # Show hidden files? You can toggle this by typing &apos;zh&apos;
+</span><span class="sub">-set show_hidden true
+</span><span class="add">+set show_hidden false
+</span><span class="def"> 
+</span><span class="def"> # Ask for a confirmation when running the &quot;delete&quot; command?
+</span><span class="def"> # Valid values are &quot;always&quot;, &quot;never&quot;, &quot;multiple&quot; (default)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,7 +6,7 @@
+<span class="def"> # misc
+</span><span class="def"> alias ..=&apos;cd ../&apos;
+</span><span class="def"> alias ...=&apos;cd ../../&apos;
+</span><span class="sub">-alias l=&apos;ls -alhF&apos;
+</span><span class="add">+alias l=&apos;ls -lhF&apos;
+</span><span class="def"> alias lc=&apos;ls -c1&apos;
+</span><span class="def"> alias tmp=&apos;cd /tmp; l&apos;
+</span><span class="def"> alias _=&apos;sudo&apos;
+</span>@@ -60,6 +60,9 @@
+<span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span><span class="add">+alias psb=&apos;python setup.py build&apos;
+</span><span class="add">+alias psi=&apos;python setup.py install&apos;
+</span><span class="add">+alias psiu=&apos;python setup.py install --user&apos;
+</span><span class="def"> 
+</span><span class="def"> # quick edits
+</span><span class="def"> alias modalia=&apos;vim $HOME/.config/aliases&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

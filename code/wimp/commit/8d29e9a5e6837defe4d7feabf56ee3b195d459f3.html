@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add -i flag to set logging to info mode</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/8d29e9a5e6837defe4d7feabf56ee3b195d459f3.html">8d29e9a5e6837defe4d7feabf56ee3b195d459f3</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/07664d034bc7a1d4eaeca6061d29c04d984eadad.html">07664d034bc7a1d4eaeca6061d29c04d984eadad</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-21 22:38:09 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-21 22:38:09 +0000
+
+add -i flag to set logging to info mode
+</pre><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,6 +26,9 @@
+<span class="def"> 	    case &apos;d&apos;:
+</span><span class="def"> 		wlr_log_init(WLR_DEBUG, NULL);
+</span><span class="def"> 		break;
+</span><span class="add">+	    case &apos;i&apos;:
+</span><span class="add">+		wlr_log_init(WLR_INFO, NULL);
+</span><span class="add">+		break;
+</span><span class="def"> 	    case &apos;c&apos;:
+</span><span class="def"> 		config = strdup(optarg);
+</span><span class="def"> 		break;
+</span></pre>
+</div></div>
+  </body>
+</html>

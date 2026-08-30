@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - removed auto pairs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/f4818c1c4789abac550fec5965bf508256b41409.html">f4818c1c4789abac550fec5965bf508256b41409</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/64ce2ae7bfd5a41a32f9ad9f95fa728647b310be.html">64ce2ae7bfd5a41a32f9ad9f95fa728647b310be</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-17 11:28:37 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-17 11:28:37 +0000
+
+removed auto pairs
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,7 +24,6 @@
+<span class="def"> Plugin &apos;mcolligan/vimlab&apos;	    &quot; vimlab
+</span><span class="def"> Plugin &apos;mcolligan/tide&apos;		    &quot; tmux ide
+</span><span class="def"> Plugin &apos;mcolligan/argtextobj.vim&apos;   &quot; function argument text object
+</span><span class="sub">-&quot;Plugin &apos;jpalardy/vim-slime&apos;	    &quot; send text to IDE and execute
+</span><span class="def"> Plugin &apos;christoomey/vim-tmux-navigator&apos;	    &quot; navigate vim and tmux splits seamlessly
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()            &quot; required
+</span>@@ -43,8 +42,8 @@
+<span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="def"> set autoread			&quot; update when file is modified outside of vim
+</span><span class="add">+set autowrite			&quot; update file when changing buffers, opening new files, etc
+</span><span class="def"> au BufLeave * :silent! update	&quot; save automatically when leaving buffer
+</span><span class="sub">-&quot;set hidden			&quot; allow opening new buffers without saving first
+</span><span class="def"> set lazyredraw			&quot; dont update screen during macros/scripts
+</span><span class="def"> set hlsearch			&quot; Highlight all search results - toggled by &lt;Leader&gt;h
+</span><span class="def"> set smartcase			&quot; searches ignore case only if all lower case
+</span></pre>
+</div></div>
+  </body>
+</html>

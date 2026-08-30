@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sudoku-solver - remove redundant cell arg passed around solve func</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/sudoku-solver">sudoku-solver</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A small haskell script to solve sudoku puzzles</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/sudoku-solver">https://github.com/m-col/sudoku-solver</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/sudoku-solver/tree.html">Files</a> | <a href="https://mcol.xyz/code/sudoku-solver/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/sudoku-solver/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/7697d0092a5a1a4a3c80ae35c2d201767b50bbc8.html">7697d0092a5a1a4a3c80ae35c2d201767b50bbc8</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/2e5686cbe38e588102c5f6d0a83d65979c51e927.html">2e5686cbe38e588102c5f6d0a83d65979c51e927</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-03 17:33:00 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-03 17:33:00 +0100
+
+remove redundant cell arg passed around solve func
+</pre><div class="diff">
+  <p>
+    <b>sudoku.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -58,28 +58,28 @@
+<span class="def"> Solve the given puzzle!
+</span><span class="def"> -}
+</span><span class="def"> solve :: Puzzle -&gt; Maybe Puzzle
+</span><span class="sub">-solve p = go [(p, (One, One), One)] (Just (One, One)) One
+</span><span class="add">+solve p = go [(p, (One, One))] (Just (One, One))
+</span><span class="def">   where
+</span><span class="def">     {-
+</span><span class="def">     The first argument here is the stack of steps taken since the beginning. Each
+</span><span class="sub">-    element of the list is the new state of the puzzle, and the index + new value
+</span><span class="sub">-    inserted to get there. pc was put at pi to make p. The remaining 2 argments are what
+</span><span class="sub">-    we are going to be testing this iteration.
+</span><span class="add">+    element of the list is the new state of the puzzle, and the index that was filled to
+</span><span class="add">+    get there. The second argument index is where we are going to be testing this
+</span><span class="add">+    iteration.
+</span><span class="def">     -}
+</span><span class="sub">-    go :: [(Puzzle, Index, Cell)] -&gt; Maybe Index -&gt; Cell -&gt; Maybe Puzzle
+</span><span class="add">+    go :: [(Puzzle, Index)] -&gt; Maybe Index -&gt; Maybe Puzzle
+</span><span class="def">     -- We are finished when the maybe index is Nothing.
+</span><span class="sub">-    go ((p, _, _) : _) Nothing _ = Just p
+</span><span class="sub">-    go pps@((p, pi, pc) : ps) (Just i) c
+</span><span class="add">+    go ((p, _) : _) Nothing = Just p
+</span><span class="add">+    go pps@((p, pi) : ps) (Just i)
+</span><span class="def">         -- This index is already filled - continue.
+</span><span class="sub">-        | isJust (p ! i) = go ((puz p, pi, pc) : ps) (next i) One
+</span><span class="add">+        | isJust (p ! i) = go ((puz p, pi) : ps) (next i)
+</span><span class="def">         -- This index is empty - let&apos;s find a possibly valid value.
+</span><span class="def">         | otherwise =
+</span><span class="sub">-            case getOptions p i c of
+</span><span class="add">+            case getOptions p i of
+</span><span class="def">                 [] -&gt; Nothing
+</span><span class="sub">-                opts -&gt; listToMaybe . mapMaybe (\o -&gt; go ((puz o, i, c) : pps) (next i) One) $ opts
+</span><span class="add">+                opts -&gt; listToMaybe . mapMaybe (\o -&gt; go ((puz o, i) : pps) (next i)) $ opts
+</span><span class="def"> 
+</span><span class="sub">-    getOptions :: Puzzle -&gt; Index -&gt; Cell -&gt; [Puzzle]
+</span><span class="sub">-    getOptions p i c = filter isValid . map (\c -&gt; p // [(i, Just c)]) $ [c .. Nine]
+</span><span class="add">+    getOptions :: Puzzle -&gt; Index -&gt; [Puzzle]
+</span><span class="add">+    getOptions p i = filter isValid . map (\c -&gt; p // [(i, Just c)]) $ set
+</span><span class="def"> 
+</span><span class="def">     -- Maybe-get the next Index, left to right, then top to bottom
+</span><span class="def">     next :: Index -&gt; Maybe Index
+</span></pre>
+</div></div>
+  </body>
+</html>

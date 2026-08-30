@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - remove git.zsh</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/509eee66954a58c8db4a370e6f57220d8360d707.html">509eee66954a58c8db4a370e6f57220d8360d707</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/5739b0398f1439757565d1043a9ca25504c3ce56.html">5739b0398f1439757565d1043a9ca25504c3ce56</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-07-28 20:52:35 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-07-28 20:52:35 +0100
+
+remove git.zsh
+</pre><div class="diff">
+  <p>
+    <b>oh-my-zsh/git.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,221 +0,0 @@
+<span class="sub">-# Outputs current branch info in prompt format
+</span><span class="sub">-function git_prompt_info() {
+</span><span class="sub">-  local ref
+</span><span class="sub">-  if [[ &quot;$(command git config --get oh-my-zsh.hide-status 2&gt;/dev/null)&quot; != &quot;1&quot; ]]; then
+</span><span class="sub">-    ref=$(command git symbolic-ref HEAD 2&gt; /dev/null) || \
+</span><span class="sub">-    ref=$(command git rev-parse --short HEAD 2&gt; /dev/null) || return 0
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_SUFFIX&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Checks if working tree is dirty
+</span><span class="sub">-function parse_git_dirty() {
+</span><span class="sub">-  local STATUS=&apos;&apos;
+</span><span class="sub">-  local -a FLAGS
+</span><span class="sub">-  FLAGS=(&apos;--porcelain&apos;)
+</span><span class="sub">-  if [[ &quot;$(command git config --get oh-my-zsh.hide-dirty)&quot; != &quot;1&quot; ]]; then
+</span><span class="sub">-    if [[ $POST_1_7_2_GIT -gt 0 ]]; then
+</span><span class="sub">-      FLAGS+=&apos;--ignore-submodules=dirty&apos;
+</span><span class="sub">-    fi
+</span><span class="sub">-    if [[ &quot;$DISABLE_UNTRACKED_FILES_DIRTY&quot; == &quot;true&quot; ]]; then
+</span><span class="sub">-      FLAGS+=&apos;--untracked-files=no&apos;
+</span><span class="sub">-    fi
+</span><span class="sub">-    STATUS=$(command git status ${FLAGS} 2&gt; /dev/null | tail -n1)
+</span><span class="sub">-  fi
+</span><span class="sub">-  if [[ -n $STATUS ]]; then
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_DIRTY&quot;
+</span><span class="sub">-  else
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_CLEAN&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Gets the difference between the local and remote branches
+</span><span class="sub">-function git_remote_status() {
+</span><span class="sub">-    local remote ahead behind git_remote_status git_remote_status_detailed
+</span><span class="sub">-    remote=${$(command git rev-parse --verify ${hook_com[branch]}@{upstream} --symbolic-full-name 2&gt;/dev/null)/refs\/remotes\/}
+</span><span class="sub">-    if [[ -n ${remote} ]]; then
+</span><span class="sub">-        ahead=$(command git rev-list ${hook_com[branch]}@{upstream}..HEAD 2&gt;/dev/null | wc -l)
+</span><span class="sub">-        behind=$(command git rev-list HEAD..${hook_com[branch]}@{upstream} 2&gt;/dev/null | wc -l)
+</span><span class="sub">-
+</span><span class="sub">-        if [[ $ahead -eq 0 ]] &amp;&amp; [[ $behind -eq 0 ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_EQUAL_REMOTE&quot;
+</span><span class="sub">-        elif [[ $ahead -gt 0 ]] &amp;&amp; [[ $behind -eq 0 ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE&quot;
+</span><span class="sub">-            git_remote_status_detailed=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE$((ahead))%{$reset_color%}&quot;
+</span><span class="sub">-        elif [[ $behind -gt 0 ]] &amp;&amp; [[ $ahead -eq 0 ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE&quot;
+</span><span class="sub">-            git_remote_status_detailed=&quot;$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE$((behind))%{$reset_color%}&quot;
+</span><span class="sub">-        elif [[ $ahead -gt 0 ]] &amp;&amp; [[ $behind -gt 0 ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_DIVERGED_REMOTE&quot;
+</span><span class="sub">-            git_remote_status_detailed=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE$((ahead))%{$reset_color%}$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE$((behind))%{$reset_color%}&quot;
+</span><span class="sub">-        fi
+</span><span class="sub">-
+</span><span class="sub">-        if [[ -n $ZSH_THEME_GIT_PROMPT_REMOTE_STATUS_DETAILED ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_REMOTE_STATUS_PREFIX$remote$git_remote_status_detailed$ZSH_THEME_GIT_PROMPT_REMOTE_STATUS_SUFFIX&quot;
+</span><span class="sub">-        fi
+</span><span class="sub">-
+</span><span class="sub">-        echo $git_remote_status
+</span><span class="sub">-    fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs the name of the current branch
+</span><span class="sub">-# Usage example: git pull origin $(git_current_branch)
+</span><span class="sub">-# Using &apos;--quiet&apos; with &apos;symbolic-ref&apos; will not cause a fatal error (128) if
+</span><span class="sub">-# it&apos;s not a symbolic ref, but in a Git repo.
+</span><span class="sub">-function git_current_branch() {
+</span><span class="sub">-  local ref
+</span><span class="sub">-  ref=$(command git symbolic-ref --quiet HEAD 2&gt; /dev/null)
+</span><span class="sub">-  local ret=$?
+</span><span class="sub">-  if [[ $ret != 0 ]]; then
+</span><span class="sub">-    [[ $ret == 128 ]] &amp;&amp; return  # no git repo.
+</span><span class="sub">-    ref=$(command git rev-parse --short HEAD 2&gt; /dev/null) || return
+</span><span class="sub">-  fi
+</span><span class="sub">-  echo ${ref#refs/heads/}
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-# Gets the number of commits ahead from remote
+</span><span class="sub">-function git_commits_ahead() {
+</span><span class="sub">-  if command git rev-parse --git-dir &amp;&gt;/dev/null; then
+</span><span class="sub">-    local commits=&quot;$(git rev-list --count @{upstream}..HEAD 2&gt;/dev/null)&quot;
+</span><span class="sub">-    if [[ -n &quot;$commits&quot; &amp;&amp; &quot;$commits&quot; != 0 ]]; then
+</span><span class="sub">-      echo &quot;$ZSH_THEME_GIT_COMMITS_AHEAD_PREFIX$commits$ZSH_THEME_GIT_COMMITS_AHEAD_SUFFIX&quot;
+</span><span class="sub">-    fi
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Gets the number of commits behind remote
+</span><span class="sub">-function git_commits_behind() {
+</span><span class="sub">-  if command git rev-parse --git-dir &amp;&gt;/dev/null; then
+</span><span class="sub">-    local commits=&quot;$(git rev-list --count HEAD..@{upstream} 2&gt;/dev/null)&quot;
+</span><span class="sub">-    if [[ -n &quot;$commits&quot; &amp;&amp; &quot;$commits&quot; != 0 ]]; then
+</span><span class="sub">-      echo &quot;$ZSH_THEME_GIT_COMMITS_BEHIND_PREFIX$commits$ZSH_THEME_GIT_COMMITS_BEHIND_SUFFIX&quot;
+</span><span class="sub">-    fi
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs if current branch is ahead of remote
+</span><span class="sub">-function git_prompt_ahead() {
+</span><span class="sub">-  if [[ -n &quot;$(command git rev-list origin/$(git_current_branch)..HEAD 2&gt; /dev/null)&quot; ]]; then
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_AHEAD&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs if current branch is behind remote
+</span><span class="sub">-function git_prompt_behind() {
+</span><span class="sub">-  if [[ -n &quot;$(command git rev-list HEAD..origin/$(git_current_branch) 2&gt; /dev/null)&quot; ]]; then
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_BEHIND&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs if current branch exists on remote or not
+</span><span class="sub">-function git_prompt_remote() {
+</span><span class="sub">-  if [[ -n &quot;$(command git show-ref origin/$(git_current_branch) 2&gt; /dev/null)&quot; ]]; then
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_REMOTE_EXISTS&quot;
+</span><span class="sub">-  else
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_REMOTE_MISSING&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Formats prompt string for current git commit short SHA
+</span><span class="sub">-function git_prompt_short_sha() {
+</span><span class="sub">-  local SHA
+</span><span class="sub">-  SHA=$(command git rev-parse --short HEAD 2&gt; /dev/null) &amp;&amp; echo &quot;$ZSH_THEME_GIT_PROMPT_SHA_BEFORE$SHA$ZSH_THEME_GIT_PROMPT_SHA_AFTER&quot;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Formats prompt string for current git commit long SHA
+</span><span class="sub">-function git_prompt_long_sha() {
+</span><span class="sub">-  local SHA
+</span><span class="sub">-  SHA=$(command git rev-parse HEAD 2&gt; /dev/null) &amp;&amp; echo &quot;$ZSH_THEME_GIT_PROMPT_SHA_BEFORE$SHA$ZSH_THEME_GIT_PROMPT_SHA_AFTER&quot;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Get the status of the working tree
+</span><span class="sub">-function git_prompt_status() {
+</span><span class="sub">-  local INDEX STATUS
+</span><span class="sub">-  INDEX=$(command git status --porcelain -b 2&gt; /dev/null)
+</span><span class="sub">-  STATUS=&quot;&quot;
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | command grep -E &apos;^\?\? &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_UNTRACKED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^A  &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_ADDED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^M  &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_ADDED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^MM &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_ADDED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^ M &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^AM &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^MM &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^ T &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^R  &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_RENAMED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^ D &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DELETED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^D  &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DELETED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^AD &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DELETED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(command git rev-parse --verify refs/stash &gt;/dev/null 2&gt;&amp;1); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_STASHED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^UU &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_UNMERGED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^## [^ ]\+ .*ahead&apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^## [^ ]\+ .*behind&apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_BEHIND$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^## [^ ]\+ .*diverged&apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DIVERGED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  echo $STATUS
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Compares the provided version of git to the version installed and on path
+</span><span class="sub">-# Outputs -1, 0, or 1 if the installed version is less than, equal to, or
+</span><span class="sub">-# greater than the input version, respectively.
+</span><span class="sub">-function git_compare_version() {
+</span><span class="sub">-  local INPUT_GIT_VERSION INSTALLED_GIT_VERSION i
+</span><span class="sub">-  INPUT_GIT_VERSION=(${(s/./)1})
+</span><span class="sub">-  INSTALLED_GIT_VERSION=($(command git --version 2&gt;/dev/null))
+</span><span class="sub">-  INSTALLED_GIT_VERSION=(${(s/./)INSTALLED_GIT_VERSION[3]})
+</span><span class="sub">-
+</span><span class="sub">-  for i in {1..3}; do
+</span><span class="sub">-    if [[ $INSTALLED_GIT_VERSION[$i] -gt $INPUT_GIT_VERSION[$i] ]]; then
+</span><span class="sub">-      echo 1
+</span><span class="sub">-      return 0
+</span><span class="sub">-    fi
+</span><span class="sub">-    if [[ $INSTALLED_GIT_VERSION[$i] -lt $INPUT_GIT_VERSION[$i] ]]; then
+</span><span class="sub">-      echo -1
+</span><span class="sub">-      return 0
+</span><span class="sub">-    fi
+</span><span class="sub">-  done
+</span><span class="sub">-  echo 0
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs the name of the current user
+</span><span class="sub">-# Usage example: $(git_current_user_name)
+</span><span class="sub">-function git_current_user_name() {
+</span><span class="sub">-  command git config user.name 2&gt;/dev/null
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs the email of the current user
+</span><span class="sub">-# Usage example: $(git_current_user_email)
+</span><span class="sub">-function git_current_user_email() {
+</span><span class="sub">-  command git config user.email 2&gt;/dev/null
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# This is unlikely to change so make it all statically assigned
+</span><span class="sub">-POST_1_7_2_GIT=$(git_compare_version &quot;1.7.2&quot;)
+</span><span class="sub">-# Clean up the namespace slightly by removing the checker function
+</span><span class="sub">-unfunction git_compare_version
+</span></pre>
+</div></div>
+  </body>
+</html>

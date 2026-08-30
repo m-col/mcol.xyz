@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - added readme and made submodules use http</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/3c33b7b339bf646bf5c2efd1b81c6a6460f4decb.html">3c33b7b339bf646bf5c2efd1b81c6a6460f4decb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/c64ee4c90888b3afc84252a3cde341804863c2f6.html">c64ee4c90888b3afc84252a3cde341804863c2f6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 00:43:01 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 00:43:01 +0000
+
+added readme and made submodules use http
+</pre><div class="diff">
+  <p>
+    <b>readme.md</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,3 @@
+<span class="add">+    git clone --resursive-submodules https://github.com/mcolligan.zshrc.git ~/.zsh
+</span><span class="add">+
+</span><span class="add">+and run install
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitmodules</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,9 +1,9 @@
+<span class="def"> [submodule &quot;z&quot;]
+</span><span class="def"> 	path = z
+</span><span class="sub">-	url = git@github.com:rupa/z.git
+</span><span class="add">+	url = https://github.com/rupa/z.git
+</span><span class="def"> [submodule &quot;zsh-autosuggestions&quot;]
+</span><span class="def"> 	path = zsh-autosuggestions
+</span><span class="sub">-	url = git@github.com:zsh-users/zsh-autosuggestions.git
+</span><span class="add">+	url = https://github.com/zsh-users/zsh-autosuggestions.git
+</span><span class="def"> [submodule &quot;zsh-syntax-highlighting&quot;]
+</span><span class="def"> 	path = zsh-syntax-highlighting
+</span><span class="sub">-	url = git@github.com:zsh-users/zsh-syntax-highlighting.git
+</span><span class="add">+	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
+</span></pre>
+</div></div>
+  </body>
+</html>

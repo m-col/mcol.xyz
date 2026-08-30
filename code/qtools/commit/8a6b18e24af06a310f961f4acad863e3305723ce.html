@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Add frame borders plugin</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/8a6b18e24af06a310f961f4acad863e3305723ce.html">8a6b18e24af06a310f961f4acad863e3305723ce</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/5bf366b741ed81fb941871eb12c15735f05e7800.html">5bf366b741ed81fb941871eb12c15735f05e7800</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-29 13:32:21 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-29 13:32:21 +0100
+
+Add frame borders plugin
+</pre><div class="diff">
+  <p>
+    <b>qtools/borders/borders.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,111 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+This plugin can make Qtile draw different patterns on window borders.
+</span><span class="add">+
+</span><span class="add">+Example usage:
+</span><span class="add">+
+</span><span class="add">+    from qtools import borders
+</span><span class="add">+
+</span><span class="add">+    borders.enable(&apos;frame&apos;)
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import functools
+</span><span class="add">+import xcffib
+</span><span class="add">+
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from libqtile.backend.x11 import xcbq
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def _frame(self, inner_w, inner_h, borderwidths, bordercolors):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    The &quot;frame&quot; style accepts one border width and two colours.
+</span><span class="add">+
+</span><span class="add">+    The first colour is the sides and the second is top and bottom.
+</span><span class="add">+      _________
+</span><span class="add">+     |\_______/|
+</span><span class="add">+     ||       ||
+</span><span class="add">+     ||       ||
+</span><span class="add">+     ||       ||
+</span><span class="add">+     ||_______||
+</span><span class="add">+     |/_______\|
+</span><span class="add">+
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    if len(bordercolors) == 1:
+</span><span class="add">+        self.set_attribute(borderpixel=bordercolors[0])
+</span><span class="add">+        return
+</span><span class="add">+
+</span><span class="add">+    core = self.conn.conn.core
+</span><span class="add">+    self.borderwidth = sum(borderwidths)
+</span><span class="add">+    outer_w = inner_w + self.borderwidth * 2
+</span><span class="add">+    outer_h = inner_h + self.borderwidth * 2
+</span><span class="add">+
+</span><span class="add">+    pixmap = self.conn.conn.generate_id()
+</span><span class="add">+    core.CreatePixmap(
+</span><span class="add">+        self.conn.default_screen.root_depth, pixmap, self.wid, outer_w, outer_h
+</span><span class="add">+    )
+</span><span class="add">+    gc = self.conn.conn.generate_id()
+</span><span class="add">+    core.CreateGC(gc, pixmap, xcffib.xproto.GC.Foreground, [bordercolors[0]])
+</span><span class="add">+    rect = xcffib.xproto.RECTANGLE.synthetic(0, 0, outer_w, outer_h)
+</span><span class="add">+    core.PolyFillRectangle(pixmap, gc, 1, [rect])
+</span><span class="add">+
+</span><span class="add">+    core.ChangeGC(gc, xcffib.xproto.GC.Foreground, [bordercolors[1]])
+</span><span class="add">+    core.FillPoly(
+</span><span class="add">+        pixmap, gc, 2, 0, 4, _frame_trapezium_top(self.borderwidth, outer_w)
+</span><span class="add">+    )
+</span><span class="add">+    core.FillPoly(
+</span><span class="add">+        pixmap, gc, 2, 0, 4, _frame_trapezium_bottom(self.borderwidth, outer_w, outer_h)
+</span><span class="add">+    )
+</span><span class="add">+
+</span><span class="add">+    self.set_borderpixmap(pixmap, gc, outer_w, outer_h)
+</span><span class="add">+    core.FreePixmap(pixmap)
+</span><span class="add">+    core.FreeGC(gc)
+</span><span class="add">+    return
+</span><span class="add">+
+</span><span class="add">+@functools.lru_cache()
+</span><span class="add">+def _frame_trapezium_top(borderwidth, width):
+</span><span class="add">+    points = [
+</span><span class="add">+        xcffib.xproto.POINT.synthetic(0, 0),
+</span><span class="add">+        xcffib.xproto.POINT.synthetic(borderwidth, borderwidth),
+</span><span class="add">+        xcffib.xproto.POINT.synthetic(width - borderwidth, borderwidth),
+</span><span class="add">+        xcffib.xproto.POINT.synthetic(width, 0),
+</span><span class="add">+    ]
+</span><span class="add">+    return points
+</span><span class="add">+
+</span><span class="add">+@functools.lru_cache()
+</span><span class="add">+def _frame_trapezium_bottom(borderwidth, width, bottom):
+</span><span class="add">+    points = [
+</span><span class="add">+        xcffib.xproto.POINT.synthetic(0, bottom),
+</span><span class="add">+        xcffib.xproto.POINT.synthetic(borderwidth, bottom - borderwidth),
+</span><span class="add">+        xcffib.xproto.POINT.synthetic(width - borderwidth, bottom - borderwidth),
+</span><span class="add">+        xcffib.xproto.POINT.synthetic(width, bottom),
+</span><span class="add">+    ]
+</span><span class="add">+    return points
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+_style_map = {
+</span><span class="add">+    &apos;frame&apos;: _frame,
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def enable(style):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Enable a particular style of window borders.
+</span><span class="add">+
+</span><span class="add">+    Available styles:
+</span><span class="add">+
+</span><span class="add">+        - frame
+</span><span class="add">+
+</span><span class="add">+    Parameters
+</span><span class="add">+    ----------
+</span><span class="add">+    style : str
+</span><span class="add">+        A string specifying which style to use.
+</span><span class="add">+
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    if style not in _style_map:
+</span><span class="add">+        logger.exception(&quot;qtools.borders: style {0} not found.&quot;.format(style))
+</span><span class="add">+        return
+</span><span class="add">+
+</span><span class="add">+    xcbq.Window.paint_borders = _style_map[style]
+</span><span class="add">+    return
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/borders/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+from .borders import enable
+</span><span class="add">+__all__ = (&apos;enable&apos;,)
+</span></pre>
+</div></div>
+  </body>
+</html>

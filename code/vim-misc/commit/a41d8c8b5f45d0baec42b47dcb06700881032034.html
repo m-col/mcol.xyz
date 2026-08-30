@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add ale and markdownfolding</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/a41d8c8b5f45d0baec42b47dcb06700881032034.html">a41d8c8b5f45d0baec42b47dcb06700881032034</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/fc7dc5ce952574571c3b1b4683fe151793417f23.html">fc7dc5ce952574571c3b1b4683fe151793417f23</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-06-20 01:05:30 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-08-23 22:07:56 +0100
+
+add ale and markdownfolding
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -25,6 +25,8 @@
+<span class="def">     &quot;Plugin &apos;gu-fan/riv.vim&apos;
+</span><span class="def">     Plugin &apos;https://mcol.xyz/code/vimlab&apos;   &quot; vimlab
+</span><span class="def">     Plugin &apos;lervag/vimtex&apos;		    &quot; vimtex
+</span><span class="add">+    Plugin &apos;dense-analysis/ale&apos;             &quot; ALE
+</span><span class="add">+    Plugin &apos;neovimhaskell/haskell-vim&apos;      &quot; better haskell syntax highlighting
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> Plugin &apos;https://gitlab.com/gi1242/vim-emoji-ab.git&apos; &quot; emoji input support
+</span>@@ -34,6 +36,7 @@
+<span class="def"> Plugin &apos;https://mcol.xyz/code/tide&apos;	    &quot; tmux ide 
+</span><span class="def"> &quot;Plugin &apos;airblade/vim-gitgutter&apos;		    &quot; gitgutter
+</span><span class="def"> Plugin &apos;Yggdroot/indentLine&apos;                &quot;Show indentation lines
+</span><span class="add">+Plugin &apos;masukomi/vim-markdown-folding&apos;      &quot;markdown folding
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span><span class="def"> filetype plugin indent on		    &quot; required
+</span>@@ -65,9 +68,10 @@
+<span class="def"> set softtabstop=4		&quot; Number of spaces per tab
+</span><span class="def"> set linebreak			&quot; Allow backspacing over indention, line breaks and insertion start
+</span><span class="def"> set backspace=indent,eol,start	&quot; Backspace behaviour
+</span><span class="sub">-set formatoptions+=j		&quot; Delete comment characters when joining lines.
+</span><span class="add">+set formatoptions+=j	        &quot; Delete comment characters when joining lines.
+</span><span class="def"> autocmd FileType * setlocal formatoptions-=cro    &quot; disable autocommenting
+</span><span class="def"> set matchtime=2
+</span><span class="add">+set conceallevel=0              &quot; disable all concealing
+</span><span class="def"> 
+</span><span class="def"> set undolevels=200		&quot; Number of undo levels
+</span><span class="def"> set undodir=~/.vim/undo//	&quot; undo files
+</span>@@ -113,13 +117,14 @@
+<span class="def">     let g:vimtex_view_general_options = &apos;--unique @pdf\#src:@tex:@line:@col&apos;
+</span><span class="def">     let g:vimtex_view_qpdfview_hook_callback = &apos;ViewerCallback&apos;
+</span><span class="def">     let g:vimtex_compiler_latexmk = {&apos;build_dir&apos; : &apos;.latex_build&apos;}
+</span><span class="add">+    let g:vimtex_syntax_conceal_disable = 1
+</span><span class="def">     function! ViewerCallback() dict
+</span><span class="def">         VimtexView
+</span><span class="def">     endfunction
+</span><span class="def"> 
+</span><span class="sub">-    let g:riv_projects = [{ &apos;path&apos;: &apos;~/git/phd&apos;, }]
+</span><span class="sub">-    let g:riv_disable_folding = 1
+</span><span class="sub">-    set mmp=2000
+</span><span class="add">+    &quot;let g:riv_projects = [{ &apos;path&apos;: &apos;~/git/phd&apos;, }]
+</span><span class="add">+    &quot;let g:riv_disable_folding = 1
+</span><span class="add">+    &quot;set mmp=2000
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> &quot; Intelligently navigate tmux panes and Vim splits using the same keys.
+</span>@@ -143,3 +148,14 @@
+<span class="def"> let g:markdown_syntax_conceal = 0
+</span><span class="def"> 
+</span><span class="def"> runtime macros/emoji-ab.vim
+</span><span class="add">+
+</span><span class="add">+let g:ale_linters = {
+</span><span class="add">+\   &apos;haskell&apos;: [&apos;hlint&apos;],
+</span><span class="add">+\   &apos;python&apos;: [&apos;flake8&apos;, &apos;mypy&apos;],
+</span><span class="add">+\}
+</span><span class="add">+let g:ale_linters_explicit = 1
+</span><span class="add">+let g:ale_lint_on_text_changed = &apos;never&apos;
+</span><span class="add">+let g:ale_lint_on_insert_leave = 0
+</span><span class="add">+let g:ale_fixers = {}
+</span><span class="add">+let g:ale_fixers.python = [&apos;black&apos;, &apos;isort&apos;]
+</span><span class="add">+let g:ale_fixers.haskell = [&apos;ormolu&apos;]
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -122,3 +122,7 @@
+<span class="def"> inoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="def"> vnoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="def"> vnoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; ALE navigation
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-S-k&gt; &lt;Plug&gt;(ale_previous_wrap)
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-S-j&gt; &lt;Plug&gt;(ale_next_wrap)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/folds.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,23 +4,23 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> &quot; format folded section header text
+</span><span class="sub">-&quot;function! GenericFoldText()
+</span><span class="sub">-&quot;    let line = getline(v:foldstart)
+</span><span class="sub">-&quot;
+</span><span class="sub">-&quot;    let nucolwidth = &amp;fdc + &amp;number * &amp;numberwidth
+</span><span class="sub">-&quot;    let windowwidth = winwidth(0) - nucolwidth - 3
+</span><span class="sub">-&quot;    let foldedlinecount = v:foldend - v:foldstart
+</span><span class="sub">-&quot;
+</span><span class="sub">-&quot;    let onetab = strpart(&apos;          &apos;, 0, &amp;tabstop)
+</span><span class="sub">-&quot;    let line = substitute(line, &apos;\t&apos;, onetab, &apos;g&apos;)
+</span><span class="sub">-&quot;
+</span><span class="sub">-&quot;    let line = strpart(line, 0, windowwidth - len(foldedlinecount))
+</span><span class="sub">-&quot;    let fillcharcount = windowwidth - len(line) - len(foldedlinecount)
+</span><span class="sub">-&quot;    return line . repeat(&quot; &quot;,fillcharcount) . &apos; &apos; . foldedlinecount
+</span><span class="sub">-&quot;endfunction
+</span><span class="sub">-&quot;set foldtext=GenericFoldText()
+</span><span class="sub">-&quot;
+</span><span class="sub">-&quot;
+</span><span class="add">+function! GenericFoldText()
+</span><span class="add">+    let line = getline(v:foldstart)
+</span><span class="add">+
+</span><span class="add">+    let nucolwidth = &amp;fdc + &amp;number * &amp;numberwidth
+</span><span class="add">+    let windowwidth = winwidth(0) - nucolwidth - 3
+</span><span class="add">+    let foldedlinecount = v:foldend - v:foldstart
+</span><span class="add">+
+</span><span class="add">+    let onetab = strpart(&apos;          &apos;, 0, &amp;tabstop)
+</span><span class="add">+    let line = substitute(line, &apos;\t&apos;, onetab, &apos;g&apos;)
+</span><span class="add">+
+</span><span class="add">+    let line = strpart(line, 0, windowwidth - len(foldedlinecount))
+</span><span class="add">+    let fillcharcount = windowwidth - len(line) - len(foldedlinecount)
+</span><span class="add">+    return line . repeat(&quot; &quot;,fillcharcount) . &apos; &apos; . foldedlinecount
+</span><span class="add">+endfunction
+</span><span class="add">+set foldtext=GenericFoldText()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> &quot;function! GenericFolds()
+</span><span class="def"> &quot;    if match(getline(v:lnum), &apos;^\s*&apos; . &amp;commentstring[0] . &amp;commentstring[0]) &gt;=0
+</span><span class="def"> &quot;	return &quot;&gt;1&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/tex.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,4 +8,4 @@
+<span class="def"> 
+</span><span class="def"> nnoremap &lt;localleader&gt;lw :exe &apos;cexpr system(&quot;texcount &apos; . expand(&apos;%&apos;) . &apos;&quot;)&apos;&lt;CR&gt;:copen&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="sub">-nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;localleader&gt;c :VimtexCompile&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/markdown.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,23 @@
+<span class="add">+setlocal textwidth=100
+</span><span class="add">+&quot;setlocal spell spelllang=en_gb
+</span><span class="add">+nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot; format folded section header text
+</span><span class="add">+function! GenericFoldText()
+</span><span class="add">+    let line = getline(v:foldstart)
+</span><span class="add">+
+</span><span class="add">+    let nucolwidth = &amp;fdc + &amp;number * &amp;numberwidth
+</span><span class="add">+    let windowwidth = winwidth(0) - nucolwidth - 3
+</span><span class="add">+    let foldedlinecount = v:foldend - v:foldstart
+</span><span class="add">+
+</span><span class="add">+    let onetab = strpart(&apos;          &apos;, 0, &amp;tabstop)
+</span><span class="add">+    let line = substitute(line, &apos;\t&apos;, onetab, &apos;g&apos;)
+</span><span class="add">+
+</span><span class="add">+    let line = strpart(line, 0, windowwidth - len(foldedlinecount))
+</span><span class="add">+    let level = (len(split(line)[0]) - 1) * 3
+</span><span class="add">+    let level_indent = repeat(&quot; &quot;, level)
+</span><span class="add">+    let fillcharcount = windowwidth - len(line) - len(foldedlinecount) - level
+</span><span class="add">+    return level_indent . line . repeat(&quot; &quot;,fillcharcount) . &apos; &apos; . foldedlinecount
+</span><span class="add">+endfunction
+</span><span class="add">+setlocal foldtext=GenericFoldText()
+</span></pre>
+</div></div>
+  </body>
+</html>

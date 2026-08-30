@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - fix: Only jump each axis if it&apos;s enabled</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/38fa806ff4c2c24b9da1f7700f7f4625666e4800.html">38fa806ff4c2c24b9da1f7700f7f4625666e4800</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/5bcaa001058798eb245d53315bcfa8d4f36eea03.html">5bcaa001058798eb245d53315bcfa8d4f36eea03</a>
+<b>Author:</b> Aaron Dill &lt;<a href="mailto:aaronsacks2006@gmail.com">aaronsacks2006@gmail.com</a>&gt;
+<b>Date:</b> 2025-02-01 13:43:04 -0600
+<b>Committer:</b> Aaron Dill &lt;<a href="mailto:aaronsacks2006@gmail.com">aaronsacks2006@gmail.com</a>&gt;
+<b>Committed:</b> 2025-02-01 13:43:08 -0600
+
+fix: Only jump each axis if it&apos;s enabled
+
+This fixes the bug where the upper right corner of the screen will jump
+to the bottom left corner when only x is enabled.
+Also fixes the bug where the lower left corner of the screen will jump
+to the top right corner when only y is enabled.
+
+This also changes the `axis` variable to be a bit mask based on the new
+`axis_t` enum. This makes it easier to check if an axis is enabled,
+instead of having to check for both `X_AXIS` and `BOTH_AXES`.
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -37,11 +37,10 @@
+<span class="def"> xcb_input_device_id_t	deviceid;
+</span><span class="def"> xcb_xfixes_barrier_t    barriers[4];
+</span><span class="def"> 
+</span><span class="add">+enum axis_t { NO_AXIS = 0, X_AXIS = 1 &lt;&lt; 0, Y_AXIS = 1 &lt;&lt; 1, BOTH_AXES = X_AXIS | Y_AXIS };
+</span><span class="add">+enum axis_t axis = NO_AXIS;
+</span><span class="add">+
+</span><span class="def"> int debug = 0;
+</span><span class="sub">-int axis = 0;
+</span><span class="sub">-const int BOTH_AXES = 0;
+</span><span class="sub">-const int X_ONLY = 1;
+</span><span class="sub">-const int Y_ONLY = 2;
+</span><span class="def"> uint8_t op_randr = 0;
+</span><span class="def"> uint8_t op_xfixes = 0;
+</span><span class="def"> uint8_t op_xinput = 0;
+</span>@@ -81,12 +80,12 @@
+<span class="def">     if (debug)
+</span><span class="def"> 	printf(&quot;Creating barriers: %i %i %i %i\n&quot;, x1, y1, x2, y2);
+</span><span class="def"> 
+</span><span class="sub">-    if (axis == X_ONLY || axis == BOTH_AXES) {
+</span><span class="add">+    if (axis &amp; X_AXIS) {
+</span><span class="def"> 	create_barrier(&amp;barriers[0], x1, y1, x1, y2);
+</span><span class="def"> 	create_barrier(&amp;barriers[1], x2, y1, x2, y2);
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="sub">-    if (axis == Y_ONLY || axis == BOTH_AXES) {
+</span><span class="add">+    if (axis &amp; Y_AXIS) {
+</span><span class="def"> 	create_barrier(&amp;barriers[2], x1, y1, x2, y1);
+</span><span class="def"> 	create_barrier(&amp;barriers[3], x1, y2, x2, y2);
+</span><span class="def">     };
+</span>@@ -160,16 +159,16 @@
+<span class="def">     int32_t ev_x = (int32_t)(event-&gt;root_x / (double)UINT16_MAX);
+</span><span class="def">     int32_t ev_y = (int32_t)(event-&gt;root_y / (double)UINT16_MAX);
+</span><span class="def"> 
+</span><span class="sub">-    if (ev_x == 0) {
+</span><span class="sub">-	x = far_x;
+</span><span class="sub">-	y = ev_y;
+</span><span class="sub">-    } else if (ev_y == 0){
+</span><span class="sub">-	x = ev_x;
+</span><span class="sub">-	y = far_y;
+</span><span class="sub">-    } else if (ev_x == far_x){
+</span><span class="sub">-	y = ev_y;
+</span><span class="sub">-    } else if (ev_y == far_y){
+</span><span class="sub">-	x = ev_x;
+</span><span class="add">+    if (axis &amp; X_AXIS &amp;&amp; ev_x == 0) {
+</span><span class="add">+      x = far_x;
+</span><span class="add">+      y = ev_y;
+</span><span class="add">+    } else if (axis &amp; Y_AXIS &amp;&amp; ev_y == 0){
+</span><span class="add">+      x = ev_x;
+</span><span class="add">+      y = far_y;
+</span><span class="add">+    } else if (axis &amp; X_AXIS &amp;&amp; ev_x == far_x){
+</span><span class="add">+      y = ev_y;
+</span><span class="add">+    } else if (axis &amp; Y_AXIS &amp;&amp; ev_y == far_y){
+</span><span class="add">+      x = ev_x;
+</span><span class="def">     };
+</span><span class="def">     xcb_warp_pointer(conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y);
+</span><span class="def"> 
+</span>@@ -241,15 +240,15 @@
+<span class="def"> 		debug = 1;
+</span><span class="def"> 		break;
+</span><span class="def"> 	    case &apos;x&apos;:
+</span><span class="sub">-		axis += 1;
+</span><span class="add">+    axis |= X_AXIS;
+</span><span class="def"> 		break;
+</span><span class="def"> 	    case &apos;y&apos;:
+</span><span class="sub">-		axis += 2;
+</span><span class="add">+    axis |= Y_AXIS;
+</span><span class="def"> 		break;
+</span><span class="def">         }
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    if (axis == 3)
+</span><span class="add">+    if (axis == NO_AXIS)
+</span><span class="def"> 	axis = BOTH_AXES;
+</span><span class="def"> 
+</span><span class="def">     conn = xcb_connect(NULL, NULL);
+</span></pre>
+</div></div>
+  </body>
+</html>

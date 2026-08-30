@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Let the pointer interact with layer surfaces</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/23600c53fbdf886fcbc2fc4a5913c75d26821e26.html">23600c53fbdf886fcbc2fc4a5913c75d26821e26</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/3e5fc4b2bd41458c4e5a6c8cebb76c5578ee49a8.html">3e5fc4b2bd41458c4e5a6c8cebb76c5578ee49a8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 22:05:01 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 22:05:01 +0000
+
+Let the pointer interact with layer surfaces
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,7 +24,7 @@
+<span class="def">     if (prev_surface == surface) {
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="sub">-    if (prev_surface) {
+</span><span class="add">+    if (prev_surface &amp;&amp; wlr_surface_is_xdg_surface(prev_surface)) {
+</span><span class="def"> 	struct wlr_xdg_surface *previous = wlr_xdg_surface_from_wlr_surface(
+</span><span class="def"> 	    seat-&gt;keyboard_state.focused_surface
+</span><span class="def"> 	);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/layer_shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -97,7 +97,7 @@
+<span class="def">     lview-&gt;surface-&gt;mapped = false;
+</span><span class="def">     layer(lview-&gt;output);
+</span><span class="def"> 
+</span><span class="sub">-    if (wimp.focussed_layer_view == lview) {
+</span><span class="add">+    if (wimp.focussed_layer_view == lview &amp;&amp; !wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="def"> 	struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(wimp.seat);
+</span><span class="def"> 	struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="def"> 	wlr_seat_keyboard_notify_enter(
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,10 +3,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-struct view *view_at(
+</span><span class="sub">-    double lx, double ly, struct wlr_surface **surface, double *sx, double *sy
+</span><span class="sub">-);
+</span><span class="sub">-
+</span><span class="add">+void *under_pointer(struct wlr_surface **surface, double *sx, double *sy, bool *is_layer);
+</span><span class="def"> void set_up_cursor();
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,7 @@
+<span class="def"> #include &lt;linux/input-event-codes.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_cursor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_layer_shell_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_pointer_gestures_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xcursor_manager.h&gt;
+</span><span class="def"> 
+</span>@@ -46,28 +47,68 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-struct view *view_at(
+</span><span class="sub">-    double lx, double ly, struct wlr_surface **surface, double *sx, double *sy
+</span><span class="sub">-) {
+</span><span class="add">+void *under_pointer(struct wlr_surface **surface, double *sx, double *sy, bool *is_layer) {
+</span><span class="add">+    double x = wimp.cursor-&gt;x;
+</span><span class="add">+    double y = wimp.cursor-&gt;y;
+</span><span class="add">+    double tsx, tsy;
+</span><span class="def">     struct view *view;
+</span><span class="sub">-    lx /= wimp.current_desk-&gt;zoom;
+</span><span class="sub">-    ly /= wimp.current_desk-&gt;zoom;
+</span><span class="sub">-    double _sx, _sy;
+</span><span class="add">+    struct layer_view *lview;
+</span><span class="add">+    struct wlr_surface *tsurface;
+</span><span class="add">+    struct wlr_output *wlr_output = wlr_output_layout_output_at(wimp.output_layout, x, y);
+</span><span class="add">+    struct output *output = wlr_output-&gt;data;
+</span><span class="add">+
+</span><span class="add">+    // overlay and top layers
+</span><span class="add">+    uint32_t above[] = { ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY, ZWLR_LAYER_SHELL_V1_LAYER_TOP };
+</span><span class="add">+    size_t nlayers = sizeof(above) / sizeof(above[0]);
+</span><span class="add">+    for (size_t i = 0; i &lt; nlayers; i++) {
+</span><span class="add">+	wl_list_for_each(lview, &amp;output-&gt;layer_views[above[i]], link) {
+</span><span class="add">+	    tsurface = wlr_layer_surface_v1_surface_at(
+</span><span class="add">+		lview-&gt;surface, x - lview-&gt;geo.x, y - lview-&gt;geo.y, &amp;tsx, &amp;tsy
+</span><span class="add">+	    );
+</span><span class="add">+	    if (tsurface) {
+</span><span class="add">+		*sx = tsx;
+</span><span class="add">+		*sy = tsy;
+</span><span class="add">+		*surface = tsurface;
+</span><span class="add">+		*is_layer = true;
+</span><span class="add">+		return lview;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // clients
+</span><span class="add">+    double zx = x / wimp.current_desk-&gt;zoom;
+</span><span class="add">+    double zy = y / wimp.current_desk-&gt;zoom;
+</span><span class="def"> 
+</span><span class="def">     wl_list_for_each(view, &amp;wimp.current_desk-&gt;views, link) {
+</span><span class="sub">-	double view_sx = lx - view-&gt;x;
+</span><span class="sub">-	double view_sy = ly - view-&gt;y;
+</span><span class="sub">-	struct wlr_surface *_surface = NULL;
+</span><span class="sub">-	_surface = wlr_xdg_surface_surface_at(
+</span><span class="sub">-	    view-&gt;surface, view_sx, view_sy, &amp;_sx, &amp;_sy
+</span><span class="add">+	tsurface = wlr_xdg_surface_surface_at(
+</span><span class="add">+	    view-&gt;surface, zx - view-&gt;x, zy - view-&gt;y, &amp;tsx, &amp;tsy
+</span><span class="def"> 	);
+</span><span class="sub">-	if (_surface != NULL) {
+</span><span class="sub">-	    *sx = _sx;
+</span><span class="sub">-	    *sy = _sy;
+</span><span class="sub">-	    *surface = _surface;
+</span><span class="add">+	if (tsurface) {
+</span><span class="add">+	    *sx = tsx;
+</span><span class="add">+	    *sy = tsy;
+</span><span class="add">+	    *surface = tsurface;
+</span><span class="add">+	    *is_layer = false;
+</span><span class="def"> 	    return view;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+
+</span><span class="add">+    // bottom and background layers
+</span><span class="add">+    uint32_t below[] = { ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM, ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND };
+</span><span class="add">+    for (size_t i = 0; i &lt; nlayers; i++) {
+</span><span class="add">+	wl_list_for_each(lview, &amp;output-&gt;layer_views[below[i]], link) {
+</span><span class="add">+	    tsurface = wlr_layer_surface_v1_surface_at(
+</span><span class="add">+		lview-&gt;surface, x - lview-&gt;geo.x, y - lview-&gt;geo.y, &amp;tsx, &amp;tsy
+</span><span class="add">+	    );
+</span><span class="add">+	    if (tsurface) {
+</span><span class="add">+		*sx = tsx;
+</span><span class="add">+		*sy = tsy;
+</span><span class="add">+		*surface = tsurface;
+</span><span class="add">+		*is_layer = true;
+</span><span class="add">+		return lview;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     return NULL;
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -78,14 +119,13 @@
+<span class="def">     struct wlr_surface *surface;
+</span><span class="def">     struct view *view;
+</span><span class="def">     double zoom = wimp.current_desk-&gt;zoom;
+</span><span class="sub">-    dx /= zoom;
+</span><span class="sub">-    dy /= zoom;
+</span><span class="def"> 
+</span><span class="def">     switch (wimp.cursor_mode) {
+</span><span class="def"> 	case CURSOR_PASSTHROUGH:
+</span><span class="def"> 	    seat = wimp.seat;
+</span><span class="def"> 	    surface = NULL;
+</span><span class="sub">-	    view = view_at(wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy);
+</span><span class="add">+	    bool is_layer;
+</span><span class="add">+	    view = under_pointer(&amp;surface, &amp;sx, &amp;sy, &amp;is_layer);
+</span><span class="def"> 	    if (!view) {
+</span><span class="def"> 		wlr_xcursor_manager_set_cursor_image(wimp.cursor_manager, &quot;left_ptr&quot;, wimp.cursor);
+</span><span class="def"> 	    }
+</span>@@ -103,8 +143,8 @@
+<span class="def"> 	case CURSOR_MOD:
+</span><span class="def"> 	    if (wimp.on_mouse_motion) {
+</span><span class="def"> 		struct motion motion = {
+</span><span class="sub">-		    .dx = dx,
+</span><span class="sub">-		    .dy = dy,
+</span><span class="add">+		    .dx = dx / zoom,
+</span><span class="add">+		    .dy = dy / zoom,
+</span><span class="def"> 		    .is_percentage = false,
+</span><span class="def"> 		};
+</span><span class="def"> 		wimp.on_mouse_motion(&amp;motion);
+</span>@@ -139,6 +179,9 @@
+<span class="def"> static void on_cursor_button(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_event_pointer_button *event = data;
+</span><span class="def">     wlr_seat_pointer_notify_button(wimp.seat, event-&gt;time_msec, event-&gt;button, event-&gt;state);
+</span><span class="add">+    double sx, sy;
+</span><span class="add">+    struct wlr_surface *surface;
+</span><span class="add">+    bool is_layer;
+</span><span class="def"> 
+</span><span class="def">     if (event-&gt;state == WLR_BUTTON_RELEASED) {
+</span><span class="def"> 	if (wimp.cursor_mode == CURSOR_MOD) {
+</span>@@ -156,8 +199,9 @@
+<span class="def"> 	if (wimp.grabbed_view) {
+</span><span class="def"> 	    wimp.grabbed_view = NULL;
+</span><span class="def"> 	}
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-    } else if (wimp.cursor_mode == CURSOR_MOD) {
+</span><span class="add">+    else if (wimp.cursor_mode == CURSOR_MOD) {
+</span><span class="def"> 	bool grab = true;
+</span><span class="def"> 	switch (event-&gt;button) {
+</span><span class="def"> 	    case BTN_LEFT:
+</span>@@ -173,18 +217,15 @@
+<span class="def"> 		grab = false;
+</span><span class="def"> 	}
+</span><span class="def"> 	if (grab) {
+</span><span class="sub">-	    struct wlr_surface *surface;
+</span><span class="sub">-	    double sx, sy;
+</span><span class="sub">-	    wimp.grabbed_view = view_at(wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy);
+</span><span class="add">+	    wimp.grabbed_view = under_pointer(&amp;surface, &amp;sx, &amp;sy, &amp;is_layer);
+</span><span class="def"> 	}
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-    } else {
+</span><span class="sub">-	double sx, sy;
+</span><span class="sub">-	struct wlr_surface *surface;
+</span><span class="sub">-	struct view *view = view_at(
+</span><span class="sub">-	    wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy
+</span><span class="sub">-	);
+</span><span class="sub">-	focus_view(view, surface);
+</span><span class="add">+    else {
+</span><span class="add">+	struct view *view = under_pointer(&amp;surface, &amp;sx, &amp;sy, &amp;is_layer);
+</span><span class="add">+	if (!is_layer) {
+</span><span class="add">+	    focus_view(view, surface);
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -52,8 +52,9 @@
+<span class="def">     } else {
+</span><span class="def"> 	double sx, sy;
+</span><span class="def"> 	struct wlr_surface *surface;
+</span><span class="sub">-	view = view_at(wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy);
+</span><span class="sub">-	if (!view) {
+</span><span class="add">+	bool is_layer;
+</span><span class="add">+	view = under_pointer(&amp;surface, &amp;sx, &amp;sy, &amp;is_layer);
+</span><span class="add">+	if (!view || is_layer) {
+</span><span class="def"> 	    return;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span>@@ -277,8 +278,9 @@
+<span class="def"> 
+</span><span class="def"> void toggle_fullscreen(void *data) {
+</span><span class="def">     struct wlr_surface *surface = wimp.seat-&gt;keyboard_state.focused_surface;
+</span><span class="sub">-    if (!surface)
+</span><span class="add">+    if (!surface || !wlr_surface_is_xdg_surface(surface)) {
+</span><span class="def"> 	return;
+</span><span class="add">+    }
+</span><span class="def">     struct wlr_xdg_surface *xdg_surface = wlr_xdg_surface_from_wlr_surface(surface);
+</span><span class="def">     struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="def">     fullscreen_xdg_surface(view, xdg_surface, NULL);
+</span></pre>
+</div></div>
+  </body>
+</html>

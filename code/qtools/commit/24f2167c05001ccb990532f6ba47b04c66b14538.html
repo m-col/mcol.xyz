@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add alsa volume level Notify plugin</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/24f2167c05001ccb990532f6ba47b04c66b14538.html">24f2167c05001ccb990532f6ba47b04c66b14538</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/d5f3ad7666c6bcb1db84d651bbcf7429ec798677.html">d5f3ad7666c6bcb1db84d651bbcf7429ec798677</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-10 22:07:27 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-10 22:07:27 +0000
+
+add alsa volume level Notify plugin
+</pre><div class="diff">
+  <p>
+    <b>amixer/amixer.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,67 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile plugin to control an ALSA device volume level.
+</span><span class="add">+
+</span><span class="add">+Example usage:
+</span><span class="add">+
+</span><span class="add">+    import qtools.amixer
+</span><span class="add">+    vol = qtools.amixer.Volume()
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;&lt;XF86AudioMute&gt;&apos;:        vol.lazy_mute,
+</span><span class="add">+        &apos;&lt;XF86AudioRaiseVolume&gt;&apos;: vol.lazy_increase,
+</span><span class="add">+        &apos;&lt;XF86AudioLowerVolume&gt;&apos;: vol.lazy_decrease,
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import subprocess
+</span><span class="add">+
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from qtools import Notifier
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Volume(Notifier):
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;mixer&apos;, &apos;Master&apos;, &apos;ALSA mixer to control.&apos;),
+</span><span class="add">+        (&apos;interval&apos;, 5, &apos;Percentage interval to change volume by.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        Notifier.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Volume.defaults)
+</span><span class="add">+
+</span><span class="add">+    def increase(self, qtile=None):
+</span><span class="add">+        volume = self._run(f&apos;{self.interval}%+&apos;)
+</span><span class="add">+        self.show(self.interval * round(volume/self.interval))
+</span><span class="add">+
+</span><span class="add">+    def decrease(self, qtile=None):
+</span><span class="add">+        volume = self._run(f&apos;{self.interval}%-&apos;)
+</span><span class="add">+        self.show(self.interval * round(volume/self.interval))
+</span><span class="add">+
+</span><span class="add">+    def toggle(self, qtile=None):
+</span><span class="add">+        volume = self._run(&apos;toggle&apos;)
+</span><span class="add">+        self.show(self.interval * round(volume/self.interval))
+</span><span class="add">+
+</span><span class="add">+    def mute(self, qtile=None):
+</span><span class="add">+        self._run(&apos;mute&apos;)
+</span><span class="add">+        self.show(&apos;Muted&apos;)
+</span><span class="add">+
+</span><span class="add">+    def unmute(self, qtile=None):
+</span><span class="add">+        volume = self._run(&apos;unmute&apos;)
+</span><span class="add">+        self.show(volume)
+</span><span class="add">+
+</span><span class="add">+    def _run(self, setting):
+</span><span class="add">+        try:
+</span><span class="add">+            output = subprocess.run(
+</span><span class="add">+                [&apos;amixer&apos;, &apos;set&apos;, self.mixer, setting],
+</span><span class="add">+                stdout=subprocess.PIPE,
+</span><span class="add">+            )
+</span><span class="add">+            stdout = output.stdout.splitlines()
+</span><span class="add">+        except subprocess.CalledProcessError as err:
+</span><span class="add">+            logger.error(err.output.decode())
+</span><span class="add">+            return
+</span><span class="add">+
+</span><span class="add">+        if len(stdout) == 5:
+</span><span class="add">+            volume = int(stdout[4].decode().split()[3][1:-2])
+</span><span class="add">+        elif len(stdout) == 6:
+</span><span class="add">+            volume = int(stdout[5].decode().split()[4][1:-2])
+</span><span class="add">+        return volume
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>amixer/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+from .amixer import Volume
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,1100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - moved oh my zsh stuff into own folder to tidy it up and group it all under one creditting folder</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/7de7f992381f5d85a1aea4b78d35c527c525b725.html">7de7f992381f5d85a1aea4b78d35c527c525b725</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/4bf4202de30754e83a1c2c75d4b4a942153f867b.html">4bf4202de30754e83a1c2c75d4b4a942153f867b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 01:15:37 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 01:15:37 +0000
+
+moved oh my zsh stuff into own folder to tidy it up and group it all under one creditting folder
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,7 +15,7 @@
+<span class="def"> HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span><span class="def"> bindkey &apos;^A&apos; autosuggest-execute
+</span><span class="def"> 
+</span><span class="sub">-for plugin ($ZSH/*.zsh)
+</span><span class="add">+for plugin ($ZSH/oh-my-zsh/*.zsh $ZSH/*.zsh)
+</span><span class="def"> do
+</span><span class="def">     source $plugin
+</span><span class="def"> done
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>zsh-autosuggestions.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,70 +0,0 @@
+<span class="sub">-# -------------------------------------------------#
+</span><span class="sub">-# https://github.com/zsh-users/zsh-autosuggestions #
+</span><span class="sub">-# -------------------------------------------------#
+</span><span class="sub">-
+</span><span class="sub">-[[ ! -e $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &amp;&amp; return
+</span><span class="sub">-source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
+</span><span class="sub">-
+</span><span class="sub">-# More info: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Widgets
+</span><span class="sub">-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=&apos;fg=8&apos;
+</span><span class="sub">-
+</span><span class="sub">-# Prefix to use when saving original versions of bound widgets
+</span><span class="sub">-ZSH_AUTOSUGGEST_ORIGINAL_WIDGET_PREFIX=autosuggest-orig-
+</span><span class="sub">-
+</span><span class="sub">-#ZSH_AUTOSUGGEST_STRATEGY=default
+</span><span class="sub">-ZSH_AUTOSUGGEST_STRATEGY=match_prev_cmd
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that clear the suggestion
+</span><span class="sub">-ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(
+</span><span class="sub">-	history-search-forward
+</span><span class="sub">-	history-search-backward
+</span><span class="sub">-	history-beginning-search-forward
+</span><span class="sub">-	history-beginning-search-backward
+</span><span class="sub">-	history-substring-search-up
+</span><span class="sub">-	history-substring-search-down
+</span><span class="sub">-	up-line-or-beginning-search
+</span><span class="sub">-	down-line-or-beginning-search
+</span><span class="sub">-	up-line-or-history
+</span><span class="sub">-	down-line-or-history
+</span><span class="sub">-	accept-line
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that accept the entire suggestion
+</span><span class="sub">-ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(
+</span><span class="sub">-	end-of-line
+</span><span class="sub">-	vi-end-of-line
+</span><span class="sub">-	vi-add-eol
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that accept the entire suggestion and execute it
+</span><span class="sub">-ZSH_AUTOSUGGEST_EXECUTE_WIDGETS=(
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that accept the suggestion as far as the cursor moves
+</span><span class="sub">-ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
+</span><span class="sub">-	vi-forward-char
+</span><span class="sub">-	forward-word
+</span><span class="sub">-	vi-forward-word
+</span><span class="sub">-	vi-forward-word-end
+</span><span class="sub">-	vi-forward-blank-word
+</span><span class="sub">-	vi-forward-blank-word-end
+</span><span class="sub">-	vi-find-next-char
+</span><span class="sub">-	vi-find-next-char-skip
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that should be ignored (globbing supported but must be escaped)
+</span><span class="sub">-ZSH_AUTOSUGGEST_IGNORE_WIDGETS=(
+</span><span class="sub">-	orig-\*
+</span><span class="sub">-	beep
+</span><span class="sub">-	run-help
+</span><span class="sub">-	set-local-history
+</span><span class="sub">-	which-command
+</span><span class="sub">-	yank
+</span><span class="sub">-	yank-pop
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Max size of buffer to trigger autosuggestion. Leave undefined for no upper bound.
+</span><span class="sub">-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=
+</span><span class="sub">-
+</span><span class="sub">-# Pty name for calculating autosuggestions asynchronously
+</span><span class="sub">-ZSH_AUTOSUGGEST_ASYNC_PTY_NAME=zsh_autosuggest_pty
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme-and-appearance.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,55 +0,0 @@
+<span class="sub">-# ls colors
+</span><span class="sub">-autoload -U colors &amp;&amp; colors
+</span><span class="sub">-
+</span><span class="sub">-# Enable ls colors
+</span><span class="sub">-export LSCOLORS=&quot;Gxfxcxdxbxegedabagacad&quot;
+</span><span class="sub">-
+</span><span class="sub">-# TODO organise this chaotic logic
+</span><span class="sub">-
+</span><span class="sub">-if [[ &quot;$DISABLE_LS_COLORS&quot; != &quot;true&quot; ]]; then
+</span><span class="sub">-  # Find the option for using colors in ls, depending on the version
+</span><span class="sub">-  if [[ &quot;$OSTYPE&quot; == netbsd* ]]; then
+</span><span class="sub">-    # On NetBSD, test if &quot;gls&quot; (GNU ls) is installed (this one supports colors);
+</span><span class="sub">-    # otherwise, leave ls as is, because NetBSD&apos;s ls doesn&apos;t support -G
+</span><span class="sub">-    gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+</span><span class="sub">-  elif [[ &quot;$OSTYPE&quot; == openbsd* ]]; then
+</span><span class="sub">-    # On OpenBSD, &quot;gls&quot; (ls from GNU coreutils) and &quot;colorls&quot; (ls from base,
+</span><span class="sub">-    # with color and multibyte support) are available from ports.  &quot;colorls&quot;
+</span><span class="sub">-    # will be installed on purpose and can&apos;t be pulled in by installing
+</span><span class="sub">-    # coreutils, so prefer it to &quot;gls&quot;.
+</span><span class="sub">-    gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+</span><span class="sub">-    colorls -G -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;colorls -G&apos;
+</span><span class="sub">-  elif [[ &quot;$OSTYPE&quot; == darwin* ]]; then
+</span><span class="sub">-    # this is a good alias, it works by default just using $LSCOLORS
+</span><span class="sub">-    ls -G . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls -G&apos;
+</span><span class="sub">-
+</span><span class="sub">-    # only use coreutils ls if there is a dircolors customization present ($LS_COLORS or .dircolors file)
+</span><span class="sub">-    # otherwise, gls will use the default color scheme which is ugly af
+</span><span class="sub">-    [[ -n &quot;$LS_COLORS&quot; || -f &quot;$HOME/.dircolors&quot; ]] &amp;&amp; gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+</span><span class="sub">-  else
+</span><span class="sub">-    # For GNU ls, we use the default ls color theme. They can later be overwritten by themes.
+</span><span class="sub">-    if [[ -z &quot;$LS_COLORS&quot; ]]; then
+</span><span class="sub">-      (( $+commands[dircolors] )) &amp;&amp; eval &quot;$(dircolors -b)&quot;
+</span><span class="sub">-    fi
+</span><span class="sub">-
+</span><span class="sub">-    ls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls --color=tty&apos; || { ls -G . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls -G&apos; }
+</span><span class="sub">-
+</span><span class="sub">-    # Take advantage of $LS_COLORS for completion as well.
+</span><span class="sub">-    zstyle &apos;:completion:*&apos; list-colors &quot;${(s.:.)LS_COLORS}&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-setopt auto_cd
+</span><span class="sub">-setopt multios
+</span><span class="sub">-setopt prompt_subst
+</span><span class="sub">-
+</span><span class="sub">-[[ -n &quot;$WINDOW&quot; ]] &amp;&amp; SCREEN_NO=&quot;%B$WINDOW%b &quot; || SCREEN_NO=&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-# Apply theming defaults
+</span><span class="sub">-PS1=&quot;%n@%m:%~%# &quot;
+</span><span class="sub">-
+</span><span class="sub">-# git theming default: Variables for theming the git info prompt
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_PREFIX=&quot;git:(&quot;         # Prefix at the very beginning of the prompt, before the branch name
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;)&quot;             # At the very end of the prompt
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_DIRTY=&quot;*&quot;              # Text to display if the branch is dirty
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_CLEAN=&quot;&quot;               # Text to display if the branch is clean
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>oh-my-zsh/zsh-autosuggestions.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,70 @@
+<span class="add">+# -------------------------------------------------#
+</span><span class="add">+# https://github.com/zsh-users/zsh-autosuggestions #
+</span><span class="add">+# -------------------------------------------------#
+</span><span class="add">+
+</span><span class="add">+[[ ! -e $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &amp;&amp; return
+</span><span class="add">+source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
+</span><span class="add">+
+</span><span class="add">+# More info: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Widgets
+</span><span class="add">+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=&apos;fg=8&apos;
+</span><span class="add">+
+</span><span class="add">+# Prefix to use when saving original versions of bound widgets
+</span><span class="add">+ZSH_AUTOSUGGEST_ORIGINAL_WIDGET_PREFIX=autosuggest-orig-
+</span><span class="add">+
+</span><span class="add">+#ZSH_AUTOSUGGEST_STRATEGY=default
+</span><span class="add">+ZSH_AUTOSUGGEST_STRATEGY=match_prev_cmd
+</span><span class="add">+
+</span><span class="add">+# Widgets that clear the suggestion
+</span><span class="add">+ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(
+</span><span class="add">+	history-search-forward
+</span><span class="add">+	history-search-backward
+</span><span class="add">+	history-beginning-search-forward
+</span><span class="add">+	history-beginning-search-backward
+</span><span class="add">+	history-substring-search-up
+</span><span class="add">+	history-substring-search-down
+</span><span class="add">+	up-line-or-beginning-search
+</span><span class="add">+	down-line-or-beginning-search
+</span><span class="add">+	up-line-or-history
+</span><span class="add">+	down-line-or-history
+</span><span class="add">+	accept-line
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that accept the entire suggestion
+</span><span class="add">+ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(
+</span><span class="add">+	end-of-line
+</span><span class="add">+	vi-end-of-line
+</span><span class="add">+	vi-add-eol
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that accept the entire suggestion and execute it
+</span><span class="add">+ZSH_AUTOSUGGEST_EXECUTE_WIDGETS=(
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that accept the suggestion as far as the cursor moves
+</span><span class="add">+ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
+</span><span class="add">+	vi-forward-char
+</span><span class="add">+	forward-word
+</span><span class="add">+	vi-forward-word
+</span><span class="add">+	vi-forward-word-end
+</span><span class="add">+	vi-forward-blank-word
+</span><span class="add">+	vi-forward-blank-word-end
+</span><span class="add">+	vi-find-next-char
+</span><span class="add">+	vi-find-next-char-skip
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that should be ignored (globbing supported but must be escaped)
+</span><span class="add">+ZSH_AUTOSUGGEST_IGNORE_WIDGETS=(
+</span><span class="add">+	orig-\*
+</span><span class="add">+	beep
+</span><span class="add">+	run-help
+</span><span class="add">+	set-local-history
+</span><span class="add">+	which-command
+</span><span class="add">+	yank
+</span><span class="add">+	yank-pop
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Max size of buffer to trigger autosuggestion. Leave undefined for no upper bound.
+</span><span class="add">+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=
+</span><span class="add">+
+</span><span class="add">+# Pty name for calculating autosuggestions asynchronously
+</span><span class="add">+ZSH_AUTOSUGGEST_ASYNC_PTY_NAME=zsh_autosuggest_pty
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>oh-my-zsh/theme-and-appearance.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,55 @@
+<span class="add">+# ls colors
+</span><span class="add">+autoload -U colors &amp;&amp; colors
+</span><span class="add">+
+</span><span class="add">+# Enable ls colors
+</span><span class="add">+export LSCOLORS=&quot;Gxfxcxdxbxegedabagacad&quot;
+</span><span class="add">+
+</span><span class="add">+# TODO organise this chaotic logic
+</span><span class="add">+
+</span><span class="add">+if [[ &quot;$DISABLE_LS_COLORS&quot; != &quot;true&quot; ]]; then
+</span><span class="add">+  # Find the option for using colors in ls, depending on the version
+</span><span class="add">+  if [[ &quot;$OSTYPE&quot; == netbsd* ]]; then
+</span><span class="add">+    # On NetBSD, test if &quot;gls&quot; (GNU ls) is installed (this one supports colors);
+</span><span class="add">+    # otherwise, leave ls as is, because NetBSD&apos;s ls doesn&apos;t support -G
+</span><span class="add">+    gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+</span><span class="add">+  elif [[ &quot;$OSTYPE&quot; == openbsd* ]]; then
+</span><span class="add">+    # On OpenBSD, &quot;gls&quot; (ls from GNU coreutils) and &quot;colorls&quot; (ls from base,
+</span><span class="add">+    # with color and multibyte support) are available from ports.  &quot;colorls&quot;
+</span><span class="add">+    # will be installed on purpose and can&apos;t be pulled in by installing
+</span><span class="add">+    # coreutils, so prefer it to &quot;gls&quot;.
+</span><span class="add">+    gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+</span><span class="add">+    colorls -G -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;colorls -G&apos;
+</span><span class="add">+  elif [[ &quot;$OSTYPE&quot; == darwin* ]]; then
+</span><span class="add">+    # this is a good alias, it works by default just using $LSCOLORS
+</span><span class="add">+    ls -G . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls -G&apos;
+</span><span class="add">+
+</span><span class="add">+    # only use coreutils ls if there is a dircolors customization present ($LS_COLORS or .dircolors file)
+</span><span class="add">+    # otherwise, gls will use the default color scheme which is ugly af
+</span><span class="add">+    [[ -n &quot;$LS_COLORS&quot; || -f &quot;$HOME/.dircolors&quot; ]] &amp;&amp; gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+</span><span class="add">+  else
+</span><span class="add">+    # For GNU ls, we use the default ls color theme. They can later be overwritten by themes.
+</span><span class="add">+    if [[ -z &quot;$LS_COLORS&quot; ]]; then
+</span><span class="add">+      (( $+commands[dircolors] )) &amp;&amp; eval &quot;$(dircolors -b)&quot;
+</span><span class="add">+    fi
+</span><span class="add">+
+</span><span class="add">+    ls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls --color=tty&apos; || { ls -G . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls -G&apos; }
+</span><span class="add">+
+</span><span class="add">+    # Take advantage of $LS_COLORS for completion as well.
+</span><span class="add">+    zstyle &apos;:completion:*&apos; list-colors &quot;${(s.:.)LS_COLORS}&quot;
+</span><span class="add">+  fi
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+setopt auto_cd
+</span><span class="add">+setopt multios
+</span><span class="add">+setopt prompt_subst
+</span><span class="add">+
+</span><span class="add">+[[ -n &quot;$WINDOW&quot; ]] &amp;&amp; SCREEN_NO=&quot;%B$WINDOW%b &quot; || SCREEN_NO=&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+# Apply theming defaults
+</span><span class="add">+PS1=&quot;%n@%m:%~%# &quot;
+</span><span class="add">+
+</span><span class="add">+# git theming default: Variables for theming the git info prompt
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_PREFIX=&quot;git:(&quot;         # Prefix at the very beginning of the prompt, before the branch name
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;)&quot;             # At the very end of the prompt
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_DIRTY=&quot;*&quot;              # Text to display if the branch is dirty
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_CLEAN=&quot;&quot;               # Text to display if the branch is clean
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>oh-my-zsh/git.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,221 @@
+<span class="add">+# Outputs current branch info in prompt format
+</span><span class="add">+function git_prompt_info() {
+</span><span class="add">+  local ref
+</span><span class="add">+  if [[ &quot;$(command git config --get oh-my-zsh.hide-status 2&gt;/dev/null)&quot; != &quot;1&quot; ]]; then
+</span><span class="add">+    ref=$(command git symbolic-ref HEAD 2&gt; /dev/null) || \
+</span><span class="add">+    ref=$(command git rev-parse --short HEAD 2&gt; /dev/null) || return 0
+</span><span class="add">+    echo &quot;$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_SUFFIX&quot;
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Checks if working tree is dirty
+</span><span class="add">+function parse_git_dirty() {
+</span><span class="add">+  local STATUS=&apos;&apos;
+</span><span class="add">+  local -a FLAGS
+</span><span class="add">+  FLAGS=(&apos;--porcelain&apos;)
+</span><span class="add">+  if [[ &quot;$(command git config --get oh-my-zsh.hide-dirty)&quot; != &quot;1&quot; ]]; then
+</span><span class="add">+    if [[ $POST_1_7_2_GIT -gt 0 ]]; then
+</span><span class="add">+      FLAGS+=&apos;--ignore-submodules=dirty&apos;
+</span><span class="add">+    fi
+</span><span class="add">+    if [[ &quot;$DISABLE_UNTRACKED_FILES_DIRTY&quot; == &quot;true&quot; ]]; then
+</span><span class="add">+      FLAGS+=&apos;--untracked-files=no&apos;
+</span><span class="add">+    fi
+</span><span class="add">+    STATUS=$(command git status ${FLAGS} 2&gt; /dev/null | tail -n1)
+</span><span class="add">+  fi
+</span><span class="add">+  if [[ -n $STATUS ]]; then
+</span><span class="add">+    echo &quot;$ZSH_THEME_GIT_PROMPT_DIRTY&quot;
+</span><span class="add">+  else
+</span><span class="add">+    echo &quot;$ZSH_THEME_GIT_PROMPT_CLEAN&quot;
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Gets the difference between the local and remote branches
+</span><span class="add">+function git_remote_status() {
+</span><span class="add">+    local remote ahead behind git_remote_status git_remote_status_detailed
+</span><span class="add">+    remote=${$(command git rev-parse --verify ${hook_com[branch]}@{upstream} --symbolic-full-name 2&gt;/dev/null)/refs\/remotes\/}
+</span><span class="add">+    if [[ -n ${remote} ]]; then
+</span><span class="add">+        ahead=$(command git rev-list ${hook_com[branch]}@{upstream}..HEAD 2&gt;/dev/null | wc -l)
+</span><span class="add">+        behind=$(command git rev-list HEAD..${hook_com[branch]}@{upstream} 2&gt;/dev/null | wc -l)
+</span><span class="add">+
+</span><span class="add">+        if [[ $ahead -eq 0 ]] &amp;&amp; [[ $behind -eq 0 ]]; then
+</span><span class="add">+            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_EQUAL_REMOTE&quot;
+</span><span class="add">+        elif [[ $ahead -gt 0 ]] &amp;&amp; [[ $behind -eq 0 ]]; then
+</span><span class="add">+            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE&quot;
+</span><span class="add">+            git_remote_status_detailed=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE$((ahead))%{$reset_color%}&quot;
+</span><span class="add">+        elif [[ $behind -gt 0 ]] &amp;&amp; [[ $ahead -eq 0 ]]; then
+</span><span class="add">+            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE&quot;
+</span><span class="add">+            git_remote_status_detailed=&quot;$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE$((behind))%{$reset_color%}&quot;
+</span><span class="add">+        elif [[ $ahead -gt 0 ]] &amp;&amp; [[ $behind -gt 0 ]]; then
+</span><span class="add">+            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_DIVERGED_REMOTE&quot;
+</span><span class="add">+            git_remote_status_detailed=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE$((ahead))%{$reset_color%}$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE$((behind))%{$reset_color%}&quot;
+</span><span class="add">+        fi
+</span><span class="add">+
+</span><span class="add">+        if [[ -n $ZSH_THEME_GIT_PROMPT_REMOTE_STATUS_DETAILED ]]; then
+</span><span class="add">+            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_REMOTE_STATUS_PREFIX$remote$git_remote_status_detailed$ZSH_THEME_GIT_PROMPT_REMOTE_STATUS_SUFFIX&quot;
+</span><span class="add">+        fi
+</span><span class="add">+
+</span><span class="add">+        echo $git_remote_status
+</span><span class="add">+    fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Outputs the name of the current branch
+</span><span class="add">+# Usage example: git pull origin $(git_current_branch)
+</span><span class="add">+# Using &apos;--quiet&apos; with &apos;symbolic-ref&apos; will not cause a fatal error (128) if
+</span><span class="add">+# it&apos;s not a symbolic ref, but in a Git repo.
+</span><span class="add">+function git_current_branch() {
+</span><span class="add">+  local ref
+</span><span class="add">+  ref=$(command git symbolic-ref --quiet HEAD 2&gt; /dev/null)
+</span><span class="add">+  local ret=$?
+</span><span class="add">+  if [[ $ret != 0 ]]; then
+</span><span class="add">+    [[ $ret == 128 ]] &amp;&amp; return  # no git repo.
+</span><span class="add">+    ref=$(command git rev-parse --short HEAD 2&gt; /dev/null) || return
+</span><span class="add">+  fi
+</span><span class="add">+  echo ${ref#refs/heads/}
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Gets the number of commits ahead from remote
+</span><span class="add">+function git_commits_ahead() {
+</span><span class="add">+  if command git rev-parse --git-dir &amp;&gt;/dev/null; then
+</span><span class="add">+    local commits=&quot;$(git rev-list --count @{upstream}..HEAD 2&gt;/dev/null)&quot;
+</span><span class="add">+    if [[ -n &quot;$commits&quot; &amp;&amp; &quot;$commits&quot; != 0 ]]; then
+</span><span class="add">+      echo &quot;$ZSH_THEME_GIT_COMMITS_AHEAD_PREFIX$commits$ZSH_THEME_GIT_COMMITS_AHEAD_SUFFIX&quot;
+</span><span class="add">+    fi
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Gets the number of commits behind remote
+</span><span class="add">+function git_commits_behind() {
+</span><span class="add">+  if command git rev-parse --git-dir &amp;&gt;/dev/null; then
+</span><span class="add">+    local commits=&quot;$(git rev-list --count HEAD..@{upstream} 2&gt;/dev/null)&quot;
+</span><span class="add">+    if [[ -n &quot;$commits&quot; &amp;&amp; &quot;$commits&quot; != 0 ]]; then
+</span><span class="add">+      echo &quot;$ZSH_THEME_GIT_COMMITS_BEHIND_PREFIX$commits$ZSH_THEME_GIT_COMMITS_BEHIND_SUFFIX&quot;
+</span><span class="add">+    fi
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Outputs if current branch is ahead of remote
+</span><span class="add">+function git_prompt_ahead() {
+</span><span class="add">+  if [[ -n &quot;$(command git rev-list origin/$(git_current_branch)..HEAD 2&gt; /dev/null)&quot; ]]; then
+</span><span class="add">+    echo &quot;$ZSH_THEME_GIT_PROMPT_AHEAD&quot;
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Outputs if current branch is behind remote
+</span><span class="add">+function git_prompt_behind() {
+</span><span class="add">+  if [[ -n &quot;$(command git rev-list HEAD..origin/$(git_current_branch) 2&gt; /dev/null)&quot; ]]; then
+</span><span class="add">+    echo &quot;$ZSH_THEME_GIT_PROMPT_BEHIND&quot;
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Outputs if current branch exists on remote or not
+</span><span class="add">+function git_prompt_remote() {
+</span><span class="add">+  if [[ -n &quot;$(command git show-ref origin/$(git_current_branch) 2&gt; /dev/null)&quot; ]]; then
+</span><span class="add">+    echo &quot;$ZSH_THEME_GIT_PROMPT_REMOTE_EXISTS&quot;
+</span><span class="add">+  else
+</span><span class="add">+    echo &quot;$ZSH_THEME_GIT_PROMPT_REMOTE_MISSING&quot;
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Formats prompt string for current git commit short SHA
+</span><span class="add">+function git_prompt_short_sha() {
+</span><span class="add">+  local SHA
+</span><span class="add">+  SHA=$(command git rev-parse --short HEAD 2&gt; /dev/null) &amp;&amp; echo &quot;$ZSH_THEME_GIT_PROMPT_SHA_BEFORE$SHA$ZSH_THEME_GIT_PROMPT_SHA_AFTER&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Formats prompt string for current git commit long SHA
+</span><span class="add">+function git_prompt_long_sha() {
+</span><span class="add">+  local SHA
+</span><span class="add">+  SHA=$(command git rev-parse HEAD 2&gt; /dev/null) &amp;&amp; echo &quot;$ZSH_THEME_GIT_PROMPT_SHA_BEFORE$SHA$ZSH_THEME_GIT_PROMPT_SHA_AFTER&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Get the status of the working tree
+</span><span class="add">+function git_prompt_status() {
+</span><span class="add">+  local INDEX STATUS
+</span><span class="add">+  INDEX=$(command git status --porcelain -b 2&gt; /dev/null)
+</span><span class="add">+  STATUS=&quot;&quot;
+</span><span class="add">+  if $(echo &quot;$INDEX&quot; | command grep -E &apos;^\?\? &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_UNTRACKED$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  if $(echo &quot;$INDEX&quot; | grep &apos;^A  &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_ADDED$STATUS&quot;
+</span><span class="add">+  elif $(echo &quot;$INDEX&quot; | grep &apos;^M  &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_ADDED$STATUS&quot;
+</span><span class="add">+  elif $(echo &quot;$INDEX&quot; | grep &apos;^MM &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_ADDED$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  if $(echo &quot;$INDEX&quot; | grep &apos;^ M &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="add">+  elif $(echo &quot;$INDEX&quot; | grep &apos;^AM &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="add">+  elif $(echo &quot;$INDEX&quot; | grep &apos;^MM &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="add">+  elif $(echo &quot;$INDEX&quot; | grep &apos;^ T &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  if $(echo &quot;$INDEX&quot; | grep &apos;^R  &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_RENAMED$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  if $(echo &quot;$INDEX&quot; | grep &apos;^ D &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DELETED$STATUS&quot;
+</span><span class="add">+  elif $(echo &quot;$INDEX&quot; | grep &apos;^D  &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DELETED$STATUS&quot;
+</span><span class="add">+  elif $(echo &quot;$INDEX&quot; | grep &apos;^AD &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DELETED$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  if $(command git rev-parse --verify refs/stash &gt;/dev/null 2&gt;&amp;1); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_STASHED$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  if $(echo &quot;$INDEX&quot; | grep &apos;^UU &apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_UNMERGED$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  if $(echo &quot;$INDEX&quot; | grep &apos;^## [^ ]\+ .*ahead&apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  if $(echo &quot;$INDEX&quot; | grep &apos;^## [^ ]\+ .*behind&apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_BEHIND$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  if $(echo &quot;$INDEX&quot; | grep &apos;^## [^ ]\+ .*diverged&apos; &amp;&gt; /dev/null); then
+</span><span class="add">+    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DIVERGED$STATUS&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  echo $STATUS
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Compares the provided version of git to the version installed and on path
+</span><span class="add">+# Outputs -1, 0, or 1 if the installed version is less than, equal to, or
+</span><span class="add">+# greater than the input version, respectively.
+</span><span class="add">+function git_compare_version() {
+</span><span class="add">+  local INPUT_GIT_VERSION INSTALLED_GIT_VERSION i
+</span><span class="add">+  INPUT_GIT_VERSION=(${(s/./)1})
+</span><span class="add">+  INSTALLED_GIT_VERSION=($(command git --version 2&gt;/dev/null))
+</span><span class="add">+  INSTALLED_GIT_VERSION=(${(s/./)INSTALLED_GIT_VERSION[3]})
+</span><span class="add">+
+</span><span class="add">+  for i in {1..3}; do
+</span><span class="add">+    if [[ $INSTALLED_GIT_VERSION[$i] -gt $INPUT_GIT_VERSION[$i] ]]; then
+</span><span class="add">+      echo 1
+</span><span class="add">+      return 0
+</span><span class="add">+    fi
+</span><span class="add">+    if [[ $INSTALLED_GIT_VERSION[$i] -lt $INPUT_GIT_VERSION[$i] ]]; then
+</span><span class="add">+      echo -1
+</span><span class="add">+      return 0
+</span><span class="add">+    fi
+</span><span class="add">+  done
+</span><span class="add">+  echo 0
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Outputs the name of the current user
+</span><span class="add">+# Usage example: $(git_current_user_name)
+</span><span class="add">+function git_current_user_name() {
+</span><span class="add">+  command git config user.name 2&gt;/dev/null
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Outputs the email of the current user
+</span><span class="add">+# Usage example: $(git_current_user_email)
+</span><span class="add">+function git_current_user_email() {
+</span><span class="add">+  command git config user.email 2&gt;/dev/null
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# This is unlikely to change so make it all statically assigned
+</span><span class="add">+POST_1_7_2_GIT=$(git_compare_version &quot;1.7.2&quot;)
+</span><span class="add">+# Clean up the namespace slightly by removing the checker function
+</span><span class="add">+unfunction git_compare_version
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>oh-my-zsh/completion.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,84 @@
+<span class="add">+# Load all stock functions (from $fpath files) called below.
+</span><span class="add">+autoload -U compaudit compinit
+</span><span class="add">+
+</span><span class="add">+if [[ $ZSH_DISABLE_COMPFIX != true ]]; then
+</span><span class="add">+  # If completion insecurities exist, warn the user
+</span><span class="add">+  if ! compaudit &amp;&gt;/dev/null; then
+</span><span class="add">+    handle_completion_insecurities
+</span><span class="add">+  fi
+</span><span class="add">+  # Load only from secure directories
+</span><span class="add">+  compinit -i -d &quot;${ZSH_COMPDUMP}&quot;
+</span><span class="add">+else
+</span><span class="add">+  # If the user wants it, load from all found directories
+</span><span class="add">+  compinit -u -d &quot;${ZSH_COMPDUMP}&quot;
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+# fixme - the load process here seems a bit bizarre
+</span><span class="add">+zmodload -i zsh/complist
+</span><span class="add">+
+</span><span class="add">+WORDCHARS=&apos;&apos;
+</span><span class="add">+
+</span><span class="add">+unsetopt menu_complete   # do not autoselect the first completion entry
+</span><span class="add">+unsetopt flowcontrol
+</span><span class="add">+setopt auto_menu         # show completion menu on successive tab press
+</span><span class="add">+setopt complete_in_word
+</span><span class="add">+setopt always_to_end
+</span><span class="add">+
+</span><span class="add">+# should this be in keybindings?
+</span><span class="add">+bindkey -M menuselect &apos;^o&apos; accept-and-infer-next-history
+</span><span class="add">+zstyle &apos;:completion:*:*:*:*:*&apos; menu select
+</span><span class="add">+
+</span><span class="add">+# case insensitive (all), partial-word and substring completion
+</span><span class="add">+if [[ &quot;$CASE_SENSITIVE&quot; = true ]]; then
+</span><span class="add">+  zstyle &apos;:completion:*&apos; matcher-list &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+</span><span class="add">+else
+</span><span class="add">+  if [[ &quot;$HYPHEN_INSENSITIVE&quot; = true ]]; then
+</span><span class="add">+    zstyle &apos;:completion:*&apos; matcher-list &apos;m:{a-zA-Z-_}={A-Za-z_-}&apos; &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+</span><span class="add">+  else
+</span><span class="add">+    zstyle &apos;:completion:*&apos; matcher-list &apos;m:{a-zA-Z}={A-Za-z}&apos; &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+</span><span class="add">+  fi
+</span><span class="add">+fi
+</span><span class="add">+unset CASE_SENSITIVE HYPHEN_INSENSITIVE
+</span><span class="add">+
+</span><span class="add">+# Complete . and .. special directories
+</span><span class="add">+zstyle &apos;:completion:*&apos; special-dirs true
+</span><span class="add">+
+</span><span class="add">+zstyle &apos;:completion:*&apos; list-colors &apos;&apos;
+</span><span class="add">+zstyle &apos;:completion:*:*:kill:*:processes&apos; list-colors &apos;=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01&apos;
+</span><span class="add">+
+</span><span class="add">+zstyle &apos;:completion:*:*:*:*:processes&apos; command &quot;ps -u $USER -o pid,user,comm -w -w&quot;
+</span><span class="add">+
+</span><span class="add">+# disable named-directories autocompletion
+</span><span class="add">+zstyle &apos;:completion:*:cd:*&apos; tag-order local-directories directory-stack path-directories
+</span><span class="add">+
+</span><span class="add">+# Use caching so that commands like apt and dpkg complete are useable
+</span><span class="add">+zstyle &apos;:completion::complete:*&apos; use-cache 1
+</span><span class="add">+zstyle &apos;:completion::complete:*&apos; cache-path $ZSH_CACHE_DIR
+</span><span class="add">+
+</span><span class="add">+# Don&apos;t complete uninteresting users
+</span><span class="add">+zstyle &apos;:completion:*:*:*:users&apos; ignored-patterns \
+</span><span class="add">+        adm amanda apache at avahi avahi-autoipd beaglidx bin cacti canna \
+</span><span class="add">+        clamav daemon dbus distcache dnsmasq dovecot fax ftp games gdm \
+</span><span class="add">+        gkrellmd gopher hacluster haldaemon halt hsqldb ident junkbust kdm \
+</span><span class="add">+        ldap lp mail mailman mailnull man messagebus  mldonkey mysql nagios \
+</span><span class="add">+        named netdump news nfsnobody nobody nscd ntp nut nx obsrun openvpn \
+</span><span class="add">+        operator pcap polkitd postfix postgres privoxy pulse pvm quagga radvd \
+</span><span class="add">+        rpc rpcuser rpm rtkit scard shutdown squid sshd statd svn sync tftp \
+</span><span class="add">+        usbmux uucp vcsa wwwrun xfs &apos;_*&apos;
+</span><span class="add">+
+</span><span class="add">+# ... unless we really want to.
+</span><span class="add">+zstyle &apos;*&apos; single-ignored show
+</span><span class="add">+
+</span><span class="add">+if [[ $COMPLETION_WAITING_DOTS = true ]]; then
+</span><span class="add">+  expand-or-complete-with-dots() {
+</span><span class="add">+    # toggle line-wrapping off and back on again
+</span><span class="add">+    [[ -n &quot;$terminfo[rmam]&quot; &amp;&amp; -n &quot;$terminfo[smam]&quot; ]] &amp;&amp; echoti rmam
+</span><span class="add">+    print -Pn &quot;%{%F{red}......%f%}&quot;
+</span><span class="add">+    [[ -n &quot;$terminfo[rmam]&quot; &amp;&amp; -n &quot;$terminfo[smam]&quot; ]] &amp;&amp; echoti smam
+</span><span class="add">+
+</span><span class="add">+    zle expand-or-complete
+</span><span class="add">+    zle redisplay
+</span><span class="add">+  }
+</span><span class="add">+  zle -N expand-or-complete-with-dots
+</span><span class="add">+  bindkey &quot;^I&quot; expand-or-complete-with-dots
+</span><span class="add">+fi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>oh-my-zsh/compfix.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,44 @@
+<span class="add">+# Handle completions insecurities (i.e., completion-dependent directories with
+</span><span class="add">+# insecure ownership or permissions) by:
+</span><span class="add">+#
+</span><span class="add">+# * Human-readably notifying the user of these insecurities.
+</span><span class="add">+function handle_completion_insecurities() {
+</span><span class="add">+  # List of the absolute paths of all unique insecure directories, split on
+</span><span class="add">+  # newline from compaudit()&apos;s output resembling:
+</span><span class="add">+  #
+</span><span class="add">+  #     There are insecure directories:
+</span><span class="add">+  #     /usr/share/zsh/site-functions
+</span><span class="add">+  #     /usr/share/zsh/5.0.6/functions
+</span><span class="add">+  #     /usr/share/zsh
+</span><span class="add">+  #     /usr/share/zsh/5.0.6
+</span><span class="add">+  #
+</span><span class="add">+  # Since the ignorable first line is printed to stderr and thus not captured,
+</span><span class="add">+  # stderr is squelched to prevent this output from leaking to the user. 
+</span><span class="add">+  local -aU insecure_dirs
+</span><span class="add">+  insecure_dirs=( ${(f@):-&quot;$(compaudit 2&gt;/dev/null)&quot;} )
+</span><span class="add">+
+</span><span class="add">+  # If no such directories exist, get us out of here.
+</span><span class="add">+  (( ! ${#insecure_dirs} )) &amp;&amp; return
+</span><span class="add">+
+</span><span class="add">+  # List ownership and permissions of all insecure directories.
+</span><span class="add">+  print &quot;[oh-my-zsh] Insecure completion-dependent directories detected:&quot;
+</span><span class="add">+  ls -ld &quot;${(@)insecure_dirs}&quot;
+</span><span class="add">+
+</span><span class="add">+  cat &lt;&lt;EOD
+</span><span class="add">+
+</span><span class="add">+[oh-my-zsh] For safety, we will not load completions from these directories until
+</span><span class="add">+[oh-my-zsh] you fix their permissions and ownership and restart zsh.
+</span><span class="add">+[oh-my-zsh] See the above list for directories with group or other writability.
+</span><span class="add">+
+</span><span class="add">+[oh-my-zsh] To fix your permissions you can do so by disabling
+</span><span class="add">+[oh-my-zsh] the write permission of &quot;group&quot; and &quot;others&quot; and making sure that the
+</span><span class="add">+[oh-my-zsh] owner of these directories is either root or your current user.
+</span><span class="add">+[oh-my-zsh] The following command may help:
+</span><span class="add">+[oh-my-zsh]     compaudit | xargs chmod g-w,o-w
+</span><span class="add">+
+</span><span class="add">+[oh-my-zsh] If the above didn&apos;t help or you want to skip the verification of
+</span><span class="add">+[oh-my-zsh] insecure directories you can set the variable ZSH_DISABLE_COMPFIX to
+</span><span class="add">+[oh-my-zsh] &quot;true&quot; before oh-my-zsh is sourced in your zshrc file.
+</span><span class="add">+
+</span><span class="add">+EOD
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>git.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,221 +0,0 @@
+<span class="sub">-# Outputs current branch info in prompt format
+</span><span class="sub">-function git_prompt_info() {
+</span><span class="sub">-  local ref
+</span><span class="sub">-  if [[ &quot;$(command git config --get oh-my-zsh.hide-status 2&gt;/dev/null)&quot; != &quot;1&quot; ]]; then
+</span><span class="sub">-    ref=$(command git symbolic-ref HEAD 2&gt; /dev/null) || \
+</span><span class="sub">-    ref=$(command git rev-parse --short HEAD 2&gt; /dev/null) || return 0
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_SUFFIX&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Checks if working tree is dirty
+</span><span class="sub">-function parse_git_dirty() {
+</span><span class="sub">-  local STATUS=&apos;&apos;
+</span><span class="sub">-  local -a FLAGS
+</span><span class="sub">-  FLAGS=(&apos;--porcelain&apos;)
+</span><span class="sub">-  if [[ &quot;$(command git config --get oh-my-zsh.hide-dirty)&quot; != &quot;1&quot; ]]; then
+</span><span class="sub">-    if [[ $POST_1_7_2_GIT -gt 0 ]]; then
+</span><span class="sub">-      FLAGS+=&apos;--ignore-submodules=dirty&apos;
+</span><span class="sub">-    fi
+</span><span class="sub">-    if [[ &quot;$DISABLE_UNTRACKED_FILES_DIRTY&quot; == &quot;true&quot; ]]; then
+</span><span class="sub">-      FLAGS+=&apos;--untracked-files=no&apos;
+</span><span class="sub">-    fi
+</span><span class="sub">-    STATUS=$(command git status ${FLAGS} 2&gt; /dev/null | tail -n1)
+</span><span class="sub">-  fi
+</span><span class="sub">-  if [[ -n $STATUS ]]; then
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_DIRTY&quot;
+</span><span class="sub">-  else
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_CLEAN&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Gets the difference between the local and remote branches
+</span><span class="sub">-function git_remote_status() {
+</span><span class="sub">-    local remote ahead behind git_remote_status git_remote_status_detailed
+</span><span class="sub">-    remote=${$(command git rev-parse --verify ${hook_com[branch]}@{upstream} --symbolic-full-name 2&gt;/dev/null)/refs\/remotes\/}
+</span><span class="sub">-    if [[ -n ${remote} ]]; then
+</span><span class="sub">-        ahead=$(command git rev-list ${hook_com[branch]}@{upstream}..HEAD 2&gt;/dev/null | wc -l)
+</span><span class="sub">-        behind=$(command git rev-list HEAD..${hook_com[branch]}@{upstream} 2&gt;/dev/null | wc -l)
+</span><span class="sub">-
+</span><span class="sub">-        if [[ $ahead -eq 0 ]] &amp;&amp; [[ $behind -eq 0 ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_EQUAL_REMOTE&quot;
+</span><span class="sub">-        elif [[ $ahead -gt 0 ]] &amp;&amp; [[ $behind -eq 0 ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE&quot;
+</span><span class="sub">-            git_remote_status_detailed=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE$((ahead))%{$reset_color%}&quot;
+</span><span class="sub">-        elif [[ $behind -gt 0 ]] &amp;&amp; [[ $ahead -eq 0 ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE&quot;
+</span><span class="sub">-            git_remote_status_detailed=&quot;$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE$((behind))%{$reset_color%}&quot;
+</span><span class="sub">-        elif [[ $ahead -gt 0 ]] &amp;&amp; [[ $behind -gt 0 ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_DIVERGED_REMOTE&quot;
+</span><span class="sub">-            git_remote_status_detailed=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_AHEAD_REMOTE$((ahead))%{$reset_color%}$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE_COLOR$ZSH_THEME_GIT_PROMPT_BEHIND_REMOTE$((behind))%{$reset_color%}&quot;
+</span><span class="sub">-        fi
+</span><span class="sub">-
+</span><span class="sub">-        if [[ -n $ZSH_THEME_GIT_PROMPT_REMOTE_STATUS_DETAILED ]]; then
+</span><span class="sub">-            git_remote_status=&quot;$ZSH_THEME_GIT_PROMPT_REMOTE_STATUS_PREFIX$remote$git_remote_status_detailed$ZSH_THEME_GIT_PROMPT_REMOTE_STATUS_SUFFIX&quot;
+</span><span class="sub">-        fi
+</span><span class="sub">-
+</span><span class="sub">-        echo $git_remote_status
+</span><span class="sub">-    fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs the name of the current branch
+</span><span class="sub">-# Usage example: git pull origin $(git_current_branch)
+</span><span class="sub">-# Using &apos;--quiet&apos; with &apos;symbolic-ref&apos; will not cause a fatal error (128) if
+</span><span class="sub">-# it&apos;s not a symbolic ref, but in a Git repo.
+</span><span class="sub">-function git_current_branch() {
+</span><span class="sub">-  local ref
+</span><span class="sub">-  ref=$(command git symbolic-ref --quiet HEAD 2&gt; /dev/null)
+</span><span class="sub">-  local ret=$?
+</span><span class="sub">-  if [[ $ret != 0 ]]; then
+</span><span class="sub">-    [[ $ret == 128 ]] &amp;&amp; return  # no git repo.
+</span><span class="sub">-    ref=$(command git rev-parse --short HEAD 2&gt; /dev/null) || return
+</span><span class="sub">-  fi
+</span><span class="sub">-  echo ${ref#refs/heads/}
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-# Gets the number of commits ahead from remote
+</span><span class="sub">-function git_commits_ahead() {
+</span><span class="sub">-  if command git rev-parse --git-dir &amp;&gt;/dev/null; then
+</span><span class="sub">-    local commits=&quot;$(git rev-list --count @{upstream}..HEAD 2&gt;/dev/null)&quot;
+</span><span class="sub">-    if [[ -n &quot;$commits&quot; &amp;&amp; &quot;$commits&quot; != 0 ]]; then
+</span><span class="sub">-      echo &quot;$ZSH_THEME_GIT_COMMITS_AHEAD_PREFIX$commits$ZSH_THEME_GIT_COMMITS_AHEAD_SUFFIX&quot;
+</span><span class="sub">-    fi
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Gets the number of commits behind remote
+</span><span class="sub">-function git_commits_behind() {
+</span><span class="sub">-  if command git rev-parse --git-dir &amp;&gt;/dev/null; then
+</span><span class="sub">-    local commits=&quot;$(git rev-list --count HEAD..@{upstream} 2&gt;/dev/null)&quot;
+</span><span class="sub">-    if [[ -n &quot;$commits&quot; &amp;&amp; &quot;$commits&quot; != 0 ]]; then
+</span><span class="sub">-      echo &quot;$ZSH_THEME_GIT_COMMITS_BEHIND_PREFIX$commits$ZSH_THEME_GIT_COMMITS_BEHIND_SUFFIX&quot;
+</span><span class="sub">-    fi
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs if current branch is ahead of remote
+</span><span class="sub">-function git_prompt_ahead() {
+</span><span class="sub">-  if [[ -n &quot;$(command git rev-list origin/$(git_current_branch)..HEAD 2&gt; /dev/null)&quot; ]]; then
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_AHEAD&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs if current branch is behind remote
+</span><span class="sub">-function git_prompt_behind() {
+</span><span class="sub">-  if [[ -n &quot;$(command git rev-list HEAD..origin/$(git_current_branch) 2&gt; /dev/null)&quot; ]]; then
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_BEHIND&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs if current branch exists on remote or not
+</span><span class="sub">-function git_prompt_remote() {
+</span><span class="sub">-  if [[ -n &quot;$(command git show-ref origin/$(git_current_branch) 2&gt; /dev/null)&quot; ]]; then
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_REMOTE_EXISTS&quot;
+</span><span class="sub">-  else
+</span><span class="sub">-    echo &quot;$ZSH_THEME_GIT_PROMPT_REMOTE_MISSING&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Formats prompt string for current git commit short SHA
+</span><span class="sub">-function git_prompt_short_sha() {
+</span><span class="sub">-  local SHA
+</span><span class="sub">-  SHA=$(command git rev-parse --short HEAD 2&gt; /dev/null) &amp;&amp; echo &quot;$ZSH_THEME_GIT_PROMPT_SHA_BEFORE$SHA$ZSH_THEME_GIT_PROMPT_SHA_AFTER&quot;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Formats prompt string for current git commit long SHA
+</span><span class="sub">-function git_prompt_long_sha() {
+</span><span class="sub">-  local SHA
+</span><span class="sub">-  SHA=$(command git rev-parse HEAD 2&gt; /dev/null) &amp;&amp; echo &quot;$ZSH_THEME_GIT_PROMPT_SHA_BEFORE$SHA$ZSH_THEME_GIT_PROMPT_SHA_AFTER&quot;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Get the status of the working tree
+</span><span class="sub">-function git_prompt_status() {
+</span><span class="sub">-  local INDEX STATUS
+</span><span class="sub">-  INDEX=$(command git status --porcelain -b 2&gt; /dev/null)
+</span><span class="sub">-  STATUS=&quot;&quot;
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | command grep -E &apos;^\?\? &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_UNTRACKED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^A  &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_ADDED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^M  &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_ADDED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^MM &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_ADDED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^ M &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^AM &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^MM &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^ T &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^R  &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_RENAMED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^ D &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DELETED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^D  &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DELETED$STATUS&quot;
+</span><span class="sub">-  elif $(echo &quot;$INDEX&quot; | grep &apos;^AD &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DELETED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(command git rev-parse --verify refs/stash &gt;/dev/null 2&gt;&amp;1); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_STASHED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^UU &apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_UNMERGED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^## [^ ]\+ .*ahead&apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_AHEAD$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^## [^ ]\+ .*behind&apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_BEHIND$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  if $(echo &quot;$INDEX&quot; | grep &apos;^## [^ ]\+ .*diverged&apos; &amp;&gt; /dev/null); then
+</span><span class="sub">-    STATUS=&quot;$ZSH_THEME_GIT_PROMPT_DIVERGED$STATUS&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  echo $STATUS
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Compares the provided version of git to the version installed and on path
+</span><span class="sub">-# Outputs -1, 0, or 1 if the installed version is less than, equal to, or
+</span><span class="sub">-# greater than the input version, respectively.
+</span><span class="sub">-function git_compare_version() {
+</span><span class="sub">-  local INPUT_GIT_VERSION INSTALLED_GIT_VERSION i
+</span><span class="sub">-  INPUT_GIT_VERSION=(${(s/./)1})
+</span><span class="sub">-  INSTALLED_GIT_VERSION=($(command git --version 2&gt;/dev/null))
+</span><span class="sub">-  INSTALLED_GIT_VERSION=(${(s/./)INSTALLED_GIT_VERSION[3]})
+</span><span class="sub">-
+</span><span class="sub">-  for i in {1..3}; do
+</span><span class="sub">-    if [[ $INSTALLED_GIT_VERSION[$i] -gt $INPUT_GIT_VERSION[$i] ]]; then
+</span><span class="sub">-      echo 1
+</span><span class="sub">-      return 0
+</span><span class="sub">-    fi
+</span><span class="sub">-    if [[ $INSTALLED_GIT_VERSION[$i] -lt $INPUT_GIT_VERSION[$i] ]]; then
+</span><span class="sub">-      echo -1
+</span><span class="sub">-      return 0
+</span><span class="sub">-    fi
+</span><span class="sub">-  done
+</span><span class="sub">-  echo 0
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs the name of the current user
+</span><span class="sub">-# Usage example: $(git_current_user_name)
+</span><span class="sub">-function git_current_user_name() {
+</span><span class="sub">-  command git config user.name 2&gt;/dev/null
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Outputs the email of the current user
+</span><span class="sub">-# Usage example: $(git_current_user_email)
+</span><span class="sub">-function git_current_user_email() {
+</span><span class="sub">-  command git config user.email 2&gt;/dev/null
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# This is unlikely to change so make it all statically assigned
+</span><span class="sub">-POST_1_7_2_GIT=$(git_compare_version &quot;1.7.2&quot;)
+</span><span class="sub">-# Clean up the namespace slightly by removing the checker function
+</span><span class="sub">-unfunction git_compare_version
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>completion.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,84 +0,0 @@
+<span class="sub">-# Load all stock functions (from $fpath files) called below.
+</span><span class="sub">-autoload -U compaudit compinit
+</span><span class="sub">-
+</span><span class="sub">-if [[ $ZSH_DISABLE_COMPFIX != true ]]; then
+</span><span class="sub">-  # If completion insecurities exist, warn the user
+</span><span class="sub">-  if ! compaudit &amp;&gt;/dev/null; then
+</span><span class="sub">-    handle_completion_insecurities
+</span><span class="sub">-  fi
+</span><span class="sub">-  # Load only from secure directories
+</span><span class="sub">-  compinit -i -d &quot;${ZSH_COMPDUMP}&quot;
+</span><span class="sub">-else
+</span><span class="sub">-  # If the user wants it, load from all found directories
+</span><span class="sub">-  compinit -u -d &quot;${ZSH_COMPDUMP}&quot;
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-# fixme - the load process here seems a bit bizarre
+</span><span class="sub">-zmodload -i zsh/complist
+</span><span class="sub">-
+</span><span class="sub">-WORDCHARS=&apos;&apos;
+</span><span class="sub">-
+</span><span class="sub">-unsetopt menu_complete   # do not autoselect the first completion entry
+</span><span class="sub">-unsetopt flowcontrol
+</span><span class="sub">-setopt auto_menu         # show completion menu on successive tab press
+</span><span class="sub">-setopt complete_in_word
+</span><span class="sub">-setopt always_to_end
+</span><span class="sub">-
+</span><span class="sub">-# should this be in keybindings?
+</span><span class="sub">-bindkey -M menuselect &apos;^o&apos; accept-and-infer-next-history
+</span><span class="sub">-zstyle &apos;:completion:*:*:*:*:*&apos; menu select
+</span><span class="sub">-
+</span><span class="sub">-# case insensitive (all), partial-word and substring completion
+</span><span class="sub">-if [[ &quot;$CASE_SENSITIVE&quot; = true ]]; then
+</span><span class="sub">-  zstyle &apos;:completion:*&apos; matcher-list &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+</span><span class="sub">-else
+</span><span class="sub">-  if [[ &quot;$HYPHEN_INSENSITIVE&quot; = true ]]; then
+</span><span class="sub">-    zstyle &apos;:completion:*&apos; matcher-list &apos;m:{a-zA-Z-_}={A-Za-z_-}&apos; &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+</span><span class="sub">-  else
+</span><span class="sub">-    zstyle &apos;:completion:*&apos; matcher-list &apos;m:{a-zA-Z}={A-Za-z}&apos; &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+</span><span class="sub">-  fi
+</span><span class="sub">-fi
+</span><span class="sub">-unset CASE_SENSITIVE HYPHEN_INSENSITIVE
+</span><span class="sub">-
+</span><span class="sub">-# Complete . and .. special directories
+</span><span class="sub">-zstyle &apos;:completion:*&apos; special-dirs true
+</span><span class="sub">-
+</span><span class="sub">-zstyle &apos;:completion:*&apos; list-colors &apos;&apos;
+</span><span class="sub">-zstyle &apos;:completion:*:*:kill:*:processes&apos; list-colors &apos;=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01&apos;
+</span><span class="sub">-
+</span><span class="sub">-zstyle &apos;:completion:*:*:*:*:processes&apos; command &quot;ps -u $USER -o pid,user,comm -w -w&quot;
+</span><span class="sub">-
+</span><span class="sub">-# disable named-directories autocompletion
+</span><span class="sub">-zstyle &apos;:completion:*:cd:*&apos; tag-order local-directories directory-stack path-directories
+</span><span class="sub">-
+</span><span class="sub">-# Use caching so that commands like apt and dpkg complete are useable
+</span><span class="sub">-zstyle &apos;:completion::complete:*&apos; use-cache 1
+</span><span class="sub">-zstyle &apos;:completion::complete:*&apos; cache-path $ZSH_CACHE_DIR
+</span><span class="sub">-
+</span><span class="sub">-# Don&apos;t complete uninteresting users
+</span><span class="sub">-zstyle &apos;:completion:*:*:*:users&apos; ignored-patterns \
+</span><span class="sub">-        adm amanda apache at avahi avahi-autoipd beaglidx bin cacti canna \
+</span><span class="sub">-        clamav daemon dbus distcache dnsmasq dovecot fax ftp games gdm \
+</span><span class="sub">-        gkrellmd gopher hacluster haldaemon halt hsqldb ident junkbust kdm \
+</span><span class="sub">-        ldap lp mail mailman mailnull man messagebus  mldonkey mysql nagios \
+</span><span class="sub">-        named netdump news nfsnobody nobody nscd ntp nut nx obsrun openvpn \
+</span><span class="sub">-        operator pcap polkitd postfix postgres privoxy pulse pvm quagga radvd \
+</span><span class="sub">-        rpc rpcuser rpm rtkit scard shutdown squid sshd statd svn sync tftp \
+</span><span class="sub">-        usbmux uucp vcsa wwwrun xfs &apos;_*&apos;
+</span><span class="sub">-
+</span><span class="sub">-# ... unless we really want to.
+</span><span class="sub">-zstyle &apos;*&apos; single-ignored show
+</span><span class="sub">-
+</span><span class="sub">-if [[ $COMPLETION_WAITING_DOTS = true ]]; then
+</span><span class="sub">-  expand-or-complete-with-dots() {
+</span><span class="sub">-    # toggle line-wrapping off and back on again
+</span><span class="sub">-    [[ -n &quot;$terminfo[rmam]&quot; &amp;&amp; -n &quot;$terminfo[smam]&quot; ]] &amp;&amp; echoti rmam
+</span><span class="sub">-    print -Pn &quot;%{%F{red}......%f%}&quot;
+</span><span class="sub">-    [[ -n &quot;$terminfo[rmam]&quot; &amp;&amp; -n &quot;$terminfo[smam]&quot; ]] &amp;&amp; echoti smam
+</span><span class="sub">-
+</span><span class="sub">-    zle expand-or-complete
+</span><span class="sub">-    zle redisplay
+</span><span class="sub">-  }
+</span><span class="sub">-  zle -N expand-or-complete-with-dots
+</span><span class="sub">-  bindkey &quot;^I&quot; expand-or-complete-with-dots
+</span><span class="sub">-fi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>compfix.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,44 +0,0 @@
+<span class="sub">-# Handle completions insecurities (i.e., completion-dependent directories with
+</span><span class="sub">-# insecure ownership or permissions) by:
+</span><span class="sub">-#
+</span><span class="sub">-# * Human-readably notifying the user of these insecurities.
+</span><span class="sub">-function handle_completion_insecurities() {
+</span><span class="sub">-  # List of the absolute paths of all unique insecure directories, split on
+</span><span class="sub">-  # newline from compaudit()&apos;s output resembling:
+</span><span class="sub">-  #
+</span><span class="sub">-  #     There are insecure directories:
+</span><span class="sub">-  #     /usr/share/zsh/site-functions
+</span><span class="sub">-  #     /usr/share/zsh/5.0.6/functions
+</span><span class="sub">-  #     /usr/share/zsh
+</span><span class="sub">-  #     /usr/share/zsh/5.0.6
+</span><span class="sub">-  #
+</span><span class="sub">-  # Since the ignorable first line is printed to stderr and thus not captured,
+</span><span class="sub">-  # stderr is squelched to prevent this output from leaking to the user. 
+</span><span class="sub">-  local -aU insecure_dirs
+</span><span class="sub">-  insecure_dirs=( ${(f@):-&quot;$(compaudit 2&gt;/dev/null)&quot;} )
+</span><span class="sub">-
+</span><span class="sub">-  # If no such directories exist, get us out of here.
+</span><span class="sub">-  (( ! ${#insecure_dirs} )) &amp;&amp; return
+</span><span class="sub">-
+</span><span class="sub">-  # List ownership and permissions of all insecure directories.
+</span><span class="sub">-  print &quot;[oh-my-zsh] Insecure completion-dependent directories detected:&quot;
+</span><span class="sub">-  ls -ld &quot;${(@)insecure_dirs}&quot;
+</span><span class="sub">-
+</span><span class="sub">-  cat &lt;&lt;EOD
+</span><span class="sub">-
+</span><span class="sub">-[oh-my-zsh] For safety, we will not load completions from these directories until
+</span><span class="sub">-[oh-my-zsh] you fix their permissions and ownership and restart zsh.
+</span><span class="sub">-[oh-my-zsh] See the above list for directories with group or other writability.
+</span><span class="sub">-
+</span><span class="sub">-[oh-my-zsh] To fix your permissions you can do so by disabling
+</span><span class="sub">-[oh-my-zsh] the write permission of &quot;group&quot; and &quot;others&quot; and making sure that the
+</span><span class="sub">-[oh-my-zsh] owner of these directories is either root or your current user.
+</span><span class="sub">-[oh-my-zsh] The following command may help:
+</span><span class="sub">-[oh-my-zsh]     compaudit | xargs chmod g-w,o-w
+</span><span class="sub">-
+</span><span class="sub">-[oh-my-zsh] If the above didn&apos;t help or you want to skip the verification of
+</span><span class="sub">-[oh-my-zsh] insecure directories you can set the variable ZSH_DISABLE_COMPFIX to
+</span><span class="sub">-[oh-my-zsh] &quot;true&quot; before oh-my-zsh is sourced in your zshrc file.
+</span><span class="sub">-
+</span><span class="sub">-EOD
+</span><span class="sub">-}
+</span></pre>
+</div></div>
+  </body>
+</html>

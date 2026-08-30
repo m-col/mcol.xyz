@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tide - made TmuxSendLines non-script function so it can be used externally</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/tide">tide</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/tide">https://github.com/m-col/tide</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/tide/tree.html">Files</a> | <a href="https://mcol.xyz/code/tide/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/tide/file/README.md.html">Readme</a>     | <a href="https://mcol.xyz/code/tide/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/tide/commit/59e8ac5703db9b202e46d5b74d81a1762941daa0.html">59e8ac5703db9b202e46d5b74d81a1762941daa0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/tide/commit/a58ca6103f78680cabc55e034eacb3bb386d3ea4.html">a58ca6103f78680cabc55e034eacb3bb386d3ea4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-15 23:59:04 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-15 23:59:04 +0000
+
+made TmuxSendLines non-script function so it can be used externally
+</pre><div class="diff">
+  <p>
+    <b>plugin/tide.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,10 +18,12 @@
+<span class="def">     let l:keys = substitute(a:keys, &apos;^[\ ]*&apos;, &apos;&apos;, &apos;g&apos;) &quot;strip leading whitespace
+</span><span class="def">     let l:keys = substitute(l:keys, &apos;	&apos;, &apos;    &apos;, &apos;g&apos;) &quot;make tabs spaces
+</span><span class="def">     let l:keys = substitute(l:keys, &quot;;$&quot;, &apos;; &apos;, &apos;g&apos;) &quot;preserve trailing semicolons
+</span><span class="sub">-    let l:keys = substitute(l:keys, &apos;\&apos;, &apos;\\\\&apos;, &apos;g&apos;) &quot;escape backslashes
+</span><span class="sub">-    let l:keys = substitute(l:keys, &apos;\&quot;&apos;, &apos;\\\&quot;&apos;, &apos;g&apos;) &quot;escape double quotes
+</span><span class="sub">-    let l:keys = substitute(l:keys, &apos;!&apos;, &apos;\!&apos;, &apos;g&apos;) &quot;escape esclamation mark
+</span><span class="sub">-    let l:keys = substitute(l:keys, &apos;\$&apos;, &apos;\\\$&apos;, &apos;g&apos;) &quot;escape dollar sign
+</span><span class="add">+    let l:keys = escape(l:keys, &apos;\&quot;$&apos;)
+</span><span class="add">+    &quot;let l:keys = substitute(l:keys, &apos;\&apos;, &apos;\\\\&apos;, &apos;g&apos;) &quot;escape backslashes
+</span><span class="add">+    &quot;let l:keys = substitute(l:keys, &apos;\&quot;&apos;, &apos;\\\&quot;&apos;, &apos;g&apos;) &quot;escape double quotes
+</span><span class="add">+    &quot;let l:keys = substitute(l:keys, &apos;!&apos;, &apos;\!&apos;, &apos;g&apos;) &quot;escape esclamation mark
+</span><span class="add">+    &quot;let l:keys = escape(l:keys, &apos;!&apos;)
+</span><span class="add">+    &quot;let l:keys = substitute(l:keys, &apos;\$&apos;, &apos;\\\$&apos;, &apos;g&apos;) &quot;escape dollar sign
+</span><span class="def">     call system(g:tmux_cmd . &quot;-l \&quot;&quot; . l:keys . &quot;\&quot;&quot;)
+</span><span class="def"> endfunction
+</span><span class="def"> function! s:TmuxSendEnter()
+</span>@@ -33,7 +35,7 @@
+<span class="def"> endfunction
+</span><span class="def"> 
+</span><span class="def"> &quot; send region between two lines
+</span><span class="sub">-function! s:TmuxSendLines(top, bottom)
+</span><span class="add">+function! TmuxSendLines(top, bottom)
+</span><span class="def">     if a:top &gt; a:bottom
+</span><span class="def"> 	call TmuxSendKeys(getline(a:top))
+</span><span class="def"> 	call s:TmuxSendEnter()
+</span>@@ -64,7 +66,7 @@
+<span class="def">     if l:bottom != line(&quot;$&quot;)
+</span><span class="def"> 	let l:bottom = l:bottom - 1
+</span><span class="def">     endif
+</span><span class="sub">-    call s:TmuxSendLines(l:top, l:bottom)
+</span><span class="add">+    call TmuxSendLines(l:top, l:bottom)
+</span><span class="def"> endfunction
+</span><span class="def"> 
+</span><span class="def"> &quot; send current section delimited by double comments
+</span>@@ -89,7 +91,7 @@
+<span class="def">     if s:top == 0
+</span><span class="def"> 	let s:top = 1
+</span><span class="def">     endif
+</span><span class="sub">-    call s:TmuxSendLines(s:top, s:bottom)
+</span><span class="add">+    call TmuxSendLines(s:top, s:bottom)
+</span><span class="def"> endfunction
+</span><span class="def"> 
+</span><span class="def"> &quot; send visual selection
+</span>@@ -114,7 +116,7 @@
+<span class="def"> command! -nargs=0 -complete=command TmuxSendLine call TmuxSendKeys(getline(&quot;.&quot;)) | call s:TmuxSendEnter()
+</span><span class="def"> command! -nargs=0 -complete=command TmuxSendParagraph call s:TmuxSendParagraph()
+</span><span class="def"> command! -nargs=0 -complete=command TmuxSendSection call s:TmuxSendSection()
+</span><span class="sub">-command! -nargs=0 -complete=command -range TmuxSendLines call s:TmuxSendLines(&lt;line1&gt;, &lt;line2&gt;)
+</span><span class="add">+command! -nargs=0 -complete=command -range TmuxSendLines call TmuxSendLines(&lt;line1&gt;, &lt;line2&gt;)
+</span><span class="def"> 
+</span><span class="def"> silent! xnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendVisual :&lt;C-u&gt;TmuxSendVisual&lt;CR&gt;
+</span><span class="def"> silent! nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendParagraph :TmuxSendParagraph&lt;CR&gt;
+</span>@@ -130,17 +132,3 @@
+<span class="def">     silent! nmap &lt;unique&gt; &lt;silent&gt; &lt;F7&gt; &lt;Plug&gt;TmuxSendWord
+</span><span class="def">     silent! nmap &lt;unique&gt; &lt;silent&gt; &lt;F4&gt; &lt;Plug&gt;TmuxSendSection
+</span><span class="def"> endif
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot;
+</span><span class="sub">-return
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-here
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-here
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-
+</span></pre>
+</div></div>
+  </body>
+</html>

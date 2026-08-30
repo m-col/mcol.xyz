@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Add more styles to example style.css</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/9a226015aef13362d5bfa0977f04af6467f13909.html">9a226015aef13362d5bfa0977f04af6467f13909</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/f4f8927474e0be15d87cda2e022e6b6036a3fdc3.html">f4f8927474e0be15d87cda2e022e6b6036a3fdc3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-03 00:05:37 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-03 00:07:49 +0000
+
+Add more styles to example style.css
+</pre><div class="diff">
+  <p>
+    <b>style.css</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +1,36 @@
+<span class="add">+/* Styling for xanada desktop metaphor
+</span><span class="add">+ *
+</span><span class="add">+ * GUI elements can be styled using GTK&apos;s CSS. The core widget inside the window
+</span><span class="add">+ * is an icon view, and everything else is a child of that. For options, see:
+</span><span class="add">+ * https://developer-old.gnome.org/gtk3/stable/chap-css-properties.html
+</span><span class="add">+ */
+</span><span class="add">+
+</span><span class="add">+/* Make the main window background transparent */
+</span><span class="def"> window,iconview {
+</span><span class="def">     background-color: transparent;
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+/* Style the selected icon */
+</span><span class="add">+.view:selected {
+</span><span class="add">+    background-color: #15539e;
+</span><span class="add">+    border-radius: 3px;
+</span><span class="add">+    outline-style: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+/* Style the selection rubberband */
+</span><span class="add">+rubberband {
+</span><span class="add">+    border: 1px solid #0f3b71;
+</span><span class="add">+    background-color: rgba(15, 59, 113, 0.3);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+/* Other styling ideas */
+</span><span class="add">+/*
+</span><span class="add">+iconview {
+</span><span class="add">+    padding: 3px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.view:selected {
+</span><span class="add">+    background-color: unset;
+</span><span class="add">+    border: 1px solid #0f3b71;
+</span><span class="add">+}
+</span><span class="add">+*/
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Style.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,7 +38,7 @@
+<span class="def">     Gtk.styleContextAddProviderForScreen screen cssProvider 800
+</span><span class="def"> 
+</span><span class="def">     -- Default CSS
+</span><span class="sub">-    Gtk.cssProviderLoadFromData cssProvider &quot;* { background-color: transparent; }&quot;
+</span><span class="add">+    Gtk.cssProviderLoadFromData cssProvider &quot;window,iconview { background-color: transparent; }&quot;
+</span><span class="def"> 
+</span><span class="def">     -- Custom CSS
+</span><span class="def">     configDir &lt;- getConfigDir
+</span></pre>
+</div></div>
+  </body>
+</html>

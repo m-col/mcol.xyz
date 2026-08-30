@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/2b44747f8994a31ce86f81af29d4db8639a7a96c.html">2b44747f8994a31ce86f81af29d4db8639a7a96c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/1907ed323ebcb03f43d4925633e0b69560487042.html">1907ed323ebcb03f43d4925633e0b69560487042</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-01-15 23:07:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-01-15 23:07:36 +0000
+
+Updates
+
+- use snap window dragging
+- set background and wallpaper of second output
+- remove ununsed keybinding
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -228,7 +228,8 @@
+<span class="def">     Drag(
+</span><span class="def">         [mod],
+</span><span class="def">         &quot;Button1&quot;,
+</span><span class="sub">-        lazy.window.set_position_floating(),
+</span><span class="add">+        #lazy.window.set_position_floating(),
+</span><span class="add">+        move_snap_window(snap_dist=20),
+</span><span class="def">         start=lazy.window.get_position(),
+</span><span class="def">     ),
+</span><span class="def">     Drag(
+</span>@@ -589,9 +590,9 @@
+<span class="def">                 time,  # Right
+</span><span class="def">             ],
+</span><span class="def">             28,
+</span><span class="sub">-            background=background,
+</span><span class="add">+            background=background + &quot;00&quot;,
+</span><span class="def">         ),
+</span><span class="sub">-        wallpaper=&quot;~/pictures/Wallpapers/qtile-wallpaper.png&quot;,
+</span><span class="add">+        wallpaper=&quot;~/pictures/Wallpapers/q_triangles2.png&quot;,
+</span><span class="def">         wallpaper_mode=&quot;fill&quot;,
+</span><span class="def">         top=bar.Gap(outer_gaps),
+</span><span class="def">         left=bar.Gap(outer_gaps),
+</span>@@ -631,8 +632,3 @@
+<span class="def"> focus_on_window_activation = &quot;smart&quot;
+</span><span class="def"> keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+</span><span class="def"> groups.append(scratchpad)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-# keys.extend([
+</span><span class="sub">-#    Key([], &quot;b&quot;, lazy.spawn(&quot;rofi -show&quot;), swallow=False),
+</span><span class="sub">-# ])
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - add readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/ffa2e5dbbb09f1fe76fec040bc3aa4a07049d1bf.html">ffa2e5dbbb09f1fe76fec040bc3aa4a07049d1bf</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/aeeffb4d09488ebaa183d533f1cfce3ea1742426.html">aeeffb4d09488ebaa183d533f1cfce3ea1742426</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-29 21:14:02 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-29 21:14:02 +0100
+
+add readme
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,31 @@
+<span class="add">+mkinitcpio-welcome
+</span><span class="add">+==================
+</span><span class="add">+
+</span><span class="add">+Two hooks for mkinitcpio_ that draw out the word &quot;Welcome&quot; in big letters early
+</span><span class="add">+during the boot process. A box is drawn underneath for inputting the password
+</span><span class="add">+during the &apos;encrypt&apos; hook and printing the output of the &apos;fsck&apos; hook.
+</span><span class="add">+
+</span><span class="add">+Please email me with any issues, questions or comments @ mcol at posteo.net
+</span><span class="add">+
+</span><span class="add">+Usage
+</span><span class="add">+-----
+</span><span class="add">+
+</span><span class="add">+1. Copy the contents of `hooks` into `/etc/initcpio/hooks`
+</span><span class="add">+#. Copy the contents of `install` into `/etc/initcpio/install`
+</span><span class="add">+#. Add the `welcome` hook to `/etc/mkinitcpio.conf` before the `encrypt` hook
+</span><span class="add">+#. Add the `poscursor` hook to `/etc/mkinitcpio.conf` after the `encrypt` hook
+</span><span class="add">+   but before the `fsck` hook
+</span><span class="add">+#. Optionally configure the colours to use in `/etc/vconsole.conf`:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: sh
+</span><span class="add">+
+</span><span class="add">+   WELCOME_BG=0    # background
+</span><span class="add">+   WELCOME_FG=5    # foreground (&quot;Welcome&quot;)
+</span><span class="add">+   WELCOME_IN=6    # input box
+</span><span class="add">+
+</span><span class="add">+where the number is 0-15 corresponding to the 16 defined console colours.
+</span><span class="add">+
+</span><span class="add">+Works very well with Evan Purkhiser&apos;s `mkinitcpio-colors`_.
+</span><span class="add">+
+</span><span class="add">+.. _mkinitcpio: https://wiki.archlinux.org/index.php/mkinitcpio
+</span><span class="add">+.. _mkinitcpio-colors: https://github.com/EvanPurkhiser/mkinitcpio-colors
+</span></pre>
+</div></div>
+  </body>
+</html>

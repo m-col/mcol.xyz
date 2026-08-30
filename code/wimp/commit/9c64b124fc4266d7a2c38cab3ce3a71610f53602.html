@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - remove F1 keybinding to switch view</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/9c64b124fc4266d7a2c38cab3ce3a71610f53602.html">9c64b124fc4266d7a2c38cab3ce3a71610f53602</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/18d85ea1c7ae2a718a8aaee1efe5365c00a0d105.html">18d85ea1c7ae2a718a8aaee1efe5365c00a0d105</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-08 17:24:28 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-08 17:24:28 +0000
+
+remove F1 keybinding to switch view
+</pre><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -202,19 +202,6 @@
+<span class="def"> 	wl_display_terminate(server-&gt;display);
+</span><span class="def"> 	break;
+</span><span class="def"> 
+</span><span class="sub">-    case XKB_KEY_F1: // to next view
+</span><span class="sub">-	if (wl_list_length(&amp;server-&gt;views) &lt; 2) {
+</span><span class="sub">-	    break;
+</span><span class="sub">-	}
+</span><span class="sub">-	struct view *current_view = wl_container_of(
+</span><span class="sub">-	    server-&gt;views.next, current_view, link);
+</span><span class="sub">-	struct view *next_view = wl_container_of(
+</span><span class="sub">-	    current_view-&gt;link.next, next_view, link);
+</span><span class="sub">-	focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="sub">-	wl_list_remove(&amp;current_view-&gt;link);
+</span><span class="sub">-	wl_list_insert(server-&gt;views.prev, &amp;current_view-&gt;link);
+</span><span class="sub">-	break;
+</span><span class="sub">-
+</span><span class="def">     case XKB_KEY_Left:
+</span><span class="def"> 	prev_desk(server);
+</span><span class="def"> 	break;
+</span></pre>
+</div></div>
+  </body>
+</html>

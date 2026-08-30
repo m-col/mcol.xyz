@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - add hacky workaround for my bad monitor</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/5423cf39f3ee271725a3110479f30cb8925ef2cd.html">5423cf39f3ee271725a3110479f30cb8925ef2cd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/cd040823aa191720b57366d1f1e878f27c9e3bb3.html">cd040823aa191720b57366d1f1e878f27c9e3bb3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-09-03 03:23:47 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-09-03 03:23:47 +0100
+
+add hacky workaround for my bad monitor
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -624,6 +624,29 @@
+<span class="def">         groupboxes[0].bar.draw()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+@hook.subscribe.screen_change
+</span><span class="add">+def _(*_):
+</span><span class="add">+    # Temporary hacky fix for the dell monitor on my desk which for some mysterious
+</span><span class="add">+    # reason doesn&apos;t advertise that it supports any HD mode. Qtile does support setting
+</span><span class="add">+    # custom modes via the protocol, but neither kanshi nor wdisplays do. So instead,
+</span><span class="add">+    # I&apos;ll detect if that monitor is present and set the desired custom mode here.
+</span><span class="add">+    for output in qtile.core.outputs:
+</span><span class="add">+        wlr_output = output.wlr_output
+</span><span class="add">+        # Not only does this monitor not report modes correctly, it ALSO doesn&apos;t report
+</span><span class="add">+        # a make or model.
+</span><span class="add">+        if wlr_output.make == wlr_output.model == &quot;&lt;Unknown&gt;&quot;:
+</span><span class="add">+            if wlr_output.current_mode.width == 1024:
+</span><span class="add">+                break
+</span><span class="add">+    else:
+</span><span class="add">+        return
+</span><span class="add">+
+</span><span class="add">+    wlr_output.set_custom_mode(1920, 1080, 0)
+</span><span class="add">+    # Lastly, while cmd_reconfigure_screens will be fired right after this hook, as it
+</span><span class="add">+    # gets subscribed to this hook right after the config is loaded, the backend doesn&apos;t
+</span><span class="add">+    # get a change to actually apply the mode, so let&apos;s flush it.
+</span><span class="add">+    qtile.core.flush()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> bar_border_width = [0, 3, 0, 3]
+</span><span class="def"> bar_border_color = [&quot;000000&quot;, colours[5], &quot;000000&quot;, colours[5]]
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

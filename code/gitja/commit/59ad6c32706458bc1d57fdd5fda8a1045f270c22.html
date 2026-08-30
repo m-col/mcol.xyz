@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - remove unnecessary monomorphism</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/59ad6c32706458bc1d57fdd5fda8a1045f270c22.html">59ad6c32706458bc1d57fdd5fda8a1045f270c22</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/7789b037f5077906f66956ba66d675abc879eb13.html">7789b037f5077906f66956ba66d675abc879eb13</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-05-29 19:40:23 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-05-29 19:40:23 +0100
+
+remove unnecessary monomorphism
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -307,8 +307,8 @@
+<span class="def"> 
+</span><span class="def">     prependParent ::
+</span><span class="def">         Git.TreeFilePath -&gt;
+</span><span class="sub">-        (Git.TreeFilePath, Git.TreeEntry LgRepo) -&gt;
+</span><span class="sub">-        (Git.TreeFilePath, Git.TreeEntry LgRepo)
+</span><span class="add">+        (Git.TreeFilePath, Git.TreeEntry r) -&gt;
+</span><span class="add">+        (Git.TreeFilePath, Git.TreeEntry r)
+</span><span class="def">     prependParent &quot;&quot; pathentry = pathentry
+</span><span class="def">     prependParent parent (path, entry) = (mconcat [parent, &quot;/&quot;, path], entry)
+</span><span class="def"> 
+</span>@@ -317,12 +317,12 @@
+<span class="def">     getEntryContents (path, Git.TreeEntry oid) count = FolderContents &lt;$&gt; getTree&apos; path count oid
+</span><span class="def">     getEntryContents (_, Git.CommitEntry oid) _ = return . FileContents . B.fromString . show . untag $ oid
+</span><span class="def"> 
+</span><span class="sub">-    getEntryModes :: Git.TreeEntry LgRepo -&gt; ReaderT LgRepo IO TreeEntryMode
+</span><span class="add">+    getEntryModes :: Git.TreeEntry r -&gt; ReaderT r IO TreeEntryMode
+</span><span class="def">     getEntryModes (Git.BlobEntry _ kind) = return . blobkindToMode $ kind
+</span><span class="def">     getEntryModes (Git.TreeEntry _) = return ModeDirectory
+</span><span class="def">     getEntryModes (Git.CommitEntry _) = return ModeSubmodule
+</span><span class="def"> 
+</span><span class="sub">-    treePaths :: (Git.TreeFilePath, Git.TreeEntry LgRepo) -&gt; T.Text
+</span><span class="add">+    treePaths :: (Git.TreeFilePath, Git.TreeEntry r) -&gt; T.Text
+</span><span class="def">     treePaths = T.decodeUtf8With T.lenientDecode . fst
+</span><span class="def"> 
+</span><span class="def"> {-
+</span></pre>
+</div></div>
+  </body>
+</html>

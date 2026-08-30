@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Set second column of listview to gdk pixbufs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/b63f12726d93ee6f1a74c301ef67249719f0510c.html">b63f12726d93ee6f1a74c301ef67249719f0510c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/3ece7cc647600da5a19df05e8069f94fc054f691.html">3ece7cc647600da5a19df05e8069f94fc054f691</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-19 13:50:15 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-19 20:18:37 +0100
+
+Set second column of listview to gdk pixbufs
+</pre><div class="diff">
+  <p>
+    <b>xanadu.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,6 +19,7 @@
+<span class="def">   default-language:    Haskell2010
+</span><span class="def">   build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+</span><span class="def">                      , directory
+</span><span class="add">+                     , gi-gdkpixbuf
+</span><span class="def">                      , gi-gio
+</span><span class="def">                      , gi-gtk
+</span><span class="def">                      , haskell-gi-base
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,4 @@
+<span class="sub">-{-# LANGUAGE OverloadedStrings, OverloadedLabels #-}
+</span><span class="add">+{-# LANGUAGE OverloadedStrings, OverloadedLabels, TypeApplications #-}
+</span><span class="def"> 
+</span><span class="def"> module Main where
+</span><span class="def"> 
+</span>@@ -10,6 +10,7 @@
+<span class="def"> 
+</span><span class="def"> import Data.GI.Base
+</span><span class="def"> import qualified Data.GI.Base.GType as GType
+</span><span class="add">+import qualified GI.GdkPixbuf as Pixbuf
+</span><span class="def"> import qualified GI.Gio as Gio
+</span><span class="def"> import qualified GI.Gtk as Gtk
+</span><span class="def"> 
+</span>@@ -29,7 +30,8 @@
+<span class="def">         [ #application := app
+</span><span class="def">         , #title := &quot;xanadu&quot;
+</span><span class="def">         ]
+</span><span class="sub">-    listStore &lt;- Gtk.listStoreNew [GType.gtypeString]
+</span><span class="add">+    pixbufGType &lt;- glibType @Pixbuf.Pixbuf
+</span><span class="add">+    listStore &lt;- Gtk.listStoreNew [GType.gtypeString, pixbufGType]
+</span><span class="def">     view &lt;- new Gtk.IconView
+</span><span class="def">         [ #model := listStore
+</span><span class="def">         , #selectionMode := Gtk.SelectionModeMultiple
+</span>@@ -48,8 +50,10 @@
+<span class="def"> addItem :: Gtk.ListStore -&gt; FilePath -&gt; IO ()
+</span><span class="def"> addItem listStore path = do
+</span><span class="def">     value &lt;- Gtk.toGValue $ Just path
+</span><span class="add">+    pixbuf &lt;- Pixbuf.pixbufNewFromFile &quot;/usr/share/icons/Adwaita/32x32/mimetypes/image-x-generic.png&quot;
+</span><span class="add">+    icon &lt;- Gtk.toGValue pixbuf
+</span><span class="def">     iter &lt;- Gtk.listStoreAppend listStore
+</span><span class="sub">-    Gtk.listStoreSet listStore iter [0] [value]
+</span><span class="add">+    Gtk.listStoreSet listStore iter [0, 1] [value, icon]
+</span><span class="def"> 
+</span><span class="def"> ls :: FilePath -&gt; IO [FilePath]
+</span><span class="def"> ls = fmap (filter (\f -&gt; f /= &quot;.&quot; &amp;&amp; f /= &quot;..&quot;)) . getDirectoryContents
+</span></pre>
+</div></div>
+  </body>
+</html>

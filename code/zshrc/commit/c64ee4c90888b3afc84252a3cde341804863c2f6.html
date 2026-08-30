@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - setup submodule install</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/c64ee4c90888b3afc84252a3cde341804863c2f6.html">c64ee4c90888b3afc84252a3cde341804863c2f6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/6a9c0fe6ac25ae9038084c36e7a6fa09e4e011b1.html">6a9c0fe6ac25ae9038084c36e7a6fa09e4e011b1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 00:38:44 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 00:38:44 +0000
+
+setup submodule install
+</pre><div class="diff">
+  <p>
+    <b>install</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,4 +9,5 @@
+<span class="def"> [[ ! -d $HOME/.config ]] &amp;&amp; mkdir $HOME/.config
+</span><span class="def"> 
+</span><span class="def"> # if installation didn&apos;t include submodules they need installing
+</span><span class="sub">-
+</span><span class="add">+git --git-dir=$dir/.git submodule init
+</span><span class="add">+git --git-dir=$dir/.git submodule update
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add bind_marks option</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/6cfd652362a213169a3e2b1dcc7fb54c58b882d9.html">6cfd652362a213169a3e2b1dcc7fb54c58b882d9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/40faefb75809ef4560385c3fcdc1c48b8e0751d9.html">40faefb75809ef4560385c3fcdc1c48b8e0751d9</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 19:30:20 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 19:30:20 +0000
+
+add bind_marks option
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -54,6 +54,10 @@
+<span class="def"> # Focus when moving the pointer over a window
+</span><span class="def"> #wimptool set auto_focus on
+</span><span class="def"> 
+</span><span class="add">+# Whether to automatically bind marks to keys if the key is vacant
+</span><span class="add">+# This means instead of &quot;mod+backtick 1&quot; you can just do &quot;mod+1&quot;
+</span><span class="add">+#wimptool set bind_marks on
+</span><span class="add">+
+</span><span class="def"> # Primary modifier be one of: shift, caps, ctrl, alt, mod2, mod3, logo, mod5
+</span><span class="def"> #wimptool set mod logo
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -59,6 +59,7 @@
+<span class="def">     struct wl_list marks;
+</span><span class="def">     bool mark_waiting;
+</span><span class="def">     struct mark_indicator mark_indicator;
+</span><span class="add">+    bool bind_marks;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_xdg_decoration_manager_v1 *decoration_manager;
+</span><span class="def">     struct wl_listener decoration_listener;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -72,6 +72,7 @@
+<span class="def"> 	&quot;set snap_box 47315c66&quot;,
+</span><span class="def"> 	&quot;set mod Logo&quot;,
+</span><span class="def"> 	&quot;set vt_switching on&quot;,
+</span><span class="add">+	&quot;set bind_marks on&quot;,
+</span><span class="def"> 	&quot;bind Ctrl Escape terminate&quot;,
+</span><span class="def">     };
+</span><span class="def">     for (size_t i = 0; i &lt; sizeof(defaults) / sizeof(defaults[0]); i++) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -76,7 +76,7 @@
+<span class="def"> 	    xkb_state_key_get_syms(wlr_kb-&gt;xkb_state, keycode, &amp;syms);
+</span><span class="def"> 	    mark = wl_container_of(wimp.marks.next, mark, link);
+</span><span class="def"> 	    if (mark-&gt;key) {
+</span><span class="sub">-		actually_go_to_mark(syms[0]);
+</span><span class="add">+		actually_go_to_mark((void *)&amp;syms[0]);
+</span><span class="def"> 	    } else {
+</span><span class="def"> 		actually_set_mark(syms[0]);
+</span><span class="def"> 	    }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -240,11 +240,20 @@
+<span class="def"> 	    wimp.reverse_scrolling = true;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    // e.g.: set_modifier logo
+</span><span class="add">+    // mod &lt;modifier&gt;
+</span><span class="def">     else if (!strcasecmp(s, &quot;mod&quot;)) {
+</span><span class="def"> 	set_mod(message, response);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    // bind_marks [on|off]
+</span><span class="add">+    else if (!strcasecmp(s, &quot;bind_marks&quot;)) {
+</span><span class="add">+	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+	if (!strcasecmp(s, &quot;off&quot;))
+</span><span class="add">+	    wimp.bind_marks = false;
+</span><span class="add">+	else if (!strcasecmp(s, &quot;on&quot;))
+</span><span class="add">+	    wimp.bind_marks = true;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     // auto_focus [on|off]
+</span><span class="def">     else if (!strcasecmp(s, &quot;auto_focus&quot;)) {
+</span><span class="def"> 	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,7 +21,7 @@
+<span class="def"> void set_mark(void *data);
+</span><span class="def"> void actually_set_mark(const xkb_keysym_t sym);
+</span><span class="def"> void go_to_mark(void *data);
+</span><span class="sub">-void actually_go_to_mark(const xkb_keysym_t sym);
+</span><span class="add">+void actually_go_to_mark(void *data);
+</span><span class="def"> void toggle_fullscreen(void *data);
+</span><span class="def"> void halfimize(void *data);
+</span><span class="def"> void maximize(void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -289,6 +289,22 @@
+<span class="def"> 
+</span><span class="def">     mark = wl_container_of(wimp.marks.next, mark, link);
+</span><span class="def">     mark-&gt;key = sym;
+</span><span class="add">+
+</span><span class="add">+    if (wimp.bind_marks) {
+</span><span class="add">+	struct binding *kb, *tmp;
+</span><span class="add">+	wl_list_for_each_safe(kb, tmp, &amp;wimp.key_bindings, link) {
+</span><span class="add">+	    if (kb-&gt;key == sym &amp;&amp; kb-&gt;mods == 0) {
+</span><span class="add">+		return;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+	kb = calloc(1, sizeof(struct binding));
+</span><span class="add">+	kb-&gt;mods = 0;
+</span><span class="add">+	kb-&gt;key = sym;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(xkb_keysym_t));
+</span><span class="add">+	kb-&gt;action = &amp;actually_go_to_mark;
+</span><span class="add">+	*(xkb_keysym_t *)(kb-&gt;data) = sym;
+</span><span class="add">+	wl_list_insert(&amp;wimp.key_bindings, &amp;kb-&gt;link);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -298,7 +314,8 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void actually_go_to_mark(const xkb_keysym_t sym) {
+</span><span class="add">+void actually_go_to_mark(void *data) {
+</span><span class="add">+    const xkb_keysym_t sym = *(xkb_keysym_t *)data;
+</span><span class="def">     struct mark *mark;
+</span><span class="def"> 
+</span><span class="def">     if (sym == XKB_KEY_Escape) {
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / ubuntu-touch on the pinephone: first impressions</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2020/02/ubuntu-touch-on-the-pinephone-first-impressions.html>ubuntu-touch on the pinephone: first impressions</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>My Braveheart edition <a class="reference external" href="https://wiki.pine64.org/index.php/PinePhone">PinePhone</a> arrived a couple of days after a <em>long</em>
+journey and I've finally got some time to play with it. The first thing I
+wanted to do was test drive <a class="reference external" href="https://ubuntu-touch.io">ubuntu-touch</a>, the mobile version of Ubuntu
+maintained by the <a class="reference external" href="https://ubports.com">UBports community</a>, and I figured I'd write about my
+experiences.</p>
+<div class="section" id="interface-and-responsiveness">
+<h2>interface and responsiveness</h2>
+<p>My expectations were sensibly quite low given that it's still early days for
+the pinephone, but I've got to say, I was pleasantly surprised by how
+responsive and un-frustrating the UI is at this stage.</p>
+<p>The keyboard, which sometimes was an issue for me when I tested <a class="reference external" href="https://postmarketos.org">postmarketOS</a>,
+works 99% perfectly. There does appear to be a minor bug where keyboard sounds,
+when enabled in the settings, are only triggered on the first key press after
+the keyboard is opened. A low priority bug to be sure.</p>
+<p>The app draw - displayed when swiping in from the left of the screen - feels
+intuitive and looks great. Much more convenient access to apps than android
+has. Swiping in the from the right of the screen gives a view of all running
+apps, allow you to swipe them up to close them. These two very gesture-based
+features are smooth and responsive and don't feel clunky at all.</p>
+<img alt="ubuntu-touch on pinephone: view of running apps" class="align-center" src="/static/UT_pinephone.jpg" style="width: 60%;" />
+<p>Dragging the bar at the top of the screen down (although <em>not</em> swiping down
+from off the top of the screen) dispays a number of informational tabs much
+like in android and iOS. There has been a little <span class="fas fa-envelope"></span> icon on the
+bar since it first booted suggesting a notifications pending, but the
+notifications tab is pretty convinced that that is not the case.</p>
+<video controls width="60%" class="align-center" src="/static/UT_pinephone.webm"></video></div>
+<div class="section" id="hardware">
+<h2>hardware</h2>
+<p>Much of the hardware is perfectly under control:</p>
+<blockquote>
+<ul class="simple">
+<li>The volume buttons do indeed change the volume.</li>
+<li>The lock/power button locks the screen, and turns it back on again.</li>
+<li>Screen brightness control works.</li>
+</ul>
+</blockquote>
+<p>But some is not:</p>
+<blockquote>
+<ul class="simple">
+<li>Wifi appears to connect and work beautifully initially, but then fails.
+There is a working fix for when it does, however (discussion on <a class="reference external" href="https://forums.ubports.com/topic/3791/wifi-issues-on-pinephone-braveheart/8">ubports</a>
+and <a class="reference external" href="https://forum.pine64.org/showthread.php?tid=8969">pine64</a>).</li>
+<li>The <em>Rotation Lock</em> setting appears to do nothing; perhaps the gyro doesn't
+quite work yet.</li>
+<li>Currently pinephone ubuntu-touch is stuck in headphone mode, and has other
+issues with the speakers (<a class="reference external" href="https://forum.pine64.org/showthread.php?tid=8923">pine64 discussion</a>).</li>
+<li>There also appears to be a an issue with the battery usage, that <a class="reference external" href="https://forum.pine64.org/showthread.php?tid=9063">others
+have also experienced</a>, though this does appear to be an issue that can be
+fixed by software changes (fortunately!).</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="software">
+<h2>software</h2>
+<p>It does seem pretty strange, SSH-ing into and exploring a phone from my
+computer. Using apt to install tor or vim or whatever the hell I want. On my
+phone. That novelty is yet to wear off.</p>
+<p>A dozen or so apps came pre-installed with ubuntu-touch, and more can be
+downloaded from the <em>OpenStore</em>. Many of these are simple web-apps, which has
+enabled a huge range of 'apps' to be created already. Though some are buggy
+(unsurprising, considering the webpages they display probably weren't designed
+with this in mind), they do serve as stepping stones between having no apps and
+eventually having native apps <span class="fas fa-praying-hands"></span>.</p>
+<p>We are in the midst of an incredibly exciting time for linux smart phones, and
+I can't wait to see what the next few months bring us. I'm sure very soon we
+will have all the necessary components of the pinephone working smoothly, and
+once people make that transition to using it as a(n imperfect, yet functional)
+daily driver, the new apps and functionality will hopefully boom.</p>
+</div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2020-02-11T00:00:00+00:00">2020-02-11</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

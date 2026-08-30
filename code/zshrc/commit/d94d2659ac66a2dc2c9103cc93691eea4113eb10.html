@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - functions in separate file; add tig to ranger</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/d94d2659ac66a2dc2c9103cc93691eea4113eb10.html">d94d2659ac66a2dc2c9103cc93691eea4113eb10</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/85b979265b48d952cbbd9b3fcd9685a625d35c8f.html">85b979265b48d952cbbd9b3fcd9685a625d35c8f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-07-30 22:58:17 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-07-30 22:58:17 +0100
+
+functions in separate file; add tig to ranger
+</pre><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,7 +3,7 @@
+<span class="def"> # ban zsh theme
+</span><span class="def"> #
+</span><span class="def"> 
+</span><span class="sub">-## Segment drawing
+</span><span class="add">+# Segment drawing
+</span><span class="def"> 
+</span><span class="def"> # A few utility functions to make it easy and re-usable to draw segmented prompts
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -641,11 +641,11 @@
+<span class="def"> map gc cd ~/.config
+</span><span class="def"> map gx cd ~/.config/Xresources.d
+</span><span class="def"> map gm cd ~/media
+</span><span class="sub">-map gb cd ~/bin
+</span><span class="add">+map gb cd ~/.config/bin
+</span><span class="def"> map gP cd ~/pictures
+</span><span class="def"> map gw cd ~/work
+</span><span class="def"> map ga cd ~/work/analysis
+</span><span class="sub">-map gp cd ~/work/research/papers
+</span><span class="add">+map gp cd ~/work/research/research.wiki/papers/pdfs
+</span><span class="def"> map gf cd ~/work/analysis/Figures
+</span><span class="def"> map gW cd ~/work/research/research.wiki
+</span><span class="def"> map gr cd ~/work/analysis/rochefort-tools
+</span>@@ -657,7 +657,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # git
+</span><span class="sub">-map bs shell git status | less -r
+</span><span class="add">+map bs shell git -c color.status=always status | less -r
+</span><span class="def"> map bm console shell git commit -m &apos;
+</span><span class="def"> map bd shell git diff --color=always %s | less -r
+</span><span class="def"> map bD shell git diff --color=always | less -r
+</span>@@ -666,3 +666,4 @@
+<span class="def"> map bc console shell git checkout%space
+</span><span class="def"> map bp shell git push | less -r
+</span><span class="def"> map bl shell git pull | less -r
+</span><span class="add">+map bt shell tig
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,42 @@
+<span class="add">+#
+</span><span class="add">+# misc functions
+</span><span class="add">+#
+</span><span class="add">+
+</span><span class="add">+# use last browsed directory automatically with ranger
+</span><span class="add">+ranger-cd() { 
+</span><span class="add">+    tempfile=&quot;$(mktemp -t tmp.XXXXXX)&quot;
+</span><span class="add">+    if [[ -f /usr/local/bin/ranger ]]
+</span><span class="add">+    then
+</span><span class="add">+	/usr/local/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="add">+    else
+</span><span class="add">+	/usr/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="add">+    fi
+</span><span class="add">+    test -f &quot;$tempfile&quot; &amp;&amp;
+</span><span class="add">+	if [ &quot;$(cat -- &quot;$tempfile&quot;)&quot; != &quot;$(echo -n `pwd`)&quot; ]; then
+</span><span class="add">+	    cd -- &quot;$(cat &quot;$tempfile&quot;)&quot;
+</span><span class="add">+	fi
+</span><span class="add">+	rm -f -- &quot;$tempfile&quot;
+</span><span class="add">+}
+</span><span class="add">+ranger() { # prevent nested ranger instances when shelling from ranger
+</span><span class="add">+    if [ -z &quot;$RANGER_LEVEL&quot; ]; then
+</span><span class="add">+	ranger-cd &quot;$@&quot;
+</span><span class="add">+    else
+</span><span class="add">+	exit
+</span><span class="add">+    fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+shebang() { # create new file, add shebang, and vim
+</span><span class="add">+    touch $1
+</span><span class="add">+    chmod +x $1
+</span><span class="add">+    echo -e &quot;#!/usr/bin/env bash\n&quot; &gt; $1
+</span><span class="add">+    vim +2 $1
+</span><span class="add">+}
+</span><span class="add">+shebangpy() { # create new file, add shebang, and vim
+</span><span class="add">+    touch $1
+</span><span class="add">+    chmod +x $1
+</span><span class="add">+    echo -e &quot;#!/usr/bin/env python3\n&quot; &gt; $1
+</span><span class="add">+    vim +2 $1
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# copy file path to clipboard
+</span><span class="add">+cpath() { readlink -f $1 | copy }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,17 +1,15 @@
+<span class="def"> #
+</span><span class="def"> # General aliases go here
+</span><span class="def"> # Machine-specific aliases go in $HOME/.config/aliases
+</span><span class="sub">-#
+</span><span class="add">+# 
+</span><span class="def"> 
+</span><span class="def"> # misc
+</span><span class="def"> alias ..=&apos;cd ../&apos;
+</span><span class="def"> alias ...=&apos;cd ../../&apos;
+</span><span class="def"> alias l=&apos;ls -alhF&apos;
+</span><span class="def"> alias lc=&apos;ls -c1&apos;
+</span><span class="sub">-alias q=&quot;exit&quot;
+</span><span class="sub">-alias :q=&quot;exit&quot;
+</span><span class="sub">-alias tmp=&quot;cd /tmp; l&quot;
+</span><span class="sub">-alias _=&quot;sudo&quot;
+</span><span class="add">+alias tmp=&apos;cd /tmp; l&apos;
+</span><span class="add">+alias _=&apos;sudo&apos;
+</span><span class="def"> 
+</span><span class="def"> # systemd
+</span><span class="def"> alias sc=&apos;systemctl&apos;
+</span>@@ -23,16 +21,6 @@
+<span class="def"> alias scen=&apos;systemctl enable --now&apos;
+</span><span class="def"> alias scd=&apos;systemctl disable&apos;
+</span><span class="def"> alias scdr=&apos;systemctl daemon-reload&apos;
+</span><span class="sub">-alias scc=&apos;systemctl cat&apos;
+</span><span class="sub">-
+</span><span class="sub">-alias uscs=&apos;systemctl --user status&apos;
+</span><span class="sub">-alias uscsta=&apos;systemctl --user start&apos;
+</span><span class="sub">-alias uscsto=&apos;systemctl --user stop&apos;
+</span><span class="sub">-alias uscr=&apos;systemctl --user restart&apos;
+</span><span class="sub">-alias usce=&apos;systemctl --user enable&apos;
+</span><span class="sub">-alias uscen=&apos;systemctl --user enable --now&apos;
+</span><span class="sub">-alias uscd=&apos;systemctl --user disable&apos;
+</span><span class="sub">-alias uscdr=&apos;systemctl --user daemon-reload&apos;
+</span><span class="def"> 
+</span><span class="def"> alias ssc=&apos;sudo systemctl&apos;
+</span><span class="def"> alias sscs=&apos;sudo systemctl status&apos;
+</span>@@ -43,115 +31,52 @@
+<span class="def"> alias sscen=&apos;sudo systemctl enable --now&apos;
+</span><span class="def"> alias sscd=&apos;sudo systemctl disable&apos;
+</span><span class="def"> alias sscdr=&apos;sudo systemctl daemon-reload&apos;
+</span><span class="sub">-alias sscc=&apos;sudo systemctl cat&apos;
+</span><span class="def"> 
+</span><span class="def"> # networking
+</span><span class="sub">-alias eduroam=&apos;nmcli con up eduroam&apos;
+</span><span class="sub">-alias pinga=&apos;ping archlinux.org&apos;
+</span><span class="sub">-alias ip=&quot;ip -c&quot;
+</span><span class="sub">-alias dns=&quot;cat /etc/resolv.conf&quot;
+</span><span class="sub">-alias wnet=&quot;sudo netstat -nputw&quot;
+</span><span class="sub">-alias wnetl=&quot;sudo netstat -nputlw&quot;
+</span><span class="add">+alias ip=&apos;ip -c&apos;
+</span><span class="add">+alias dns=&apos;cat /etc/resolv.conf&apos;
+</span><span class="add">+alias wnet=&apos;sudo netstat -nputw&apos;
+</span><span class="add">+alias wnetl=&apos;sudo netstat -nputlw&apos;
+</span><span class="def"> 
+</span><span class="def"> # launchers
+</span><span class="sub">-alias ra=&quot;ranger&quot;
+</span><span class="sub">-alias v=&quot;vim&quot;
+</span><span class="sub">-alias tmux=&quot;tmux -u&quot;
+</span><span class="sub">-alias ta=&quot;tmux attach&quot;
+</span><span class="add">+alias ra=&apos;ranger&apos;
+</span><span class="add">+alias v=&apos;vim&apos;
+</span><span class="add">+alias tmux=&apos;tmux -u&apos;
+</span><span class="add">+alias ta=&apos;tmux attach&apos;
+</span><span class="def"> 
+</span><span class="def"> # git
+</span><span class="sub">-alias gs=&quot;git status&quot;
+</span><span class="sub">-alias ad=&quot;git add&quot;
+</span><span class="sub">-alias cm=&quot;git commit -m&quot;
+</span><span class="sub">-alias psh=&quot;git push&quot;
+</span><span class="sub">-alias pshu=&quot;git push --set-upstream&quot;
+</span><span class="sub">-alias pl=&quot;git pull&quot;
+</span><span class="sub">-alias grm=&quot;git rm&quot;
+</span><span class="sub">-alias br=&quot;git branch&quot;
+</span><span class="sub">-alias brs=&quot;git branch -v&quot;
+</span><span class="sub">-alias ch=&quot;git checkout&quot;
+</span><span class="sub">-alias dif=&quot;git diff&quot;
+</span><span class="add">+alias gs=&apos;git status&apos;
+</span><span class="add">+alias ad=&apos;git add&apos;
+</span><span class="add">+alias cm=&apos;git commit -m&apos;
+</span><span class="add">+alias psh=&apos;git push&apos;
+</span><span class="add">+alias fe=&apos;git fetch &amp;&amp; git status&apos;
+</span><span class="add">+alias pl=&apos;git pull&apos;
+</span><span class="add">+alias rb=&apos;git pull --rebase upstream master&apos;
+</span><span class="add">+alias br=&apos;git branch&apos;
+</span><span class="add">+alias brs=&apos;git branch -v&apos;
+</span><span class="add">+alias ch=&apos;git checkout&apos;
+</span><span class="add">+alias dif=&apos;git diff&apos;
+</span><span class="add">+alias cl=&apos;git clone&apos;
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="sub">-alias usync=&quot;rsync -avPzh --delete&quot;
+</span><span class="sub">-alias cl=&apos;clear&apos;
+</span><span class="sub">-alias removespaces=&quot;for run in {1..20}; do; find . -type f -name \&quot;* *\&quot; -exec rename \&quot; \&quot; \&quot;_\&quot; {} \; ; done&quot;
+</span><span class="add">+alias usync=&apos;rsync -avPzh --delete&apos;
+</span><span class="def"> 
+</span><span class="def"> # quick edits
+</span><span class="sub">-alias modalia=&apos;vim $HOME/.config/aliases &amp;&amp; source $HOME/.config/aliases&apos;
+</span><span class="sub">-alias modaliaz=&apos;vim $ZSH/aliases &amp;&amp; source $ZSH/aliases&apos;
+</span><span class="add">+alias modalia=&apos;vim $HOME/.config/aliases&apos;
+</span><span class="add">+alias modaliaz=&apos;vim $ZSH/aliases&apos;
+</span><span class="def"> alias vimrc=&apos;vim $HOME/.vim/bundle/vim-misc/vimrc&apos;
+</span><span class="sub">-alias vimkeys=&apos;vim $HOME/.vim/bundle/vim-misc/plugin/keybindings.vim&apos;
+</span><span class="sub">-alias modtux=&apos;vim $HOME/.vim/bundle/vim-misc/tmux.conf&apos;
+</span><span class="def"> alias zshrc=&apos;vim $HOME/.zsh/zshrc&apos;
+</span><span class="def"> alias modrc=&apos;vim $HOME/.config/ranger/rc.conf&apos;
+</span><span class="def"> 
+</span><span class="def"> # shortcuts
+</span><span class="def"> alias gc=&apos;cd $HOME/.config; l&apos;
+</span><span class="sub">-alias gcs=&apos;cd $HOME/.config/systemd/user; ranger&apos;
+</span><span class="def"> alias gh=&apos;cd $HOME; ls&apos;
+</span><span class="def"> alias gd=&apos;cd $HOME/documents&apos;
+</span><span class="def"> alias gD=&apos;cd $HOME/Downloads&apos;
+</span><span class="def"> alias gg=&apos;cd $HOME/git; l&apos;
+</span><span class="sub">-alias gb=&apos;cd $HOME/bin; ls&apos;
+</span><span class="add">+alias gb=&apos;cd $HOME/.config/bin; ls&apos;
+</span><span class="def"> alias ge=&apos;cd /etc&apos;
+</span><span class="sub">-alias gv=&apos;cd $HOME/.vim; ranger&apos;
+</span><span class="add">+alias gv=&apos;cd $HOME/.vim/bundle; ranger&apos;
+</span><span class="def"> alias gvm=&apos;cd $HOME/.vim/bundle/vim-misc; ra&apos;
+</span><span class="def"> alias gz=&apos;cd $HOME/.zsh; l&apos;
+</span><span class="def"> alias gR=&apos;cd $HOME/reach&apos;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-# colourise man pages
+</span><span class="sub">-function man() {
+</span><span class="sub">-    env \
+</span><span class="sub">-	LESS_TERMCAP_mb=$(printf &quot;\e[1;31m&quot;) \
+</span><span class="sub">-	LESS_TERMCAP_md=$(printf &quot;\e[1;31m&quot;) \
+</span><span class="sub">-	LESS_TERMCAP_me=$(printf &quot;\e[0m&quot;) \
+</span><span class="sub">-	LESS_TERMCAP_se=$(printf &quot;\e[0m&quot;) \
+</span><span class="sub">-	LESS_TERMCAP_so=$(printf &quot;\e[1;44;33m&quot;) \
+</span><span class="sub">-	LESS_TERMCAP_ue=$(printf &quot;\e[0m&quot;) \
+</span><span class="sub">-	LESS_TERMCAP_us=$(printf &quot;\e[1;32m&quot;) \
+</span><span class="sub">-	PAGER=&quot;${commands[less]:-$PAGER}&quot; \
+</span><span class="sub">-	_NROFF_U=1 \
+</span><span class="sub">-	PATH=&quot;$HOME/bin:$PATH&quot; \
+</span><span class="sub">-	man &quot;$@&quot;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# use last browsed directory automatically with ranger
+</span><span class="sub">-ranger-cd() { 
+</span><span class="sub">-    tempfile=&quot;$(mktemp -t tmp.XXXXXX)&quot;
+</span><span class="sub">-    if [[ -f /usr/local/bin/ranger ]]
+</span><span class="sub">-    then
+</span><span class="sub">-	/usr/local/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="sub">-    else
+</span><span class="sub">-	/usr/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="sub">-    fi
+</span><span class="sub">-    test -f &quot;$tempfile&quot; &amp;&amp;
+</span><span class="sub">-	if [ &quot;$(cat -- &quot;$tempfile&quot;)&quot; != &quot;$(echo -n `pwd`)&quot; ]; then
+</span><span class="sub">-	    cd -- &quot;$(cat &quot;$tempfile&quot;)&quot;
+</span><span class="sub">-	fi
+</span><span class="sub">-	rm -f -- &quot;$tempfile&quot;
+</span><span class="sub">-}
+</span><span class="sub">-ranger() { # prevent nested ranger instances when shelling from ranger
+</span><span class="sub">-    if [ -z &quot;$RANGER_LEVEL&quot; ]; then
+</span><span class="sub">-	ranger-cd &quot;$@&quot;
+</span><span class="sub">-    else
+</span><span class="sub">-	exit
+</span><span class="sub">-    fi
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-shebang() { # create new file, add shebang, and vim
+</span><span class="sub">-    touch $1
+</span><span class="sub">-    chmod +x $1
+</span><span class="sub">-    echo -e &quot;#!/usr/bin/env bash\n&quot; &gt; $1
+</span><span class="sub">-    vim +2 $1
+</span><span class="sub">-}
+</span><span class="sub">-shebangpy() { # create new file, add shebang, and vim
+</span><span class="sub">-    touch $1
+</span><span class="sub">-    chmod +x $1
+</span><span class="sub">-    echo -e &quot;#!/usr/bin/env python3\n&quot; &gt; $1
+</span><span class="sub">-    vim +2 $1
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# vim: ft=sh
+</span></pre>
+</div></div>
+  </body>
+</html>

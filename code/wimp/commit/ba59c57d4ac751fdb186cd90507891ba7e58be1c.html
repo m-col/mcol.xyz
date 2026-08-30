@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add maximize action</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/ba59c57d4ac751fdb186cd90507891ba7e58be1c.html">ba59c57d4ac751fdb186cd90507891ba7e58be1c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/0c51792c3b4909edcc797bec9f906a03b12522a4.html">0c51792c3b4909edcc797bec9f906a03b12522a4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-31 20:26:12 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-31 20:26:12 +0000
+
+add maximize action
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -59,6 +59,7 @@
+<span class="def"> bind		h		focus left
+</span><span class="def"> bind		l		focus right
+</span><span class="def"> bind		f		toggle_fullscreen
+</span><span class="add">+bind	Shift	m		maximize
+</span><span class="def"> bind	Shift	1		send_to_desk 1
+</span><span class="def"> bind	Shift	2		send_to_desk 2
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -157,6 +157,7 @@
+<span class="def">     { &quot;go_to_mark&quot;, &amp;go_to_mark, NULL },
+</span><span class="def">     { &quot;toggle_fullscreen&quot;, &amp;toggle_fullscreen, NULL },
+</span><span class="def">     { &quot;halfimize&quot;, &amp;halfimize, &amp;dir_handler },
+</span><span class="add">+    { &quot;maximize&quot;, &amp;maximize, NULL },
+</span><span class="def">     { &quot;reload_config&quot;, &amp;reload_config, NULL },
+</span><span class="def">     { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="def"> };
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,6 +23,7 @@
+<span class="def"> void actually_go_to_mark(const xkb_keysym_t sym);
+</span><span class="def"> void toggle_fullscreen(void *data);
+</span><span class="def"> void halfimize(void *data);
+</span><span class="add">+void maximize(void *data);
+</span><span class="def"> void reload_config(void *data);
+</span><span class="def"> void send_to_desk(void *data);
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -349,6 +349,28 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void maximize(void *data) {
+</span><span class="add">+    if (wl_list_empty(&amp;wimp.current_desk-&gt;views))
+</span><span class="add">+	return;
+</span><span class="add">+
+</span><span class="add">+    struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="add">+    double vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="add">+    double vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="add">+    double x, y;
+</span><span class="add">+    wlr_output_layout_closest_point(wimp.output_layout, NULL, vx, vy, &amp;x, &amp;y);
+</span><span class="add">+    struct wlr_output *output = wlr_output_layout_output_at(wimp.output_layout, x, y);
+</span><span class="add">+    unfullscreen();
+</span><span class="add">+
+</span><span class="add">+    double zoom = wimp.current_desk-&gt;zoom;
+</span><span class="add">+    int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="add">+    view-&gt;x = border_width;
+</span><span class="add">+    view-&gt;y = border_width;
+</span><span class="add">+    double width = (output-&gt;width - border_width * 2) / zoom;
+</span><span class="add">+    double height = (output-&gt;height - border_width * 2) / zoom;
+</span><span class="add">+    wlr_xdg_toplevel_set_size(view-&gt;surface, width, height);
+</span><span class="add">+    wlr_xdg_toplevel_set_tiled(view-&gt;surface, true);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> void reload_config(void *data) {
+</span><span class="def">     load_config();
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

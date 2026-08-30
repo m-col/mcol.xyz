@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - File template should display file contents</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/678ad5dd8bd82fa8c43a169ab7d9e81dac980890.html">678ad5dd8bd82fa8c43a169ab7d9e81dac980890</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/955967c99fdad9478a92310f894aabf3f1b40d1b.html">955967c99fdad9478a92310f894aabf3f1b40d1b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-28 20:10:05 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-28 20:10:05 +0100
+
+File template should display file contents
+</pre><div class="diff">
+  <p>
+    <b>templates/file.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,11 +12,8 @@
+<span class="def">     &lt;p&gt;{{- name }}&lt;/p&gt;
+</span><span class="def">     &lt;hr&gt;
+</span><span class="def"> 		&lt;p&gt;File &lt;b&gt;{{ file.path }}&lt;/b&gt;&lt;/p&gt;
+</span><span class="sub">-		&lt;p&gt;&lt;b&gt;{{ commit.title }}&lt;/b&gt;&lt;/p&gt;
+</span><span class="sub">-    &lt;p&gt;{{ commit.body }}&lt;/p&gt;
+</span><span class="def">     &lt;hr&gt;
+</span><span class="sub">-		&lt;p&gt;Authored {{ commit.authored }} by: {{ commit.author }} ({{ commit.author_email }})&lt;/p&gt;
+</span><span class="sub">-		&lt;p&gt;Committed {{ commit.committed }} by: {{ commit.committer }} ({{ commit.committer_email }})&lt;/p&gt;
+</span><span class="add">+    {{ file.contents }}
+</span><span class="def">     &lt;hr&gt;
+</span><span class="def">   &lt;/body&gt;
+</span><span class="def"> &lt;/html&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

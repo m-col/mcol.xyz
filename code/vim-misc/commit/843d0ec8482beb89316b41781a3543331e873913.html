@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - don&apos;t render markdown in fancy ways in markdown files</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/843d0ec8482beb89316b41781a3543331e873913.html">843d0ec8482beb89316b41781a3543331e873913</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/232666bc5168fd4d015bfc77b8119127b6e17c3f.html">232666bc5168fd4d015bfc77b8119127b6e17c3f</a>
+<b>Author:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Date:</b> 2025-06-17 13:29:27 +0100
+<b>Committer:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-06-17 13:29:27 +0100
+
+don&apos;t render markdown in fancy ways in markdown files
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -157,9 +157,9 @@
+<span class="def">       {
+</span><span class="def">         &apos;MeanderingProgrammer/render-markdown.nvim&apos;,
+</span><span class="def">         opts = {
+</span><span class="sub">-          file_types = { &quot;markdown&quot;, &quot;Avante&quot; },
+</span><span class="add">+          file_types = { &quot;Avante&quot; },
+</span><span class="def">         },
+</span><span class="sub">-        ft = { &quot;markdown&quot;, &quot;Avante&quot; },
+</span><span class="add">+        ft = { &quot;Avante&quot; },
+</span><span class="def">       },
+</span><span class="def">     },
+</span><span class="def">   }
+</span></pre>
+</div></div>
+  </body>
+</html>

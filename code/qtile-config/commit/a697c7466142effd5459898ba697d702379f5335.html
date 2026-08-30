@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - update per decorators PR</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/a697c7466142effd5459898ba697d702379f5335.html">a697c7466142effd5459898ba697d702379f5335</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/c6329158c18ebbb122b0d05cd7cfc2884b92ba02.html">c6329158c18ebbb122b0d05cd7cfc2884b92ba02</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-10-10 21:01:21 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-10-10 21:01:21 +0100
+
+update per decorators PR
+</pre><div class="diff">
+  <p>
+    <b>x11.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,7 +38,7 @@
+<span class="def"> @hook.subscribe.client_new
+</span><span class="def"> def _(window):
+</span><span class="def">     if window.window.get_wm_type() == &quot;desktop&quot;:
+</span><span class="sub">-        window.cmd_static(qtile.current_screen.index)
+</span><span class="add">+        window.static(qtile.current_screen.index)
+</span><span class="def">         return
+</span><span class="def"> 
+</span><span class="def">     hints = window.window.get_wm_normal_hints()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -150,4 +150,4 @@
+<span class="def">     @hook.subscribe.startup_once
+</span><span class="def">     async def _():
+</span><span class="def">         await asyncio.sleep(0.5)
+</span><span class="sub">-        qtile.cmd_reconfigure_screens()
+</span><span class="add">+        qtile.reconfigure_screens()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>tags.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -57,7 +57,7 @@
+<span class="def">     for name, match, windows in tags:
+</span><span class="def">         if name == to_toggle:
+</span><span class="def">             for window in windows:
+</span><span class="sub">-                window.cmd_toggle_minimize()
+</span><span class="add">+                window.toggle_minimize()
+</span><span class="def">             return
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -49,18 +49,18 @@
+<span class="def"> 
+</span><span class="def">     def _inner(qtile: Qtile) -&gt; None:
+</span><span class="def">         if len(qtile.screens) == 1:
+</span><span class="sub">-            qtile.groups_map[name].cmd_toscreen(toggle=True)
+</span><span class="add">+            qtile.groups_map[name].toscreen(toggle=True)
+</span><span class="def">             return
+</span><span class="def"> 
+</span><span class="def">         old = qtile.current_screen.group.name
+</span><span class="def">         if name in &quot;1234&quot;:
+</span><span class="def">             qtile.focus_screen(0)
+</span><span class="def">             if old in &quot;1234&quot; or qtile.current_screen.group.name != name:
+</span><span class="sub">-                qtile.groups_map[name].cmd_toscreen(toggle=True)
+</span><span class="add">+                qtile.groups_map[name].toscreen(toggle=True)
+</span><span class="def">         else:
+</span><span class="def">             qtile.focus_screen(1)
+</span><span class="def">             if old in &quot;qwer&quot; or qtile.current_screen.group.name != name:
+</span><span class="sub">-                qtile.groups_map[name].cmd_toscreen(toggle=True)
+</span><span class="add">+                qtile.groups_map[name].toscreen(toggle=True)
+</span><span class="def"> 
+</span><span class="def">     return _inner
+</span><span class="def"> 
+</span>@@ -94,7 +94,7 @@
+<span class="def">         if len(qtile.screens) == 1:
+</span><span class="def">             current = qtile.groups.index(qtile.current_group)
+</span><span class="def">             destination = (current + direction) % 8
+</span><span class="sub">-            qtile.groups[destination].cmd_toscreen()
+</span><span class="add">+            qtile.groups[destination].toscreen()
+</span><span class="def">             return
+</span><span class="def"> 
+</span><span class="def">         current = qtile.groups.index(qtile.current_group)
+</span>@@ -102,7 +102,7 @@
+<span class="def">             destination = (current + direction) % 4
+</span><span class="def">         else:
+</span><span class="def">             destination = ((current - 4 + direction) % 4) + 4
+</span><span class="sub">-        qtile.groups[destination].cmd_toscreen()
+</span><span class="add">+        qtile.groups[destination].toscreen()
+</span><span class="def"> 
+</span><span class="def">     return _inner
+</span><span class="def"> 
+</span>@@ -119,8 +119,8 @@
+<span class="def"> def _():
+</span><span class="def">     # Set initial groups
+</span><span class="def">     if len(qtile.screens) &gt; 1:
+</span><span class="sub">-        qtile.groups_map[&quot;1&quot;].cmd_toscreen(0, toggle=False)
+</span><span class="sub">-        qtile.groups_map[&quot;q&quot;].cmd_toscreen(1, toggle=False)
+</span><span class="add">+        qtile.groups_map[&quot;1&quot;].toscreen(0, toggle=False)
+</span><span class="add">+        qtile.groups_map[&quot;q&quot;].toscreen(1, toggle=False)
+</span><span class="def">         qtile.focus_screen(1)
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -129,6 +129,6 @@
+<span class="def">     # Set groups to screens
+</span><span class="def">     if len(qtile.screens) &gt; 1:
+</span><span class="def">         if qtile.screens[0].group.name not in &quot;1234&quot;:
+</span><span class="sub">-            qtile.groups_map[&quot;1&quot;].cmd_toscreen(0, toggle=False)
+</span><span class="add">+            qtile.groups_map[&quot;1&quot;].toscreen(0, toggle=False)
+</span><span class="def">         if qtile.screens[1].group.name in &quot;1234&quot;:
+</span><span class="sub">-            qtile.groups_map[&quot;q&quot;].cmd_toscreen(1, toggle=False)
+</span><span class="add">+            qtile.groups_map[&quot;q&quot;].toscreen(1, toggle=False)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -115,7 +115,7 @@
+<span class="def">     &quot;&quot;&quot;Bring all floating windows of the group to front&quot;&quot;&quot;
+</span><span class="def">     for window in qtile.current_group.windows:
+</span><span class="def">         if window.floating:
+</span><span class="sub">-            window.cmd_bring_to_front()
+</span><span class="add">+            window.bring_to_front()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> my_keys.extend(
+</span>@@ -705,7 +705,7 @@
+<span class="def">     for window in qtile.windows_map.values():
+</span><span class="def">         if isinstance(window, base.Static):
+</span><span class="def">             if hasattr(window, &quot;cmd_bring_to_front&quot;):
+</span><span class="sub">-                window.cmd_bring_to_front()
+</span><span class="add">+                window.bring_to_front()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> reconfigure_screens = True
+</span></pre>
+</div></div>
+  </body>
+</html>

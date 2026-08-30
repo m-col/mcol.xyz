@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - reduce default zoom bounds</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/eeac25dc651af303235ae1b7c6e39750c7bfda99.html">eeac25dc651af303235ae1b7c6e39750c7bfda99</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/beed13cde8505bccf868f7a6c0ff63305a5541db.html">beed13cde8505bccf868f7a6c0ff63305a5541db</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 19:39:42 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 19:39:42 +0000
+
+reduce default zoom bounds
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -30,8 +30,8 @@
+<span class="def"> desk 1 background ~/path/to/tiling-image.png
+</span><span class="def"> 
+</span><span class="def"> # Magnification bounds
+</span><span class="sub">-#zoom_min 0.1
+</span><span class="sub">-#zoom_max 10
+</span><span class="add">+#zoom_min 0.2
+</span><span class="add">+#zoom_max 5
+</span><span class="def"> 
+</span><span class="def"> # Set the colour for the mark setter/getter indicator
+</span><span class="def"> #mark_indicator #000000
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -27,8 +27,8 @@
+<span class="def"> desk 2 borders normal #5D479D\n\
+</span><span class="def"> desk 2 borders focus #998dd1\n\
+</span><span class="def"> desk 2 borders width 6\n\
+</span><span class="sub">-zoom_min 0.1\n\
+</span><span class="sub">-zoom_max 10\n\
+</span><span class="add">+zoom_min 0.2\n\
+</span><span class="add">+zoom_max 5\n\
+</span><span class="def"> mark_indicator #000000\n\
+</span><span class="def"> vt_switching on\n\
+</span><span class="def"> scroll_direction natural\n\
+</span></pre>
+</div></div>
+  </body>
+</html>

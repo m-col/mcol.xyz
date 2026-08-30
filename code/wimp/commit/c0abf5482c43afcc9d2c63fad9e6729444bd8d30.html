@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - improve some default config options</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/c0abf5482c43afcc9d2c63fad9e6729444bd8d30.html">c0abf5482c43afcc9d2c63fad9e6729444bd8d30</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/4c89dc433162250ebe67a6ae5eeaa7d0cfd8f2e2.html">4c89dc433162250ebe67a6ae5eeaa7d0cfd8f2e2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 14:19:27 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 14:19:27 +0000
+
+improve some default config options
+</pre><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -59,7 +59,7 @@
+<span class="def"> bind		r		reset_zoom
+</span><span class="def"> 
+</span><span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="sub">-bind		Return		exec wterm
+</span><span class="add">+bind		Return		exec gnome-terminal
+</span><span class="def"> 
+</span><span class="def"> # These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="def"> # pressed, waits for the following key press and uses that as the &apos;mark&apos;, e.g.
+</span>@@ -85,13 +85,13 @@
+<span class="def"> background ~/pattern.png
+</span><span class="def"> 
+</span><span class="def"> # window border colors
+</span><span class="sub">-borders normal #998dd1
+</span><span class="sub">-borders focus #3e3e73
+</span><span class="add">+borders focus #998dd1
+</span><span class="add">+borders normal #3e3e73
+</span><span class="def"> borders width 4
+</span><span class="def"> 
+</span><span class="def"> # This adds another desk. Following commands will apply to this desk.
+</span><span class="def"> add_desk
+</span><span class="sub">-background #f9f9fb
+</span><span class="add">+background #3e3e73
+</span><span class="def"> borders normal #1f1c32
+</span><span class="def"> borders focus #406794
+</span><span class="def"> borders width 5
+</span></pre>
+</div></div>
+  </body>
+</html>

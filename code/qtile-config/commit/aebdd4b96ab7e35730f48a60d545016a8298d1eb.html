@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - misc changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/aebdd4b96ab7e35730f48a60d545016a8298d1eb.html">aebdd4b96ab7e35730f48a60d545016a8298d1eb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/3b425f791066bcea44962e73079e2cf7249dab96.html">3b425f791066bcea44962e73079e2cf7249dab96</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-09-09 07:14:02 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-09-09 07:14:02 +0100
+
+misc changes
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,12 +7,10 @@
+<span class="def"> import subprocess
+</span><span class="def"> 
+</span><span class="def"> from libqtile import hook, qtile
+</span><span class="sub">-from libqtile.backend import base
+</span><span class="def"> from libqtile.backend.wayland import InputConfig
+</span><span class="def"> from libqtile.backend.wayland.xdgwindow import XdgWindow
+</span><span class="def"> from libqtile.backend.wayland.xwindow import XWindow
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="sub">-from libqtile.log_utils import logger
+</span><span class="def"> 
+</span><span class="def"> IS_XEPHYR = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0))
+</span><span class="def"> mod = &quot;mod1&quot; if IS_XEPHYR else &quot;mod4&quot;
+</span>@@ -82,8 +80,16 @@
+<span class="def"> 
+</span><span class="def"> @hook.subscribe.client_managed
+</span><span class="def"> def _(win):
+</span><span class="add">+    # Some other miscellaneous rules
+</span><span class="def">     if win.name == &quot;Firefox — Sharing Indicator&quot;:
+</span><span class="def">         win.place(win.x + win.borderwidth, 0, win.width, win.height, 0, None)
+</span><span class="add">+        return
+</span><span class="add">+
+</span><span class="add">+    wm_class = win.get_wm_class() or []
+</span><span class="add">+    if win.name == &quot;Navigator&quot; and &quot;libreoffice-startcenter&quot; in wm_class:
+</span><span class="add">+        x = qtile.current_screen.x
+</span><span class="add">+        win.place(x, 240, 450, 600, win.borderwidth, win.bordercolor)
+</span><span class="add">+        return
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> @hook.subscribe.startup_once
+</span>@@ -103,6 +109,29 @@
+<span class="def">     hook.subscribe.shutdown(p.terminate)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+@hook.subscribe.screen_change
+</span><span class="add">+def _(*_):
+</span><span class="add">+    # Temporary hacky fix for the dell monitor on my desk which for some mysterious
+</span><span class="add">+    # reason doesn&apos;t advertise that it supports any HD mode. Qtile does support setting
+</span><span class="add">+    # custom modes via the protocol, but neither kanshi nor wdisplays do. So instead,
+</span><span class="add">+    # I&apos;ll detect if that monitor is present and set the desired custom mode here.
+</span><span class="add">+    for output in qtile.core.outputs:
+</span><span class="add">+        wlr_output = output.wlr_output
+</span><span class="add">+        # Not only does this monitor not report modes correctly, it ALSO doesn&apos;t report
+</span><span class="add">+        # a make or model.
+</span><span class="add">+        if wlr_output.make == wlr_output.model == &quot;&lt;Unknown&gt;&quot;:
+</span><span class="add">+            if wlr_output.current_mode.width == 1024:
+</span><span class="add">+                break
+</span><span class="add">+    else:
+</span><span class="add">+        return
+</span><span class="add">+
+</span><span class="add">+    wlr_output.set_custom_mode(1920, 1080, 0)
+</span><span class="add">+    # Lastly, while cmd_reconfigure_screens will be fired right after this hook, as it
+</span><span class="add">+    # gets subscribed to this hook right after the config is loaded, the backend doesn&apos;t
+</span><span class="add">+    # get a change to actually apply the mode, so let&apos;s flush it.
+</span><span class="add">+    qtile.core.flush()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> if IS_XEPHYR:
+</span><span class="def">     # To adapt to whatever window size it was given
+</span><span class="def">     @hook.subscribe.startup_once
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -29,7 +29,7 @@
+<span class="def"> 
+</span><span class="def">     # Services
+</span><span class="def">     kanshi &amp;
+</span><span class="sub">-    pkill wlsunset; wlsunset -t 1000 -T 6700 -l 55.7 -L -3.1 &amp;
+</span><span class="add">+    wlsunset &amp;
+</span><span class="def">     swayidle &amp;
+</span><span class="def">     mpDris2 &amp;
+</span><span class="def">     sway-mpris-idle-inhibit &amp;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -110,9 +110,6 @@
+<span class="def"> my_keys.extend(keys_scratchpad)
+</span><span class="def"> my_keys.extend(keys_power_menu)
+</span><span class="def"> 
+</span><span class="sub">-# reload(&quot;fullscreen_state&quot;)
+</span><span class="sub">-# from fullscreen_state import toggle_fullscreen_state
+</span><span class="sub">-
+</span><span class="def"> 
+</span><span class="def"> def float_to_front(qtile: Qtile) -&gt; None:
+</span><span class="def">     &quot;&quot;&quot;Bring all floating windows of the group to front&quot;&quot;&quot;
+</span>@@ -126,7 +123,6 @@
+<span class="def">         # Window management
+</span><span class="def">         ([mod, &quot;control&quot;], &quot;q&quot;, lazy.window.kill(), &quot;Close window&quot;),
+</span><span class="def">         ([mod], &quot;f&quot;, lazy.window.toggle_fullscreen(), &quot;Toggle fullscreen&quot;),
+</span><span class="sub">-        # ([mod], &quot;g&quot;, lazy.function(toggle_fullscreen_state), &quot;Toggle fullscreen state&quot;),
+</span><span class="def">         ([mod, &quot;shift&quot;], &quot;space&quot;, lazy.window.toggle_floating(), &quot;Toggle floating&quot;),
+</span><span class="def">         ([mod, &quot;shift&quot;], &quot;s&quot;, lazy.window.static(), &quot;Make window static&quot;),
+</span><span class="def">         (
+</span>@@ -369,6 +365,7 @@
+<span class="def">         Match(wm_class=&quot;file_progress&quot;),
+</span><span class="def">         Match(wm_class=&quot;imv&quot;),
+</span><span class="def">         Match(wm_class=&quot;lxappearance&quot;),
+</span><span class="add">+        Match(wm_class=&quot;nm-connection-editor&quot;),
+</span><span class="def">         Match(wm_class=&quot;matplotlib&quot;),
+</span><span class="def">         Match(wm_class=&quot;mpv&quot;),
+</span><span class="def">         Match(wm_class=&quot;notification&quot;),
+</span>@@ -624,29 +621,6 @@
+<span class="def">         groupboxes[0].bar.draw()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-@hook.subscribe.screen_change
+</span><span class="sub">-def _(*_):
+</span><span class="sub">-    # Temporary hacky fix for the dell monitor on my desk which for some mysterious
+</span><span class="sub">-    # reason doesn&apos;t advertise that it supports any HD mode. Qtile does support setting
+</span><span class="sub">-    # custom modes via the protocol, but neither kanshi nor wdisplays do. So instead,
+</span><span class="sub">-    # I&apos;ll detect if that monitor is present and set the desired custom mode here.
+</span><span class="sub">-    for output in qtile.core.outputs:
+</span><span class="sub">-        wlr_output = output.wlr_output
+</span><span class="sub">-        # Not only does this monitor not report modes correctly, it ALSO doesn&apos;t report
+</span><span class="sub">-        # a make or model.
+</span><span class="sub">-        if wlr_output.make == wlr_output.model == &quot;&lt;Unknown&gt;&quot;:
+</span><span class="sub">-            if wlr_output.current_mode.width == 1024:
+</span><span class="sub">-                break
+</span><span class="sub">-    else:
+</span><span class="sub">-        return
+</span><span class="sub">-
+</span><span class="sub">-    wlr_output.set_custom_mode(1920, 1080, 0)
+</span><span class="sub">-    # Lastly, while cmd_reconfigure_screens will be fired right after this hook, as it
+</span><span class="sub">-    # gets subscribed to this hook right after the config is loaded, the backend doesn&apos;t
+</span><span class="sub">-    # get a change to actually apply the mode, so let&apos;s flush it.
+</span><span class="sub">-    qtile.core.flush()
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> bar_border_width = [0, 3, 0, 3]
+</span><span class="def"> bar_border_color = [&quot;000000&quot;, colours[5], &quot;000000&quot;, colours[5]]
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

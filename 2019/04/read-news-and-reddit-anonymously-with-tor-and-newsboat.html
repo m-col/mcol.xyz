@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / read news and reddit anonymously with tor and newsboat</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2019/04/read-news-and-reddit-anonymously-with-tor-and-newsboat.html>read news and reddit anonymously with tor and newsboat</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>ncurses based programs can be a bit hit-or-miss but newsboat is one of the
+kings.</p>
+<p><a class="reference external" href="https://newsboat.org/">newsboat</a> is an RSS reader, and as far as I'm
+concerned, a reddit interface, as you can turn any reddit feed into an RSS
+feed. Just stick something like this into your <code>~/.config/newsboat/urls</code>
+file:</p>
+<div class="highlight"><pre><span></span>https://www.reddit.com/r/onions/new/.rss?sort=new  &quot;~/r/onions&quot;
+</pre></div>
+<p>Each time your run newsboat you'll get posts to that subreddit sorted by new -
+easy subscription without going near a web browser.</p>
+<p>The key to torifying newsboat is its socks5 proxy, which is enabled with these
+config settings in <code>~/.config/newsboat/config</code>:</p>
+<div class="highlight"><pre><span></span>use-proxy yes
+proxy-type socks5h
+proxy 127.0.0.1:9050
+</pre></div>
+<p>The proxy IP and port of course must correspond to the socks5 proxy set up in
+your torrc config. The <strong>h</strong> in <code>socks5h</code> is important - this makes tor
+do all its own DNS resolutions so they aren't leaking out the usual route.</p>
+<p>You can take the functionality to the next level by opening any feed items in
+tor-browser directly from newsboat, too. First, stick this into your newsboat
+config:</p>
+<div class="highlight"><pre><span></span>browser<span class="w"> </span><span class="s2">&quot;nohup tor-browser --allow-remote %u &gt; /dev/null 2&gt;&amp;1 &amp;&quot;</span>
+</pre></div>
+<p>and set the setting <code>browser.tabs.loadDivertedInBackground</code> in
+tor-browser's <code>about:config</code> to false. This allows feed items to be
+opened from newsboat when hitting <code>o</code> without tor-browser stealing focus.</p>
+<p>nohup is needed so tor-browser can stay alive even after your close newsboat,
+if newsboat opened it. <code>--allow-remote</code> will launch tor-browser and allow
+it to receive remote commands to open urls as we are doing here. If
+tor-browser, with this option, is already running then the url will be opened
+in that instance but newsboat will stay focussed. The rest of the line sends
+all output to oblivion and backgrounds the command so that it doesn't disrupt
+your newsboating.</p>
+<p>With this setup I just open newsboat once a day and give it a couple minutes to
+update its feeds while I do something else. Then I can quickly comb through
+everything, opening anything I want to read more about in tor-browser as I go
+and deleting the rest.</p>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2019-04-21T00:00:00+00:00">2019-04-21</time>
+in <a href="/category/privacy.html">privacy</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

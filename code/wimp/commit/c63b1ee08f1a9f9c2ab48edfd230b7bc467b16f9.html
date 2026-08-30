@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add indicator to indicate set_mark or go_to_mark is waiting for a key</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/c63b1ee08f1a9f9c2ab48edfd230b7bc467b16f9.html">c63b1ee08f1a9f9c2ab48edfd230b7bc467b16f9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/a7e9608a050a0a483ef8c3ad2c078ffa056f5462.html">a7e9608a050a0a483ef8c3ad2c078ffa056f5462</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-24 13:15:43 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-24 13:15:43 +0000
+
+add indicator to indicate set_mark or go_to_mark is waiting for a key
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,6 +24,11 @@
+<span class="def"> 
+</span><span class="def"> typedef void (*action)(struct server *server, void *data);
+</span><span class="def"> 
+</span><span class="add">+struct mark_indicator {
+</span><span class="add">+    float colour[4];
+</span><span class="add">+    struct wlr_box box;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> struct server {
+</span><span class="def">     struct wl_display *display;
+</span><span class="def">     struct wlr_backend *backend;
+</span>@@ -41,6 +46,7 @@
+<span class="def">     bool can_steal_focus;
+</span><span class="def">     struct wl_list marks;
+</span><span class="def">     bool mark_waiting;
+</span><span class="add">+    struct mark_indicator mark_indicator;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -70,8 +70,9 @@
+<span class="def"> 
+</span><span class="def"> void on_frame(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct output *output = wl_container_of(listener, output, frame_listener);
+</span><span class="sub">-    struct wlr_renderer *renderer = output-&gt;server-&gt;renderer;
+</span><span class="sub">-    struct desk *desk = output-&gt;server-&gt;current_desk;
+</span><span class="add">+    struct server *server = output-&gt;server;
+</span><span class="add">+    struct wlr_renderer *renderer = server-&gt;renderer;
+</span><span class="add">+    struct desk *desk = server-&gt;current_desk;
+</span><span class="def"> 
+</span><span class="def">     struct timespec now;
+</span><span class="def">     clock_gettime(CLOCK_MONOTONIC, &amp;now);
+</span>@@ -101,6 +102,7 @@
+<span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    // paint clients
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each_reverse(view, &amp;desk-&gt;views, link) {
+</span><span class="def"> 	struct render_data rdata = {
+</span>@@ -115,6 +117,16 @@
+<span class="def"> 	);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    // paint mark indicator
+</span><span class="add">+    if (server-&gt;mark_waiting) {
+</span><span class="add">+	struct wlr_box indicator = server-&gt;mark_indicator.box;
+</span><span class="add">+	indicator.y = height - indicator.height;
+</span><span class="add">+	wlr_render_rect(
+</span><span class="add">+	    renderer, &amp;indicator, server-&gt;mark_indicator.colour,
+</span><span class="add">+	    output-&gt;wlr_output-&gt;transform_matrix
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     wlr_output_render_software_cursors(output-&gt;wlr_output, NULL);  // no-op with HW cursors
+</span><span class="def">     wlr_renderer_end(renderer);
+</span><span class="def">     wlr_output_commit(output-&gt;wlr_output);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -233,6 +233,11 @@
+<span class="def"> 
+</span><span class="def">     wl_list_init(&amp;server-&gt;marks);
+</span><span class="def">     server-&gt;mark_waiting = false;
+</span><span class="add">+    assign_colour(&quot;#000000&quot;, server-&gt;mark_indicator.colour);
+</span><span class="add">+    server-&gt;mark_indicator.box.width = 25;
+</span><span class="add">+    server-&gt;mark_indicator.box.height = 25;
+</span><span class="add">+    server-&gt;mark_indicator.box.x = 0;
+</span><span class="add">+    server-&gt;mark_indicator.box.y = 0;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -316,6 +321,8 @@
+<span class="def"> 	    }
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;bind&quot;)) {
+</span><span class="def"> 	    add_binding(server, strtok(NULL, &quot;&quot;), line);
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;mark_indicator&quot;)) {
+</span><span class="add">+	    assign_colour(strtok(NULL, &quot; \t\n\r&quot;), server-&gt;mark_indicator.colour);
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;vt_switching&quot;)) {
+</span><span class="def"> 	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def"> 	    if (!strcasecmp(s, &quot;off&quot;))
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,6 +19,9 @@
+<span class="def"> #zoom_min 0.5
+</span><span class="def"> #zoom_max 3
+</span><span class="def"> 
+</span><span class="add">+# Set the colour for the mark setter/getter indicator
+</span><span class="add">+#mark_indicator #000000
+</span><span class="add">+
+</span><span class="def"> # Whether to allow VT switching: on or off.
+</span><span class="def"> #vt_switching on
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

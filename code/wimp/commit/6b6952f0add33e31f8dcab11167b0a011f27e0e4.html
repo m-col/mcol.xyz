@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - replace pragma once with ifdefs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/6b6952f0add33e31f8dcab11167b0a011f27e0e4.html">6b6952f0add33e31f8dcab11167b0a011f27e0e4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/e2a3df6207b354f9b92aeaa686a59d484680a019.html">e2a3df6207b354f9b92aeaa686a59d484680a019</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-06 22:47:03 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-06 22:47:03 +0000
+
+replace pragma once with ifdefs
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,5 @@
+<span class="sub">-#pragma once
+</span><span class="add">+#ifndef DESKWM_TYPES_H
+</span><span class="add">+#define DESKWM_TYPES_H
+</span><span class="def"> 
+</span><span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span>@@ -10,14 +11,12 @@
+<span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> enum cursor_mode {
+</span><span class="def">     CURSOR_PASSTHROUGH,
+</span><span class="def">     CURSOR_MOVE,
+</span><span class="def">     CURSOR_RESIZE,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> struct server {
+</span><span class="def">     struct wl_display *display;
+</span><span class="def">     struct wlr_backend *backend;
+</span>@@ -52,7 +51,6 @@
+<span class="def">     uint32_t resize_edges;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> struct view {
+</span><span class="def">     struct wl_list link;
+</span><span class="def">     struct server *server;
+</span>@@ -66,7 +64,6 @@
+<span class="def">     int x, y;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> struct keyboard {
+</span><span class="def">     struct wl_list link;
+</span><span class="def">     struct server *server;
+</span>@@ -74,3 +71,5 @@
+<span class="def">     struct wl_listener modifier_listener;
+</span><span class="def">     struct wl_listener key_listener;
+</span><span class="def"> };
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,5 @@
+<span class="sub">-#pragma once
+</span><span class="add">+#ifndef DESKWM_SHELL_H
+</span><span class="add">+#define DESKWM_SHELL_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span>@@ -12,3 +13,5 @@
+<span class="def"> void on_request_resize(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_new_xdg_surface(struct wl_listener *listener, void *data);
+</span><span class="def"> void set_up_shell(struct server *server);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,9 +1,10 @@
+<span class="sub">-#pragma once
+</span><span class="add">+#ifndef DESKWM_OUTPUT_H
+</span><span class="add">+#define DESKWM_OUTPUT_H
+</span><span class="add">+
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> struct output {
+</span><span class="def">     struct wl_list link;
+</span><span class="def">     struct server *server;
+</span>@@ -11,7 +12,6 @@
+<span class="def">     struct wl_listener frame_listener;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> struct render_data {
+</span><span class="def">     struct wlr_output *output;
+</span><span class="def">     struct wlr_renderer *renderer;
+</span>@@ -19,10 +19,11 @@
+<span class="def">     struct timespec *when;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> void render_surface(
+</span><span class="def">     struct wlr_surface *surface, int sx, int sy, void *data
+</span><span class="def"> );
+</span><span class="def"> void on_frame(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_new_output(struct wl_listener *listener, void *data);
+</span><span class="def"> void set_up_outputs(struct server *server);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +1,8 @@
+<span class="sub">-#pragma once
+</span><span class="add">+#ifndef DESKWM_INPUT_H
+</span><span class="add">+#define DESKWM_INPUT_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> void process_cursor_move(struct server *server, uint32_t time);
+</span><span class="def"> void process_cursor_resize(struct server *server, uint32_t time);
+</span><span class="def"> void process_cursor_motion(struct server *server, uint32_t time);
+</span>@@ -29,3 +29,5 @@
+<span class="def"> void on_request_set_selection(struct wl_listener *listener, void *data);
+</span><span class="def"> void set_up_cursor(struct server *server);
+</span><span class="def"> void set_up_keyboard(struct server *server);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,8 @@
+<span class="sub">-#pragma once
+</span><span class="add">+#ifndef DESKWM_DESKWM_H
+</span><span class="add">+#define DESKWM_DESKWM_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> struct server create_server();
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,9 @@
+<span class="sub">-#pragma once
+</span><span class="add">+#ifndef DESKWM_CONFIG_H
+</span><span class="add">+#define DESKWM_CONFIG_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void load_config(struct server *server);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div></div>
+  </body>
+</html>

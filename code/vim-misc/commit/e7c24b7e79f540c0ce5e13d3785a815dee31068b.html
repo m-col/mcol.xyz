@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - remove some plugins</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/e7c24b7e79f540c0ce5e13d3785a815dee31068b.html">e7c24b7e79f540c0ce5e13d3785a815dee31068b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/6e0d6a3b4a3f062ddf0f9e654bafd836dfecc968.html">6e0d6a3b4a3f062ddf0f9e654bafd836dfecc968</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-10-31 17:03:47 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-10-31 17:06:17 +0000
+
+remove some plugins
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,25 +19,14 @@
+<span class="def"> call vundle#begin()
+</span><span class="def"> 
+</span><span class="def"> Plugin &apos;VundleVim/Vundle.vim&apos;		    &quot; required
+</span><span class="sub">-
+</span><span class="sub">-if stridx(hostname(), &quot;book&quot;) != -1
+</span><span class="sub">-    &quot;Plugin &apos;vimwiki/vimwiki&apos;		    &quot; vimwiki
+</span><span class="sub">-    &quot;Plugin &apos;gu-fan/riv.vim&apos;
+</span><span class="sub">-    Plugin &apos;https://mcol.xyz/code/vimlab&apos;   &quot; vimlab
+</span><span class="sub">-    Plugin &apos;lervag/vimtex&apos;		    &quot; vimtex
+</span><span class="sub">-    Plugin &apos;dense-analysis/ale&apos;             &quot; ALE
+</span><span class="sub">-    Plugin &apos;neovimhaskell/haskell-vim&apos;      &quot; better haskell syntax highlighting
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="add">+Plugin &apos;dense-analysis/ale&apos;		    &quot; ALE
+</span><span class="add">+Plugin &apos;neovimhaskell/haskell-vim&apos;	    &quot; better haskell syntax highlighting
+</span><span class="def"> Plugin &apos;https://gitlab.com/gi1242/vim-emoji-ab.git&apos; &quot; emoji input support
+</span><span class="sub">-Plugin &apos;vmchale/dhall-vim&apos;              &quot; dhall highlighting
+</span><span class="sub">-Plugin &apos;tpope/vim-fugitive&apos;             &quot; git plugin
+</span><span class="add">+Plugin &apos;vmchale/dhall-vim&apos;		    &quot; dhall highlighting
+</span><span class="add">+Plugin &apos;tpope/vim-fugitive&apos;		    &quot; git plugin
+</span><span class="def"> Plugin &apos;https://mcol.xyz/code/vim-misc&apos;	    &quot; my vimrc and misc functions 
+</span><span class="def"> Plugin &apos;https://mcol.xyz/code/tide&apos;	    &quot; tmux ide 
+</span><span class="sub">-&quot;Plugin &apos;airblade/vim-gitgutter&apos;		    &quot; gitgutter
+</span><span class="sub">-Plugin &apos;Yggdroot/indentLine&apos;                &quot;Show indentation lines
+</span><span class="sub">-Plugin &apos;masukomi/vim-markdown-folding&apos;      &quot;markdown folding
+</span><span class="sub">-
+</span><span class="add">+Plugin &apos;Yggdroot/indentLine&apos;                &quot; Show indentation lines
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span><span class="def"> filetype plugin indent on		    &quot; required
+</span>@@ -109,26 +98,6 @@
+<span class="def"> 	    \ |   exe &quot;normal! g`\&quot;&quot;
+</span><span class="def"> 	    \ | endif
+</span><span class="def"> 
+</span><span class="sub">-&quot; machine specific settings
+</span><span class="sub">-if stridx(hostname(), &quot;book&quot;) != -1
+</span><span class="sub">-
+</span><span class="sub">-    packadd! matchit		&quot; needed for matlab indentation functionality
+</span><span class="sub">-    let g:vimlab_session = &quot;~/.vim/sessions/matlab-session.vim&quot;
+</span><span class="sub">-
+</span><span class="sub">-    let g:vimtex_view_general_viewer = &apos;qpdfview&apos;
+</span><span class="sub">-    let g:vimtex_view_general_options = &apos;--unique @pdf\#src:@tex:@line:@col&apos;
+</span><span class="sub">-    let g:vimtex_view_qpdfview_hook_callback = &apos;ViewerCallback&apos;
+</span><span class="sub">-    let g:vimtex_compiler_latexmk = {&apos;build_dir&apos; : &apos;.latex_build&apos;}
+</span><span class="sub">-    let g:vimtex_syntax_conceal_disable = 1
+</span><span class="sub">-    function! ViewerCallback() dict
+</span><span class="sub">-        VimtexView
+</span><span class="sub">-    endfunction
+</span><span class="sub">-
+</span><span class="sub">-    &quot;let g:riv_projects = [{ &apos;path&apos;: &apos;~/git/phd&apos;, }]
+</span><span class="sub">-    &quot;let g:riv_disable_folding = 1
+</span><span class="sub">-    &quot;set mmp=2000
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="def"> &quot; Intelligently navigate tmux panes and Vim splits using the same keys.
+</span><span class="def"> &quot; See https://sunaku.github.io/tmux-select-pane.html for documentation.
+</span><span class="def"> let progname = substitute($VIM, &apos;.*[/\\]&apos;, &apos;&apos;, &apos;&apos;)
+</span>@@ -146,8 +115,6 @@
+<span class="def"> 
+</span><span class="def"> let g:indentLine_defaultGroup = &apos;LineNr&apos;
+</span><span class="def"> let g:indentLine_char_list = [&apos;|&apos;, &apos;¦&apos;, &apos;┆&apos;, &apos;┊&apos;]
+</span><span class="sub">-let g:vim_json_concel = 0
+</span><span class="sub">-let g:markdown_syntax_conceal = 0
+</span><span class="def"> 
+</span><span class="def"> runtime macros/emoji-ab.vim
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

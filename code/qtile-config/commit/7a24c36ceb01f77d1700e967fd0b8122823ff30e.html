@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Update notification options</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/7a24c36ceb01f77d1700e967fd0b8122823ff30e.html">7a24c36ceb01f77d1700e967fd0b8122823ff30e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/66477417049cf9838e1760b9e39e313f4890a279.html">66477417049cf9838e1760b9e39e313f4890a279</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-29 01:53:47 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-29 01:53:47 +0100
+
+Update notification options
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -495,55 +495,38 @@
+<span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-# Config variables
+</span><span class="sub">-reconfigure_screens = True
+</span><span class="sub">-follow_mouse_focus = True
+</span><span class="sub">-bring_front_click = True
+</span><span class="sub">-cursor_warp = False
+</span><span class="sub">-auto_fullscreen = True
+</span><span class="sub">-focus_on_window_activation = &apos;smart&apos;
+</span><span class="sub">-keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+</span><span class="sub">-groups.append(scratchpad)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> # Notification server
+</span><span class="def"> reload(&quot;notification&quot;)
+</span><span class="def"> import notification
+</span><span class="def"> 
+</span><span class="sub">-notification.Server(
+</span><span class="sub">-    background=&apos;#888888&apos;,
+</span><span class="sub">-    foreground=&apos;#00ffff&apos;,
+</span><span class="add">+# Remove defunct callbacks left when reloading the config
+</span><span class="add">+import libqtile.notify
+</span><span class="add">+libqtile.notify.notifier.callbacks.clear()
+</span><span class="add">+
+</span><span class="add">+notifier = notification.Server(
+</span><span class="add">+    background=colours[12],
+</span><span class="add">+    foreground=background,
+</span><span class="def">     x=50,
+</span><span class="def">     y=50,
+</span><span class="def">     width=320,
+</span><span class="def">     height=100,
+</span><span class="sub">-    border=&apos;#dddddd&apos;,
+</span><span class="sub">-    border_width=8,
+</span><span class="sub">-    font_size=16,
+</span><span class="sub">-    max_windows=1,
+</span><span class="add">+    font_size=18,
+</span><span class="add">+    font=&apos;TamzenForPowerline Bold&apos;,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="sub">-keys.extend([EzKey(k, v) for k, v in {
+</span><span class="sub">-    &apos;M-&lt;grave&gt;&apos;:    notifier.lazy_prev,
+</span><span class="sub">-    &apos;M-S-&lt;grave&gt;&apos;:  notifier.lazy_next,
+</span><span class="sub">-    &apos;C-&lt;space&gt;&apos;:    notifier.lazy_close,
+</span><span class="sub">-}.items()])
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-from libqtile.popup import Popup
+</span><span class="sub">-p = Popup(qtile, background=&apos;#33ff33&apos;, foreground=&apos;#ff33ff&apos;)
+</span><span class="sub">-p.text = &quot;hello&quot;
+</span><span class="sub">-
+</span><span class="sub">-from libqtile.log_utils import logger
+</span><span class="add">+my_keys.extend([
+</span><span class="add">+    ([mod],             &apos;grave&apos;,    notifier.lazy_prev,     &quot;Previous notification&quot;),
+</span><span class="add">+    ([mod, &apos;shift&apos;],    &apos;grave&apos;,    notifier.lazy_next,     &quot;Next notification&quot;),
+</span><span class="add">+    ([&apos;control&apos;],       &apos;space&apos;,    notifier.lazy_close,    &quot;Close notification&quot;),
+</span><span class="add">+])
+</span><span class="def"> 
+</span><span class="sub">-def func(*a):
+</span><span class="sub">-    if p.win.mapped:
+</span><span class="sub">-        p.hide()
+</span><span class="sub">-    else:
+</span><span class="sub">-        p.unhide()
+</span><span class="sub">-        p.draw_text()
+</span><span class="sub">-        p.draw()
+</span><span class="def"> 
+</span><span class="sub">-keys.append(Key([mod], &apos;t&apos;, lazy.function(func)))
+</span><span class="add">+# Config variables
+</span><span class="add">+reconfigure_screens = True
+</span><span class="add">+follow_mouse_focus = True
+</span><span class="add">+bring_front_click = True
+</span><span class="add">+cursor_warp = False
+</span><span class="add">+auto_fullscreen = True
+</span><span class="add">+focus_on_window_activation = &apos;smart&apos;
+</span><span class="add">+keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+</span><span class="add">+groups.append(scratchpad)
+</span></pre>
+</div></div>
+  </body>
+</html>

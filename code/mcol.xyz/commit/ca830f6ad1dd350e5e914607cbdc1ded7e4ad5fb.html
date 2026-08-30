@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - remove redundent goat tag</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/ca830f6ad1dd350e5e914607cbdc1ded7e4ad5fb.html">ca830f6ad1dd350e5e914607cbdc1ded7e4ad5fb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/dbe45e8914c73b7cbc80f3864c9ba5631e1cfef1.html">dbe45e8914c73b7cbc80f3864c9ba5631e1cfef1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-19 01:04:52 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-19 01:04:52 +0100
+
+remove redundent goat tag
+</pre><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -50,8 +50,7 @@
+<span class="def"> AVATAR = &quot;/avatar.png&quot;
+</span><span class="def"> HOME1 = &quot;A hobbyist&apos;s notes on FOSS, linux toys and privacy tools&quot;
+</span><span class="def"> HOME2 = &quot;~ Welcome ~&quot;
+</span><span class="sub">-EXTRAHEAD = &quot;&quot;&quot;&lt;link rel=&quot;stylesheet&quot; href=&quot;/theme/css/fa.css&quot; /&gt;
+</span><span class="sub">-    &lt;script data-goatcounter=&quot;https://goat.mcol.xyz/count&quot; async src=&quot;//goat.mcol.xyz/count.js&quot;&gt;&lt;/script&gt;&quot;&quot;&quot;
+</span><span class="add">+EXTRAHEAD = &quot;&lt;link rel=stylesheet href=/theme/css/fa.css /&gt;&quot;
+</span><span class="def"> EXTRATAIL = &quot;&lt;script data-goatcounter=https://goat.mcol.xyz/count async src=//goat.mcol.xyz/count.js&gt;&lt;/script&gt;&quot;
+</span><span class="def"> 
+</span><span class="def"> # minify-fontawesome
+</span></pre>
+</div></div>
+  </body>
+</html>

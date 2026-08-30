@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Restore --trim CSS variable in mini-theme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/48e3a1d9c3dc12d037a6c02e3900f1b6c613eb87.html">48e3a1d9c3dc12d037a6c02e3900f1b6c613eb87</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/656967a2fad7c646ce55ed89af1c804bfa195f9f.html">656967a2fad7c646ce55ed89af1c804bfa195f9f</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 16:38:08 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 16:39:07 +0000
+
+Restore --trim CSS variable in mini-theme
+
+Traced via mini-theme&apos;s own git history: 9a1866b originally defined
+:root { --trim: #5D479D } and used it in index.html&apos;s hover border,
+blinking cursor, and ::selection. b4df4d0 (&quot;reorganise syntax
+highlighting&quot;) dropped the :root block and hardcoded ::selection&apos;s color
+directly, but missed the two remaining var(--trim) references in
+templates/index.html, leaving them pointing at nothing since. Restoring
+the original definition fixes both without touching index.html.
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_017Q252PHwe4uGEP1eLj3RPU
+</pre><div class="diff">
+  <p>
+    <b>theme/static/css/main.css</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,9 @@
+<span class="def"> /* 🐱  🐭  */
+</span><span class="def"> 
+</span><span class="add">+:root {
+</span><span class="add">+    --trim: #5D479D; /* purple */
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> @viewport {
+</span><span class="def">     width: device-width;
+</span><span class="def">     zoom: 1.0;
+</span></pre>
+</div></div>
+  </body>
+</html>

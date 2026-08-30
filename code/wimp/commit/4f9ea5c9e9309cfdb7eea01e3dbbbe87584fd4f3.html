@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Pass widthxheight+x+y geometry to scratchpads to set geometry</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/4f9ea5c9e9309cfdb7eea01e3dbbbe87584fd4f3.html">4f9ea5c9e9309cfdb7eea01e3dbbbe87584fd4f3</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/c15fc8a82f5e3d8ad28f1d46156473ff80cd2475.html">c15fc8a82f5e3d8ad28f1d46156473ff80cd2475</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-06 14:06:18 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-06 14:06:18 +0000
+
+Pass widthxheight+x+y geometry to scratchpads to set geometry
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -218,6 +218,7 @@
+<span class="def">     pid_t pid;
+</span><span class="def">     struct view *view;
+</span><span class="def">     bool is_mapped;
+</span><span class="add">+    struct wlr_box geo; // negative values represent a percentage of the output&apos;s geometry
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,6 +18,39 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void scratchpad_apply_geo(struct scratchpad *scratchpad) {
+</span><span class="add">+    struct wlr_output *output =
+</span><span class="add">+	wlr_output_layout_output_at(wimp.output_layout, wimp.cursor-&gt;x, wimp.cursor-&gt;y);
+</span><span class="add">+    struct wlr_box *ogeo = wlr_output_layout_get_box(wimp.output_layout, output);
+</span><span class="add">+    struct view *view = scratchpad-&gt;view;
+</span><span class="add">+    struct wlr_box *geo = &amp;scratchpad-&gt;geo;
+</span><span class="add">+
+</span><span class="add">+    if (geo-&gt;x &gt; 0) {
+</span><span class="add">+	view-&gt;x = geo-&gt;x;
+</span><span class="add">+    } else {
+</span><span class="add">+	view-&gt;x = ogeo-&gt;x - (ogeo-&gt;width * geo-&gt;x / 100);
+</span><span class="add">+    }
+</span><span class="add">+    if (geo-&gt;y &gt; 0) {
+</span><span class="add">+	view-&gt;y = geo-&gt;y;
+</span><span class="add">+    } else {
+</span><span class="add">+	view-&gt;y = ogeo-&gt;y - (ogeo-&gt;height * geo-&gt;y / 100);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct wlr_box *sgeo = &amp;view-&gt;surface-&gt;geometry;
+</span><span class="add">+    if (geo-&gt;width &gt; 0) {
+</span><span class="add">+	sgeo-&gt;width = geo-&gt;width;
+</span><span class="add">+    } else {
+</span><span class="add">+	sgeo-&gt;width = - ogeo-&gt;width * geo-&gt;width / 100;
+</span><span class="add">+    }
+</span><span class="add">+    if (geo-&gt;height &gt; 0) {
+</span><span class="add">+	sgeo-&gt;height = geo-&gt;height;
+</span><span class="add">+    } else {
+</span><span class="add">+	sgeo-&gt;height = - ogeo-&gt;height * geo-&gt;height / 100;
+</span><span class="add">+    }
+</span><span class="add">+    wlr_xdg_toplevel_set_size(view-&gt;surface, sgeo-&gt;width, sgeo-&gt;height);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void unmap_view(struct view *view) {
+</span><span class="def">     wl_signal_emit(&amp;view-&gt;surface-&gt;events.unmap, view);
+</span><span class="def"> }
+</span>@@ -148,6 +181,7 @@
+<span class="def">     if (view-&gt;is_scratchpad) {
+</span><span class="def"> 	struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="def"> 	scratchpad-&gt;is_mapped = true;
+</span><span class="add">+	scratchpad_apply_geo(scratchpad);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     if (wimp.can_steal_focus) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,6 +13,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> #define is_number(s) (strspn(s, &quot;0123456789.-&quot;) == strlen(s))
+</span><span class="add">+#define is_number_perc(s) (strspn(s, &quot;0123456789.-%&quot;) == strlen(s))
+</span><span class="def"> #define CONFIG_HOME &quot;$HOME/.config/wimp/&quot;
+</span><span class="def"> #define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/.config/wimp/&quot;
+</span><span class="def"> 
+</span>@@ -96,13 +97,14 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void dir_handler(struct binding *kb, char *data) {
+</span><span class="add">+static bool dir_handler(struct binding *kb, char *data, int line) {
+</span><span class="def">     kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="def">     *(enum direction *)(kb-&gt;data) = get(dirs, data);
+</span><span class="add">+    return true;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void str_handler(struct binding *kb, char *data) {
+</span><span class="add">+static bool str_handler(struct binding *kb, char *data, int line) {
+</span><span class="def">     if (is_number(data)) {
+</span><span class="def"> 	kb-&gt;data = calloc(1, sizeof(double));
+</span><span class="def"> 	*(double *)(kb-&gt;data) = strtod(data, NULL);
+</span>@@ -110,22 +112,26 @@
+<span class="def"> 	kb-&gt;data = calloc(strlen(data), sizeof(char));
+</span><span class="def"> 	strncpy(kb-&gt;data, data, strlen(data));
+</span><span class="def">     }
+</span><span class="add">+    return true;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void motion_handler(struct binding *kb, char *data) {
+</span><span class="add">+static bool motion_handler(struct binding *kb, char *data, int line) {
+</span><span class="def">     char *s;
+</span><span class="sub">-    if (!data)
+</span><span class="sub">-	return;
+</span><span class="add">+    if (!data) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="def">     s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="sub">-    if (!is_number(s) || !data)
+</span><span class="sub">-	return;
+</span><span class="add">+    if (!is_number(s) || !data) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="def">     int x = atoi(s);
+</span><span class="def"> 
+</span><span class="def">     s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-    if (!is_number(s))
+</span><span class="sub">-	return;
+</span><span class="add">+    if (!is_number(s)) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="def">     int y = atoi(s);
+</span><span class="def"> 
+</span><span class="def">     struct motion motion = {
+</span>@@ -135,33 +141,110 @@
+<span class="def">     };
+</span><span class="def">     kb-&gt;data = calloc(1, sizeof(struct motion));
+</span><span class="def">     *(struct motion *)(kb-&gt;data) = motion;
+</span><span class="add">+    return true;
+</span><span class="add">+
+</span><span class="add">+err:
+</span><span class="add">+    wlr_log(WLR_ERROR, &quot;Config line %i malformed/incomplete.&quot;, line);
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static bool wlr_box_from_str(char* str, struct wlr_box *box) {
+</span><span class="add">+    // turns e.g. 1920x1800+500+500 into a wlr_box
+</span><span class="add">+    char *w, *h, *x, *y;
+</span><span class="add">+    if (str) {
+</span><span class="add">+	if ((w = strtok(str, &quot;x&quot;)) &amp;&amp; is_number_perc(w)) {
+</span><span class="add">+	    if ((h = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(h)) {
+</span><span class="add">+		if ((x = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(x)) {
+</span><span class="add">+		    if ((y = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number_perc(y)) {
+</span><span class="add">+			if (is_number(w)) {
+</span><span class="add">+			    box-&gt;width = atoi(w);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((w = strtok(w, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;width = - atoi(w);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			if (is_number(h)) {
+</span><span class="add">+			    box-&gt;height = atoi(h);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((h = strtok(h, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;height = - atoi(h);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			if (is_number(x)) {
+</span><span class="add">+			    box-&gt;x = atoi(x);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((x = strtok(x, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;x = - atoi(x);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			if (is_number(y)) {
+</span><span class="add">+			    box-&gt;y = atoi(y);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((y = strtok(y, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;y = - atoi(y);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			return true;
+</span><span class="add">+		    }
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    return false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static int scratchpad_id = 0;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void scratchpad_handler(struct binding *kb, char *data) {
+</span><span class="add">+static bool scratchpad_handler(struct binding *kb, char *data, int line) {
+</span><span class="add">+    char *geo, *command;
+</span><span class="add">+    struct wlr_box box;
+</span><span class="def">     if (!data) {
+</span><span class="sub">-	return;
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    if (!(command = strtok(NULL, &quot;\n\r&quot;))) {
+</span><span class="add">+	goto err;
+</span><span class="def">     }
+</span><span class="add">+    if (!wlr_box_from_str(geo, &amp;box)) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     struct scratchpad *scratchpad = calloc(1, sizeof(struct scratchpad));
+</span><span class="def">     wl_list_insert(wimp.scratchpads.prev, &amp;scratchpad-&gt;link);
+</span><span class="sub">-    scratchpad-&gt;command = strdup(data);
+</span><span class="add">+    scratchpad-&gt;command = strdup(command);
+</span><span class="def">     scratchpad-&gt;id = scratchpad_id;
+</span><span class="sub">-    scratchpad-&gt;view = NULL;
+</span><span class="def">     scratchpad-&gt;is_mapped = false;
+</span><span class="add">+    scratchpad-&gt;view = NULL;
+</span><span class="add">+    scratchpad-&gt;geo = box;
+</span><span class="def"> 
+</span><span class="def">     kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="def">     *(int *)(kb-&gt;data) = scratchpad_id;
+</span><span class="def">     scratchpad_id++;
+</span><span class="add">+    return true;
+</span><span class="add">+
+</span><span class="add">+err:
+</span><span class="add">+    wlr_log(WLR_ERROR, &quot;Config line %i malformed/incomplete.&quot;, line);
+</span><span class="add">+    return false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static struct {
+</span><span class="def">     const char *name;
+</span><span class="def">     const action action;
+</span><span class="sub">-    void (*data_handler)(struct binding *kb, char *data);
+</span><span class="add">+    bool (*data_handler)(struct binding *kb, char *data, int line);
+</span><span class="def"> } action_map[] = {
+</span><span class="def">     { &quot;shutdown&quot;, &amp;shutdown, NULL },
+</span><span class="def">     { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span>@@ -202,7 +285,7 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool assign_action(const char *name, char *data, struct binding *kb) {
+</span><span class="add">+static bool assign_action(const char *name, char *data, struct binding *kb, int line) {
+</span><span class="def">     kb-&gt;action = NULL;
+</span><span class="def">     kb-&gt;data = NULL;
+</span><span class="def">     size_t i;
+</span>@@ -230,7 +313,9 @@
+<span class="def"> 		if (strcmp(action_map[i].name, name) == 0) {
+</span><span class="def"> 		    kb-&gt;action = action_map[i].action;
+</span><span class="def"> 		    if (action_map[i].data_handler != NULL) {
+</span><span class="sub">-			action_map[i].data_handler(kb, data);
+</span><span class="add">+			if (!action_map[i].data_handler(kb, data, line)){
+</span><span class="add">+			    return false;
+</span><span class="add">+			}
+</span><span class="def"> 		    }
+</span><span class="def"> 		    return true;
+</span><span class="def"> 		}
+</span>@@ -287,8 +372,7 @@
+<span class="def"> 	wlr_log(WLR_ERROR, &quot;Config line %i: malformed option.&quot;, line);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="sub">-    if (!assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb)) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;Config line %i: No such action &apos;%s&apos;.&quot;, line, s);
+</span><span class="add">+    if (!assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb, line)) {
+</span><span class="def"> 	free(kb);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span>@@ -446,7 +530,6 @@
+<span class="def">     char linebuf[1024];
+</span><span class="def">     int line = 0;
+</span><span class="def">     int index;
+</span><span class="sub">-    static bool a = true;
+</span><span class="def"> 
+</span><span class="def">     while (fgets(linebuf, sizeof(linebuf), stream)) {
+</span><span class="def"> 	line++;
+</span>@@ -569,9 +652,6 @@
+<span class="def"> 	else {
+</span><span class="def"> 	    wlr_log(WLR_ERROR, &quot;Config line %i: unknown option &apos;%s&apos;.&quot;, line, s);
+</span><span class="def"> 	}
+</span><span class="sub">-	if (wimp.mark_waiting &amp;&amp; a) {
+</span><span class="sub">-	    a = false;
+</span><span class="sub">-	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

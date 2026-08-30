@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - rename deskwm.{c,h} main.{c,h}</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/9b9e88abdd73504a97b13e2d7e53b2613d01a6d2.html">9b9e88abdd73504a97b13e2d7e53b2613d01a6d2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/bd5a4d4b16c4f539f474da9da2931c720af254fb.html">bd5a4d4b16c4f539f474da9da2931c720af254fb</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-23 21:40:25 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-23 21:40:25 +0000
+
+rename deskwm.{c,h} main.{c,h}
+</pre><div class="diff">
+  <p>
+    <b>src/main.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,4 @@
+<span class="add">+#ifndef DESKWM_DESKWM_H
+</span><span class="add">+#define DESKWM_DESKWM_H
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,118 @@
+<span class="add">+#include &lt;stdlib.h&gt;
+</span><span class="add">+#include &lt;string.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="add">+#include &lt;wlr/backend.h&gt;
+</span><span class="add">+#include &lt;wlr/render/wlr_renderer.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_primary_selection_v1.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_screencopy_v1.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="add">+#include &lt;wlr/util/log.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;config.h&quot;
+</span><span class="add">+#include &quot;cursor.h&quot;
+</span><span class="add">+#include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;main.h&quot;
+</span><span class="add">+#include &quot;keyboard.h&quot;
+</span><span class="add">+#include &quot;log.h&quot;
+</span><span class="add">+#include &quot;output.h&quot;
+</span><span class="add">+#include &quot;shell.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static const char usage[] =
+</span><span class="add">+    &quot;usage: deskwm [options...]\n&quot;
+</span><span class="add">+    &quot;    -h         show this help message\n&quot;
+</span><span class="add">+    &quot;    -c &lt;file&gt;  specify config file\n&quot;
+</span><span class="add">+    &quot;    -d         set logging to debug mode\n&quot;
+</span><span class="add">+    &quot;    -i         set logging to info mode\n&quot;
+</span><span class="add">+;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+int main(int argc, char *argv[])
+</span><span class="add">+{
+</span><span class="add">+    int opt;
+</span><span class="add">+    int log_level = WLR_ERROR;
+</span><span class="add">+    struct server server;
+</span><span class="add">+    server.config_file = NULL;
+</span><span class="add">+
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;hc:di&quot;)) != -1) {
+</span><span class="add">+        switch (opt) {
+</span><span class="add">+	    case &apos;h&apos;:
+</span><span class="add">+		printf(usage);
+</span><span class="add">+		return EXIT_SUCCESS;
+</span><span class="add">+		break;
+</span><span class="add">+	    case &apos;c&apos;:
+</span><span class="add">+		server.config_file = strdup(optarg);
+</span><span class="add">+		break;
+</span><span class="add">+	    case &apos;d&apos;:
+</span><span class="add">+		log_level = WLR_DEBUG;
+</span><span class="add">+		break;
+</span><span class="add">+	    case &apos;i&apos;:
+</span><span class="add">+		log_level = WLR_INFO;
+</span><span class="add">+		break;
+</span><span class="add">+        }
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    init_log(log_level);
+</span><span class="add">+
+</span><span class="add">+    // create
+</span><span class="add">+    server.display = wl_display_create();
+</span><span class="add">+    server.backend = wlr_backend_autocreate(server.display, NULL);
+</span><span class="add">+    server.renderer = wlr_backend_get_renderer(server.backend);
+</span><span class="add">+    wlr_renderer_init_wl_display(server.renderer, server.display);
+</span><span class="add">+    wlr_compositor_create(server.display, server.renderer);
+</span><span class="add">+
+</span><span class="add">+    // add some managers
+</span><span class="add">+    wlr_screencopy_manager_v1_create(server.display);
+</span><span class="add">+    wlr_data_device_manager_create(server.display);
+</span><span class="add">+    wlr_primary_selection_v1_device_manager_create(server.display);
+</span><span class="add">+
+</span><span class="add">+    // initialise
+</span><span class="add">+    wl_list_init(&amp;server.desks);
+</span><span class="add">+    wl_list_init(&amp;server.key_bindings);
+</span><span class="add">+    wl_list_init(&amp;server.mouse_bindings);
+</span><span class="add">+    wl_list_init(&amp;server.marks);
+</span><span class="add">+    server.mark_waiting = false;
+</span><span class="add">+    server.on_mouse_motion = NULL;
+</span><span class="add">+    server.on_mouse_scroll = NULL;
+</span><span class="add">+    server.can_steal_focus = true;
+</span><span class="add">+    server.mark_indicator.box.width = 25;
+</span><span class="add">+    server.mark_indicator.box.height = 25;
+</span><span class="add">+    server.mark_indicator.box.x = 0;
+</span><span class="add">+    server.mark_indicator.box.y = 0;
+</span><span class="add">+    server.desk_count = 0;
+</span><span class="add">+    add_desk(&amp;server);
+</span><span class="add">+    server.current_desk = wl_container_of(server.desks.next, server.current_desk, link);
+</span><span class="add">+
+</span><span class="add">+    // configure
+</span><span class="add">+    locate_config(&amp;server);
+</span><span class="add">+    load_config(&amp;server);
+</span><span class="add">+    set_up_outputs(&amp;server);
+</span><span class="add">+    set_up_shell(&amp;server);
+</span><span class="add">+    set_up_cursor(&amp;server);
+</span><span class="add">+    set_up_keyboard(&amp;server);
+</span><span class="add">+
+</span><span class="add">+    // start
+</span><span class="add">+    const char *socket = wl_display_add_socket_auto(server.display);
+</span><span class="add">+    if (!socket) {
+</span><span class="add">+	wlr_backend_destroy(server.backend);
+</span><span class="add">+	wl_display_destroy(server.display);
+</span><span class="add">+	return EXIT_FAILURE;
+</span><span class="add">+    }
+</span><span class="add">+    if (!wlr_backend_start(server.backend)) {
+</span><span class="add">+	wlr_backend_destroy(server.backend);
+</span><span class="add">+	wl_display_destroy(server.display);
+</span><span class="add">+	return 1;
+</span><span class="add">+    }
+</span><span class="add">+    setenv(&quot;WAYLAND_DISPLAY&quot;, socket, true);
+</span><span class="add">+    wlr_log(WLR_INFO, &quot;Starting with WAYLAND_DISPLAY=%s&quot;, socket);
+</span><span class="add">+    wl_display_run(server.display);
+</span><span class="add">+
+</span><span class="add">+    // stop
+</span><span class="add">+    wl_display_destroy_clients(server.display);
+</span><span class="add">+    wlr_backend_destroy(server.backend);
+</span><span class="add">+    wl_display_destroy(server.display);
+</span><span class="add">+    return EXIT_SUCCESS;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.h</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +0,0 @@
+<span class="sub">-#ifndef DESKWM_DESKWM_H
+</span><span class="sub">-#define DESKWM_DESKWM_H
+</span><span class="sub">-
+</span><span class="sub">-#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,118 +0,0 @@
+<span class="sub">-#include &lt;stdlib.h&gt;
+</span><span class="sub">-#include &lt;string.h&gt;
+</span><span class="sub">-#include &lt;unistd.h&gt;
+</span><span class="sub">-#include &lt;wlr/backend.h&gt;
+</span><span class="sub">-#include &lt;wlr/render/wlr_renderer.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_primary_selection_v1.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_screencopy_v1.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="sub">-#include &lt;wlr/util/log.h&gt;
+</span><span class="sub">-
+</span><span class="sub">-#include &quot;config.h&quot;
+</span><span class="sub">-#include &quot;cursor.h&quot;
+</span><span class="sub">-#include &quot;desk.h&quot;
+</span><span class="sub">-#include &quot;deskwm.h&quot;
+</span><span class="sub">-#include &quot;keyboard.h&quot;
+</span><span class="sub">-#include &quot;log.h&quot;
+</span><span class="sub">-#include &quot;output.h&quot;
+</span><span class="sub">-#include &quot;shell.h&quot;
+</span><span class="sub">-#include &quot;types.h&quot;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static const char usage[] =
+</span><span class="sub">-    &quot;usage: deskwm [options...]\n&quot;
+</span><span class="sub">-    &quot;    -h         show this help message\n&quot;
+</span><span class="sub">-    &quot;    -c &lt;file&gt;  specify config file\n&quot;
+</span><span class="sub">-    &quot;    -d         set logging to debug mode\n&quot;
+</span><span class="sub">-    &quot;    -i         set logging to info mode\n&quot;
+</span><span class="sub">-;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-int main(int argc, char *argv[])
+</span><span class="sub">-{
+</span><span class="sub">-    int opt;
+</span><span class="sub">-    int log_level = WLR_ERROR;
+</span><span class="sub">-    struct server server;
+</span><span class="sub">-    server.config_file = NULL;
+</span><span class="sub">-
+</span><span class="sub">-    while ((opt = getopt(argc, argv, &quot;hc:di&quot;)) != -1) {
+</span><span class="sub">-        switch (opt) {
+</span><span class="sub">-	    case &apos;h&apos;:
+</span><span class="sub">-		printf(usage);
+</span><span class="sub">-		return EXIT_SUCCESS;
+</span><span class="sub">-		break;
+</span><span class="sub">-	    case &apos;c&apos;:
+</span><span class="sub">-		server.config_file = strdup(optarg);
+</span><span class="sub">-		break;
+</span><span class="sub">-	    case &apos;d&apos;:
+</span><span class="sub">-		log_level = WLR_DEBUG;
+</span><span class="sub">-		break;
+</span><span class="sub">-	    case &apos;i&apos;:
+</span><span class="sub">-		log_level = WLR_INFO;
+</span><span class="sub">-		break;
+</span><span class="sub">-        }
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    init_log(log_level);
+</span><span class="sub">-
+</span><span class="sub">-    // create
+</span><span class="sub">-    server.display = wl_display_create();
+</span><span class="sub">-    server.backend = wlr_backend_autocreate(server.display, NULL);
+</span><span class="sub">-    server.renderer = wlr_backend_get_renderer(server.backend);
+</span><span class="sub">-    wlr_renderer_init_wl_display(server.renderer, server.display);
+</span><span class="sub">-    wlr_compositor_create(server.display, server.renderer);
+</span><span class="sub">-
+</span><span class="sub">-    // add some managers
+</span><span class="sub">-    wlr_screencopy_manager_v1_create(server.display);
+</span><span class="sub">-    wlr_data_device_manager_create(server.display);
+</span><span class="sub">-    wlr_primary_selection_v1_device_manager_create(server.display);
+</span><span class="sub">-
+</span><span class="sub">-    // initialise
+</span><span class="sub">-    wl_list_init(&amp;server.desks);
+</span><span class="sub">-    wl_list_init(&amp;server.key_bindings);
+</span><span class="sub">-    wl_list_init(&amp;server.mouse_bindings);
+</span><span class="sub">-    wl_list_init(&amp;server.marks);
+</span><span class="sub">-    server.mark_waiting = false;
+</span><span class="sub">-    server.on_mouse_motion = NULL;
+</span><span class="sub">-    server.on_mouse_scroll = NULL;
+</span><span class="sub">-    server.can_steal_focus = true;
+</span><span class="sub">-    server.mark_indicator.box.width = 25;
+</span><span class="sub">-    server.mark_indicator.box.height = 25;
+</span><span class="sub">-    server.mark_indicator.box.x = 0;
+</span><span class="sub">-    server.mark_indicator.box.y = 0;
+</span><span class="sub">-    server.desk_count = 0;
+</span><span class="sub">-    add_desk(&amp;server);
+</span><span class="sub">-    server.current_desk = wl_container_of(server.desks.next, server.current_desk, link);
+</span><span class="sub">-
+</span><span class="sub">-    // configure
+</span><span class="sub">-    locate_config(&amp;server);
+</span><span class="sub">-    load_config(&amp;server);
+</span><span class="sub">-    set_up_outputs(&amp;server);
+</span><span class="sub">-    set_up_shell(&amp;server);
+</span><span class="sub">-    set_up_cursor(&amp;server);
+</span><span class="sub">-    set_up_keyboard(&amp;server);
+</span><span class="sub">-
+</span><span class="sub">-    // start
+</span><span class="sub">-    const char *socket = wl_display_add_socket_auto(server.display);
+</span><span class="sub">-    if (!socket) {
+</span><span class="sub">-	wlr_backend_destroy(server.backend);
+</span><span class="sub">-	wl_display_destroy(server.display);
+</span><span class="sub">-	return EXIT_FAILURE;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (!wlr_backend_start(server.backend)) {
+</span><span class="sub">-	wlr_backend_destroy(server.backend);
+</span><span class="sub">-	wl_display_destroy(server.display);
+</span><span class="sub">-	return 1;
+</span><span class="sub">-    }
+</span><span class="sub">-    setenv(&quot;WAYLAND_DISPLAY&quot;, socket, true);
+</span><span class="sub">-    wlr_log(WLR_INFO, &quot;Starting with WAYLAND_DISPLAY=%s&quot;, socket);
+</span><span class="sub">-    wl_display_run(server.display);
+</span><span class="sub">-
+</span><span class="sub">-    // stop
+</span><span class="sub">-    wl_display_destroy_clients(server.display);
+</span><span class="sub">-    wlr_backend_destroy(server.backend);
+</span><span class="sub">-    wl_display_destroy(server.display);
+</span><span class="sub">-    return EXIT_SUCCESS;
+</span><span class="sub">-}
+</span></pre>
+</div></div>
+  </body>
+</html>

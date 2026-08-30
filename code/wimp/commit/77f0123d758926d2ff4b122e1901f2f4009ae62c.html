@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - go to the first desk when removing the last desk</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/77f0123d758926d2ff4b122e1901f2f4009ae62c.html">77f0123d758926d2ff4b122e1901f2f4009ae62c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/0cf9a850c1dbf81466a1b77c9f55610de567320d.html">0cf9a850c1dbf81466a1b77c9f55610de567320d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-06 23:32:22 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-06 23:32:22 +0000
+
+go to the first desk when removing the last desk
+</pre><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,7 +26,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static void remove_desk() {
+</span><span class="sub">-    struct desk *last = wl_container_of(wimp.desks.next, last, link);
+</span><span class="add">+    struct desk *last = wl_container_of(wimp.desks.prev, last, link);
+</span><span class="def">     if (last == wimp.current_desk) {
+</span><span class="def"> 	set_desk(wl_container_of(wimp.desks.next, last, link));
+</span><span class="def">     }
+</span>@@ -34,7 +34,6 @@
+<span class="def">     wl_list_for_each_safe(view, tview, &amp;last-&gt;views, link) {
+</span><span class="def"> 	view_to_desk(view, 0);
+</span><span class="def">     };
+</span><span class="sub">-    wl_list_init(&amp;last-&gt;link);
+</span><span class="def">     wl_list_remove(&amp;last-&gt;link);
+</span><span class="def">     free(last-&gt;wallpaper);
+</span><span class="def">     free(last);
+</span></pre>
+</div></div>
+  </body>
+</html>

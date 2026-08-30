@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - disable IRC and mutt scratchpads</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/feb4769b13586b18ede2932f742f7b896298cf0f.html">feb4769b13586b18ede2932f742f7b896298cf0f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/a96f482ec2bac0e0f53dac5b335a7010b744f10e.html">a96f482ec2bac0e0f53dac5b335a7010b744f10e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-07-29 18:51:27 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-07-29 18:51:33 +0100
+
+disable IRC and mutt scratchpads
+</pre><div class="diff">
+  <p>
+    <b>scratchpad.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,10 +38,10 @@
+<span class="def"> 
+</span><span class="def"> dropdowns = [
+</span><span class="def">     DropDown(&quot;tmux&quot;, term + &quot;tmux&quot;, height=0.4, **conf),
+</span><span class="sub">-    DropDown(&quot;irc&quot;, term + &quot;irc&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **conf),
+</span><span class="add">+    #DropDown(&quot;irc&quot;, term + &quot;irc&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **conf),
+</span><span class="def">     DropDown(&quot;ncmpcpp&quot;, term + &quot;ncmpcpp&quot;, x=0.12, y=0.2, width=0.56, height=0.7, **conf),
+</span><span class="def">     DropDown(&quot;python&quot;, term + &quot;python&quot;, x=0.05, y=0.1, width=0.2, height=0.3, **conf),
+</span><span class="sub">-    DropDown(&quot;email&quot;, mutt, x=0.1, y=0.05, width=0.8, height=0.9, **conf),
+</span><span class="add">+    #DropDown(&quot;email&quot;, mutt, x=0.1, y=0.05, width=0.8, height=0.9, **conf),
+</span><span class="def">     #DropDown(&quot;newsboat&quot;, term + &quot;newsboat&quot;, x=0.2, y=0.05, width=0.6, height=0.9, **conf),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -31,9 +31,9 @@
+<span class="def">     Group(&apos;1&apos;, label=&apos;term&apos;),
+</span><span class="def">     Group(&apos;2&apos;, label=&apos;term&apos;),
+</span><span class="def">     Group(&apos;3&apos;, label=&apos;term&apos;),
+</span><span class="sub">-    Group(&apos;q&apos;, label=&apos;surf&apos;, matches=[Match(wm_class=&apos;firefox&apos;)], layout=&apos;max&apos;),
+</span><span class="sub">-    Group(&apos;w&apos;, label=&apos;chat&apos;),
+</span><span class="sub">-    Group(&apos;e&apos;, label=&apos;toot&apos;, matches=[Match(wm_class=&apos;hyperspace desktop&apos;)]),
+</span><span class="add">+    Group(&apos;q&apos;, label=&apos;surf&apos;, matches=[Match(wm_class=&apos;firefox&apos;)]),
+</span><span class="add">+    Group(&apos;w&apos;, label=&apos;mail&apos;, matches=[Match(wm_class=&apos;geary&apos;), Match(title=&apos;Geary&apos;)]),
+</span><span class="add">+    Group(&apos;e&apos;, label=&apos;chat&apos;, matches=[Match(title=&apos;irc&apos;)]),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

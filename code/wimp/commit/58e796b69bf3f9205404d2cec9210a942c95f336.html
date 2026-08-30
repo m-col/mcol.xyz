@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Load defaults using load_config(), set up config reloading action</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/58e796b69bf3f9205404d2cec9210a942c95f336.html">58e796b69bf3f9205404d2cec9210a942c95f336</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/778af7f2d707ed8aa2590a49809e637205c380f7.html">778af7f2d707ed8aa2590a49809e637205c380f7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-23 00:06:56 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-23 00:06:56 +0000
+
+Load defaults using load_config(), set up config reloading action
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -33,6 +33,7 @@
+<span class="def">     struct wl_display *display;
+</span><span class="def">     struct wlr_backend *backend;
+</span><span class="def">     struct wlr_renderer *renderer;
+</span><span class="add">+    char *config_file;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_output_layout *output_layout;
+</span><span class="def">     struct wl_list outputs;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,6 +12,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;cursor.h&quot;
+</span><span class="add">+#include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;deskwm.h&quot;
+</span><span class="def"> #include &quot;keyboard.h&quot;
+</span><span class="def"> #include &quot;log.h&quot;
+</span>@@ -33,16 +34,17 @@
+<span class="def"> {
+</span><span class="def">     int opt;
+</span><span class="def">     int log_level = WLR_ERROR;
+</span><span class="sub">-    char *config = NULL;
+</span><span class="add">+    struct server server;
+</span><span class="add">+    server.config_file = NULL;
+</span><span class="def"> 
+</span><span class="sub">-    while ((opt = getopt(argc, argv, &quot;hcdi&quot;)) != -1) {
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;hc:di&quot;)) != -1) {
+</span><span class="def">         switch (opt) {
+</span><span class="def"> 	    case &apos;h&apos;:
+</span><span class="def"> 		printf(usage);
+</span><span class="def"> 		return EXIT_SUCCESS;
+</span><span class="def"> 		break;
+</span><span class="def"> 	    case &apos;c&apos;:
+</span><span class="sub">-		config = strdup(optarg);
+</span><span class="add">+		server.config_file = strdup(optarg);
+</span><span class="def"> 		break;
+</span><span class="def"> 	    case &apos;d&apos;:
+</span><span class="def"> 		log_level = WLR_DEBUG;
+</span>@@ -56,7 +58,6 @@
+<span class="def">     init_log(log_level);
+</span><span class="def"> 
+</span><span class="def">     // create
+</span><span class="sub">-    struct server server;
+</span><span class="def">     server.display = wl_display_create();
+</span><span class="def">     server.backend = wlr_backend_autocreate(server.display, NULL);
+</span><span class="def">     server.renderer = wlr_backend_get_renderer(server.backend);
+</span>@@ -68,14 +69,27 @@
+<span class="def">     wlr_data_device_manager_create(server.display);
+</span><span class="def">     wlr_primary_selection_v1_device_manager_create(server.display);
+</span><span class="def"> 
+</span><span class="add">+    // initialise
+</span><span class="def">     wl_list_init(&amp;server.desks);
+</span><span class="add">+    wl_list_init(&amp;server.key_bindings);
+</span><span class="add">+    wl_list_init(&amp;server.mouse_bindings);
+</span><span class="add">+    wl_list_init(&amp;server.marks);
+</span><span class="add">+    server.mark_waiting = false;
+</span><span class="add">+    server.on_mouse_motion = NULL;
+</span><span class="add">+    server.on_mouse_scroll = NULL;
+</span><span class="def">     server.can_steal_focus = true;
+</span><span class="sub">-
+</span><span class="sub">-    // read config
+</span><span class="sub">-    load_config(&amp;server, config);
+</span><span class="sub">-    free(config);
+</span><span class="add">+    server.mark_indicator.box.width = 25;
+</span><span class="add">+    server.mark_indicator.box.height = 25;
+</span><span class="add">+    server.mark_indicator.box.x = 0;
+</span><span class="add">+    server.mark_indicator.box.y = 0;
+</span><span class="add">+    server.desk_count = 0;
+</span><span class="add">+    add_desk(&amp;server);
+</span><span class="add">+    server.current_desk = wl_container_of(server.desks.next, server.current_desk, link);
+</span><span class="def"> 
+</span><span class="def">     // configure
+</span><span class="add">+    load_defaults(&amp;server);
+</span><span class="add">+    locate_config(&amp;server);
+</span><span class="add">+    load_config(&amp;server, NULL);
+</span><span class="def">     set_up_outputs(&amp;server);
+</span><span class="def">     set_up_shell(&amp;server);
+</span><span class="def">     set_up_cursor(&amp;server);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,6 +4,8 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> void assign_colour(char *hex, float dest[4]);
+</span><span class="sub">-void load_config(struct server *server, char *config);
+</span><span class="add">+void load_defaults(struct server *server);
+</span><span class="add">+void load_config(struct server *server, FILE *stream);
+</span><span class="add">+void locate_config(struct server *server);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,6 +14,17 @@
+<span class="def"> #define is_decimal(s) (strspn(s, &quot;0123456789.&quot;) == strlen(s))
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static const char *DEFAULT_CONFIG =  &quot;\n\
+</span><span class="add">+zoom_min 0.5\n\
+</span><span class="add">+zoom_max 3\n\
+</span><span class="add">+mark_indicator #000000\n\
+</span><span class="add">+vt_switching on\n\
+</span><span class="add">+set_modifier Logo\n\
+</span><span class="add">+bind Ctrl Escape shutdown\n\
+</span><span class="add">+scroll_direction natural\n\
+</span><span class="add">+&quot;;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> enum wlr_keyboard_modifier modifier_by_name(char *mod) {
+</span><span class="def">     if (strcasecmp(mod, &quot;shift&quot;) == 0)
+</span><span class="def"> 	return WLR_MODIFIER_SHIFT;
+</span>@@ -97,6 +108,8 @@
+<span class="def"> 	kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="def"> 	*(enum direction *)(kb-&gt;data) = direction_from_name(data);
+</span><span class="def">     }
+</span><span class="add">+    else if (strcasecmp(name, &quot;reload_config&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;reload_config;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -109,6 +122,14 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void free_binding(struct binding *kb) {
+</span><span class="add">+    if (kb-&gt;data)
+</span><span class="add">+	free(kb-&gt;data);
+</span><span class="add">+    wl_list_remove(&amp;kb-&gt;link);
+</span><span class="add">+    free(kb);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void add_binding(struct server *server, char *data, int line) {
+</span><span class="def">     struct binding *kb = calloc(1, sizeof(struct binding));
+</span><span class="def">     enum wlr_keyboard_modifier mod;
+</span>@@ -149,18 +170,16 @@
+<span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    struct binding *kb_existing;
+</span><span class="add">+    struct binding *kb_existing, *tmp;
+</span><span class="def">     struct wl_list *bindings;
+</span><span class="def">     if (is_mouse_binding) {
+</span><span class="def"> 	bindings = &amp;server-&gt;mouse_bindings;
+</span><span class="def">     } else {
+</span><span class="def"> 	bindings = &amp;server-&gt;key_bindings;
+</span><span class="def">     }
+</span><span class="sub">-    wl_list_for_each(kb_existing, bindings, link) {
+</span><span class="add">+    wl_list_for_each_safe(kb_existing, tmp, bindings, link) {
+</span><span class="def"> 	if (kb_existing-&gt;key == kb-&gt;key &amp;&amp; kb_existing-&gt;mods == kb-&gt;mods) {
+</span><span class="sub">-	    wlr_log(WLR_ERROR, &quot;Config line %i: binding exists for key combo.&quot;, line);
+</span><span class="sub">-	    free(kb);
+</span><span class="sub">-	    return;
+</span><span class="add">+	    free_binding(kb_existing);
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def">     wl_list_insert(bindings-&gt;prev, &amp;kb-&gt;link);
+</span>@@ -234,31 +253,6 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void set_defaults(struct server *server) {
+</span><span class="sub">-    add_desk(server);
+</span><span class="sub">-    server-&gt;current_desk =
+</span><span class="sub">-	wl_container_of(server-&gt;desks.next, server-&gt;current_desk, link);
+</span><span class="sub">-
+</span><span class="sub">-    server-&gt;mod = WLR_MODIFIER_LOGO;
+</span><span class="sub">-    wl_list_init(&amp;server-&gt;key_bindings);
+</span><span class="sub">-    wl_list_init(&amp;server-&gt;mouse_bindings);
+</span><span class="sub">-    server-&gt;on_mouse_motion = NULL;
+</span><span class="sub">-    server-&gt;on_mouse_scroll = NULL;
+</span><span class="sub">-    server-&gt;zoom_min = 0.5;
+</span><span class="sub">-    server-&gt;zoom_max = 3;
+</span><span class="sub">-    server-&gt;reverse_scrolling = false;
+</span><span class="sub">-    server-&gt;vt_switching = true;
+</span><span class="sub">-
+</span><span class="sub">-    wl_list_init(&amp;server-&gt;marks);
+</span><span class="sub">-    server-&gt;mark_waiting = false;
+</span><span class="sub">-    assign_colour(&quot;#000000&quot;, server-&gt;mark_indicator.colour);
+</span><span class="sub">-    server-&gt;mark_indicator.box.width = 25;
+</span><span class="sub">-    server-&gt;mark_indicator.box.height = 25;
+</span><span class="sub">-    server-&gt;mark_indicator.box.x = 0;
+</span><span class="sub">-    server-&gt;mark_indicator.box.y = 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> static void setup_vt_switching(struct server *server) {
+</span><span class="def">     if (!server-&gt;vt_switching)
+</span><span class="def"> 	return;
+</span>@@ -304,32 +298,29 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void load_config(struct server *server, char *config) {
+</span><span class="sub">-    set_defaults(server);
+</span><span class="add">+void load_defaults(struct server *server) {
+</span><span class="add">+    char *buffer = NULL;
+</span><span class="add">+    size_t size = 0;
+</span><span class="add">+    FILE *stream = open_memstream(&amp;buffer, &amp;size);
+</span><span class="add">+    fprintf(stream, DEFAULT_CONFIG);
+</span><span class="add">+    rewind(stream);
+</span><span class="add">+    load_config(server, stream);
+</span><span class="add">+    free(buffer);
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="sub">-    if (config == NULL) {
+</span><span class="sub">-	char *xdg_config_home = getenv(&quot;XDG_CONFIG_HOME&quot;);
+</span><span class="sub">-	if (xdg_config_home &amp;&amp; *xdg_config_home) {
+</span><span class="sub">-	    config = &quot;$XDG_CONFIG_HOME/.config/deskwm.conf&quot;;
+</span><span class="sub">-	} else {
+</span><span class="sub">-	    config = &quot;$HOME/.config/deskwm.conf&quot;;
+</span><span class="sub">-	}
+</span><span class="sub">-    };
+</span><span class="sub">-    wordexp_t p;
+</span><span class="sub">-    wordexp(config, &amp;p, WRDE_NOCMD | WRDE_UNDEF);
+</span><span class="def"> 
+</span><span class="sub">-    if (access(p.we_wordv[0], R_OK) == -1) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;%s not accessible. Using defaults.&quot;, p.we_wordv[0]);
+</span><span class="sub">-	wordfree(&amp;p);
+</span><span class="sub">-	return;
+</span><span class="add">+void load_config(struct server *server, FILE *stream) {
+</span><span class="add">+    if (stream == NULL) {
+</span><span class="add">+	if (server-&gt;config_file == NULL) {
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+	stream = fopen(server-&gt;config_file, &quot;r&quot;);
+</span><span class="def">     }
+</span><span class="sub">-    FILE *fd = fopen(p.we_wordv[0], &quot;r&quot;);
+</span><span class="sub">-    wordfree(&amp;p);
+</span><span class="sub">-
+</span><span class="def">     char *s;
+</span><span class="def">     char linebuf[1024];
+</span><span class="def">     int line = 0;
+</span><span class="sub">-    while (fgets(linebuf, sizeof(linebuf), fd)) {
+</span><span class="add">+
+</span><span class="add">+    while (fgets(linebuf, sizeof(linebuf), stream)) {
+</span><span class="def"> 	line++;
+</span><span class="def"> 	if (!(s = strtok(linebuf, &quot; \t\n\r&quot;)) || s[0] == &apos;#&apos;) {
+</span><span class="def"> 	    continue;
+</span>@@ -366,7 +357,34 @@
+<span class="def"> 		server-&gt;vt_switching = false;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="sub">-    fclose(fd);
+</span><span class="add">+    fclose(stream);
+</span><span class="def"> 
+</span><span class="def">     setup_vt_switching(server);
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void locate_config(struct server *server)
+</span><span class="add">+{
+</span><span class="add">+    char *config;
+</span><span class="add">+    char *xdg_config;
+</span><span class="add">+
+</span><span class="add">+    if (server-&gt;config_file == NULL) {
+</span><span class="add">+	xdg_config = getenv(&quot;XDG_CONFIG_HOME&quot;);
+</span><span class="add">+	config = (xdg_config &amp;&amp; *xdg_config) ?
+</span><span class="add">+	    &quot;$XDG_CONFIG_HOME/.config/deskwm.conf&quot; : &quot;$HOME/.config/deskwm.conf&quot;;
+</span><span class="add">+	server-&gt;config_file = strdup(config);
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    wordexp_t p;
+</span><span class="add">+    wordexp(server-&gt;config_file, &amp;p, WRDE_NOCMD | WRDE_UNDEF);
+</span><span class="add">+    free(server-&gt;config_file);
+</span><span class="add">+
+</span><span class="add">+    if (access(p.we_wordv[0], R_OK) == -1) {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;%s not accessible. Using defaults.&quot;, p.we_wordv[0]);
+</span><span class="add">+	server-&gt;config_file = NULL;
+</span><span class="add">+    } else {
+</span><span class="add">+	server-&gt;config_file = strdup(p.we_wordv[0]);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    wordfree(&amp;p);
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,5 +20,6 @@
+<span class="def"> void actually_go_to_mark(struct server *server, const xkb_keysym_t sym);
+</span><span class="def"> void toggle_fullscreen(struct server *server, void *data);
+</span><span class="def"> void halfimize(struct server *server, void *data);
+</span><span class="add">+void reload_config(struct server *server, void *data);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,6 +4,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;action.h&quot;
+</span><span class="add">+#include &quot;config.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span>@@ -290,3 +291,9 @@
+<span class="def">     view-&gt;y = (y - view-&gt;surface-&gt;geometry.y) / zoom;
+</span><span class="def">     wlr_xdg_toplevel_set_size(view-&gt;surface, width / zoom, height / zoom);
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void reload_config(struct server *server, void *data) {
+</span><span class="add">+    load_defaults(server);
+</span><span class="add">+    load_config(server, NULL);
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,8 +16,6 @@
+<span class="def"> To do list:
+</span><span class="def">  - border decorations
+</span><span class="def">  - make configuration much nicer and remove all the strcmps
+</span><span class="sub">- - read default configuration as string
+</span><span class="sub">-    - then add action to read config
+</span><span class="def">  - fix issue where Shift-using key bindings require pre-shifted key in config
+</span><span class="def">  - pan desk when focussing window in direction that isn&apos;t in view
+</span><span class="def">  - xwayland
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -35,6 +35,7 @@
+<span class="def"> # Define key bindings
+</span><span class="def"> # additional modifiers, key, action(, data)
+</span><span class="def"> bind	Ctrl	Escape		shutdown
+</span><span class="add">+bind	Ctrl	r		reload_config
+</span><span class="def"> 
+</span><span class="def"> # These actions act on windows
+</span><span class="def"> bind	Ctrl	q		close_current_window
+</span></pre>
+</div></div>
+  </body>
+</html>

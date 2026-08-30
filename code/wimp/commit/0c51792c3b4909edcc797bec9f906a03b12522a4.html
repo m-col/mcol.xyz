@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - unfullscreen when zooming/panning/focussing etc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/0c51792c3b4909edcc797bec9f906a03b12522a4.html">0c51792c3b4909edcc797bec9f906a03b12522a4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/2e9b3d1167c2cf54e70006506cd3042ac6a0b7c2.html">2e9b3d1167c2cf54e70006506cd3042ac6a0b7c2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-31 20:15:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-31 20:15:06 +0000
+
+unfullscreen when zooming/panning/focussing etc
+</pre><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,6 +10,7 @@
+<span class="def"> void fullscreen_xdg_surface(
+</span><span class="def">     struct view *view, struct wlr_xdg_surface *xdg_surface, struct wlr_output *output
+</span><span class="def"> );
+</span><span class="add">+void unfullscreen();
+</span><span class="def"> void set_up_shell();
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -113,6 +113,13 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void unfullscreen() {
+</span><span class="add">+    if (wimp.current_desk-&gt;fullscreened != NULL) {
+</span><span class="add">+	toggle_fullscreen(NULL);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void on_map(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, map_listener);
+</span><span class="def">     if (wimp.can_steal_focus)
+</span>@@ -132,6 +139,9 @@
+<span class="def"> 
+</span><span class="def"> static void on_surface_destroy(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, destroy_listener);
+</span><span class="add">+    if (wimp.current_desk-&gt;fullscreened == view-&gt;surface) {
+</span><span class="add">+	wimp.current_desk-&gt;fullscreened = NULL;
+</span><span class="add">+    }
+</span><span class="def">     wl_list_remove(&amp;view-&gt;link);
+</span><span class="def">     free(view);
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -99,6 +99,7 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     if (next) {
+</span><span class="add">+	unfullscreen();
+</span><span class="def"> 	pan_to_view(next);
+</span><span class="def"> 	focus_view(next, next-&gt;surface-&gt;surface);
+</span><span class="def">     }
+</span>@@ -138,6 +139,7 @@
+<span class="def"> 	dx = extents-&gt;width * (dx / 100);
+</span><span class="def"> 	dy = extents-&gt;height * (dy / 100);
+</span><span class="def">     }
+</span><span class="add">+    unfullscreen();
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="def"> 	view-&gt;x -= dx;
+</span>@@ -151,6 +153,10 @@
+<span class="def"> void reset_zoom(void *data) {
+</span><span class="def">     struct desk *desk = wimp.current_desk;
+</span><span class="def">     double f = 1 / desk-&gt;zoom;
+</span><span class="add">+    if (f == 1) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+    unfullscreen();
+</span><span class="def">     struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span><span class="def">     double fx = extents-&gt;width * (f - 1) / 2;
+</span><span class="def">     double fy = extents-&gt;height * (f - 1) / 2;
+</span>@@ -175,6 +181,7 @@
+<span class="def">     ) {
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="add">+    unfullscreen();
+</span><span class="def">     desk-&gt;zoom *= f;
+</span><span class="def">     double fx = wimp.cursor-&gt;x * (f - 1) / desk-&gt;zoom;
+</span><span class="def">     double fy = wimp.cursor-&gt;y * (f - 1) / desk-&gt;zoom;
+</span>@@ -263,6 +270,7 @@
+<span class="def"> 
+</span><span class="def">     wl_list_for_each(mark, &amp;wimp.marks, link) {
+</span><span class="def"> 	if (mark-&gt;key == sym) {
+</span><span class="add">+	    unfullscreen();
+</span><span class="def"> 	    struct motion motion = {
+</span><span class="def"> 		.dx = mark-&gt;desk-&gt;panned_x - mark-&gt;x,
+</span><span class="def"> 		.dy = mark-&gt;desk-&gt;panned_y - mark-&gt;y,
+</span>@@ -293,17 +301,13 @@
+<span class="def"> 	return;
+</span><span class="def"> 
+</span><span class="def">     struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="sub">-
+</span><span class="sub">-    if (wimp.current_desk-&gt;fullscreened == view-&gt;surface) {
+</span><span class="sub">-	fullscreen_xdg_surface(view, view-&gt;surface, NULL);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="def">     enum direction dir = *(enum direction*)data;
+</span><span class="def">     double vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="def">     double vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="def">     double x, y, width, height;
+</span><span class="def">     wlr_output_layout_closest_point(wimp.output_layout, NULL, vx, vy, &amp;x, &amp;y);
+</span><span class="def">     struct wlr_output *output = wlr_output_layout_output_at(wimp.output_layout, x, y);
+</span><span class="add">+    unfullscreen();
+</span><span class="def"> 
+</span><span class="def">     switch (dir) {
+</span><span class="def"> 	case RIGHT:
+</span>@@ -353,5 +357,6 @@
+<span class="def"> void send_to_desk(void *data) {
+</span><span class="def">     struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="def">     int index = *(double*)data - 1;
+</span><span class="add">+    unfullscreen();
+</span><span class="def">     view_to_desk(view, index);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

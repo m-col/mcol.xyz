@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - temp fix: use local haskell-gi from source</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/4922c6351ff54e1b6ac87da32521d7405a3017dd.html">4922c6351ff54e1b6ac87da32521d7405a3017dd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/10df6b8e2b661777b5efe782b007c991f68e2c52.html">10df6b8e2b661777b5efe782b007c991f68e2c52</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-02 16:01:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-02 16:01:36 +0000
+
+temp fix: use local haskell-gi from source
+</pre><div class="diff">
+  <p>
+    <b>stack.yaml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,11 +2,25 @@
+<span class="def">   url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/5.yaml
+</span><span class="def"> 
+</span><span class="def"> packages:
+</span><span class="sub">-- .
+</span><span class="add">+ - ../haskell-gi/base/
+</span><span class="add">+ - ../haskell-gi/
+</span><span class="add">+ - ../haskell-gi/bindings/GLib/
+</span><span class="add">+ - ../haskell-gi/bindings/GModule/
+</span><span class="add">+ - ../haskell-gi/bindings/GObject/
+</span><span class="add">+ - ../haskell-gi/bindings/Atk/
+</span><span class="add">+ - ../haskell-gi/bindings/Gio/
+</span><span class="add">+ - ../haskell-gi/bindings/cairo/
+</span><span class="add">+ - ../haskell-gi/bindings/HarfBuzz/
+</span><span class="add">+ - ../haskell-gi/bindings/Pango/
+</span><span class="add">+ - ../haskell-gi/bindings/GdkPixbuf/
+</span><span class="add">+ - ../haskell-gi/bindings/Gtk-3.0/
+</span><span class="add">+ - ../haskell-gi/bindings/Gdk-3.0/
+</span><span class="add">+ - ../haskell-gi/bindings/GtkLayerShell/
+</span><span class="add">+ - ./
+</span><span class="def"> 
+</span><span class="def"> # These options are from the Kowainik style guide.
+</span><span class="def"> ghc-options:
+</span><span class="sub">-  &quot;$locals&quot;: -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+</span><span class="add">+  &quot;xanadu&quot;: -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+</span><span class="def">     -Wincomplete-record-updates -Wredundant-constraints -Wpartial-fields
+</span><span class="def">     -Wmissing-deriving-strategies -Wunused-packages -fno-warn-unused-do-bind
+</span><span class="def">     -fno-warn-orphans
+</span></pre>
+</div></div>
+  </body>
+</html>

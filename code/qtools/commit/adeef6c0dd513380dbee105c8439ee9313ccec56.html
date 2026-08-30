@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add habit tracker widget</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/adeef6c0dd513380dbee105c8439ee9313ccec56.html">adeef6c0dd513380dbee105c8439ee9313ccec56</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/5cfd45707dda9a4f7242691d8368c875f9ef879f.html">5cfd45707dda9a4f7242691d8368c875f9ef879f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-22 18:25:43 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-22 18:25:43 +0100
+
+add habit tracker widget
+</pre><div class="diff">
+  <p>
+    <b>qtools/widget/habit_tracker.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,180 @@
+<span class="add">+# Copyright (c) 2020 Matt Colligan
+</span><span class="add">+#
+</span><span class="add">+# Permission is hereby granted, free of charge, to any person obtaining a copy
+</span><span class="add">+# of this software and associated documentation files (the &quot;Software&quot;), to deal
+</span><span class="add">+# in the Software without restriction, including without limitation the rights
+</span><span class="add">+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+</span><span class="add">+# copies of the Software, and to permit persons to whom the Software is
+</span><span class="add">+# furnished to do so, subject to the following conditions:
+</span><span class="add">+#
+</span><span class="add">+# The above copyright notice and this permission notice shall be included in
+</span><span class="add">+# all copies or substantial portions of the Software.
+</span><span class="add">+#
+</span><span class="add">+# THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+</span><span class="add">+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+</span><span class="add">+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+</span><span class="add">+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+</span><span class="add">+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+</span><span class="add">+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+</span><span class="add">+# SOFTWARE.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import json
+</span><span class="add">+import os
+</span><span class="add">+from datetime import datetime, timedelta
+</span><span class="add">+
+</span><span class="add">+from libqtile import bar
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from libqtile.utils import get_cache_dir
+</span><span class="add">+from libqtile.widget import base
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+_CACHE = os.path.join(get_cache_dir(), &apos;habit_tracker_count.json&apos;)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class HabitTracker(base._Widget):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    A don&apos;t-break-the-chain style habit tracker widget.
+</span><span class="add">+
+</span><span class="add">+    The current chain lengths are stored in a JSON file containing a dictionary where
+</span><span class="add">+    each key is the name of a habit. This habit can be passed to the widget to identify
+</span><span class="add">+    a chain.
+</span><span class="add">+
+</span><span class="add">+    The chain can be drawn in different styles:
+</span><span class="add">+
+</span><span class="add">+        - &quot;chain&quot;: A simple chain of connected squares that grows through the grid as it
+</span><span class="add">+          increases in length.
+</span><span class="add">+        - &quot;base&quot;: A grid of squares where each column represents one digit in a counting
+</span><span class="add">+          scheme using the base (rows + 1). For example, HabitTracker(rows=1) would draw
+</span><span class="add">+          a single row of squares that are filled in to represent a binary count.
+</span><span class="add">+
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&quot;colour&quot;, &quot;1667EB&quot;, &quot;Fill colour.&quot;),
+</span><span class="add">+        (&quot;chain_file&quot;, _CACHE, &quot;File that stores the chain lengths.&quot;),
+</span><span class="add">+        (&quot;habit&quot;, &quot;anon&quot;, &quot;Habit name. Used for identifying the chain in the cache file.&quot;),
+</span><span class="add">+        (&quot;margin_x&quot;, 4, &quot;X margin.&quot;),
+</span><span class="add">+        (&quot;margin_y&quot;, 4, &quot;Y margin.&quot;),
+</span><span class="add">+        (&quot;style&quot;, &quot;chain&quot;, &quot;Counter style, one of: chain, base&quot;),
+</span><span class="add">+        (&quot;rows&quot;, 2, &quot;Number of rows.&quot;),
+</span><span class="add">+        (&quot;columns&quot;, 4, &quot;Number of columns.&quot;),
+</span><span class="add">+        (&quot;blank_colour&quot;, None, &quot;Colour for placeholder blocks.&quot;),
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        base._Widget.__init__(self, bar.CALCULATED, **config)
+</span><span class="add">+        self.add_defaults(HabitTracker.defaults)
+</span><span class="add">+        self._chain = self._load_chain()
+</span><span class="add">+        self._block_size = 0
+</span><span class="add">+
+</span><span class="add">+        if not hasattr(self, &quot;draw_{0}&quot;.format(self.style)):
+</span><span class="add">+            logger.warning(&quot;HabitTracker style &apos;{0}&apos; invalid.&quot;.format(self.style))
+</span><span class="add">+            self.style = &quot;chain&quot;
+</span><span class="add">+
+</span><span class="add">+        if &apos;Button1&apos; not in self.mouse_callbacks:
+</span><span class="add">+            self.mouse_callbacks.update({&apos;Button1&apos;: self.cmd_increment})
+</span><span class="add">+        if &apos;Button2&apos; not in self.mouse_callbacks:
+</span><span class="add">+            self.mouse_callbacks.update({&apos;Button2&apos;: self.cmd_reset})
+</span><span class="add">+        if &apos;Button3&apos; not in self.mouse_callbacks:
+</span><span class="add">+            self.mouse_callbacks.update({&apos;Button3&apos;: self.cmd_decrement})
+</span><span class="add">+
+</span><span class="add">+    def _load_chain(self):
+</span><span class="add">+        if not os.path.isfile(self.chain_file):
+</span><span class="add">+            return 0
+</span><span class="add">+        with open(self.chain_file, &apos;r&apos;) as fd:
+</span><span class="add">+            cache = json.load(fd)
+</span><span class="add">+            if self.habit not in cache.keys():
+</span><span class="add">+                return 0
+</span><span class="add">+            start_date = datetime.strptime(cache.get(self.habit), &quot;%Y-%m-%d&quot;)
+</span><span class="add">+            return (datetime.now() - start_date).days
+</span><span class="add">+
+</span><span class="add">+    def _save_chain(self):
+</span><span class="add">+        cache = {}
+</span><span class="add">+        if os.path.isfile(self.chain_file):
+</span><span class="add">+            with open(self.chain_file, &apos;r&apos;) as fd:
+</span><span class="add">+                cache.update(json.load(fd))
+</span><span class="add">+        start_date = datetime.now() - timedelta(days=self._chain)
+</span><span class="add">+        cache.update({self.habit: start_date.strftime(&quot;%Y-%m-%d&quot;)})
+</span><span class="add">+        with open(self.chain_file, &apos;w&apos;) as fd:
+</span><span class="add">+            json.dump(cache, fd)
+</span><span class="add">+
+</span><span class="add">+    def cmd_increment(self, qtile=None):
+</span><span class="add">+        self._chain += 1
+</span><span class="add">+        self._save_chain()
+</span><span class="add">+        self.draw()
+</span><span class="add">+
+</span><span class="add">+    def cmd_decrement(self, qtile=None):
+</span><span class="add">+        if self._chain &gt; 0:
+</span><span class="add">+            self._chain -= 1
+</span><span class="add">+            self._save_chain()
+</span><span class="add">+            self.draw()
+</span><span class="add">+
+</span><span class="add">+    def cmd_reset(self, qtile=None):
+</span><span class="add">+        self._chain = 0
+</span><span class="add">+        self._save_chain()
+</span><span class="add">+        self.draw()
+</span><span class="add">+
+</span><span class="add">+    def calculate_length(self):
+</span><span class="add">+        space = self.bar.height - self.margin_y * 2
+</span><span class="add">+        self._block_size = space // (2 * self.rows - 1)
+</span><span class="add">+        length = self._block_size * (2 * self.columns - 1)
+</span><span class="add">+        return length + self.margin_x * 2
+</span><span class="add">+
+</span><span class="add">+    def draw(self):
+</span><span class="add">+        self.drawer.clear(self.background or self.bar.background)
+</span><span class="add">+        getattr(self, &quot;draw_{0}&quot;.format(self.style))()
+</span><span class="add">+
+</span><span class="add">+    def draw_chain(self):
+</span><span class="add">+        block_size = self._block_size
+</span><span class="add">+        start_y = self.bar.height - self.margin_y - block_size
+</span><span class="add">+
+</span><span class="add">+        if self.blank_colour:
+</span><span class="add">+            self.drawer.set_source_rgb(self.blank_colour)
+</span><span class="add">+            for col in range(self.columns):
+</span><span class="add">+                x_pos = self.margin_x + col * 2 * block_size
+</span><span class="add">+                for row in range(self.rows):
+</span><span class="add">+                    y_pos = start_y - row * 2 * block_size
+</span><span class="add">+                    self.drawer.ctx.rectangle(x_pos, y_pos, block_size, block_size)
+</span><span class="add">+            self.drawer.ctx.fill()
+</span><span class="add">+
+</span><span class="add">+        self.drawer.set_source_rgb(self.colour)
+</span><span class="add">+        chain = self._chain
+</span><span class="add">+        for col in range(chain // self.rows + 1):
+</span><span class="add">+            x_pos = self.margin_x + col * 2 * block_size
+</span><span class="add">+            this_col = min(chain - col * self.rows, self.rows)
+</span><span class="add">+            rows = range(this_col)
+</span><span class="add">+            if col % 2:
+</span><span class="add">+                rows = [self.rows - 1 - i for i in rows]
+</span><span class="add">+            for row in rows:
+</span><span class="add">+                chain % ((col + 1) * self.rows)
+</span><span class="add">+                y_pos = start_y - row * 2 * block_size
+</span><span class="add">+                self.drawer.ctx.rectangle(x_pos, y_pos, block_size, block_size)
+</span><span class="add">+
+</span><span class="add">+        self.drawer.ctx.fill()
+</span><span class="add">+        self.drawer.draw(offsetx=self.offset, width=self.length)
+</span><span class="add">+
+</span><span class="add">+    def draw_base(self):
+</span><span class="add">+        block_size = self._block_size
+</span><span class="add">+        start_y = self.bar.height - self.margin_y - block_size
+</span><span class="add">+
+</span><span class="add">+        if self.blank_colour:
+</span><span class="add">+            self.drawer.set_source_rgb(self.blank_colour)
+</span><span class="add">+            for col in range(self.columns):
+</span><span class="add">+                x_pos = self.margin_x + col * 2 * block_size
+</span><span class="add">+                for row in range(self.rows):
+</span><span class="add">+                    y_pos = start_y - row * 2 * block_size
+</span><span class="add">+                    self.drawer.ctx.rectangle(x_pos, y_pos, block_size, block_size)
+</span><span class="add">+            self.drawer.ctx.fill()
+</span><span class="add">+
+</span><span class="add">+        self.drawer.set_source_rgb(self.colour)
+</span><span class="add">+        chain = self._chain
+</span><span class="add">+        for col in reversed(range(self.columns)):
+</span><span class="add">+            units, chain = divmod(chain, (self.rows + 1) ** col)
+</span><span class="add">+            if units:
+</span><span class="add">+                x_pos = self.margin_x + col * 2 * block_size
+</span><span class="add">+                for row in range(units):
+</span><span class="add">+                    y_pos = start_y - row * 2 * block_size
+</span><span class="add">+                    self.drawer.ctx.rectangle(x_pos, y_pos, block_size, block_size)
+</span><span class="add">+
+</span><span class="add">+        self.drawer.ctx.fill()
+</span><span class="add">+        self.drawer.draw(offsetx=self.offset, width=self.length)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/widget/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+from .habit_tracker import HabitTracker
+</span><span class="add">+__all__ = (&apos;HabitTracker&apos;,)
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - don&apos;t change focus when changing desks</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/8d6521d17956052473d173e77655a717b19a75b2.html">8d6521d17956052473d173e77655a717b19a75b2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/1cec4446c1cd7f707e42bee1368416717f062218.html">1cec4446c1cd7f707e42bee1368416717f062218</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-22 19:02:41 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-22 19:02:41 +0000
+
+don&apos;t change focus when changing desks
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,6 +38,7 @@
+<span class="def">     struct wl_list desks;
+</span><span class="def">     int desk_count;
+</span><span class="def">     struct desk *current_desk;
+</span><span class="add">+    bool can_steal_focus;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,7 +44,8 @@
+<span class="def"> 
+</span><span class="def"> void on_map(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, map_listener);
+</span><span class="sub">-    focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+    if (view-&gt;server-&gt;can_steal_focus)
+</span><span class="add">+	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> void on_unmap(struct wl_listener *listener, void *data) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,6 +44,7 @@
+<span class="def">     wlr_compositor_create(server.display, server.renderer);
+</span><span class="def">     wlr_data_device_manager_create(server.display);
+</span><span class="def">     wl_list_init(&amp;server.desks);
+</span><span class="add">+    server.can_steal_focus = false;
+</span><span class="def"> 
+</span><span class="def">     // read config
+</span><span class="def">     load_config(&amp;server, config);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,7 +23,9 @@
+<span class="def"> 	unmap_view(view);
+</span><span class="def">     }
+</span><span class="def">     server-&gt;current_desk = desk;
+</span><span class="add">+    server-&gt;can_steal_focus = false;
+</span><span class="def">     wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="def"> 	map_view(view);
+</span><span class="def">     }
+</span><span class="add">+    server-&gt;can_steal_focus = true;
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - zsh fzf</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/a377e15353a3f5d3ff86d63d015b506212818a92.html">a377e15353a3f5d3ff86d63d015b506212818a92</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/f0d2bde6961f5920ebbb08cb4c1d270a87eee681.html">f0d2bde6961f5920ebbb08cb4c1d270a87eee681</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt.colligan@encord.com">matt.colligan@encord.com</a>&gt;
+<b>Date:</b> 2025-05-15 18:08:42 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt.colligan@encord.com">matt.colligan@encord.com</a>&gt;
+<b>Committed:</b> 2025-05-15 18:08:42 +0100
+
+zsh fzf
+</pre><div class="diff">
+  <p>
+    <b>fzf.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,11 +9,22 @@
+<span class="def">     #bindkey -s &apos;^t&apos; &quot;fv\n&quot;
+</span><span class="def">     #export FZF_CTRL_T_COMMAND=&quot;&quot;
+</span><span class="def"> 
+</span><span class="add">+	#--preview &apos;bat -n --color=always {}&apos;
+</span><span class="add">+	#--bind &apos;ctrl-/:change-preview-window(down|hidden|)&apos;
+</span><span class="def">     export FZF_DEFAULT_OPTS=&quot;
+</span><span class="sub">-	--preview &apos;bat -n --color=always {}&apos;
+</span><span class="sub">-	--bind &apos;ctrl-/:change-preview-window(down|hidden|)&apos;
+</span><span class="def"> 	--tmux
+</span><span class="def"> 	--walker-skip .git,node_modules,target,.mypy_cache,.venv,__pycache__,.DS_Store
+</span><span class="def"> 	&quot;
+</span><span class="add">+    export FZF_CTRL_T_COMMAND=&quot;&quot;
+</span><span class="def">     source &lt;(fzf --zsh)
+</span><span class="add">+
+</span><span class="add">+    _fzf-file-widget () {
+</span><span class="add">+	[[ -z &quot;$LBUFFER&quot; ]] &amp;&amp; LBUFFER=&quot;vim &quot;
+</span><span class="add">+	fzf-file-widget
+</span><span class="add">+	zle accept-line
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    zle     -N            _fzf-file-widget
+</span><span class="add">+    bindkey -M vicmd &apos;^T&apos; _fzf-file-widget
+</span><span class="add">+    bindkey -M viins &apos;^T&apos; _fzf-file-widget
+</span><span class="def"> fi
+</span></pre>
+</div></div>
+  </body>
+</html>

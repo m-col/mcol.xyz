@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Add auto_focus config option</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/3856c3b92f7d1a2b08e92eb173fd7ca58757d1f0.html">3856c3b92f7d1a2b08e92eb173fd7ca58757d1f0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/77f0123d758926d2ff4b122e1901f2f4009ae62c.html">77f0123d758926d2ff4b122e1901f2f4009ae62c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-06 23:59:44 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-06 23:59:44 +0000
+
+Add auto_focus config option
+
+Closes #23
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -42,6 +42,8 @@
+<span class="def"> # natural or reverse scrolling
+</span><span class="def"> #scroll_direction natural
+</span><span class="def"> 
+</span><span class="add">+# Focus when moving the pointer over a window
+</span><span class="add">+#auto_focus on
+</span><span class="def"> 
+</span><span class="def"> ## Key bindings
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -106,6 +106,7 @@
+<span class="def">     uint32_t resize_edges;
+</span><span class="def">     double zoom_min, zoom_max;
+</span><span class="def">     bool vt_switching;
+</span><span class="add">+    bool auto_focus;
+</span><span class="def"> 
+</span><span class="def">     struct wl_list scratchpads;
+</span><span class="def">     pid_t scratchpad_waiting;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,6 +38,7 @@
+<span class="def">     .mark_indicator.box.x = 0,
+</span><span class="def">     .mark_indicator.box.y = 0,
+</span><span class="def">     .scratchpad_waiting = false,
+</span><span class="add">+    .auto_focus = false,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -148,11 +148,13 @@
+<span class="def"> 		wlr_xcursor_manager_set_cursor_image(wimp.cursor_manager, &quot;left_ptr&quot;, wimp.cursor);
+</span><span class="def"> 	    }
+</span><span class="def"> 	    if (surface) {
+</span><span class="sub">-		bool focus_changed = seat-&gt;pointer_state.focused_surface != surface;
+</span><span class="def"> 		wlr_seat_pointer_notify_enter(seat, surface, sx, sy);
+</span><span class="sub">-		if (!focus_changed) {
+</span><span class="add">+		if (seat-&gt;pointer_state.focused_surface == surface) {
+</span><span class="def"> 		    wlr_seat_pointer_notify_motion(seat, time, sx, sy);
+</span><span class="def"> 		}
+</span><span class="add">+		if (wimp.auto_focus &amp;&amp; seat-&gt;keyboard_state.focused_surface != surface) {
+</span><span class="add">+		    focus_view(view, surface);
+</span><span class="add">+		}
+</span><span class="def"> 	    } else {
+</span><span class="def"> 		wlr_seat_pointer_clear_focus(seat);
+</span><span class="def"> 	    }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -35,6 +35,7 @@
+<span class="def"> vt_switching on\n\
+</span><span class="def"> scroll_direction natural\n\
+</span><span class="def"> set_modifier Logo\n\
+</span><span class="add">+auto_focus on\n\
+</span><span class="def"> bind Ctrl Escape shutdown\n\
+</span><span class="def"> &quot;;
+</span><span class="def"> 
+</span>@@ -649,6 +650,16 @@
+<span class="def"> 	    wimp.auto_start = strdup(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="def"> 	}
+</span><span class="def"> 
+</span><span class="add">+	// auto_focus [on|off]
+</span><span class="add">+	else if (!strcasecmp(s, &quot;auto_focus&quot;)) {
+</span><span class="add">+	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+	    if (!strcasecmp(s, &quot;off&quot;)) {
+</span><span class="add">+		wimp.auto_focus = false;
+</span><span class="add">+	    } else if (!strcasecmp(s, &quot;on&quot;)) {
+</span><span class="add">+		wimp.auto_focus = true;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="def"> 	// other non-empty, non-commented lines
+</span><span class="def"> 	else {
+</span><span class="def"> 	    wlr_log(WLR_ERROR, &quot;Config line %i: unknown option &apos;%s&apos;.&quot;, line, s);
+</span></pre>
+</div></div>
+  </body>
+</html>

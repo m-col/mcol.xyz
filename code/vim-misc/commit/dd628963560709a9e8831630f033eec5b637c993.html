@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - more changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/dd628963560709a9e8831630f033eec5b637c993.html">dd628963560709a9e8831630f033eec5b637c993</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/170794da722445a24ef2bf209059187658fc4324.html">170794da722445a24ef2bf209059187658fc4324</a>
+<b>Author:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Date:</b> 2025-06-16 15:36:39 +0100
+<b>Committer:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-06-16 15:36:39 +0100
+
+more changes
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/theme.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,59 +2,8 @@
+<span class="def"> &quot; Ricing                                                           &quot;
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="sub">-&quot;&quot; statusline
+</span><span class="sub">-&quot;set laststatus=2			    &quot; always show status bar
+</span><span class="sub">-&quot;set statusline =
+</span><span class="sub">-&quot;if $USER == &apos;root&apos;
+</span><span class="sub">-&quot;    let hostname = hostname()
+</span><span class="sub">-&quot;    exec &apos;set statusline +=%7*\ &apos; . $USER . &apos;@&apos; . hostname . &apos;\ %*&apos;
+</span><span class="sub">-&quot;endif
+</span><span class="sub">-&quot;if ! empty($TMUX)
+</span><span class="sub">-&quot;    set statusline +=%6*%*
+</span><span class="sub">-&quot;endif
+</span><span class="sub">-
+</span><span class="sub">-&quot;set statusline +=%1*\ \ %&lt;%F\ \ %*	    &quot; full path
+</span><span class="sub">-&quot;set statusline +=%2*\ \ %y%*                &quot; file type
+</span><span class="sub">-&quot;set statusline +=%2*\ %m\ %*                &quot; modified flag
+</span><span class="sub">-&quot;set statusline +=%3*%{noscrollbar#statusline(12,&apos;\ &apos;,&apos;-&apos;)}
+</span><span class="sub">-&quot;set statusline +=%4*%=%*		    &quot; centre padding
+</span><span class="sub">-&quot;set statusline +=%5*\ \ %l\ /\ %L\ \ %*	    &quot; current / total lines
+</span><span class="sub">-&quot;set statusline +=%1*\ %n\ %*		    &quot; buffer number 
+</span><span class="sub">-
+</span><span class="sub">-&quot;hi User1 ctermfg=0 ctermbg=5 cterm=none
+</span><span class="sub">-&quot;hi User2 ctermfg=0 ctermbg=4 cterm=none
+</span><span class="sub">-&quot;hi User3 ctermfg=0 ctermbg=14 cterm=none
+</span><span class="sub">-&quot;hi User4 ctermfg=0 ctermbg=2 cterm=none
+</span><span class="sub">-&quot;hi User5 ctermfg=0 ctermbg=3 cterm=none
+</span><span class="sub">-&quot;hi User6 ctermfg=3 ctermbg=5 cterm=none
+</span><span class="sub">-&quot;hi User7 ctermfg=0 ctermbg=9 cterm=none
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot; tab bar
+</span><span class="sub">-&quot;hi TabLineFill ctermfg=0 ctermbg=1
+</span><span class="sub">-&quot;hi TabLine ctermfg=0 ctermbg=13
+</span><span class="sub">-&quot;hi TabLineSel ctermfg=0 ctermbg=12
+</span><span class="sub">-&quot;hi Title ctermfg=0 ctermbg=12
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot; vimdiff  &quot; commented out as it was disrupting git gutter
+</span><span class="sub">-&quot;&quot;hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="sub">-&quot;&quot;hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="sub">-&quot;&quot;hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="sub">-&quot;&quot;hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot; folds
+</span><span class="sub">-&quot;hi Folded ctermbg=8 ctermfg=4 cterm=none
+</span><span class="sub">-
+</span><span class="def"> &quot;&quot; visual mode highlighting
+</span><span class="sub">-&quot;hi Visual ctermbg=7 ctermfg=0
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot; title highlighting needs changing so that text doesn&apos;t go invisible due to cursor line
+</span><span class="sub">-&quot;hi Title ctermfg=3 ctermbg=0
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot; matched brackets
+</span><span class="sub">-&quot;hi MatchParen ctermfg=7 cterm=underline ctermbg=0 
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot; github copilot
+</span><span class="sub">-&quot;hi CopilotSuggestion ctermfg=4
+</span><span class="add">+hi Visual gui=reverse
+</span><span class="def"> 
+</span><span class="def"> &quot; line numbers
+</span><span class="def"> set number relativenumber
+</span>@@ -68,14 +17,6 @@
+<span class="def">     au WinLeave * setlocal nocursorline
+</span><span class="def"> augroup END
+</span><span class="def"> 
+</span><span class="sub">-&quot;&quot; change cursor shape in insert mode
+</span><span class="sub">-&quot;let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="sub">-&quot;let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="sub">-&quot;augroup myCmds
+</span><span class="sub">-&quot;    au!
+</span><span class="sub">-&quot;    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="sub">-&quot;augroup END
+</span><span class="sub">-
+</span><span class="def"> &quot;&quot; character for split barrier
+</span><span class="def"> &quot;set fillchars=vert:\ 
+</span><span class="def"> &quot;hi VertSplit cterm=bold term=bold ctermbg=12
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -103,3 +103,4 @@
+<span class="def"> 
+</span><span class="def"> &quot; used by Ctrl-P, likely among other things
+</span><span class="def"> set wildignore+=*/tmp/*,*.so,*.swp,*.zip,node_modules,target,.mypy_cache
+</span><span class="add">+set notermguicolors
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,7 +16,7 @@
+<span class="def"> nnoremap &lt;Leader&gt;v :ls&lt;CR&gt;:vert sb&lt;space&gt;
+</span><span class="def"> nnoremap &lt;Leader&gt;j :bnext&lt;CR&gt; 
+</span><span class="def"> nnoremap &lt;Leader&gt;k :bprevious&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;Leader&gt;&lt;BS&gt; :w&lt;CR&gt;:bdelete&lt;CR&gt;
+</span><span class="add">+&quot;nnoremap &lt;Leader&gt;&lt;BS&gt; :w&lt;CR&gt;:Bdelete&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; move between tabs
+</span><span class="def"> nnoremap &lt;Leader&gt;n gT
+</span>@@ -139,3 +139,6 @@
+<span class="def"> &quot; marks
+</span><span class="def"> nnoremap mm mM
+</span><span class="def"> nnoremap `m `M
+</span><span class="add">+
+</span><span class="add">+&quot; buffer write close
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;leader&gt;&lt;BS&gt; :write&lt;CR&gt;:BuffCls&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -64,6 +64,12 @@
+<span class="def">   { &apos;neovimhaskell/haskell-vim&apos; },
+</span><span class="def">   { &apos;dense-analysis/ale&apos; },
+</span><span class="def">   {
+</span><span class="add">+    &apos;m-col/buffer-closer.nvim&apos;,
+</span><span class="add">+    opts = {
+</span><span class="add">+      close_key = &apos;&lt;BS&gt;&apos;,
+</span><span class="add">+    },
+</span><span class="add">+  },
+</span><span class="add">+  {
+</span><span class="def">     &apos;nvim-telescope/telescope.nvim&apos;,
+</span><span class="def">     tag = &apos;0.1.8&apos;,
+</span><span class="def">     dependencies = { &apos;nvim-lua/plenary.nvim&apos; },
+</span>@@ -88,20 +94,12 @@
+<span class="def">   {
+</span><span class="def">       &apos;ludovicchabant/vim-gutentags&apos;,
+</span><span class="def">   },
+</span><span class="sub">-  --{
+</span><span class="sub">-  --    &apos;prichrd/netrw.nvim&apos;,
+</span><span class="sub">-  --    dependencies = { &apos;nvim-tree/nvim-web-devicons&apos; },
+</span><span class="sub">-  --    opts = {},
+</span><span class="sub">-  --    use_devicons = true,
+</span><span class="sub">-  --},
+</span><span class="sub">-  --{
+</span><span class="sub">-  --    &apos;nvim-tree/nvim-tree.lua&apos;,
+</span><span class="sub">-  --    lazy = false,
+</span><span class="sub">-  --    dependencies = {
+</span><span class="sub">-  --      &quot;nvim-tree/nvim-web-devicons&quot;,
+</span><span class="sub">-  --    },
+</span><span class="sub">-  --    opts = {},
+</span><span class="sub">-  --},
+</span><span class="add">+  {
+</span><span class="add">+      &apos;prichrd/netrw.nvim&apos;,
+</span><span class="add">+      dependencies = { &apos;nvim-tree/nvim-web-devicons&apos; },
+</span><span class="add">+      opts = {},
+</span><span class="add">+      use_devicons = true,
+</span><span class="add">+  },
+</span><span class="def">   {
+</span><span class="def">     &quot;supermaven-inc/supermaven-nvim&quot;,
+</span><span class="def">     opts = {
+</span>@@ -112,54 +110,57 @@
+<span class="def">     },
+</span><span class="def">   },
+</span><span class="def">   {
+</span><span class="sub">-  &quot;yetone/avante.nvim&quot;,
+</span><span class="sub">-  event = &quot;VeryLazy&quot;,
+</span><span class="sub">-  version = false,
+</span><span class="sub">-  opts = {
+</span><span class="sub">-    provider = &quot;claude&quot;,
+</span><span class="sub">-    --providers = {
+</span><span class="sub">-    --  openai = {
+</span><span class="sub">-    --    endpoint = &quot;https://api.openai.com/v1&quot;,
+</span><span class="sub">-    --    model = &quot;gpt-4o&quot;, -- your desired model (or use gpt-4o, etc.)
+</span><span class="sub">-    --    extra_request_body = {
+</span><span class="sub">-    --      timeout = 30000, -- Timeout in milliseconds, increase this for reasoning models
+</span><span class="sub">-    --      temperature = 0.75,
+</span><span class="sub">-    --      max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
+</span><span class="sub">-    --      --reasoning_effort = &quot;medium&quot;, -- low|medium|high, only used for reasoning models
+</span><span class="sub">-    --    },
+</span><span class="sub">-    --  },
+</span><span class="sub">-    --},
+</span><span class="sub">-  },
+</span><span class="sub">-  dependencies = {
+</span><span class="sub">-    &quot;nvim-treesitter/nvim-treesitter&quot;,
+</span><span class="sub">-    &quot;stevearc/dressing.nvim&quot;,
+</span><span class="sub">-    &quot;nvim-lua/plenary.nvim&quot;,
+</span><span class="sub">-    &quot;MunifTanjim/nui.nvim&quot;,
+</span><span class="sub">-    --- The below dependencies are optional,
+</span><span class="sub">-    &quot;nvim-telescope/telescope.nvim&quot;, -- for file_selector provider telescope
+</span><span class="sub">-    &quot;hrsh7th/nvim-cmp&quot;, -- autocompletion for avante commands and mentions
+</span><span class="sub">-    &quot;nvim-tree/nvim-web-devicons&quot;,
+</span><span class="sub">-    {
+</span><span class="sub">-      -- support for image pasting
+</span><span class="sub">-      &quot;HakonHarnes/img-clip.nvim&quot;,
+</span><span class="sub">-      event = &quot;VeryLazy&quot;,
+</span><span class="sub">-      opts = {
+</span><span class="sub">-        default = {
+</span><span class="sub">-          embed_image_as_base64 = false,
+</span><span class="sub">-          prompt_for_file_name = false,
+</span><span class="sub">-          drag_and_drop = {
+</span><span class="sub">-            insert_mode = true,
+</span><span class="add">+    &quot;yetone/avante.nvim&quot;,
+</span><span class="add">+    event = &quot;VeryLazy&quot;,
+</span><span class="add">+    version = false,
+</span><span class="add">+    opts = {
+</span><span class="add">+      provider = &quot;claude&quot;,
+</span><span class="add">+      --providers = {
+</span><span class="add">+      --  openai = {
+</span><span class="add">+      --    endpoint = &quot;https://api.openai.com/v1&quot;,
+</span><span class="add">+      --    model = &quot;gpt-4o&quot;, -- your desired model (or use gpt-4o, etc.)
+</span><span class="add">+      --    extra_request_body = {
+</span><span class="add">+      --      timeout = 30000, -- Timeout in milliseconds, increase this for reasoning models
+</span><span class="add">+      --      temperature = 0.75,
+</span><span class="add">+      --      max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
+</span><span class="add">+      --      --reasoning_effort = &quot;medium&quot;, -- low|medium|high, only used for reasoning models
+</span><span class="add">+      --    },
+</span><span class="add">+      --  },
+</span><span class="add">+      --},
+</span><span class="add">+    },
+</span><span class="add">+    dependencies = {
+</span><span class="add">+      &quot;nvim-treesitter/nvim-treesitter&quot;,
+</span><span class="add">+      &quot;stevearc/dressing.nvim&quot;,
+</span><span class="add">+      &quot;nvim-lua/plenary.nvim&quot;,
+</span><span class="add">+      &quot;MunifTanjim/nui.nvim&quot;,
+</span><span class="add">+      --- The below dependencies are optional,
+</span><span class="add">+      &quot;nvim-telescope/telescope.nvim&quot;, -- for file_selector provider telescope
+</span><span class="add">+      &quot;hrsh7th/nvim-cmp&quot;, -- autocompletion for avante commands and mentions
+</span><span class="add">+      &quot;nvim-tree/nvim-web-devicons&quot;,
+</span><span class="add">+      {
+</span><span class="add">+        -- support for image pasting
+</span><span class="add">+        &quot;HakonHarnes/img-clip.nvim&quot;,
+</span><span class="add">+        event = &quot;VeryLazy&quot;,
+</span><span class="add">+        opts = {
+</span><span class="add">+          default = {
+</span><span class="add">+            embed_image_as_base64 = false,
+</span><span class="add">+            prompt_for_file_name = false,
+</span><span class="add">+            drag_and_drop = {
+</span><span class="add">+              insert_mode = true,
+</span><span class="add">+            },
+</span><span class="def">           },
+</span><span class="def">         },
+</span><span class="def">       },
+</span><span class="sub">-    },
+</span><span class="sub">-    {
+</span><span class="sub">-      &apos;MeanderingProgrammer/render-markdown.nvim&apos;,
+</span><span class="sub">-      opts = {
+</span><span class="sub">-        file_types = { &quot;markdown&quot;, &quot;Avante&quot; },
+</span><span class="add">+      {
+</span><span class="add">+        &apos;MeanderingProgrammer/render-markdown.nvim&apos;,
+</span><span class="add">+        opts = {
+</span><span class="add">+          file_types = { &quot;markdown&quot;, &quot;Avante&quot; },
+</span><span class="add">+        },
+</span><span class="add">+        ft = { &quot;markdown&quot;, &quot;Avante&quot; },
+</span><span class="def">       },
+</span><span class="sub">-      ft = { &quot;markdown&quot;, &quot;Avante&quot; },
+</span><span class="def">     },
+</span><span class="sub">-  },
+</span><span class="sub">-}
+</span><span class="add">+  }
+</span><span class="def"> })
+</span><span class="add">+
+</span><span class="add">+--local colors = require(&quot;catppuccin.palettes&quot;).get_palette(&quot;mocha&quot;)
+</span><span class="add">+--vim.cmd(&quot;highlight CursorLine gui=reverse&quot;)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/bclose.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,80 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; :bclose                                                          &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-&quot; Delete buffer while keeping window layout (don&apos;t close buffer&apos;s windows).
+</span><span class="sub">-&quot; Version 2008-11-18 from http://vim.wikia.com/wiki/VimTip165
+</span><span class="sub">-if v:version &lt; 700 || exists(&apos;loaded_bclose&apos;) || &amp;cp
+</span><span class="sub">-    finish
+</span><span class="sub">-endif
+</span><span class="sub">-let loaded_bclose = 1
+</span><span class="sub">-if !exists(&apos;bclose_multiple&apos;)
+</span><span class="sub">-    let bclose_multiple = 1
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-&quot; Display an error message.
+</span><span class="sub">-function! s:Warn(msg)
+</span><span class="sub">-    echohl ErrorMsg
+</span><span class="sub">-    echomsg a:msg
+</span><span class="sub">-    echohl NONE
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-&quot; Command &apos;:Bclose&apos; executes &apos;:bd&apos; to delete buffer in current window.
+</span><span class="sub">-&quot; The window will show the alternate buffer (Ctrl-^) if it exists,
+</span><span class="sub">-&quot; or the previous buffer (:bp), or a blank buffer if no previous.
+</span><span class="sub">-&quot; Command &apos;:Bclose!&apos; is the same, but executes &apos;:bd!&apos; (discard changes).
+</span><span class="sub">-&quot; An optional argument can specify which buffer to close (name or number).
+</span><span class="sub">-function! s:Bclose(bang, buffer)
+</span><span class="sub">-    if empty(a:buffer)
+</span><span class="sub">-	let btarget = bufnr(&apos;%&apos;)
+</span><span class="sub">-    elseif a:buffer =~ &apos;^\d\+$&apos;
+</span><span class="sub">-	let btarget = bufnr(str2nr(a:buffer))
+</span><span class="sub">-    else
+</span><span class="sub">-	let btarget = bufnr(a:buffer)
+</span><span class="sub">-    endif
+</span><span class="sub">-    if btarget &lt; 0
+</span><span class="sub">-	call s:Warn(&apos;No matching buffer for &apos;.a:buffer)
+</span><span class="sub">-	return
+</span><span class="sub">-    endif
+</span><span class="sub">-    if empty(a:bang) &amp;&amp; getbufvar(btarget, &apos;&amp;modified&apos;)
+</span><span class="sub">-	call s:Warn(&apos;No write since last change for buffer &apos;.btarget.&apos; (use :Bclose!)&apos;)
+</span><span class="sub">-	return
+</span><span class="sub">-    endif
+</span><span class="sub">-    &quot; Numbers of windows that view target buffer which we will delete.
+</span><span class="sub">-    let wnums = filter(range(1, winnr(&apos;$&apos;)), &apos;winbufnr(v:val) == btarget&apos;)
+</span><span class="sub">-    if !g:bclose_multiple &amp;&amp; len(wnums) &gt; 1
+</span><span class="sub">-	call s:Warn(&apos;Buffer is in multiple windows (use &quot;:let bclose_multiple=1&quot;)&apos;)
+</span><span class="sub">-	return
+</span><span class="sub">-    endif
+</span><span class="sub">-    let wcurrent = winnr()
+</span><span class="sub">-    for w in wnums
+</span><span class="sub">-	execute w.&apos;wincmd w&apos;
+</span><span class="sub">-	let prevbuf = bufnr(&apos;#&apos;)
+</span><span class="sub">-	if prevbuf &gt; 0 &amp;&amp; buflisted(prevbuf) &amp;&amp; prevbuf != w
+</span><span class="sub">-	    buffer #
+</span><span class="sub">-	else
+</span><span class="sub">-	    bprevious
+</span><span class="sub">-	endif
+</span><span class="sub">-	if btarget == bufnr(&apos;%&apos;)
+</span><span class="sub">-	    &quot; Numbers of listed buffers which are not the target to be deleted.
+</span><span class="sub">-	    let blisted = filter(range(1, bufnr(&apos;$&apos;)), &apos;buflisted(v:val) &amp;&amp; v:val != btarget&apos;)
+</span><span class="sub">-	    &quot; Listed, not target, and not displayed.
+</span><span class="sub">-	    let bhidden = filter(copy(blisted), &apos;bufwinnr(v:val) &lt; 0&apos;)
+</span><span class="sub">-	    &quot; Take the first buffer, if any (could be more intelligent).
+</span><span class="sub">-	    let bjump = (bhidden + blisted + [-1])[0]
+</span><span class="sub">-	    if bjump &gt; 0
+</span><span class="sub">-		execute &apos;buffer &apos;.bjump
+</span><span class="sub">-	    else
+</span><span class="sub">-		execute &apos;enew&apos;.a:bang
+</span><span class="sub">-	    endif
+</span><span class="sub">-	endif
+</span><span class="sub">-    endfor
+</span><span class="sub">-    silent! execute &apos;bdelete&apos;.a:bang.&apos; &apos;.btarget
+</span><span class="sub">-    silent! execute wcurrent.&apos;wincmd w&apos;
+</span><span class="sub">-endfunction
+</span><span class="sub">-command! -bang -complete=buffer -nargs=? Bclose call s:Bclose(&apos;&lt;bang&gt;&apos;, &apos;&lt;args&gt;&apos;)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;empty(bufname(v:val)) &amp;&amp; buflisted(v:val)&apos;)) == 1 | quit | endif
+</span><span class="sub">-
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;BS&gt; :Bclose&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

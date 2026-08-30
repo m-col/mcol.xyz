@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Clarify searx instance removal message</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/242bfa110d27e68108e091cd79692391860e7cf1.html">242bfa110d27e68108e091cd79692391860e7cf1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/34cad2a53579e3ef78b08e6321a305160c861d8c.html">34cad2a53579e3ef78b08e6321a305160c861d8c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-20 08:51:26 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-20 08:51:26 +0000
+
+Clarify searx instance removal message
+</pre><div class="diff">
+  <p>
+    <b>qtools/rofi_searx/searx.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -91,7 +91,7 @@
+<span class="def">                 self.instances.append(f&apos;#{self.last_used}&apos;)
+</span><span class="def">                 self.save_instances()
+</span><span class="def">             if self.notify_on_remove:
+</span><span class="sub">-                self.show(self.last_used)
+</span><span class="add">+                self.show(f&apos;Removed: {self.last_used}&apos;)
+</span><span class="def">             self.last_used = None
+</span><span class="def"> 
+</span><span class="def">     def load_instances(self, qtile=None):
+</span></pre>
+</div></div>
+  </body>
+</html>

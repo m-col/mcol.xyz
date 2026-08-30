@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - update blogroll page</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/41d508bbe7936af19787f14499632058a849cf2b.html">41d508bbe7936af19787f14499632058a849cf2b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/3b11d58dd701b1d5a7ef3122b05ccdc5baf2dc3b.html">3b11d58dd701b1d5a7ef3122b05ccdc5baf2dc3b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-06 22:01:09 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-06 22:01:09 +0100
+
+update blogroll page
+</pre><div class="diff">
+  <p>
+    <b>content/pages/about.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,8 +18,8 @@
+<span class="def"> email me at :code:`mcol` at :code:`posteo.net` [`pgp key`_].
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-blogs i like
+</span><span class="sub">-------------
+</span><span class="add">+blogroll
+</span><span class="add">+--------
+</span><span class="def"> 
+</span><span class="def"> *in random order*
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>blogroll.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,71 +10,67 @@
+<span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Freddy&apos;s Ramblings&quot;,
+</span><span class="def">     &quot;https://write.privacytools.io/freddy&quot;,
+</span><span class="sub">-    &quot;Useful and interesting posts and guides about privacy.&quot;,
+</span><span class="def">     &quot;write.privacytools.io/freddy&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Nduli&apos;s World&quot;,
+</span><span class="def">     &quot;https://jnduli.co.ke&quot;,
+</span><span class="sub">-   &quot;Interesting posts on FOSS projects like vim and window managers.&quot;,
+</span><span class="def">     &quot;jnduli.co.ke&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Jonathan Borichevskiy&apos;s Up and to the Right&quot;,
+</span><span class="def">     &quot;https://jborichevskiy.com&quot;,
+</span><span class="sub">-   &quot;Thought-provoking and entertaining reads.&quot;,
+</span><span class="def">     &quot;jborichevskiy.com&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Daniel&apos;s CodeSections&quot;,
+</span><span class="def">     &quot;https://www.codesections.com&quot;,
+</span><span class="sub">-    &quot;Good posts on FOSS and the Fediverse.&quot;,
+</span><span class="def">     &quot;codesections.com&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Oscar Benedito&quot;,
+</span><span class="def">     &quot;https://oscarbenedito.com&quot;,
+</span><span class="sub">-    &quot;Well-written posts on topics such as FOSS tools and privacy.&quot;,
+</span><span class="def">     &quot;oscarbenedito.com&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Jake Bauer&quot;,
+</span><span class="def">     &quot;https://paritybit.ca&quot;,
+</span><span class="sub">-    &quot;Interesting posts on topics from FOSS to The Clone Wars.&quot;,
+</span><span class="def">     &quot;paritybit.ca&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Venam&quot;,
+</span><span class="def">     &quot;https://venam.nixers.net&quot;,
+</span><span class="sub">-    &quot;Insightful posts about Unix and philosophy.&quot;,
+</span><span class="def">     &quot;venam.nixers.net&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Addy&quot;,
+</span><span class="def">     &quot;https://addy-dclxvi.github.io&quot;,
+</span><span class="sub">-    &quot;Posts about cool desktop tools.&quot;,
+</span><span class="def">     &quot;addy-dclxvi.github.io&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Alejandro&quot;,
+</span><span class="def">     &quot;https://baez.link&quot;,
+</span><span class="sub">-    &quot;Nice posts about software development and other topics.&quot;,
+</span><span class="def">     &quot;baez.link&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="def">     &quot;Yarmo Mackenbach&quot;,
+</span><span class="def">     &quot;https://yarmo.eu&quot;,
+</span><span class="sub">-    &quot;Great posts about things from neuroscience to software.&quot;,
+</span><span class="def">     &quot;yarmo.eu&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="add">+BLOGROLL.append([
+</span><span class="add">+    &quot;Martin Tournoij&quot;,
+</span><span class="add">+    &quot;https://www.arp242.net&quot;,
+</span><span class="add">+    &quot;www.arp242.net&quot;,
+</span><span class="add">+])
+</span><span class="add">+
+</span><span class="def"> random.shuffle(BLOGROLL)
+</span></pre>
+</div></div>
+  </body>
+</html>

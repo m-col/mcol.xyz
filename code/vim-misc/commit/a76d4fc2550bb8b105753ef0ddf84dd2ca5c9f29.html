@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - silent bclose on error</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/a76d4fc2550bb8b105753ef0ddf84dd2ca5c9f29.html">a76d4fc2550bb8b105753ef0ddf84dd2ca5c9f29</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/456b9661cdfbb29471f52b1758c8fa7e4c2c59c0.html">456b9661cdfbb29471f52b1758c8fa7e4c2c59c0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-03-02 22:54:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-03-02 22:54:52 +0000
+
+silent bclose on error
+</pre><div class="diff">
+  <p>
+    <b>plugin/bclose.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -69,8 +69,8 @@
+<span class="def"> 	    endif
+</span><span class="def"> 	endif
+</span><span class="def">     endfor
+</span><span class="sub">-    execute &apos;bdelete&apos;.a:bang.&apos; &apos;.btarget
+</span><span class="sub">-    execute wcurrent.&apos;wincmd w&apos;
+</span><span class="add">+    silent! execute &apos;bdelete&apos;.a:bang.&apos; &apos;.btarget
+</span><span class="add">+    silent! execute wcurrent.&apos;wincmd w&apos;
+</span><span class="def"> endfunction
+</span><span class="def"> command! -bang -complete=buffer -nargs=? Bclose call s:Bclose(&apos;&lt;bang&gt;&apos;, &apos;&lt;args&gt;&apos;)
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

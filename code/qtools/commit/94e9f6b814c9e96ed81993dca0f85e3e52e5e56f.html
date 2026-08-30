@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - create generalised base class for popup windows</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/94e9f6b814c9e96ed81993dca0f85e3e52e5e56f.html">94e9f6b814c9e96ed81993dca0f85e3e52e5e56f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/cd06a15654d2b106afdbacf186a3663661d68c67.html">cd06a15654d2b106afdbacf186a3663661d68c67</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-25 00:07:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-25 00:07:52 +0000
+
+create generalised base class for popup windows
+</pre><div class="diff">
+  <p>
+    <b>qtools/__init__.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,11 +7,14 @@
+<span class="def"> gi.require_version(&apos;Notify&apos;, &apos;0.7&apos;)
+</span><span class="def"> from gi.repository import Notify
+</span><span class="def"> 
+</span><span class="sub">-from libqtile.configurable import Configurable
+</span><span class="sub">-from libqtile.command import lazy
+</span><span class="add">+from xcffib.xproto import StackMode
+</span><span class="def"> 
+</span><span class="add">+from libqtile import configurable, pangocffi, window
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="add">+from libqtile.drawer import Drawer
+</span><span class="def"> 
+</span><span class="sub">-class Notifier(Configurable):
+</span><span class="add">+
+</span><span class="add">+class Notifier(configurable.Configurable):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     This is a base class for classes with methods that are to be executed upon key
+</span><span class="def">     presses and that generate pop-up notifications.
+</span>@@ -28,7 +31,7 @@
+<span class="def">             Notifier._is_initted = True
+</span><span class="def">             Notify.init(&apos;Qtile&apos;)
+</span><span class="def"> 
+</span><span class="sub">-        Configurable.__init__(self, **config)
+</span><span class="add">+        configurable.Configurable.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Notifier.defaults)
+</span><span class="def">         self.notifier = Notify.Notification.new(
+</span><span class="def">             config.get(&apos;summary&apos;, &apos;Notifier&apos;), &apos;&apos;
+</span>@@ -42,7 +45,7 @@
+<span class="def">         &quot;&quot;&quot;
+</span><span class="def">         if name.startswith(&apos;lazy_&apos;):
+</span><span class="def">             return lazy.function(getattr(self, name[5:]))
+</span><span class="sub">-        return Configurable.__getattr__(self, name)
+</span><span class="add">+        return configurable.Configurable.__getattr__(self, name)
+</span><span class="def"> 
+</span><span class="def">     @property
+</span><span class="def">     def timeout(self):
+</span>@@ -61,3 +64,128 @@
+<span class="def"> 
+</span><span class="def">     def hide(self):
+</span><span class="def">         self.notifier.hide()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+ALIGNMENTS = {
+</span><span class="add">+    &apos;left&apos;: pangocffi.pango.PANGO_ALIGN_LEFT,
+</span><span class="add">+    &apos;center&apos;: pangocffi.pango.PANGO_ALIGN_CENTER,
+</span><span class="add">+    &apos;right&apos;: pangocffi.pango.PANGO_ALIGN_RIGHT,
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Popup(configurable.Configurable):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This base class can be used to create popup windows for a variety of purposes.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;opacity&apos;, 1.0, &apos;Opacity of notifications.&apos;),
+</span><span class="add">+        (&apos;foreground&apos;, &apos;#ffffff&apos;, &apos;Color of text.&apos;),
+</span><span class="add">+        (&apos;background&apos;, &apos;#111111&apos;, &apos;Background color.&apos;),
+</span><span class="add">+        (&apos;border&apos;, &apos;#111111&apos;, &apos;Border color.&apos;),
+</span><span class="add">+        (&apos;border_width&apos;, 4, &apos;Line width of drawn borders.&apos;),
+</span><span class="add">+        (&apos;corner_radius&apos;, None, &apos;Corner radius for round corners, or None.&apos;),
+</span><span class="add">+        (&apos;font&apos;, &apos;sans&apos;, &apos;Font used in notifications.&apos;),
+</span><span class="add">+        (&apos;fontsize&apos;, 14, &apos;Size of font.&apos;),
+</span><span class="add">+        (&apos;fontshadow&apos;, None, &apos;Color for text shadows, or None for no shadows.&apos;),
+</span><span class="add">+        (&apos;padding&apos;, None, &apos;Padding at sides of text.&apos;),
+</span><span class="add">+        (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, qtile, x=50, y=50, width=256, height=64, **config):
+</span><span class="add">+        configurable.Configurable.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Popup.defaults)
+</span><span class="add">+        self.qtile = qtile
+</span><span class="add">+
+</span><span class="add">+        win = qtile.conn.create_window(x, y, width, height)
+</span><span class="add">+        win.set_property(&quot;QTILE_INTERNAL&quot;, 1)
+</span><span class="add">+        self.win = window.Internal(win, qtile)
+</span><span class="add">+        self.win.opacity = self.opacity
+</span><span class="add">+        self.drawer = Drawer(
+</span><span class="add">+            self.qtile, self.win.window.wid, width, height,
+</span><span class="add">+        )
+</span><span class="add">+        self.layout = self.drawer.textlayout(
+</span><span class="add">+            text=&apos;&apos;,
+</span><span class="add">+            colour=self.foreground,
+</span><span class="add">+            font_family=self.font,
+</span><span class="add">+            font_size=self.fontsize,
+</span><span class="add">+            font_shadow=self.fontshadow,
+</span><span class="add">+            wrap=True,
+</span><span class="add">+            markup=True,
+</span><span class="add">+        )
+</span><span class="add">+        self.layout.layout.set_alignment(ALIGNMENTS[self.text_alignment])
+</span><span class="add">+
+</span><span class="add">+        if self.border_width:
+</span><span class="add">+            self.win.window.configure(borderwidth=self.border_width)
+</span><span class="add">+        if self.corner_radius:
+</span><span class="add">+            self.win.window.round_corners(
+</span><span class="add">+                width, height, self.corner_radius, self.border_width,
+</span><span class="add">+            )
+</span><span class="add">+
+</span><span class="add">+        self.win.handle_Expose = self._handle_Expose
+</span><span class="add">+        self.win.handle_KeyPress = self._handle_KeyPress
+</span><span class="add">+        self.win.handle_ButtonPress = self._handle_ButtonPress
+</span><span class="add">+        self.qtile.windows_map[self.win.window.wid] = self.win
+</span><span class="add">+
+</span><span class="add">+        self.x = self.win.x
+</span><span class="add">+        self.y = self.win.y
+</span><span class="add">+        self.width = self.win.width
+</span><span class="add">+        self.height = self.win.height
+</span><span class="add">+
+</span><span class="add">+    def _handle_Expose(self, e):
+</span><span class="add">+        pass
+</span><span class="add">+
+</span><span class="add">+    def _handle_KeyPress(self, event):
+</span><span class="add">+        pass
+</span><span class="add">+
+</span><span class="add">+    def _handle_ButtonPress(self, event):
+</span><span class="add">+        if event.detail == 1:
+</span><span class="add">+            self.hide()
+</span><span class="add">+
+</span><span class="add">+    @property
+</span><span class="add">+    def text(self):
+</span><span class="add">+        return self.layout.text
+</span><span class="add">+
+</span><span class="add">+    @text.setter
+</span><span class="add">+    def text(self, value):
+</span><span class="add">+        self.layout.text = value
+</span><span class="add">+
+</span><span class="add">+    @property
+</span><span class="add">+    def foreground(self):
+</span><span class="add">+        return self._foreground
+</span><span class="add">+
+</span><span class="add">+    @foreground.setter
+</span><span class="add">+    def foreground(self, value):
+</span><span class="add">+        self._foreground = value
+</span><span class="add">+        if hasattr(self, &apos;layout&apos;):
+</span><span class="add">+            self.layout.colour = value
+</span><span class="add">+
+</span><span class="add">+    def set_border(self, color):
+</span><span class="add">+        self.win.window.set_attribute(borderpixel=color)
+</span><span class="add">+
+</span><span class="add">+    def clear(self):
+</span><span class="add">+        self.drawer.clear(self.background)
+</span><span class="add">+
+</span><span class="add">+    def draw_text(self):
+</span><span class="add">+        self.layout.draw(
+</span><span class="add">+            self.padding,
+</span><span class="add">+            (self.win.height - self.layout.height) / 2,
+</span><span class="add">+        )
+</span><span class="add">+
+</span><span class="add">+    def draw_window(self):
+</span><span class="add">+        self.drawer.draw()
+</span><span class="add">+
+</span><span class="add">+    def place(self):
+</span><span class="add">+        self.win.place(
+</span><span class="add">+            self.x, self.y, self.width, self.height,
+</span><span class="add">+            self.border_width, self.border, above=True
+</span><span class="add">+        )
+</span><span class="add">+
+</span><span class="add">+    def unhide(self):
+</span><span class="add">+        self.win.unhide()
+</span><span class="add">+        self.win.window.configure(stackmode=StackMode.Above)
+</span><span class="add">+
+</span><span class="add">+    def hide(self):
+</span><span class="add">+        self.win.hide()
+</span><span class="add">+
+</span><span class="add">+    def kill(self):
+</span><span class="add">+        self.win.kill()
+</span></pre>
+</div></div>
+  </body>
+</html>

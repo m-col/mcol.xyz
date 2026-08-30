@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tide - sh ftplugin: f6 to print array fields</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/tide">tide</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/tide">https://github.com/m-col/tide</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/tide/tree.html">Files</a> | <a href="https://mcol.xyz/code/tide/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/tide/file/README.md.html">Readme</a>     | <a href="https://mcol.xyz/code/tide/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/tide/commit/ce0eb310a31b00fa633fab707b35c870ada69e94.html">ce0eb310a31b00fa633fab707b35c870ada69e94</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/tide/commit/59e8ac5703db9b202e46d5b74d81a1762941daa0.html">59e8ac5703db9b202e46d5b74d81a1762941daa0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-27 23:58:38 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-27 23:58:38 +0000
+
+sh ftplugin: f6 to print array fields
+</pre><div class="diff">
+  <p>
+    <b>plugin/tide.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -86,7 +86,7 @@
+<span class="def">     if s:bottom &lt;= s:top
+</span><span class="def"> 	let s:bottom = line(&apos;$&apos;)
+</span><span class="def">     elseif s:bottom != line(&apos;$&apos;)
+</span><span class="sub">-	let s:bottom = s:bottom - 1
+</span><span class="add">+	let s:bottom = prevnonblank(s:bottom)
+</span><span class="def">     endif
+</span><span class="def">     if s:top == 0
+</span><span class="def"> 	let s:top = 1
+</span>@@ -132,3 +132,4 @@
+<span class="def">     silent! nmap &lt;unique&gt; &lt;silent&gt; &lt;F7&gt; &lt;Plug&gt;TmuxSendWord
+</span><span class="def">     silent! nmap &lt;unique&gt; &lt;silent&gt; &lt;F4&gt; &lt;Plug&gt;TmuxSendSection
+</span><span class="def"> endif
+</span><span class="add">+
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/sh.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,10 @@
+<span class="add">+&quot; Send Word is prefixed in shell scripts with &apos;echo $&apos;
+</span><span class="add">+silent! nmap &lt;buffer&gt; &lt;silent&gt; &lt;F7&gt; :call TmuxSendKeysEnter(&apos;echo $&apos; . expand(&quot;&lt;cword&gt;&quot;))&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; Send Word with F6 can be used to print all fields in array
+</span><span class="add">+silent! nmap &lt;buffer&gt; &lt;silent&gt; &lt;F6&gt; :call TmuxSendKeysEnter(&apos;for i in ${&apos; . expand(&quot;&lt;cword&gt;&quot;) . &apos;[@]}; do echo $i; done&apos;)&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; lines are continued when ending in \
+</span><span class="add">+&quot; TODO
+</span><span class="add">+
+</span><span class="add">+
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>README.md</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,7 @@
+<span class="def"> Tmux with one pane receiving all text from a non-tmuxed vim elsewhere, or
+</span><span class="def"> vim in one of two tmux panes can send text to the.
+</span><span class="def"> 
+</span><span class="sub">-## default keybindings
+</span><span class="add">+## default keybindings for all filetypes
+</span><span class="def"> 
+</span><span class="def"> &lt;F9&gt; send visual selection (visual mode)
+</span><span class="def"> &lt;F9&gt; send current paragraph (normal mode)
+</span></pre>
+</div></div>
+  </body>
+</html>

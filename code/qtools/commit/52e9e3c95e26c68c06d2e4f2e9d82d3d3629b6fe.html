@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Make mpc plugin use Notifier base class</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/52e9e3c95e26c68c06d2e4f2e9d82d3d3629b6fe.html">52e9e3c95e26c68c06d2e4f2e9d82d3d3629b6fe</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/41b4434008de9c21fcd14c9dfc4e8df9d0e49ef2.html">41b4434008de9c21fcd14c9dfc4e8df9d0e49ef2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-10 18:39:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-10 18:39:52 +0000
+
+Make mpc plugin use Notifier base class
+</pre><div class="diff">
+  <p>
+    <b>mpc/mpc.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,44 +3,40 @@
+<span class="def"> 
+</span><span class="def"> Example usage:
+</span><span class="def"> 
+</span><span class="sub">-    import qtools.mpc as mpc
+</span><span class="sub">-    mpc_client = mpc.Client()
+</span><span class="add">+    import qtools.mpc
+</span><span class="add">+    mpc = qtools.mpc.Client()
+</span><span class="def">     keys.extend([EzKey(k, v) for k, v in {
+</span><span class="sub">-        &apos;&lt;XF86AudioPlay&gt;&apos;:  lazy.function(mpc_local.toggle),
+</span><span class="sub">-        &apos;&lt;XF86AudioNext&gt;&apos;:  lazy.function(mpc_local.next),
+</span><span class="sub">-        &apos;&lt;XF86AudioPrev&gt;&apos;:  lazy.function(mpc_local.previous),
+</span><span class="sub">-        &apos;&lt;XF86AudioPlay&gt;&apos;:  lazy.function(mpc_local.stop),
+</span><span class="add">+        &apos;&lt;XF86AudioPlay&gt;&apos;:  mpc.lazy_toggle,
+</span><span class="add">+        &apos;&lt;XF86AudioNext&gt;&apos;:  mpc.lazy_next,
+</span><span class="add">+        &apos;&lt;XF86AudioPrev&gt;&apos;:  mpc.lazy_previous,
+</span><span class="add">+        &apos;&lt;XF86AudioPlay&gt;&apos;:  mpc.lazy_stop,
+</span><span class="def">     }.items()])
+</span><span class="def"> 
+</span><span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="add">+from functools import wraps
+</span><span class="def"> 
+</span><span class="def"> try:
+</span><span class="def">     from musicpd import ConnectionError, MPDClient
+</span><span class="def"> except ImportError:
+</span><span class="def">     from mpd import ConnectionError, MPDClient
+</span><span class="add">+from qtools import Notifier
+</span><span class="def"> 
+</span><span class="sub">-import gi
+</span><span class="sub">-gi.require_version(&apos;Notify&apos;, &apos;0.7&apos;)
+</span><span class="sub">-from gi.repository import Notify
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="sub">-Notify.init(&apos;Music&apos;)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def _wrap(func):
+</span><span class="add">+def _client_func(func):
+</span><span class="add">+    @wraps(func)
+</span><span class="def">     def _inner(self, qtile):
+</span><span class="def">         try:
+</span><span class="def">             self.client.connect()
+</span><span class="def">         except ConnectionError:
+</span><span class="def">             pass
+</span><span class="sub">-        self.notifier.update(&apos;Music&apos;, func(self))
+</span><span class="sub">-        self.notifier.show()
+</span><span class="add">+        self.update(func(self))
+</span><span class="add">+        self.show()
+</span><span class="def">         self.client.disconnect()
+</span><span class="def">     return _inner
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-class Client:
+</span><span class="add">+class Client(Notifier):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     The host and port are 127.0.0.1 and 6600 by default but can be set by passing these
+</span><span class="def">     when initiating the client.
+</span>@@ -48,24 +44,20 @@
+<span class="def">     The notification timeout can be changed by setting Client.timeout to milliseconds
+</span><span class="def">     (int) or -1, which then uses the notification server&apos;s default timeout.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-    def __init__(self, host=&apos;127.0.0.1&apos;, port=&apos;6600&apos;):
+</span><span class="sub">-        self.client = MPDClient()
+</span><span class="sub">-        self.client.host = host
+</span><span class="sub">-        self.client.port = port
+</span><span class="sub">-        self.notifier = Notify.Notification.new(&apos;Music&apos;, &apos;body&apos;)
+</span><span class="sub">-        self._timeout = -1
+</span><span class="sub">-        self.notifier.set_timeout(self._timeout)
+</span><span class="sub">-
+</span><span class="sub">-    @property
+</span><span class="sub">-    def timeout(self):
+</span><span class="sub">-        return self._timeout
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;summary&apos;, &apos;Music&apos;, &apos;Notification summary.&apos;),
+</span><span class="add">+        (&apos;host&apos;, &apos;127.0.0.1&apos;, &apos;IP address of MPD server.&apos;),
+</span><span class="add">+        (&apos;port&apos;, &apos;6600&apos;, &apos;Port of MPD server.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        Notifier.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Client.defaults)
+</span><span class="def"> 
+</span><span class="sub">-    @timeout.setter
+</span><span class="sub">-    def timeout(self, timeout):
+</span><span class="sub">-        self.notifier.set_timeout(timeout)
+</span><span class="sub">-        self._timeout = timeout
+</span><span class="add">+        self.client = MPDClient()
+</span><span class="add">+        self.client.host = self.host
+</span><span class="add">+        self.client.port = self.port
+</span><span class="def"> 
+</span><span class="sub">-    @_wrap
+</span><span class="add">+    @_client_func
+</span><span class="def">     def toggle(self):
+</span><span class="def">         if self.client.status()[&apos;state&apos;] == &apos;play&apos;:
+</span><span class="def">             self.client.pause()
+</span>@@ -74,19 +66,19 @@
+<span class="def">             self.client.play()
+</span><span class="def">             return &apos;Playing&apos;
+</span><span class="def"> 
+</span><span class="sub">-    @_wrap
+</span><span class="add">+    @_client_func
+</span><span class="def">     def next(self):
+</span><span class="def">         self.client.next()
+</span><span class="def">         current = self.client.currentsong()
+</span><span class="def">         return f&quot;{current[&apos;artist&apos;]} - {current[&apos;title&apos;]}&quot;
+</span><span class="def"> 
+</span><span class="sub">-    @_wrap
+</span><span class="add">+    @_client_func
+</span><span class="def">     def previous(self):
+</span><span class="def">         self.client.previous()
+</span><span class="def">         current = self.client.currentsong()
+</span><span class="def">         return f&quot;{current[&apos;artist&apos;]} - {current[&apos;title&apos;]}&quot;
+</span><span class="def"> 
+</span><span class="sub">-    @_wrap
+</span><span class="add">+    @_client_func
+</span><span class="def">     def stop(self):
+</span><span class="def">         self.client.stop()
+</span><span class="def">         return &apos;Stopped&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

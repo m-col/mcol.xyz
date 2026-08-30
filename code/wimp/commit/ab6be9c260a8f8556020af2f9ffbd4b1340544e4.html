@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - implement vi-like marks for saving positions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/ab6be9c260a8f8556020af2f9ffbd4b1340544e4.html">ab6be9c260a8f8556020af2f9ffbd4b1340544e4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/eda920e395627606974e1258c85716b06b421eac.html">eda920e395627606974e1258c85716b06b421eac</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-22 23:47:03 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-22 23:47:03 +0000
+
+implement vi-like marks for saving positions
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -39,6 +39,8 @@
+<span class="def">     int desk_count;
+</span><span class="def">     struct desk *current_desk;
+</span><span class="def">     bool can_steal_focus;
+</span><span class="add">+    struct wl_list marks;
+</span><span class="add">+    bool mark_waiting;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span>@@ -123,4 +125,11 @@
+<span class="def">     SCROLL,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+struct mark {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    uint32_t key;
+</span><span class="add">+    struct desk *desk;
+</span><span class="add">+    double zoom, x, y;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xcursor_manager.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#include &quot;action.h&quot;
+</span><span class="def"> #include &quot;input.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span>@@ -248,26 +249,38 @@
+<span class="def">     int nsyms = xkb_state_key_get_syms(
+</span><span class="def"> 	keyboard-&gt;device-&gt;keyboard-&gt;xkb_state, keycode, &amp;syms);
+</span><span class="def"> 
+</span><span class="sub">-    bool handled = false;
+</span><span class="sub">-    uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-    struct binding *kb;
+</span><span class="sub">-    if ((modifiers &amp; server-&gt;mod) &amp;&amp; event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="sub">-	modifiers &amp;= ~server-&gt;mod;
+</span><span class="sub">-	for (int i = 0; i &lt; nsyms; i++) {
+</span><span class="sub">-	    wl_list_for_each(kb, &amp;server-&gt;key_bindings, link) {
+</span><span class="sub">-		if (syms[i] == kb-&gt;key &amp;&amp; modifiers == kb-&gt;mods) {
+</span><span class="sub">-		    kb-&gt;action(server, kb-&gt;data);
+</span><span class="sub">-		    handled = true;
+</span><span class="add">+    if (event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="add">+	if (server-&gt;mark_waiting) {
+</span><span class="add">+	    server-&gt;mark_waiting = false;
+</span><span class="add">+	    struct mark *mark;
+</span><span class="add">+	    mark = wl_container_of(server-&gt;marks.next, mark, link);
+</span><span class="add">+	    if (mark-&gt;key == 0) {
+</span><span class="add">+		actually_set_mark(server, syms[0]);
+</span><span class="add">+	    } else {
+</span><span class="add">+		actually_go_to_mark(server, syms[0]);
+</span><span class="add">+	    }
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="add">+	struct binding *kb;
+</span><span class="add">+	if ((modifiers &amp; server-&gt;mod)) {
+</span><span class="add">+	    modifiers &amp;= ~server-&gt;mod;
+</span><span class="add">+	    for (int i = 0; i &lt; nsyms; i++) {
+</span><span class="add">+		wl_list_for_each(kb, &amp;server-&gt;key_bindings, link) {
+</span><span class="add">+		    if (syms[i] == kb-&gt;key &amp;&amp; modifiers == kb-&gt;mods) {
+</span><span class="add">+			kb-&gt;action(server, kb-&gt;data);
+</span><span class="add">+			return;
+</span><span class="add">+		    }
+</span><span class="def"> 		}
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    if (!handled) {
+</span><span class="sub">-	// forward to client
+</span><span class="sub">-	wlr_seat_keyboard_notify_key(seat, event-&gt;time_msec,
+</span><span class="sub">-	    event-&gt;keycode, event-&gt;state);
+</span><span class="sub">-    }
+</span><span class="add">+    // forward to client
+</span><span class="add">+    wlr_seat_keyboard_notify_key(
+</span><span class="add">+	seat, event-&gt;time_msec, event-&gt;keycode, event-&gt;state
+</span><span class="add">+    );
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -69,6 +69,10 @@
+<span class="def"> 	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="def"> 	*(int *)(kb-&gt;data) = -1;
+</span><span class="def">     }
+</span><span class="add">+    else if (strcasecmp(name, &quot;set_mark&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;set_mark;
+</span><span class="add">+    else if (strcasecmp(name, &quot;go_to_mark&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;go_to_mark;
+</span><span class="def">     else if (strcasecmp(name, &quot;exec&quot;) == 0) {
+</span><span class="def"> 	kb-&gt;action = &amp;exec_command;
+</span><span class="def"> 	kb-&gt;data = calloc(strlen(data), sizeof(char));
+</span>@@ -226,6 +230,9 @@
+<span class="def">     server-&gt;zoom_max = 3;
+</span><span class="def">     server-&gt;reverse_scrolling = false;
+</span><span class="def">     server-&gt;vt_switching = true;
+</span><span class="add">+
+</span><span class="add">+    wl_list_init(&amp;server-&gt;marks);
+</span><span class="add">+    server-&gt;mark_waiting = false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,5 +13,9 @@
+<span class="def"> void reset_pan(struct server *server, void *data);
+</span><span class="def"> void save_pan(struct server *server, void *data);
+</span><span class="def"> void zoom_desk(struct server *server, void *data);
+</span><span class="add">+void set_mark(struct server *server, void *data);
+</span><span class="add">+void actually_set_mark(struct server *server, const xkb_keysym_t sym);
+</span><span class="add">+void go_to_mark(struct server *server, void *data);
+</span><span class="add">+void actually_go_to_mark(struct server *server, const xkb_keysym_t sym);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -112,3 +112,69 @@
+<span class="def">     desk-&gt;panned_x -= fx;
+</span><span class="def">     desk-&gt;panned_y -= fy;
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_mark(struct server *server, void *data) {
+</span><span class="add">+    struct mark *mark = calloc(1, sizeof(struct mark));
+</span><span class="add">+    struct desk *desk = server-&gt;current_desk;
+</span><span class="add">+    mark-&gt;desk = desk;
+</span><span class="add">+    mark-&gt;x = desk-&gt;panned_x;
+</span><span class="add">+    mark-&gt;y = desk-&gt;panned_y;
+</span><span class="add">+    mark-&gt;zoom = desk-&gt;zoom;
+</span><span class="add">+    mark-&gt;key = 0;
+</span><span class="add">+    server-&gt;mark_waiting = true;
+</span><span class="add">+    wl_list_insert(&amp;server-&gt;marks, &amp;mark-&gt;link);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void actually_set_mark(struct server *server, const xkb_keysym_t sym) {
+</span><span class="add">+    struct mark *mark;
+</span><span class="add">+    struct mark *existing = NULL;
+</span><span class="add">+
+</span><span class="add">+    if (sym == XKB_KEY_Escape) {
+</span><span class="add">+	mark = wl_container_of(server-&gt;marks.next, mark, link);
+</span><span class="add">+	wl_list_remove(&amp;mark-&gt;link);
+</span><span class="add">+	free(mark);
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(mark, &amp;server-&gt;marks, link) {
+</span><span class="add">+	if (mark-&gt;key == sym) {
+</span><span class="add">+	    existing = mark;
+</span><span class="add">+	    break;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    if (existing) {
+</span><span class="add">+	wl_list_remove(&amp;existing-&gt;link);
+</span><span class="add">+	free(existing);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    mark = wl_container_of(server-&gt;marks.next, mark, link);
+</span><span class="add">+    mark-&gt;key = sym;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void go_to_mark(struct server *server, void *data) {
+</span><span class="add">+    server-&gt;mark_waiting = true;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void actually_go_to_mark(struct server *server, const xkb_keysym_t sym) {
+</span><span class="add">+    struct mark *mark;
+</span><span class="add">+
+</span><span class="add">+    if (sym == XKB_KEY_Escape)
+</span><span class="add">+	return;
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(mark, &amp;server-&gt;marks, link) {
+</span><span class="add">+	if (mark-&gt;key == sym) {
+</span><span class="add">+	    struct motion motion = {
+</span><span class="add">+		.dx = mark-&gt;x - mark-&gt;desk-&gt;panned_x,
+</span><span class="add">+		.dy = mark-&gt;y - mark-&gt;desk-&gt;panned_y,
+</span><span class="add">+	    };
+</span><span class="add">+	    mark-&gt;desk-&gt;zoom = mark-&gt;zoom;
+</span><span class="add">+	    set_desk(server, mark-&gt;desk);
+</span><span class="add">+	    pan_desk(server, &amp;motion);
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,7 +20,6 @@
+<span class="def">  - functions to shift focus
+</span><span class="def">  - functions to shift desk view
+</span><span class="def">  - screenshots protocol
+</span><span class="sub">- - vim-like marks to save desk views
+</span><span class="def">  - handle fullscreening
+</span><span class="def">  - pinch gestures for desk zooming
+</span><span class="def">  - draw rect with mouse when zoomed out to set new view
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -42,6 +42,14 @@
+<span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="def"> bind		Return		exec wterm
+</span><span class="def"> 
+</span><span class="add">+# These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="add">+# pressed, waits for the following key press and uses that as the &apos;mark&apos;, e.g.
+</span><span class="add">+# hitting &apos;mod + m&apos; then &apos;a&apos; will save the current position, then hitting
+</span><span class="add">+# &apos;mod + `&apos; then &apos;a&apos; later will move to that marked position. These can be
+</span><span class="add">+# cancelled with the escape key.
+</span><span class="add">+bind		m		set_mark
+</span><span class="add">+bind		grave		go_to_mark
+</span><span class="add">+
+</span><span class="def"> # Possible mouse bindings: motion, scroll (+ additional modifiers)
+</span><span class="def"> bind		scroll		pan_desk
+</span><span class="def"> bind	Shift	scroll		zoom_desk
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - reorganise functions, move actions into single file, check includes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/fbd8d7e039fd0f72d605950aa317742b1cf89bad.html">fbd8d7e039fd0f72d605950aa317742b1cf89bad</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/98659c1a8cf1063c4f142e73c945aef2f0980524.html">98659c1a8cf1063c4f142e73c945aef2f0980524</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-22 17:30:18 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-22 17:30:18 +0000
+
+reorganise functions, move actions into single file, check includes
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -36,6 +36,7 @@
+<span class="def">     struct wlr_xdg_shell *shell;
+</span><span class="def">     struct wl_listener new_xdg_surface_listener;
+</span><span class="def">     struct wl_list desks;
+</span><span class="add">+    int desk_count;
+</span><span class="def">     struct desk *current_desk;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_cursor *cursor;
+</span>@@ -84,9 +85,38 @@
+<span class="def">     struct wl_listener key_listener;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+struct wallpaper {
+</span><span class="add">+    struct wlr_texture *texture;
+</span><span class="add">+    int width, height;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+struct desk {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    struct server *server;
+</span><span class="add">+    struct wl_list views;
+</span><span class="add">+    float background[4];
+</span><span class="add">+    struct wallpaper *wallpaper;
+</span><span class="add">+    double panned_x, panned_y;
+</span><span class="add">+    int index;
+</span><span class="add">+    double zoom;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+struct binding {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    enum wlr_keyboard_modifier mods;
+</span><span class="add">+    uint32_t key;
+</span><span class="add">+    action action;
+</span><span class="add">+    void *data;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> struct motion {
+</span><span class="def">     double dx;
+</span><span class="def">     double dy;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+enum mouse_keys {
+</span><span class="add">+    MOTION,
+</span><span class="add">+    SCROLL,
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,16 +3,9 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-void close_current_window(struct server *server, void *data);
+</span><span class="def"> void unmap_view(struct view *view);
+</span><span class="def"> void map_view(struct view *view);
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface);
+</span><span class="sub">-void on_map(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_surface_destroy(struct wl_listener *listener, void *data);
+</span><span class="sub">-void process_move_resize(struct view *view, enum cursor_mode mode, uint32_t edges);
+</span><span class="sub">-void on_request_move(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_request_resize(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_new_xdg_surface(struct wl_listener *listener, void *data);
+</span><span class="def"> void set_up_shell(struct server *server);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,22 +1,8 @@
+<span class="def"> #include &lt;wlr/util/edges.h&gt;
+</span><span class="def"> 
+</span><span class="sub">-#include &quot;config.h&quot;
+</span><span class="sub">-#include &quot;desk.h&quot;
+</span><span class="sub">-#include &quot;output.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void close_current_window(struct server *server, void *data) {
+</span><span class="sub">-    struct wlr_surface *surface = server-&gt;seat-&gt;keyboard_state.focused_surface;
+</span><span class="sub">-    if (surface) {
+</span><span class="sub">-	struct wlr_xdg_surface *xdg_surface = surface-&gt;role_data;
+</span><span class="sub">-	if (xdg_surface-&gt;role == WLR_XDG_SURFACE_ROLE_TOPLEVEL &amp;&amp; xdg_surface-&gt;toplevel) {
+</span><span class="sub">-	    xdg_toplevel_send_close(xdg_surface-&gt;toplevel-&gt;resource);
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void unmap_view(struct view *view) {
+</span><span class="def">     wl_signal_emit(&amp;view-&gt;surface-&gt;events.unmap, view);
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,30 +1,8 @@
+<span class="def"> #ifndef DESKWM_OUTPUT_H
+</span><span class="def"> #define DESKWM_OUTPUT_H
+</span><span class="def"> 
+</span><span class="sub">-#include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="sub">-
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-struct output {
+</span><span class="sub">-    struct wl_list link;
+</span><span class="sub">-    struct server *server;
+</span><span class="sub">-    struct wlr_output *wlr_output;
+</span><span class="sub">-    struct wl_listener frame_listener;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-struct render_data {
+</span><span class="sub">-    struct wlr_output *output;
+</span><span class="sub">-    struct wlr_renderer *renderer;
+</span><span class="sub">-    struct view *view;
+</span><span class="sub">-    struct timespec *when;
+</span><span class="sub">-    double zoom;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-void render_surface(
+</span><span class="sub">-    struct wlr_surface *surface, int sx, int sy, void *data
+</span><span class="sub">-);
+</span><span class="sub">-void on_frame(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_new_output(struct wl_listener *listener, void *data);
+</span><span class="def"> void set_up_outputs(struct server *server);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,11 +2,27 @@
+<span class="def"> #include &lt;wlr/types/wlr_matrix.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> 
+</span><span class="sub">-#include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+struct output {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    struct server *server;
+</span><span class="add">+    struct wlr_output *wlr_output;
+</span><span class="add">+    struct wl_listener frame_listener;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+struct render_data {
+</span><span class="add">+    struct wlr_output *output;
+</span><span class="add">+    struct wlr_renderer *renderer;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    struct timespec *when;
+</span><span class="add">+    double zoom;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void render_surface(
+</span><span class="def">     struct wlr_surface *surface, int sx, int sy, void *data
+</span><span class="def"> ) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,41 +2,10 @@
+<span class="def"> #define DESKWM_INPUT_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="sub">-#include &quot;shell.h&quot;
+</span><span class="def"> 
+</span><span class="def"> enum wlr_keyboard_modifier modifier_by_name(char *mod);
+</span><span class="def"> void add_binding(struct server *server, char *data, int line);
+</span><span class="sub">-void process_cursor_move(struct server *server, uint32_t time, double zoom);
+</span><span class="sub">-void process_cursor_resize(struct server *server, uint32_t time, double zoom);
+</span><span class="sub">-bool view_at(
+</span><span class="sub">-    struct view *view, double lx, double ly, struct wlr_surface **surface,
+</span><span class="sub">-    double *sx, double *sy
+</span><span class="sub">-);
+</span><span class="sub">-struct view *desktop_view_at(
+</span><span class="sub">-    struct server *server, double lx, double ly, struct wlr_surface **surface,
+</span><span class="sub">-    double *sx, double *sy
+</span><span class="sub">-);
+</span><span class="sub">-void process_cursor_motion(struct server *server, uint32_t time, double dx, double dy);
+</span><span class="sub">-void on_cursor_motion(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_cursor_motion_absolute(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_cursor_button(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_cursor_axis(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_cursor_frame(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_modifier(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_key(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_new_keyboard(struct server *server, struct wlr_input_device *device);
+</span><span class="sub">-void on_new_input(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_request_cursor(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_request_set_selection(struct wl_listener *listener, void *data);
+</span><span class="def"> void set_up_cursor(struct server *server);
+</span><span class="def"> void set_up_keyboard(struct server *server);
+</span><span class="def"> 
+</span><span class="sub">-struct key_binding {
+</span><span class="sub">-    struct wl_list link;
+</span><span class="sub">-    enum wlr_keyboard_modifier mods;
+</span><span class="sub">-    uint32_t key;
+</span><span class="sub">-    action action;
+</span><span class="sub">-    void *data;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,7 +5,6 @@
+<span class="def"> #include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xcursor_manager.h&gt;
+</span><span class="def"> 
+</span><span class="sub">-#include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;input.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span>@@ -13,150 +12,6 @@
+<span class="def"> #define is_int(s) (strspn(s, &quot;-0123456789&quot;) == strlen(s))
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void shutdown(struct server *server, void *data) {
+</span><span class="sub">-    wl_display_terminate(server-&gt;display);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void exec_command(struct server *server, void *data) {
+</span><span class="sub">-    if (fork() == 0) {
+</span><span class="sub">-	execl(&quot;/bin/sh&quot;, &quot;/bin/sh&quot;, &quot;-c&quot;, data, (void *)NULL);
+</span><span class="sub">-    }
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-enum wlr_keyboard_modifier modifier_by_name(char *mod) {
+</span><span class="sub">-    if (strcasecmp(mod, &quot;shift&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_SHIFT;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;caps&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_CAPS;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;ctrl&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_CTRL;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;alt&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_ALT;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;mod2&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_MOD2;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;mod3&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_MOD3;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;logo&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_LOGO;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;mod5&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_MOD5;
+</span><span class="sub">-    return 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void assign_action(char *name, char *data, struct key_binding *kb) {
+</span><span class="sub">-    kb-&gt;data = NULL;
+</span><span class="sub">-    kb-&gt;action = NULL;
+</span><span class="sub">-
+</span><span class="sub">-    if (strcasecmp(name, &quot;shutdown&quot;) == 0)
+</span><span class="sub">-	kb-&gt;action = &amp;shutdown;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;close_current_window&quot;) == 0)
+</span><span class="sub">-	kb-&gt;action = &amp;close_current_window;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;next_desk&quot;) == 0)
+</span><span class="sub">-	kb-&gt;action = &amp;next_desk;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;prev_desk&quot;) == 0)
+</span><span class="sub">-	kb-&gt;action = &amp;prev_desk;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;pan_desk&quot;) == 0)
+</span><span class="sub">-	kb-&gt;action = &amp;pan_desk;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;reset_pan&quot;) == 0)
+</span><span class="sub">-	kb-&gt;action = &amp;reset_pan;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;save_pan&quot;) == 0)
+</span><span class="sub">-	kb-&gt;action = &amp;save_pan;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;zoom_in&quot;) == 0) {
+</span><span class="sub">-	kb-&gt;action = &amp;zoom_desk;
+</span><span class="sub">-	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="sub">-	*(int *)(kb-&gt;data) = 1;
+</span><span class="sub">-    }
+</span><span class="sub">-    else if (strcasecmp(name, &quot;zoom_out&quot;) == 0) {
+</span><span class="sub">-	kb-&gt;action = &amp;zoom_desk;
+</span><span class="sub">-	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="sub">-	*(int *)(kb-&gt;data) = -1;
+</span><span class="sub">-    }
+</span><span class="sub">-    else if (strcasecmp(name, &quot;zoom_out&quot;) == 0) {
+</span><span class="sub">-	kb-&gt;action = &amp;zoom_desk;
+</span><span class="sub">-	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="sub">-	*(int *)(kb-&gt;data) = -1;
+</span><span class="sub">-    }
+</span><span class="sub">-    else if (strcasecmp(name, &quot;exec&quot;) == 0) {
+</span><span class="sub">-	kb-&gt;action = &amp;exec_command;
+</span><span class="sub">-	kb-&gt;data = calloc(strlen(data), sizeof(char));
+</span><span class="sub">-	strncpy(kb-&gt;data, data, strlen(data));
+</span><span class="sub">-    }
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-enum mouse_keys {
+</span><span class="sub">-    MOTION,
+</span><span class="sub">-    SCROLL,
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-enum mouse_keys mouse_key_from_name(char *name) {
+</span><span class="sub">-    if (strcasecmp(name, &quot;motion&quot;) == 0)
+</span><span class="sub">-	return MOTION;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;scroll&quot;) == 0)
+</span><span class="sub">-	return SCROLL;
+</span><span class="sub">-    return 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void add_binding(struct server *server, char *data, int line) {
+</span><span class="sub">-    struct key_binding *kb = calloc(1, sizeof(struct key_binding));
+</span><span class="sub">-    enum wlr_keyboard_modifier mod;
+</span><span class="sub">-    char *s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="sub">-    bool is_mouse_binding = false;
+</span><span class="sub">-
+</span><span class="sub">-    // additional modifiers
+</span><span class="sub">-    kb-&gt;mods = 0;
+</span><span class="sub">-    for (int i = 0; i &lt; 8; i++) {
+</span><span class="sub">-	mod = modifier_by_name(s);
+</span><span class="sub">-	if (mod == 0)
+</span><span class="sub">-	    break;
+</span><span class="sub">-	kb-&gt;mods |= mod;
+</span><span class="sub">-	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    // key
+</span><span class="sub">-    kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_CASE_INSENSITIVE);
+</span><span class="sub">-    if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="sub">-	kb-&gt;key = mouse_key_from_name(s);
+</span><span class="sub">-	if (kb-&gt;key == 0) {
+</span><span class="sub">-	    wlr_log(WLR_ERROR, &quot;Config line %i: No such key &apos;%s&apos;.&quot;, line, s);
+</span><span class="sub">-	    free(kb);
+</span><span class="sub">-	    return;
+</span><span class="sub">-	}
+</span><span class="sub">-	is_mouse_binding = true;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    // action
+</span><span class="sub">-    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-    assign_action(s, strtok(NULL, &quot;&quot;), kb);
+</span><span class="sub">-    if (kb-&gt;action == NULL) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;Config line %i: No such action &apos;%s&apos;.&quot;, line, s);
+</span><span class="sub">-	free(kb);
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    struct key_binding *kb_existing;
+</span><span class="sub">-    struct wl_list *bindings;
+</span><span class="sub">-    if (is_mouse_binding) {
+</span><span class="sub">-	bindings = &amp;server-&gt;mouse_bindings;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	bindings = &amp;server-&gt;key_bindings;
+</span><span class="sub">-    }
+</span><span class="sub">-    wl_list_for_each(kb_existing, bindings, link) {
+</span><span class="sub">-	if (kb_existing-&gt;key == kb-&gt;key &amp;&amp; kb_existing-&gt;mods == kb-&gt;mods) {
+</span><span class="sub">-	    wlr_log(WLR_ERROR, &quot;Config line %i: binding exists for key combo.&quot;, line);
+</span><span class="sub">-	    free(kb);
+</span><span class="sub">-	    return;
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-    wl_list_insert(bindings, &amp;kb-&gt;link);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void process_cursor_move(struct server *server, uint32_t time, double zoom) {
+</span><span class="def">     server-&gt;grabbed_view-&gt;x = (server-&gt;cursor-&gt;x - server-&gt;grab_x) / zoom;
+</span><span class="def">     server-&gt;grabbed_view-&gt;y = (server-&gt;cursor-&gt;y - server-&gt;grab_y) / zoom;
+</span>@@ -356,7 +211,7 @@
+<span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-    struct key_binding *kb;
+</span><span class="add">+    struct binding *kb;
+</span><span class="def">     bool handled = false;
+</span><span class="def">     if ((modifiers &amp; server-&gt;mod)) {
+</span><span class="def"> 	modifiers &amp;= ~server-&gt;mod;
+</span>@@ -396,7 +251,7 @@
+<span class="def"> 
+</span><span class="def">     bool handled = false;
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-    struct key_binding *kb;
+</span><span class="add">+    struct binding *kb;
+</span><span class="def">     if ((modifiers &amp; server-&gt;mod) &amp;&amp; event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="def"> 	modifiers &amp;= ~server-&gt;mod;
+</span><span class="def"> 	for (int i = 0; i &lt; nsyms; i++) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,28 +4,6 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> void add_desk(struct server *server);
+</span><span class="sub">-void remove_desk(struct desk *desk);
+</span><span class="sub">-void next_desk(struct server *server, void *data);
+</span><span class="sub">-void prev_desk(struct server *server, void *data);
+</span><span class="sub">-void pan_desk(struct server *server, void *data);
+</span><span class="sub">-void reset_pan(struct server *server, void *data);
+</span><span class="sub">-void save_pan(struct server *server, void *data);
+</span><span class="sub">-void zoom_desk(struct server *server, void *data);
+</span><span class="sub">-
+</span><span class="sub">-struct wallpaper {
+</span><span class="sub">-    struct wlr_texture *texture;
+</span><span class="sub">-    int width, height;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-struct desk {
+</span><span class="sub">-    struct wl_list link;
+</span><span class="sub">-    struct server *server;
+</span><span class="sub">-    struct wl_list views;
+</span><span class="sub">-    float background[4];
+</span><span class="sub">-    struct wallpaper *wallpaper;
+</span><span class="sub">-    double panned_x, panned_y;
+</span><span class="sub">-    int index;
+</span><span class="sub">-    double zoom;
+</span><span class="sub">-};
+</span><span class="add">+void set_desk(struct server *server, struct desk *desk);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,9 +4,6 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static int num_desks = 0;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void add_desk(struct server *server) {
+</span><span class="def">     struct desk *desk = calloc(1, sizeof(struct desk));
+</span><span class="def">     wl_list_insert(server-&gt;desks.prev, &amp;desk-&gt;link);
+</span>@@ -14,15 +11,9 @@
+<span class="def">     wl_list_init(&amp;desk-&gt;views);
+</span><span class="def">     assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="def">     desk-&gt;wallpaper = NULL;
+</span><span class="sub">-    desk-&gt;index = num_desks;
+</span><span class="add">+    desk-&gt;index = server-&gt;desk_count;
+</span><span class="def">     desk-&gt;zoom = 1;
+</span><span class="sub">-    num_desks++;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void remove_desk(struct desk *desk) {
+</span><span class="sub">-    wl_list_remove(&amp;desk-&gt;link);
+</span><span class="sub">-    free(desk);
+</span><span class="add">+    server-&gt;desk_count++;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -36,81 +27,3 @@
+<span class="def"> 	map_view(view);
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void next_desk(struct server *server, void *data) {
+</span><span class="sub">-    struct desk *desk;
+</span><span class="sub">-    if (server-&gt;current_desk-&gt;index + 1 == num_desks) {
+</span><span class="sub">-	desk = wl_container_of(server-&gt;desks.next, desk, link);
+</span><span class="sub">-    } else {
+</span><span class="sub">-	desk = wl_container_of(server-&gt;current_desk-&gt;link.next, desk, link);
+</span><span class="sub">-    }
+</span><span class="sub">-    set_desk(server, desk);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void prev_desk(struct server *server, void *data) {
+</span><span class="sub">-    struct desk *desk;
+</span><span class="sub">-    if (server-&gt;current_desk-&gt;index == 0) {
+</span><span class="sub">-	desk = wl_container_of(server-&gt;desks.prev, desk, link);
+</span><span class="sub">-    } else {
+</span><span class="sub">-	desk = wl_container_of(server-&gt;current_desk-&gt;link.prev, desk, link);
+</span><span class="sub">-    }
+</span><span class="sub">-    set_desk(server, desk);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void pan_desk(struct server *server, void *data) {
+</span><span class="sub">-    struct desk *desk = server-&gt;current_desk;
+</span><span class="sub">-    struct motion motion = *(struct motion*)data;
+</span><span class="sub">-    double dx = motion.dx;
+</span><span class="sub">-    double dy = motion.dy;
+</span><span class="sub">-    struct view *view;
+</span><span class="sub">-    wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="sub">-	view-&gt;x += dx;
+</span><span class="sub">-	view-&gt;y += dy;
+</span><span class="sub">-    }
+</span><span class="sub">-    desk-&gt;panned_x += dx;
+</span><span class="sub">-    desk-&gt;panned_y += dy;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void reset_pan(struct server *server, void *data) {
+</span><span class="sub">-    struct desk *desk = server-&gt;current_desk;
+</span><span class="sub">-    struct view *view;
+</span><span class="sub">-    wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="sub">-	view-&gt;x -= desk-&gt;panned_x;
+</span><span class="sub">-	view-&gt;y -= desk-&gt;panned_y;
+</span><span class="sub">-    }
+</span><span class="sub">-    desk-&gt;panned_x = desk-&gt;panned_y = 0;
+</span><span class="sub">-    desk-&gt;zoom = 1;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void save_pan(struct server *server, void *data) {
+</span><span class="sub">-    server-&gt;current_desk-&gt;panned_x = server-&gt;current_desk-&gt;panned_y = 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void zoom_desk(struct server *server, void *data) {
+</span><span class="sub">-    /* dir &gt; 0 ? zoom in : zoom out */
+</span><span class="sub">-    struct desk *desk = server-&gt;current_desk;
+</span><span class="sub">-    int dir = *(int*)data;
+</span><span class="sub">-    double f = dir &gt; 0 ? 1.015 : 1/1.015;
+</span><span class="sub">-    if (
+</span><span class="sub">-	(f &gt; 1 &amp;&amp; desk-&gt;zoom &gt;= server-&gt;zoom_max) ||
+</span><span class="sub">-	(f &lt; 1 &amp;&amp; desk-&gt;zoom &lt;= server-&gt;zoom_min)
+</span><span class="sub">-    ) {
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="sub">-    desk-&gt;zoom *= f;
+</span><span class="sub">-    double fx = server-&gt;cursor-&gt;x * (f - 1) / desk-&gt;zoom;
+</span><span class="sub">-    double fy = server-&gt;cursor-&gt;y * (f - 1) / desk-&gt;zoom;
+</span><span class="sub">-    struct view *view;
+</span><span class="sub">-    wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="sub">-	view-&gt;x -= fx;
+</span><span class="sub">-	view-&gt;y -= fy;
+</span><span class="sub">-    }
+</span><span class="sub">-    desk-&gt;panned_x -= fx;
+</span><span class="sub">-    desk-&gt;panned_y -= fy;
+</span><span class="sub">-}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,6 +6,7 @@
+<span class="def"> #include &lt;wlr/render/wlr_texture.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#include &quot;action.h&quot;
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;input.h&quot;
+</span>@@ -14,6 +15,131 @@
+<span class="def"> #define is_decimal(s) (strspn(s, &quot;0123456789.&quot;) == strlen(s))
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+enum wlr_keyboard_modifier modifier_by_name(char *mod) {
+</span><span class="add">+    if (strcasecmp(mod, &quot;shift&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_SHIFT;
+</span><span class="add">+    if (strcasecmp(mod, &quot;caps&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_CAPS;
+</span><span class="add">+    if (strcasecmp(mod, &quot;ctrl&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_CTRL;
+</span><span class="add">+    if (strcasecmp(mod, &quot;alt&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_ALT;
+</span><span class="add">+    if (strcasecmp(mod, &quot;mod2&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_MOD2;
+</span><span class="add">+    if (strcasecmp(mod, &quot;mod3&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_MOD3;
+</span><span class="add">+    if (strcasecmp(mod, &quot;logo&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_LOGO;
+</span><span class="add">+    if (strcasecmp(mod, &quot;mod5&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_MOD5;
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void assign_action(char *name, char *data, struct binding *kb) {
+</span><span class="add">+    kb-&gt;data = NULL;
+</span><span class="add">+    kb-&gt;action = NULL;
+</span><span class="add">+
+</span><span class="add">+    if (strcasecmp(name, &quot;shutdown&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;shutdown;
+</span><span class="add">+    else if (strcasecmp(name, &quot;close_current_window&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;close_current_window;
+</span><span class="add">+    else if (strcasecmp(name, &quot;next_desk&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;next_desk;
+</span><span class="add">+    else if (strcasecmp(name, &quot;prev_desk&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;prev_desk;
+</span><span class="add">+    else if (strcasecmp(name, &quot;pan_desk&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;pan_desk;
+</span><span class="add">+    else if (strcasecmp(name, &quot;reset_pan&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;reset_pan;
+</span><span class="add">+    else if (strcasecmp(name, &quot;save_pan&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;save_pan;
+</span><span class="add">+    else if (strcasecmp(name, &quot;zoom_in&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;zoom_desk;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="add">+	*(int *)(kb-&gt;data) = 1;
+</span><span class="add">+    }
+</span><span class="add">+    else if (strcasecmp(name, &quot;zoom_out&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;zoom_desk;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="add">+	*(int *)(kb-&gt;data) = -1;
+</span><span class="add">+    }
+</span><span class="add">+    else if (strcasecmp(name, &quot;zoom_out&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;zoom_desk;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="add">+	*(int *)(kb-&gt;data) = -1;
+</span><span class="add">+    }
+</span><span class="add">+    else if (strcasecmp(name, &quot;exec&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;exec_command;
+</span><span class="add">+	kb-&gt;data = calloc(strlen(data), sizeof(char));
+</span><span class="add">+	strncpy(kb-&gt;data, data, strlen(data));
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+enum mouse_keys mouse_key_from_name(char *name) {
+</span><span class="add">+    if (strcasecmp(name, &quot;motion&quot;) == 0)
+</span><span class="add">+	return MOTION;
+</span><span class="add">+    else if (strcasecmp(name, &quot;scroll&quot;) == 0)
+</span><span class="add">+	return SCROLL;
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void add_binding(struct server *server, char *data, int line) {
+</span><span class="add">+    struct binding *kb = calloc(1, sizeof(struct binding));
+</span><span class="add">+    enum wlr_keyboard_modifier mod;
+</span><span class="add">+    char *s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="add">+    bool is_mouse_binding = false;
+</span><span class="add">+
+</span><span class="add">+    // additional modifiers
+</span><span class="add">+    kb-&gt;mods = 0;
+</span><span class="add">+    for (int i = 0; i &lt; 8; i++) {
+</span><span class="add">+	mod = modifier_by_name(s);
+</span><span class="add">+	if (mod == 0)
+</span><span class="add">+	    break;
+</span><span class="add">+	kb-&gt;mods |= mod;
+</span><span class="add">+	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // key
+</span><span class="add">+    kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_CASE_INSENSITIVE);
+</span><span class="add">+    if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="add">+	kb-&gt;key = mouse_key_from_name(s);
+</span><span class="add">+	if (kb-&gt;key == 0) {
+</span><span class="add">+	    wlr_log(WLR_ERROR, &quot;Config line %i: No such key &apos;%s&apos;.&quot;, line, s);
+</span><span class="add">+	    free(kb);
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+	is_mouse_binding = true;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // action
+</span><span class="add">+    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    assign_action(s, strtok(NULL, &quot;&quot;), kb);
+</span><span class="add">+    if (kb-&gt;action == NULL) {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Config line %i: No such action &apos;%s&apos;.&quot;, line, s);
+</span><span class="add">+	free(kb);
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct binding *kb_existing;
+</span><span class="add">+    struct wl_list *bindings;
+</span><span class="add">+    if (is_mouse_binding) {
+</span><span class="add">+	bindings = &amp;server-&gt;mouse_bindings;
+</span><span class="add">+    } else {
+</span><span class="add">+	bindings = &amp;server-&gt;key_bindings;
+</span><span class="add">+    }
+</span><span class="add">+    wl_list_for_each(kb_existing, bindings, link) {
+</span><span class="add">+	if (kb_existing-&gt;key == kb-&gt;key &amp;&amp; kb_existing-&gt;mods == kb-&gt;mods) {
+</span><span class="add">+	    wlr_log(WLR_ERROR, &quot;Config line %i: binding exists for key combo.&quot;, line);
+</span><span class="add">+	    free(kb);
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    wl_list_insert(bindings, &amp;kb-&gt;link);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> void assign_colour(char *hex, float dest[4]) {
+</span><span class="def">     if (strlen(hex) != 7 || hex[0] != &apos;#&apos;) {
+</span><span class="def"> 	wlr_log(WLR_INFO, &quot;Invalid colour: %s. Should be in the form #rrggbb.&quot;, hex);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,16 @@
+<span class="add">+#ifndef DESKWM_ACTION_H
+</span><span class="add">+#define DESKWM_ACTION_H
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+void shutdown(struct server *server, void *data);
+</span><span class="add">+void exec_command(struct server *server, void *data);
+</span><span class="add">+void close_current_window(struct server *server, void *data);
+</span><span class="add">+void next_desk(struct server *server, void *data);
+</span><span class="add">+void prev_desk(struct server *server, void *data);
+</span><span class="add">+void pan_desk(struct server *server, void *data);
+</span><span class="add">+void reset_pan(struct server *server, void *data);
+</span><span class="add">+void save_pan(struct server *server, void *data);
+</span><span class="add">+void zoom_desk(struct server *server, void *data);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,103 @@
+<span class="add">+#include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void shutdown(struct server *server, void *data) {
+</span><span class="add">+    wl_display_terminate(server-&gt;display);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void exec_command(struct server *server, void *data) {
+</span><span class="add">+    if (fork() == 0) {
+</span><span class="add">+	execl(&quot;/bin/sh&quot;, &quot;/bin/sh&quot;, &quot;-c&quot;, data, (void *)NULL);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void close_current_window(struct server *server, void *data) {
+</span><span class="add">+    struct wlr_surface *surface = server-&gt;seat-&gt;keyboard_state.focused_surface;
+</span><span class="add">+    if (surface) {
+</span><span class="add">+	struct wlr_xdg_surface *xdg_surface = surface-&gt;role_data;
+</span><span class="add">+	if (xdg_surface-&gt;role == WLR_XDG_SURFACE_ROLE_TOPLEVEL &amp;&amp; xdg_surface-&gt;toplevel) {
+</span><span class="add">+	    xdg_toplevel_send_close(xdg_surface-&gt;toplevel-&gt;resource);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void next_desk(struct server *server, void *data) {
+</span><span class="add">+    struct desk *desk;
+</span><span class="add">+    if (server-&gt;current_desk-&gt;index + 1 == server-&gt;desk_count) {
+</span><span class="add">+	desk = wl_container_of(server-&gt;desks.next, desk, link);
+</span><span class="add">+    } else {
+</span><span class="add">+	desk = wl_container_of(server-&gt;current_desk-&gt;link.next, desk, link);
+</span><span class="add">+    }
+</span><span class="add">+    set_desk(server, desk);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void prev_desk(struct server *server, void *data) {
+</span><span class="add">+    struct desk *desk;
+</span><span class="add">+    if (server-&gt;current_desk-&gt;index == 0) {
+</span><span class="add">+	desk = wl_container_of(server-&gt;desks.prev, desk, link);
+</span><span class="add">+    } else {
+</span><span class="add">+	desk = wl_container_of(server-&gt;current_desk-&gt;link.prev, desk, link);
+</span><span class="add">+    }
+</span><span class="add">+    set_desk(server, desk);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void pan_desk(struct server *server, void *data) {
+</span><span class="add">+    struct desk *desk = server-&gt;current_desk;
+</span><span class="add">+    struct motion motion = *(struct motion*)data;
+</span><span class="add">+    double dx = motion.dx;
+</span><span class="add">+    double dy = motion.dy;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="add">+	view-&gt;x += dx;
+</span><span class="add">+	view-&gt;y += dy;
+</span><span class="add">+    }
+</span><span class="add">+    desk-&gt;panned_x += dx;
+</span><span class="add">+    desk-&gt;panned_y += dy;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void reset_pan(struct server *server, void *data) {
+</span><span class="add">+    struct desk *desk = server-&gt;current_desk;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="add">+	view-&gt;x -= desk-&gt;panned_x;
+</span><span class="add">+	view-&gt;y -= desk-&gt;panned_y;
+</span><span class="add">+    }
+</span><span class="add">+    desk-&gt;panned_x = desk-&gt;panned_y = 0;
+</span><span class="add">+    desk-&gt;zoom = 1;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void save_pan(struct server *server, void *data) {
+</span><span class="add">+    server-&gt;current_desk-&gt;panned_x = server-&gt;current_desk-&gt;panned_y = 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void zoom_desk(struct server *server, void *data) {
+</span><span class="add">+    /* dir &gt; 0 ? zoom in : zoom out */
+</span><span class="add">+    struct desk *desk = server-&gt;current_desk;
+</span><span class="add">+    int dir = *(int*)data;
+</span><span class="add">+    double f = dir &gt; 0 ? 1.015 : 1/1.015;
+</span><span class="add">+    if (
+</span><span class="add">+	(f &gt; 1 &amp;&amp; desk-&gt;zoom &gt;= server-&gt;zoom_max) ||
+</span><span class="add">+	(f &lt; 1 &amp;&amp; desk-&gt;zoom &lt;= server-&gt;zoom_min)
+</span><span class="add">+    ) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+    desk-&gt;zoom *= f;
+</span><span class="add">+    double fx = server-&gt;cursor-&gt;x * (f - 1) / desk-&gt;zoom;
+</span><span class="add">+    double fy = server-&gt;cursor-&gt;y * (f - 1) / desk-&gt;zoom;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="add">+	view-&gt;x -= fx;
+</span><span class="add">+	view-&gt;y -= fy;
+</span><span class="add">+    }
+</span><span class="add">+    desk-&gt;panned_x -= fx;
+</span><span class="add">+    desk-&gt;panned_y -= fy;
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

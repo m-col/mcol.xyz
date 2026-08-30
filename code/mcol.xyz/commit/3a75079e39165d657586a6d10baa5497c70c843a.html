@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Add haskell blackbird post</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/3a75079e39165d657586a6d10baa5497c70c843a.html">3a75079e39165d657586a6d10baa5497c70c843a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/3bd4f6b9d8fbfe4a4cc3aee476440b09366c77ae.html">3bd4f6b9d8fbfe4a4cc3aee476440b09366c77ae</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-30 20:25:33 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-30 20:25:33 +0100
+
+Add haskell blackbird post
+</pre><div class="diff">
+  <p>
+    <b>content/posts/programming/haskell_blackbird.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,71 @@
+<span class="add">+haskell study: pointfree rules, and the blackbird
+</span><span class="add">+=================================================
+</span><span class="add">+
+</span><span class="add">+:date: 2021-09-30
+</span><span class="add">+:summary: haskell study: pointfree rules, and the blackbird
+</span><span class="add">+
+</span><span class="add">+Since I started learning Haskell (not too long ago) it was never really clear
+</span><span class="add">+to me the benefits of writing functions in a pointfree style. It seemed that
+</span><span class="add">+doing so for relatively simple functions that would require minimal changes
+</span><span class="add">+made sense, such as the example from the Haskell `pointfree wiki page`_:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: haskell
+</span><span class="add">+
+</span><span class="add">+   sum xs = foldr (+) 0 xs
+</span><span class="add">+   -- and pointfree:
+</span><span class="add">+   sum&apos; = foldr (+) 0
+</span><span class="add">+
+</span><span class="add">+Here, all it takes to make the function pointfree is omitting the argument.
+</span><span class="add">+Doing so removes some visual noise but it otherwise looks identical.
+</span><span class="add">+
+</span><span class="add">+The thing is, this small change -- omitting the arguments while keeping the
+</span><span class="add">+rest unchanged -- is often not the only thing required to rewrite a function in
+</span><span class="add">+a pointfree form. For this reason I haven&apos;t had much drive to use pointfree
+</span><span class="add">+style for most functions that I write.
+</span><span class="add">+
+</span><span class="add">+What changed my mind was Amar Shah&apos;s articles titled `Point-Free or Die`_ (and
+</span><span class="add">+`YouTube video`_). I won&apos;t repeat
+</span><span class="add">+things from there (much) but I highly recommend reading those articles or
+</span><span class="add">+watching the video.
+</span><span class="add">+
+</span><span class="add">+While all of what he says is really interesting and worth reading, the crux of
+</span><span class="add">+the matter is that one can learn to recognise common function shapes so that
+</span><span class="add">+writing them in a pointfree style simply involves using something to map a
+</span><span class="add">+concise pointfree form to that shape. The blackbird (or B1) combinator is the
+</span><span class="add">+&apos;something&apos; that Amar identifies as what he needs to write his function in a
+</span><span class="add">+clear and elegant way:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: haskell
+</span><span class="add">+
+</span><span class="add">+   blackbird :: (c -&gt; d) -&gt; (a -&gt; b -&gt; c) -&gt; a -&gt; b -&gt; d
+</span><span class="add">+   blackbird f g x y = f (g x y)
+</span><span class="add">+
+</span><span class="add">+The shape taken by a function that would make use of the blackbird is a
+</span><span class="add">+function that takes two arguments (:code:`a` and :code:`b` above) and inputs
+</span><span class="add">+these into one function and pipes the output of that into another function.
+</span><span class="add">+Without using this combinator, the pointfree version is otherwise left in this
+</span><span class="add">+more obscure form:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: haskell
+</span><span class="add">+
+</span><span class="add">+   func :: a -&gt; b -&gt; d
+</span><span class="add">+   func = (f .) . g
+</span><span class="add">+
+</span><span class="add">+While one could argue that bringing another object into the mix complicates
+</span><span class="add">+things further, being aware of this and `other such combinators`_ means that
+</span><span class="add">+when familiar shapes appear in your functions there is a go-to combinator in
+</span><span class="add">+your toolbox to represent that shape. Together, these combinators account for a
+</span><span class="add">+wide variety of function shapes, letting us write many more functions elegantly
+</span><span class="add">+in pointfree style with only a little extra work.
+</span><span class="add">+
+</span><span class="add">+Plus, isn&apos;t it pretty?:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: haskell
+</span><span class="add">+
+</span><span class="add">+   (.:) = blackbird  -- A common blackbird infix operator
+</span><span class="add">+   func = f .: g
+</span><span class="add">+
+</span><span class="add">+.. _`pointfree wiki page`: https://wiki.haskell.org/Pointfree
+</span><span class="add">+.. _`Point-Free or Die`: https://amar47shah.github.io/posts/2016-08-28-point-free-part-2.html
+</span><span class="add">+.. _`YouTube video`: https://www.youtube.com/watch?v=seVSlKazsNk
+</span><span class="add">+.. _`other such combinators`: https://hackage.haskell.org/package/data-aviary-0.4.0/docs/Data-Aviary-Birds.html
+</span></pre>
+</div></div>
+  </body>
+</html>

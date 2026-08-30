@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - make things that are static explicitly static</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/bd5a4d4b16c4f539f474da9da2931c720af254fb.html">bd5a4d4b16c4f539f474da9da2931c720af254fb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/6842b39a19cbc44edc00699dfdcd6f257ba2814c.html">6842b39a19cbc44edc00699dfdcd6f257ba2814c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-23 21:39:22 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-23 21:39:22 +0000
+
+make things that are static explicitly static
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -86,13 +86,13 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_map(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_map(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, map_listener);
+</span><span class="def">     if (view-&gt;server-&gt;can_steal_focus)
+</span><span class="def"> 	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, unmap_listener);
+</span><span class="def">     if (view-&gt;server-&gt;can_steal_focus) {
+</span><span class="def"> 	wl_list_remove(&amp;view-&gt;link);
+</span>@@ -103,14 +103,14 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_surface_destroy(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_surface_destroy(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, destroy_listener);
+</span><span class="def">     wl_list_remove(&amp;view-&gt;link);
+</span><span class="def">     free(view);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void process_move_resize(struct view *view, enum cursor_mode mode, uint32_t edges) {
+</span><span class="add">+static void process_move_resize(struct view *view, enum cursor_mode mode, uint32_t edges) {
+</span><span class="def">     struct server *server = view-&gt;server;
+</span><span class="def">     struct wlr_surface *focused_surface =
+</span><span class="def"> 	server-&gt;seat-&gt;pointer_state.focused_surface;
+</span>@@ -134,27 +134,27 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_request_move(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_request_move(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, request_move_listener);
+</span><span class="def">     process_move_resize(view, CURSOR_MOVE, 0);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_request_resize(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_request_resize(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_xdg_toplevel_resize_event *event = data;
+</span><span class="def">     struct view *view = wl_container_of(listener, view, request_resize_listener);
+</span><span class="def">     process_move_resize(view, CURSOR_RESIZE, event-&gt;edges);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_request_fullscreen(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_request_fullscreen(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_xdg_toplevel_set_fullscreen_event *event = data;
+</span><span class="def">     struct view *view = wl_container_of(listener, view, request_fullscreen_listener);
+</span><span class="def">     fullscreen_xdg_surface(view, event-&gt;surface, event-&gt;output);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_new_xdg_surface(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_new_xdg_surface(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(listener, server, new_xdg_surface_listener);
+</span><span class="def">     struct wlr_xdg_surface *surface = data;
+</span><span class="def">     if (surface-&gt;role != WLR_XDG_SURFACE_ROLE_TOPLEVEL) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,7 +23,7 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void render_surface(
+</span><span class="add">+static void render_surface(
+</span><span class="def">     struct wlr_surface *surface, int sx, int sy, void *data
+</span><span class="def"> ) {
+</span><span class="def">     struct render_data *rdata = data;
+</span>@@ -68,7 +68,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_frame(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_frame(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct output *output = wl_container_of(listener, output, frame_listener);
+</span><span class="def">     struct server *server = output-&gt;server;
+</span><span class="def">     struct wlr_renderer *renderer = server-&gt;renderer;
+</span>@@ -133,7 +133,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_new_output(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_new_output(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(listener, server, new_output_listener);
+</span><span class="def">     struct wlr_output *wlr_output = data;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/log.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,18 +3,18 @@
+<span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-enum wlr_log_importance log_importance;
+</span><span class="add">+static enum wlr_log_importance log_importance;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-const char *verbosity_headers[] = {
+</span><span class="sub">-	[WLR_SILENT] = &quot;&quot;,
+</span><span class="sub">-	[WLR_ERROR] = &quot;[ERROR]&quot;,
+</span><span class="sub">-	[WLR_INFO] = &quot;[INFO]&quot;,
+</span><span class="sub">-	[WLR_DEBUG] = &quot;[DEBUG]&quot;,
+</span><span class="add">+static const char *verbosity_headers[] = {
+</span><span class="add">+    [WLR_SILENT] = &quot;&quot;,
+</span><span class="add">+    [WLR_ERROR] = &quot;[ERROR]&quot;,
+</span><span class="add">+    [WLR_INFO] = &quot;[INFO]&quot;,
+</span><span class="add">+    [WLR_DEBUG] = &quot;[DEBUG]&quot;,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void log_stdout(enum wlr_log_importance verbosity, const char *fmt, va_list args) {
+</span><span class="add">+static void log_stdout(enum wlr_log_importance verbosity, const char *fmt, va_list args) {
+</span><span class="def">     if (verbosity &gt; log_importance) {
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keyboard.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,7 +9,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_modifier(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_modifier(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct keyboard *keyboard = wl_container_of(listener, keyboard, modifier_listener);
+</span><span class="def">     struct server *server = keyboard-&gt;server;
+</span><span class="def">     wlr_seat_keyboard_notify_modifiers(
+</span>@@ -41,7 +41,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_key(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_key(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct keyboard *keyboard = wl_container_of(listener, keyboard, key_listener);
+</span><span class="def">     struct server *server = keyboard-&gt;server;
+</span><span class="def">     struct wlr_event_keyboard_key *event = data;
+</span>@@ -89,7 +89,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_new_keyboard(struct server *server, struct wlr_input_device *device) {
+</span><span class="add">+static void on_new_keyboard(struct server *server, struct wlr_input_device *device) {
+</span><span class="def">     struct keyboard *keyboard = calloc(1, sizeof(struct keyboard));
+</span><span class="def">     keyboard-&gt;server = server;
+</span><span class="def">     keyboard-&gt;device = device;
+</span>@@ -114,7 +114,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_request_set_selection(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_request_set_selection(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(
+</span><span class="def"> 	listener, server, request_set_selection_listener);
+</span><span class="def">     struct wlr_seat_request_set_selection_event *event = data;
+</span>@@ -122,7 +122,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_request_cursor(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_request_cursor(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(listener, server, request_cursor_listener);
+</span><span class="def">     struct wlr_seat_pointer_request_set_cursor_event *event = data;
+</span><span class="def">     struct wlr_seat_client *focused_client =
+</span>@@ -136,7 +136,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_new_input(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_new_input(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(listener, server, new_input_listener);
+</span><span class="def"> 
+</span><span class="def">     struct wlr_input_device *device = data;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,13 +9,13 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void process_cursor_move(struct server *server, uint32_t time, double zoom) {
+</span><span class="add">+static void process_cursor_move(struct server *server, uint32_t time, double zoom) {
+</span><span class="def">     server-&gt;grabbed_view-&gt;x = (server-&gt;cursor-&gt;x - server-&gt;grab_x) / zoom;
+</span><span class="def">     server-&gt;grabbed_view-&gt;y = (server-&gt;cursor-&gt;y - server-&gt;grab_y) / zoom;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void process_cursor_resize(struct server *server, uint32_t time, double zoom) {
+</span><span class="add">+static void process_cursor_resize(struct server *server, uint32_t time, double zoom) {
+</span><span class="def">     struct view *view = server-&gt;grabbed_view;
+</span><span class="def">     int x = server-&gt;grab_geobox.x;
+</span><span class="def">     int width = server-&gt;grab_geobox.width;
+</span>@@ -44,7 +44,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-bool view_at(
+</span><span class="add">+static bool view_at(
+</span><span class="def">     struct view *view, double lx, double ly, struct wlr_surface **surface,
+</span><span class="def">     double *sx, double *sy
+</span><span class="def"> ) {
+</span>@@ -66,7 +66,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-struct view *desktop_view_at(
+</span><span class="add">+static struct view *desktop_view_at(
+</span><span class="def">     struct server *server, double lx, double ly, struct wlr_surface **surface,
+</span><span class="def">     double *sx, double *sy
+</span><span class="def"> ) {
+</span>@@ -80,7 +80,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void process_cursor_motion(struct server *server, uint32_t time, double dx, double dy) {
+</span><span class="add">+static void process_cursor_motion(struct server *server, uint32_t time, double dx, double dy) {
+</span><span class="def">     double sx, sy;
+</span><span class="def">     struct wlr_seat *seat;
+</span><span class="def">     struct wlr_surface *surface;
+</span>@@ -132,7 +132,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_cursor_motion(struct wl_listener *listener, void *data){
+</span><span class="add">+static void on_cursor_motion(struct wl_listener *listener, void *data){
+</span><span class="def">     struct server *server = wl_container_of(listener, server, cursor_motion_listener);
+</span><span class="def">     struct wlr_event_pointer_motion *event = data;
+</span><span class="def">     wlr_cursor_move(server-&gt;cursor, event-&gt;device, event-&gt;delta_x, event-&gt;delta_y);
+</span>@@ -140,7 +140,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_cursor_motion_absolute(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_cursor_motion_absolute(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(listener, server,
+</span><span class="def"> 	cursor_motion_absolute_listener);
+</span><span class="def">     struct wlr_event_pointer_motion_absolute *event = data;
+</span>@@ -149,7 +149,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_cursor_button(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_cursor_button(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(listener, server, cursor_button_listener);
+</span><span class="def">     struct wlr_event_pointer_button *event = data;
+</span><span class="def">     wlr_seat_pointer_notify_button(
+</span>@@ -169,7 +169,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_cursor_axis(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_cursor_axis(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(listener, server, cursor_axis_listener);
+</span><span class="def">     struct wlr_event_pointer_axis *event = data;
+</span><span class="def">     if (server-&gt;cursor_mode == CURSOR_MOD) {
+</span>@@ -194,7 +194,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_cursor_frame(struct wl_listener *listener, void *data) {
+</span><span class="add">+static void on_cursor_frame(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct server *server = wl_container_of(listener, server, cursor_frame_listener);
+</span><span class="def">     wlr_seat_pointer_notify_frame(server-&gt;seat);
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -27,7 +27,7 @@
+<span class="def"> 
+</span><span class="def"> struct value_map {
+</span><span class="def">     const char *name;
+</span><span class="sub">-    int value;
+</span><span class="add">+    const int value;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -61,7 +61,7 @@
+<span class="def">  * them to the getter so the macro hides this. */
+</span><span class="def"> #define get(arr, name) _get(arr, sizeof(arr) / sizeof(arr[0]), name)
+</span><span class="def"> 
+</span><span class="sub">-int _get(struct value_map *values, int len, const char *name) {
+</span><span class="add">+static int _get(struct value_map *values, const int len, const char *name) {
+</span><span class="def">     for (int i = 0; i &lt; len; i++) {
+</span><span class="def"> 	if (strcasecmp(values[i].name, name) == 0)
+</span><span class="def"> 	    return values[i].value;
+</span>@@ -70,13 +70,13 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void dir_handler(struct binding *kb, char *data) {
+</span><span class="add">+static void dir_handler(struct binding *kb, const char *data) {
+</span><span class="def">     kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="def">     *(enum direction *)(kb-&gt;data) = get(dirs, data);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void str_handler(struct binding *kb, char *data) {
+</span><span class="add">+static void str_handler(struct binding *kb, const char *data) {
+</span><span class="def">     if (is_number(data)) {
+</span><span class="def"> 	kb-&gt;data = calloc(1, sizeof(double));
+</span><span class="def"> 	*(double *)(kb-&gt;data) = strtod(data, NULL);
+</span>@@ -89,8 +89,8 @@
+<span class="def"> 
+</span><span class="def"> static struct {
+</span><span class="def">     const char *name;
+</span><span class="sub">-    action action;
+</span><span class="sub">-    void (*data_handler)(struct binding *kb, char *data);
+</span><span class="add">+    const action action;
+</span><span class="add">+    void (*data_handler)(struct binding *kb, const char *data);
+</span><span class="def"> } action_map[] = {
+</span><span class="def">     { &quot;shutdown&quot;, &amp;shutdown, NULL },
+</span><span class="def">     { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span>@@ -109,10 +109,10 @@
+<span class="def">     { &quot;reload_config&quot;, &amp;reload_config, NULL },
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="sub">-static int num_actions = sizeof(action_map) / sizeof(action_map[0]);
+</span><span class="add">+static const int num_actions = sizeof(action_map) / sizeof(action_map[0]);
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-bool assign_action(char *name, char *data, struct binding *kb) {
+</span><span class="add">+static bool assign_action(const char *name, const char *data, struct binding *kb) {
+</span><span class="def">     kb-&gt;action = NULL;
+</span><span class="def">     kb-&gt;data = NULL;
+</span><span class="def"> 
+</span>@@ -128,7 +128,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void free_binding(struct binding *kb) {
+</span><span class="add">+static void free_binding(struct binding *kb) {
+</span><span class="def">     if (kb-&gt;data)
+</span><span class="def"> 	free(kb-&gt;data);
+</span><span class="def">     wl_list_remove(&amp;kb-&gt;link);
+</span>@@ -136,7 +136,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void add_binding(struct server *server, char *data, int line) {
+</span><span class="add">+static void add_binding(struct server *server, char *data, const int line) {
+</span><span class="def">     struct binding *kb = calloc(1, sizeof(struct binding));
+</span><span class="def">     enum wlr_keyboard_modifier mod;
+</span><span class="def">     char *s = strtok(data, &quot; \t\n\r&quot;);
+</span>@@ -303,7 +303,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void parse_config(struct server *server, FILE *stream) {
+</span><span class="add">+static void parse_config(struct server *server, FILE *stream) {
+</span><span class="def">     char *s;
+</span><span class="def">     char linebuf[1024];
+</span><span class="def">     int line = 0;
+</span></pre>
+</div></div>
+  </body>
+</html>

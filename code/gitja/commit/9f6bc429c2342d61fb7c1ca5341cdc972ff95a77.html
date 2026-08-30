@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Return empty description if absent</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/9f6bc429c2342d61fb7c1ca5341cdc972ff95a77.html">9f6bc429c2342d61fb7c1ca5341cdc972ff95a77</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/74abc740f4b15693885e230b3fe059f55333edb8.html">74abc740f4b15693885e230b3fe059f55333edb8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-21 23:14:40 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-21 23:14:40 +0100
+
+Return empty description if absent
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -62,8 +62,8 @@
+<span class="def"> 
+</span><span class="def">     --mconcat $ runGingerT (makeContextHtmlM (scopeLookup context) (putStr . unpack . htmlSource)) tpl
+</span><span class="def"> 
+</span><span class="sub">-getDescription :: FilePath -&gt; IO (Maybe String)
+</span><span class="add">+getDescription :: FilePath -&gt; IO String
+</span><span class="def"> getDescription path = tryIOError (readFile path) &gt;&gt;= \e -&gt;
+</span><span class="def">     case e of
+</span><span class="sub">-        Right contents -&gt; return $ Just contents
+</span><span class="sub">-        Left err -&gt; return Nothing
+</span><span class="add">+        Right contents -&gt; return contents
+</span><span class="add">+        Left err -&gt; return &quot;&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

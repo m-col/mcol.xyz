@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - black</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/67681210520c3d30e2e513bb463e26b2bd190f7d.html">67681210520c3d30e2e513bb463e26b2bd190f7d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/908181fa2d2ff0760e821d7b4f07a1818c40d988.html">908181fa2d2ff0760e821d7b4f07a1818c40d988</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-08-24 00:15:08 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-08-24 00:15:08 +0100
+
+black
+</pre><div class="diff">
+  <p>
+    <b>x11.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -11,7 +11,7 @@
+<span class="def"> mod = &quot;mod1&quot; if IS_XEPHYR else &quot;mod4&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-#term = &quot;xterm&quot; if IS_XEPHYR else &quot;urxvt&quot;  # urxvt doesn&apos;t like xephyr
+</span><span class="add">+# term = &quot;xterm&quot; if IS_XEPHYR else &quot;urxvt&quot;  # urxvt doesn&apos;t like xephyr
+</span><span class="def"> term = &quot;xterm&quot;
+</span><span class="def"> wmname = &quot;LG3D&quot;
+</span><span class="def"> keys_backend = []
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -43,18 +43,19 @@
+<span class="def">         drag=True, tap=True, dwt=False, pointer_accel=0.3
+</span><span class="def">     ),
+</span><span class="def">     &quot;1e7d:2c38:ROCCAT ROCCAT Kiro Mouse&quot;: InputConfig(
+</span><span class="sub">-        left_handed=True, pointer_accel=-1.0,
+</span><span class="add">+        left_handed=True,
+</span><span class="add">+        pointer_accel=-1.0,
+</span><span class="def">     ),
+</span><span class="def">     &quot;type:pointer&quot;: InputConfig(pointer_accel=-1.0),
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Shadows configuration
+</span><span class="sub">-#wl_shadows = {
+</span><span class="add">+# wl_shadows = {
+</span><span class="def"> #    &quot;radius&quot;: 12,
+</span><span class="def"> #    &quot;color&quot;: &quot;#05001088&quot;,
+</span><span class="def"> #    &quot;offset&quot;: (-6, -6),
+</span><span class="sub">-#}
+</span><span class="add">+# }
+</span><span class="def"> wl_shadows = {
+</span><span class="def">     &quot;radius&quot;: 5,
+</span><span class="def">     &quot;color&quot;: &quot;#ff000044&quot;,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>mindfulness.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,7 +23,8 @@
+<span class="def"> from random import randint
+</span><span class="def"> 
+</span><span class="def"> import gi
+</span><span class="sub">-gi.require_version(&apos;Gst&apos;, &apos;1.0&apos;)
+</span><span class="add">+
+</span><span class="add">+gi.require_version(&quot;Gst&quot;, &quot;1.0&quot;)
+</span><span class="def"> from gi.repository import Gst
+</span><span class="def"> 
+</span><span class="def"> from libqtile.log_utils import logger
+</span>@@ -86,7 +87,7 @@
+<span class="def">             logger.info(&quot;Downloading default tone for ReMindfulness widget&quot;)
+</span><span class="def">             request.urlretrieve(self.default_url, self.audio_file)
+</span><span class="def"> 
+</span><span class="sub">-        playbin = Gst.ElementFactory.make(&apos;playbin&apos;, &apos;playbin&apos;)
+</span><span class="add">+        playbin = Gst.ElementFactory.make(&quot;playbin&quot;, &quot;playbin&quot;)
+</span><span class="def">         playbin.props.uri = &quot;file://&quot; + self.audio_file
+</span><span class="def">         playbin.set_state(Gst.State.PLAYING)
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -49,8 +49,8 @@
+<span class="def"> reload(&quot;power_menu&quot;)
+</span><span class="def"> from power_menu import keys_power_menu
+</span><span class="def"> 
+</span><span class="sub">-#reload(&quot;mindfulness&quot;)
+</span><span class="sub">-#from mindfulness import ReMindfulness
+</span><span class="add">+# reload(&quot;mindfulness&quot;)
+</span><span class="add">+# from mindfulness import ReMindfulness
+</span><span class="def"> 
+</span><span class="def"> IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+</span><span class="def"> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span>@@ -211,7 +211,12 @@
+<span class="def">         ([], &quot;Pause&quot;, lazy.spawn(&quot;playerctl play-pause&quot;), &quot;Play/unpause music&quot;),
+</span><span class="def">         ([], &quot;XF86AudioPlay&quot;, lazy.spawn(&quot;playerctl play-pause&quot;), &quot;Play/unpause music&quot;),
+</span><span class="def">         # Launchers
+</span><span class="sub">-        ([mod], &quot;d&quot;, lazy.spawn(&quot;rofi -show run -theme ~/.config/rofi/common.rasi&quot;), &quot;Spawn with rofi&quot;),
+</span><span class="add">+        (
+</span><span class="add">+            [mod],
+</span><span class="add">+            &quot;d&quot;,
+</span><span class="add">+            lazy.spawn(&quot;rofi -show run -theme ~/.config/rofi/common.rasi&quot;),
+</span><span class="add">+            &quot;Spawn with rofi&quot;,
+</span><span class="add">+        ),
+</span><span class="def">         ([mod], &quot;Return&quot;, lazy.spawn(term), &quot;Spawn terminal&quot;),
+</span><span class="def">         ([mod, &quot;shift&quot;], &quot;f&quot;, lazy.spawn(&quot;firefox&quot;), &quot;Spawn Firefox&quot;),
+</span><span class="def">         (
+</span>@@ -224,8 +229,18 @@
+<span class="def">         ([&quot;shift&quot;], &quot;Print&quot;, lazy.spawn(&quot;screenshot&quot;), &quot;Screenshot to file&quot;),
+</span><span class="def">         ([mod], &quot;p&quot;, lazy.spawn(&quot;get_password_rofi&quot;), &quot;Keepass passwords&quot;),
+</span><span class="def">         ([mod], &quot;i&quot;, lazy.spawn(&quot;systemctl suspend -i&quot;), &quot;Suspend system&quot;),
+</span><span class="sub">-        ([mod, &quot;shift&quot;], &quot;i&quot;, lazy.spawn(&quot;gtklock &amp; systemctl suspend -i&quot;, shell=True), &quot;Suspend and lock&quot;),
+</span><span class="sub">-        ([mod, &quot;shift&quot;], &quot;p&quot;, lazy.widget[&quot;pomodoro&quot;].toggle_active(), &quot;Toggle Pomodoro&quot;),
+</span><span class="add">+        (
+</span><span class="add">+            [mod, &quot;shift&quot;],
+</span><span class="add">+            &quot;i&quot;,
+</span><span class="add">+            lazy.spawn(&quot;gtklock &amp; systemctl suspend -i&quot;, shell=True),
+</span><span class="add">+            &quot;Suspend and lock&quot;,
+</span><span class="add">+        ),
+</span><span class="add">+        (
+</span><span class="add">+            [mod, &quot;shift&quot;],
+</span><span class="add">+            &quot;p&quot;,
+</span><span class="add">+            lazy.widget[&quot;pomodoro&quot;].toggle_active(),
+</span><span class="add">+            &quot;Toggle Pomodoro&quot;,
+</span><span class="add">+        ),
+</span><span class="def">     ]
+</span><span class="def"> )
+</span><span class="def"> 
+</span>@@ -263,7 +278,7 @@
+<span class="def">         wrap_focus_columns=False,
+</span><span class="def">         wrap_focus_rows=False,
+</span><span class="def">         margin=0,
+</span><span class="sub">-        #margin_on_single=30,  # 4
+</span><span class="add">+        # margin_on_single=30,  # 4
+</span><span class="def">     ),
+</span><span class="def">     # layout.Stack(
+</span><span class="def">     #    border_width=5,
+</span>@@ -447,12 +462,12 @@
+<span class="def">     update_interval=5,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="sub">-#mind = ReMindfulness(
+</span><span class="add">+# mind = ReMindfulness(
+</span><span class="def"> #    &quot;&quot;,
+</span><span class="def"> #    reminder_text=&quot;MIND!&quot;,
+</span><span class="def"> #    reminder_background=colours[2],
+</span><span class="def"> #    foreground=colours[2],
+</span><span class="sub">-#)
+</span><span class="add">+# )
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> class MyBattery(Battery):
+</span>@@ -531,7 +546,8 @@
+<span class="def"> groupboxes = [
+</span><span class="def">     widget.GroupBox(**groupbox_config),
+</span><span class="def">     widget.GroupBox(**groupbox_config, visible_groups=[&quot;q&quot;, &quot;w&quot;, &quot;e&quot;, &quot;r&quot;]),
+</span><span class="sub">-    ]
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> @hook.subscribe.startup
+</span><span class="def"> def _():
+</span>@@ -566,7 +582,7 @@
+<span class="def">                 widget.Spacer(name=&quot;s2&quot;),
+</span><span class="def">                 pomodoro,
+</span><span class="def">                 systray,
+</span><span class="sub">-                #mind,
+</span><span class="add">+                # mind,
+</span><span class="def">                 volume,
+</span><span class="def">                 bklight,
+</span><span class="def">                 wlan,
+</span></pre>
+</div></div>
+  </body>
+</html>

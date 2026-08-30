@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / mpop and msmtp: a minimalist match made in heaven</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2019/05/mpop-and-msmtp-a-minimalist-match-made-in-heaven.html>mpop and msmtp: a minimalist match made in heaven</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>Like many sane people, I have a soft spot for little C programs with little
+config files that do exactly what they do and nothing else. <a class="reference external" href="https://marlam.de/">Martin Lambers'</a> POP3 and SMTP clients, <a class="reference external" href="https://marlam.de/mpop/">mpop</a>
+and <a class="reference external" href="https://marlam.de/msmtp/">msmtp</a>, are perfect examples.</p>
+<p>In my quest for a minimal and straight forward setup, these bad boys have
+become my daily email handlers, with <code>mpop</code> downloading my emails into a
+Maildir at <code>~/.mail</code>, <code>mutt</code> being a mostly offline interface to
+deal with all the crap people send me, and <code>msmtp</code> as the backend to send
+mail from mutt.</p>
+<p>mpop can be run as a cronjob, downloading mail every 30 minutes, leaving no
+trace on the remote server (if I trust my provider, that is).</p>
+<div class="section" id="setup">
+<h2>setup</h2>
+<p>mpop and msmtp can be installed from your distributions repos via the usual
+route.</p>
+<p>Both programs have sane defaults that would work well for a standard user, so
+the configuration files are very few lines and take only a minute to write.</p>
+<p>On top of that, they both share a chunk of code and its corresponding options,
+resulting in a good bit of the two files sharing lines.</p>
+<p>My config for mpop, for example, is simply:</p>
+<div class="highlight"><pre><span></span><span class="nf">defaults</span>
+<span class="nf">uidls_file</span><span class="w"> </span><span class="s">&quot;~/.config/mpop/uidls_%U_at_%H&quot;</span>
+<span class="nf">tls</span><span class="w"> </span><span class="n">on</span>
+<span class="nf">tls_starttls</span><span class="w"> </span><span class="n">off</span>
+
+<span class="nf">account</span><span class="w"> </span><span class="n">posteo</span>
+<span class="nf">host</span><span class="w"> </span><span class="s">&quot;posteo.de&quot;</span>
+<span class="nf">user</span><span class="w"> </span><span class="s">&quot;&lt;myemailaddress&gt;&quot;</span>
+<span class="nf">passwordeval</span><span class="w"> </span><span class="s">&quot;gpg --no-tty -q -d --for-your-eyes-only ~/.mail/posteo.gpg&quot;</span>
+<span class="nf">delivery</span><span class="w"> </span><span class="n">maildir</span><span class="w"> </span><span class="s">&quot;~/.mail/posteo/INBOX&quot;</span>
+<span class="nf">port</span><span class="w"> </span><span class="mi">995</span>
+</pre></div>
+<p>Compared to my nearly identical msmtp config:</p>
+<div class="highlight"><pre><span></span><span class="nf">defaults</span>
+<span class="nf">auth</span><span class="w"> </span><span class="n">on</span>
+<span class="nf">tls</span><span class="w"> </span><span class="n">on</span>
+<span class="nf">tls_starttls</span><span class="w"> </span><span class="n">off</span>
+
+<span class="nf">account</span><span class="w"> </span><span class="n">posteo</span>
+<span class="nf">host</span><span class="w"> </span><span class="s">&quot;posteo.de&quot;</span>
+<span class="nf">user</span><span class="w"> </span><span class="s">&quot;&lt;myemailaddress&gt;&quot;</span>
+<span class="nf">from</span><span class="w"> </span><span class="s">&quot;&lt;myemailaddress&gt;&quot;</span>
+<span class="nf">passwordeval</span><span class="w"> </span><span class="s">&quot;gpg --no-tty -q -d --for-your-eyes-only ~/.mail/posteo.gpg&quot;</span>
+<span class="nf">port</span><span class="w"> </span><span class="mi">465</span>
+</pre></div>
+<p>The first 4 lines of each are the defaults, which apply to all email accounts
+that are set up. The second block is therefore my first account, in this case
+just named <code>posteo</code> for my provider. Everything is simple and self
+explanatory.  Of note though is the passwordeval lines, which is simply a shell
+line executed that should give you the password for that account, in this case
+taking it from my gpg-agent.</p>
+</div>
+<div class="section" id="torifying">
+<h2>torifying</h2>
+<p>Both programs can be run straight through Tor with no trouble at all, just
+stick this into the defaults sections:</p>
+<div class="highlight"><pre><span></span><span class="nf">proxy_host</span><span class="w"> </span><span class="n">localhost</span>
+<span class="nf">proxy_port</span><span class="w"> </span><span class="mi">9050</span>
+</pre></div>
+<p>After 2 minutes of setup, these programs can work in the background and never
+ask for your attention again.</p>
+</div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2019-05-28T00:00:00+00:00">2019-05-28</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

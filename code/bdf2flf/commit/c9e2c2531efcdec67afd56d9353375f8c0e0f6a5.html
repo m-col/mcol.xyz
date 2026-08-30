@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bdf2flf - error and exit if data could not be read correctly</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/bdf2flf">bdf2flf</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Convert BDF bitmap fonts to flf fonts for figlet</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/bdf2flf">https://github.com/m-col/bdf2flf</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/bdf2flf/tree.html">Files</a> | <a href="https://mcol.xyz/code/bdf2flf/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/bdf2flf/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/bdf2flf/commit/c9e2c2531efcdec67afd56d9353375f8c0e0f6a5.html">c9e2c2531efcdec67afd56d9353375f8c0e0f6a5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/bdf2flf/commit/0a8ce63b2db70c55d566d753fc3cb26fab7e5c95.html">0a8ce63b2db70c55d566d753fc3cb26fab7e5c95</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-25 20:17:03 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-25 20:17:03 +0000
+
+error and exit if data could not be read correctly
+</pre><div class="diff">
+  <p>
+    <b>bdf2flf.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,10 +16,14 @@
+<span class="def">     char *s;
+</span><span class="def">     int widest = 0;
+</span><span class="def">     int comments = 2;
+</span><span class="sub">-    int chars, height, baseline, old_layout, direction, full_layout, codetags,
+</span><span class="sub">-	fbb_width, fbb_height, fbb_yoffset;
+</span><span class="add">+    int baseline, old_layout, direction, full_layout, codetags;
+</span><span class="def">     char font[1024];
+</span><span class="def">     char copyright[1024];
+</span><span class="add">+    int chars = 0;
+</span><span class="add">+    int height = 0;
+</span><span class="add">+    int fbb_width = 0;
+</span><span class="add">+    int fbb_height = 0;
+</span><span class="add">+    int fbb_yoffset = 0;
+</span><span class="def"> 
+</span><span class="def">     for (;;) {
+</span><span class="def"> 	if (!fgets(linebuf, sizeof(linebuf), in)) {	// EOF
+</span>@@ -47,6 +51,12 @@
+<span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    // exit if data could not be read completely
+</span><span class="add">+    if (chars &lt;= 0 || fbb_width &lt;= 0 || fbb_height &lt;= 0 || height &lt;= 0) {
+</span><span class="add">+	fprintf(stderr, &quot;Could not extract BDF data. Is the input a BDF file?\n&quot;);
+</span><span class="add">+	exit(EXIT_FAILURE);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     // output header
+</span><span class="def">     fprintf(out, &quot;flf2a$ %i %i %i %i %i %i %i %i\n&quot;, height, baseline, widest+2,
+</span><span class="def"> 	    old_layout, comments, direction, full_layout, codetags);
+</span>@@ -54,6 +64,7 @@
+<span class="def">     if (comments &gt; 2)
+</span><span class="def"> 	fprintf(out, &quot;which has copyright: %s\n&quot;, copyright);
+</span><span class="def">     fprintf(out, &quot;Converted to flf with bdf2flf (c) Matt Colligan.\n&quot;);
+</span><span class="add">+
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

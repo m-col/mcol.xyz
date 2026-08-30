@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - various updates from last few weeks/months</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/908181fa2d2ff0760e821d7b4f07a1818c40d988.html">908181fa2d2ff0760e821d7b4f07a1818c40d988</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/040f497b4df8772ef83ed44d8b836e83fe650247.html">040f497b4df8772ef83ed44d8b836e83fe650247</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-08-24 00:14:42 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-08-24 00:14:42 +0100
+
+various updates from last few weeks/months
+</pre><div class="diff">
+  <p>
+    <b>x11.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -11,7 +11,8 @@
+<span class="def"> mod = &quot;mod1&quot; if IS_XEPHYR else &quot;mod4&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-term = &quot;xterm&quot; if IS_XEPHYR else &quot;urxvt&quot;  # urxvt doesn&apos;t like xephyr
+</span><span class="add">+#term = &quot;xterm&quot; if IS_XEPHYR else &quot;urxvt&quot;  # urxvt doesn&apos;t like xephyr
+</span><span class="add">+term = &quot;xterm&quot;
+</span><span class="def"> wmname = &quot;LG3D&quot;
+</span><span class="def"> keys_backend = []
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,7 +9,8 @@
+<span class="def"> from libqtile import hook, qtile
+</span><span class="def"> from libqtile.backend import base
+</span><span class="def"> from libqtile.backend.wayland import InputConfig
+</span><span class="sub">-from libqtile.backend.wayland.window import XdgWindow, XWindow
+</span><span class="add">+from libqtile.backend.wayland.xdgwindow import XdgWindow
+</span><span class="add">+from libqtile.backend.wayland.xwindow import XWindow
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.log_utils import logger
+</span><span class="def"> 
+</span>@@ -41,7 +42,10 @@
+<span class="def">     &quot;1267:12377:ELAN1300:00 04F3:3059 Touchpad&quot;: InputConfig(
+</span><span class="def">         drag=True, tap=True, dwt=False, pointer_accel=0.3
+</span><span class="def">     ),
+</span><span class="sub">-    &quot;type:pointer&quot;: InputConfig(pointer_accel=-0.9),
+</span><span class="add">+    &quot;1e7d:2c38:ROCCAT ROCCAT Kiro Mouse&quot;: InputConfig(
+</span><span class="add">+        left_handed=True, pointer_accel=-1.0,
+</span><span class="add">+    ),
+</span><span class="add">+    &quot;type:pointer&quot;: InputConfig(pointer_accel=-1.0),
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,17 +23,26 @@
+<span class="def"> run_if_new() { ps aux | grep -v grep | grep -q $1 || $@; }
+</span><span class="def"> 
+</span><span class="def"> [[ -z &quot;$QTILE_XEPHYR&quot; ]] &amp;&amp; {
+</span><span class="sub">-    kanshi &amp;
+</span><span class="sub">-    wlsunset -t 2500 -T 5700 -l 55.7 -L -3.1 &amp;
+</span><span class="sub">-    run_if_new firefox &amp;
+</span><span class="sub">-    #run_if_new irc &amp;
+</span><span class="add">+    # Session setup
+</span><span class="def">     systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+</span><span class="add">+    dbus-update-activation-environment --systemd \
+</span><span class="add">+	WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=$XDG_CURRENT_DESKTOP
+</span><span class="add">+
+</span><span class="add">+    # Services
+</span><span class="add">+    kanshi &amp;
+</span><span class="add">+    wlsunset -t 1000 -T 6700 -l 55.7 -L -3.1 &amp;
+</span><span class="def">     swayidle &amp;
+</span><span class="def">     mpDris2 &amp;
+</span><span class="def">     sway-mpris-idle-inhibit &amp;
+</span><span class="sub">-    playerctld daemon
+</span><span class="sub">-    check_systemd
+</span><span class="add">+    playerctld daemon &amp;
+</span><span class="add">+    kdeconnect-indicator &amp;
+</span><span class="add">+
+</span><span class="add">+    # Startup programs
+</span><span class="add">+    run_if_new firefox &amp;
+</span><span class="def">     run_if_new geary &amp;
+</span><span class="add">+
+</span><span class="add">+    # Notify me if any systemd services failed
+</span><span class="add">+    check_systemd &amp;
+</span><span class="def"> } &amp;&gt; /dev/null
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>scratchpad.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,10 +22,7 @@
+<span class="def"> if IS_WAYLAND:
+</span><span class="def">     term = &quot;foot &quot;
+</span><span class="def"> else:
+</span><span class="sub">-    if IS_XEPHYR:
+</span><span class="sub">-        term = &quot;xterm -e &quot;
+</span><span class="sub">-    else:
+</span><span class="sub">-        term = &quot;urxvt -e &quot;
+</span><span class="add">+    term = &quot;xterm -e &quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> conf = {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>mindfulness.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,101 @@
+<span class="add">+# Copyright (c) 2022 Matt Colligan
+</span><span class="add">+#
+</span><span class="add">+# Permission is hereby granted, free of charge, to any person obtaining a copy
+</span><span class="add">+# of this software and associated documentation files (the &quot;Software&quot;), to deal
+</span><span class="add">+# in the Software without restriction, including without limitation the rights
+</span><span class="add">+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+</span><span class="add">+# copies of the Software, and to permit persons to whom the Software is
+</span><span class="add">+# furnished to do so, subject to the following conditions:
+</span><span class="add">+#
+</span><span class="add">+# The above copyright notice and this permission notice shall be included in
+</span><span class="add">+# all copies or substantial portions of the Software.
+</span><span class="add">+#
+</span><span class="add">+# THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+</span><span class="add">+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+</span><span class="add">+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+</span><span class="add">+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+</span><span class="add">+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+</span><span class="add">+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+</span><span class="add">+# SOFTWARE.
+</span><span class="add">+
+</span><span class="add">+import os
+</span><span class="add">+from urllib import request
+</span><span class="add">+from random import randint
+</span><span class="add">+
+</span><span class="add">+import gi
+</span><span class="add">+gi.require_version(&apos;Gst&apos;, &apos;1.0&apos;)
+</span><span class="add">+from gi.repository import Gst
+</span><span class="add">+
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from libqtile.widget import base
+</span><span class="add">+from libqtile.utils import get_cache_dir
+</span><span class="add">+
+</span><span class="add">+Gst.init(None)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class ReMindfulness(base.ThreadPoolText):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Mindfulness reminder widget (Proof of concept / work in progress)
+</span><span class="add">+
+</span><span class="add">+    Inspired by Kyle MacLeod&apos;s mindfulnotifier Android app
+</span><span class="add">+    (https://github.com/kmac/mindfulnotifier). The widget will periodically play a
+</span><span class="add">+    calming tone at semi-random intervals.
+</span><span class="add">+
+</span><span class="add">+    Note, if the specified audio_file does not exist (i.e. the first time the widget is
+</span><span class="add">+    configured, leaving the default value for ``audio_file``), one will be downloaded.
+</span><span class="add">+    It is fetched via the mindfulnotifier app&apos;s github repository.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+    default_path = os.path.join(get_cache_dir(), &quot;tibetan_bell_ding_b.mp3&quot;)
+</span><span class="add">+    default_url = &quot;https://github.com/kmac/mindfulnotifier/raw/master/media/tibetan_bell_ding_b.mp3&quot;
+</span><span class="add">+
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&quot;audio_file&quot;, default_path, &quot;Lower bound for the interval between reminders&quot;),
+</span><span class="add">+        (&quot;interval_minimum&quot;, 60 * 60, &quot;Lower bound for the interval between reminders&quot;),
+</span><span class="add">+        (&quot;interval_maximum&quot;, 90 * 60, &quot;Upper bound for the interval between reminders&quot;),
+</span><span class="add">+        (&quot;reminder_background&quot;, &quot;ff0000&quot;, &quot;Background colour when reminding&quot;),
+</span><span class="add">+        (&quot;reminder_foreground&quot;, &quot;ff0000&quot;, &quot;Foreground colour when reminding&quot;),
+</span><span class="add">+        (&quot;reminder_duration&quot;, 5, &quot;Duration of reminders (i.e. for appearance change)&quot;),
+</span><span class="add">+        (&quot;reminder_text&quot;, None, &quot;Text&quot;),
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, text=&quot;&quot;, **config):
+</span><span class="add">+        base.ThreadPoolText.__init__(self, text, **config)
+</span><span class="add">+        self.add_defaults(ReMindfulness.defaults)
+</span><span class="add">+        self._just_started = True
+</span><span class="add">+        self._original_foreground = self.foreground
+</span><span class="add">+        self._original_background = self.background
+</span><span class="add">+
+</span><span class="add">+        self.add_callbacks(
+</span><span class="add">+            {
+</span><span class="add">+                &quot;Button1&quot;: self._reset_colours,
+</span><span class="add">+            }
+</span><span class="add">+        )
+</span><span class="add">+
+</span><span class="add">+    def _configure(self, qtile, bar):
+</span><span class="add">+        self._just_started = not self.configured
+</span><span class="add">+        base.ThreadPoolText._configure(self, qtile, bar)
+</span><span class="add">+
+</span><span class="add">+    def poll(self):
+</span><span class="add">+        self.update_interval = randint(self.interval_minimum, self.interval_maximum)
+</span><span class="add">+
+</span><span class="add">+        if self._just_started:
+</span><span class="add">+            return self.text
+</span><span class="add">+
+</span><span class="add">+        if not os.path.exists(self.audio_file):
+</span><span class="add">+            logger.info(&quot;Downloading default tone for ReMindfulness widget&quot;)
+</span><span class="add">+            request.urlretrieve(self.default_url, self.audio_file)
+</span><span class="add">+
+</span><span class="add">+        playbin = Gst.ElementFactory.make(&apos;playbin&apos;, &apos;playbin&apos;)
+</span><span class="add">+        playbin.props.uri = &quot;file://&quot; + self.audio_file
+</span><span class="add">+        playbin.set_state(Gst.State.PLAYING)
+</span><span class="add">+
+</span><span class="add">+        self.foreground = self.reminder_foreground
+</span><span class="add">+        self.background = self.reminder_background
+</span><span class="add">+        self.timeout_add(self.reminder_duration, self._reset_colours)
+</span><span class="add">+
+</span><span class="add">+        return self.text
+</span><span class="add">+
+</span><span class="add">+    def _reset_colours(self):
+</span><span class="add">+        self.foreground = self._original_foreground
+</span><span class="add">+        self.background = self._original_background
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -32,10 +32,10 @@
+<span class="def">     Group(&quot;2&quot;, label=&quot;term&quot;),
+</span><span class="def">     Group(&quot;3&quot;, label=&quot;term&quot;),
+</span><span class="def">     Group(&quot;4&quot;, label=&quot;term&quot;),
+</span><span class="sub">-    Group(&quot;q&quot;, label=&quot;surf&quot;, matches=[Match(wm_class=&quot;firefox&quot;)]),
+</span><span class="sub">-    Group(&quot;w&quot;, label=&quot;mail&quot;, matches=[Match(wm_class=&quot;geary&quot;), Match(title=&quot;Geary&quot;)]),
+</span><span class="add">+    Group(&quot;q&quot;, label=&quot;html&quot;, matches=[Match(wm_class=&quot;firefox&quot;)]),
+</span><span class="add">+    Group(&quot;w&quot;, label=&quot;imap&quot;, matches=[Match(wm_class=&quot;geary&quot;), Match(title=&quot;Geary&quot;)]),
+</span><span class="def">     Group(&quot;e&quot;, label=&quot;work&quot;),
+</span><span class="sub">-    Group(&quot;r&quot;, label=&quot;chat&quot;, matches=[Match(title=&quot;irc&quot;)]),
+</span><span class="add">+    Group(&quot;r&quot;, label=&quot;spot&quot;, matches=[Match(title=&quot;spotify&quot;)]),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,6 +10,7 @@
+<span class="def"> import os
+</span><span class="def"> import subprocess
+</span><span class="def"> import sys
+</span><span class="add">+import re
+</span><span class="def"> from typing import TYPE_CHECKING
+</span><span class="def"> 
+</span><span class="def"> from libqtile import bar, hook, layout, qtile, widget
+</span>@@ -48,12 +49,15 @@
+<span class="def"> reload(&quot;power_menu&quot;)
+</span><span class="def"> from power_menu import keys_power_menu
+</span><span class="def"> 
+</span><span class="add">+#reload(&quot;mindfulness&quot;)
+</span><span class="add">+#from mindfulness import ReMindfulness
+</span><span class="add">+
+</span><span class="def"> IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+</span><span class="def"> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span><span class="def"> 
+</span><span class="def"> reload(qtile.core.name)
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="sub">-    from wayland import keys_backend, term, wl_input_rules  # noqa: F401
+</span><span class="add">+    from wayland import keys_backend, term, wl_input_rules, wl_shadows  # noqa: F401
+</span><span class="def"> else:
+</span><span class="def">     from x11 import keys_backend, term, wmname  # noqa: F401
+</span><span class="def"> 
+</span>@@ -124,6 +128,7 @@
+<span class="def">         ([mod], &quot;f&quot;, lazy.window.toggle_fullscreen(), &quot;Toggle fullscreen&quot;),
+</span><span class="def">         # ([mod], &quot;g&quot;, lazy.function(toggle_fullscreen_state), &quot;Toggle fullscreen state&quot;),
+</span><span class="def">         ([mod, &quot;shift&quot;], &quot;space&quot;, lazy.window.toggle_floating(), &quot;Toggle floating&quot;),
+</span><span class="add">+        ([mod, &quot;shift&quot;], &quot;s&quot;, lazy.window.static(), &quot;Make window static&quot;),
+</span><span class="def">         (
+</span><span class="def">             [mod],
+</span><span class="def">             &quot;space&quot;,
+</span>@@ -195,15 +200,18 @@
+<span class="def">             lazy.spawn(&quot;playerctl next&quot;),
+</span><span class="def">             &quot;Next song&quot;,
+</span><span class="def">         ),
+</span><span class="add">+        ([], &quot;XF86AudioNext&quot;, lazy.spawn(&quot;playerctl next&quot;), &quot;Next song&quot;),
+</span><span class="def">         (
+</span><span class="def">             [mod],
+</span><span class="def">             &quot;bracketleft&quot;,
+</span><span class="def">             lazy.spawn(&quot;playerctl previous&quot;),
+</span><span class="def">             &quot;Previous song&quot;,
+</span><span class="def">         ),
+</span><span class="add">+        ([], &quot;XF86AudioPrev&quot;, lazy.spawn(&quot;playerctl previous&quot;), &quot;Previous song&quot;),
+</span><span class="def">         ([], &quot;Pause&quot;, lazy.spawn(&quot;playerctl play-pause&quot;), &quot;Play/unpause music&quot;),
+</span><span class="add">+        ([], &quot;XF86AudioPlay&quot;, lazy.spawn(&quot;playerctl play-pause&quot;), &quot;Play/unpause music&quot;),
+</span><span class="def">         # Launchers
+</span><span class="sub">-        ([mod], &quot;d&quot;, lazy.spawn(&quot;rofi -show run&quot;), &quot;Spawn with rofi&quot;),
+</span><span class="add">+        ([mod], &quot;d&quot;, lazy.spawn(&quot;rofi -show run -theme ~/.config/rofi/common.rasi&quot;), &quot;Spawn with rofi&quot;),
+</span><span class="def">         ([mod], &quot;Return&quot;, lazy.spawn(term), &quot;Spawn terminal&quot;),
+</span><span class="def">         ([mod, &quot;shift&quot;], &quot;f&quot;, lazy.spawn(&quot;firefox&quot;), &quot;Spawn Firefox&quot;),
+</span><span class="def">         (
+</span>@@ -216,6 +224,8 @@
+<span class="def">         ([&quot;shift&quot;], &quot;Print&quot;, lazy.spawn(&quot;screenshot&quot;), &quot;Screenshot to file&quot;),
+</span><span class="def">         ([mod], &quot;p&quot;, lazy.spawn(&quot;get_password_rofi&quot;), &quot;Keepass passwords&quot;),
+</span><span class="def">         ([mod], &quot;i&quot;, lazy.spawn(&quot;systemctl suspend -i&quot;), &quot;Suspend system&quot;),
+</span><span class="add">+        ([mod, &quot;shift&quot;], &quot;i&quot;, lazy.spawn(&quot;gtklock &amp; systemctl suspend -i&quot;, shell=True), &quot;Suspend and lock&quot;),
+</span><span class="add">+        ([mod, &quot;shift&quot;], &quot;p&quot;, lazy.widget[&quot;pomodoro&quot;].toggle_active(), &quot;Toggle Pomodoro&quot;),
+</span><span class="def">     ]
+</span><span class="def"> )
+</span><span class="def"> 
+</span>@@ -253,7 +263,7 @@
+<span class="def">         wrap_focus_columns=False,
+</span><span class="def">         wrap_focus_rows=False,
+</span><span class="def">         margin=0,
+</span><span class="sub">-        margin_on_single=4,
+</span><span class="add">+        #margin_on_single=30,  # 4
+</span><span class="def">     ),
+</span><span class="def">     # layout.Stack(
+</span><span class="def">     #    border_width=5,
+</span>@@ -269,9 +279,12 @@
+<span class="def">     border_normal=&quot;00000000&quot;,
+</span><span class="def">     fullscreen_border_width=0,
+</span><span class="def">     float_rules=[
+</span><span class="add">+        Match(title=&quot;Bluetooth Devices&quot;),
+</span><span class="def">         Match(title=&quot;Open File&quot;),
+</span><span class="def">         Match(title=&quot;Unlock Database - KeePassXC&quot;),
+</span><span class="def">         Match(title=&quot;File Operation Progress&quot;, wm_class=&quot;thunar&quot;),
+</span><span class="add">+        Match(title=&quot;File Operation Progress&quot;, wm_class=&quot;Thunar&quot;),
+</span><span class="add">+        Match(title=re.compile(&quot;Presenting: .*&quot;), wm_class=&quot;libreoffice-impress&quot;),
+</span><span class="def">         Match(wm_class=&quot;thunar&quot;),
+</span><span class="def">         Match(title=&quot;Firefox — Sharing Indicator&quot;),
+</span><span class="def">         Match(wm_class=&quot;Arandr&quot;),
+</span>@@ -299,6 +312,7 @@
+<span class="def">         Match(wm_class=&quot;wlroots&quot;),
+</span><span class="def">         Match(wm_class=&quot;wdisplays&quot;),
+</span><span class="def">         Match(wm_class=&quot;Xephyr&quot;),
+</span><span class="add">+        Match(wm_class=&quot;zoom&quot;),
+</span><span class="def">         Match(wm_type=&quot;dialog&quot;),
+</span><span class="def">         Match(role=&quot;gimp-file-export&quot;),
+</span><span class="def">         Match(func=base.Window.has_fixed_size),
+</span>@@ -341,11 +355,11 @@
+<span class="def"> 
+</span><span class="def"> mpd2 = widget.Mpris2(
+</span><span class="def">     name=&quot;mpris&quot;,
+</span><span class="add">+    width=1000,
+</span><span class="def">     objname=None,
+</span><span class="def">     display_metadata=[&quot;xesam:title&quot;, &quot;xesam:artist&quot;],
+</span><span class="def">     foreground=colours[12],
+</span><span class="def">     font=&quot;TamzenForPowerline Bold&quot;,
+</span><span class="sub">-    scroll_interval=0,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -406,6 +420,11 @@
+<span class="def">     foreground=colours[3],
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="add">+pomodoro = widget.Pomodoro(
+</span><span class="add">+    prefix_inactive=&quot;&quot;,
+</span><span class="add">+    foreground=colours[6],
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="def"> volume = MyVolume(
+</span><span class="def">     fontsize=18,
+</span><span class="def">     channel=&quot;PCM&quot;,
+</span>@@ -428,6 +447,13 @@
+<span class="def">     update_interval=5,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="add">+#mind = ReMindfulness(
+</span><span class="add">+#    &quot;&quot;,
+</span><span class="add">+#    reminder_text=&quot;MIND!&quot;,
+</span><span class="add">+#    reminder_background=colours[2],
+</span><span class="add">+#    foreground=colours[2],
+</span><span class="add">+#)
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> class MyBattery(Battery):
+</span><span class="def">     &quot;&quot;&quot;
+</span>@@ -498,14 +524,14 @@
+<span class="def">     fontsize=20,
+</span><span class="def">     font=&quot;TamzenForPowerline Medium&quot;,
+</span><span class="def">     update_interval=60,
+</span><span class="add">+    foreground=colours[7],
+</span><span class="def">     name=&quot;time&quot;,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> groupboxes = [
+</span><span class="def">     widget.GroupBox(**groupbox_config),
+</span><span class="def">     widget.GroupBox(**groupbox_config, visible_groups=[&quot;q&quot;, &quot;w&quot;, &quot;e&quot;, &quot;r&quot;]),
+</span><span class="sub">-]
+</span><span class="sub">-
+</span><span class="add">+    ]
+</span><span class="def"> 
+</span><span class="def"> @hook.subscribe.startup
+</span><span class="def"> def _():
+</span>@@ -538,7 +564,9 @@
+<span class="def">                 widget.Spacer(name=&quot;s1&quot;),
+</span><span class="def">                 mpd2,
+</span><span class="def">                 widget.Spacer(name=&quot;s2&quot;),
+</span><span class="add">+                pomodoro,
+</span><span class="def">                 systray,
+</span><span class="add">+                #mind,
+</span><span class="def">                 volume,
+</span><span class="def">                 bklight,
+</span><span class="def">                 wlan,
+</span>@@ -552,7 +580,7 @@
+<span class="def">         top=bar.Gap(outer_gaps),
+</span><span class="def">         left=bar.Gap(outer_gaps),
+</span><span class="def">         right=bar.Gap(outer_gaps),
+</span><span class="sub">-        wallpaper=&quot;~/pictures/Wallpapers/q_triangles2.png&quot;,
+</span><span class="add">+        wallpaper=&quot;~/pictures/Wallpapers/akira.png&quot;,
+</span><span class="def">         wallpaper_mode=&quot;fill&quot;,
+</span><span class="def">     ),
+</span><span class="def">     Screen(
+</span>@@ -562,6 +590,7 @@
+<span class="def">                 widget.Spacer(name=&quot;s3&quot;),
+</span><span class="def">                 mpd2,
+</span><span class="def">                 widget.Spacer(name=&quot;s4&quot;),
+</span><span class="add">+                pomodoro,
+</span><span class="def">                 volume,
+</span><span class="def">                 bklight,
+</span><span class="def">                 wlan,
+</span>@@ -572,7 +601,7 @@
+<span class="def">             28,
+</span><span class="def">             background=background + &quot;00&quot;,
+</span><span class="def">         ),
+</span><span class="sub">-        wallpaper=&quot;~/pictures/Wallpapers/q_triangles2.png&quot;,
+</span><span class="add">+        wallpaper=&quot;~/pictures/Wallpapers/akira.png&quot;,
+</span><span class="def">         wallpaper_mode=&quot;fill&quot;,
+</span><span class="def">         top=bar.Gap(outer_gaps),
+</span><span class="def">         left=bar.Gap(outer_gaps),
+</span></pre>
+</div></div>
+  </body>
+</html>

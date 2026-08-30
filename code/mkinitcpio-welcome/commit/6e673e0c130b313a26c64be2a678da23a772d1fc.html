@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - add message in readme about KMS/consolefont</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/6e673e0c130b313a26c64be2a678da23a772d1fc.html">6e673e0c130b313a26c64be2a678da23a772d1fc</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/441f398acb4b0bc817b6610d28901da8e78d6482.html">441f398acb4b0bc817b6610d28901da8e78d6482</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-12 22:57:02 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-12 22:57:02 +0100
+
+add message in readme about KMS/consolefont
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,6 +9,10 @@
+<span class="def"> The hook wraps and replaces the encrypt hook so that it can have greater
+</span><span class="def"> control over the cursor and any printed messages.
+</span><span class="def"> 
+</span><span class="add">+If you find that the message is squeezed into a smaller number of columns that
+</span><span class="add">+can fit on screen, you may need to enable early `kernel mode setting`_,
+</span><span class="add">+although I found enabling the `consolefont` hook also fixed the issue.
+</span><span class="add">+
+</span><span class="def"> It works very well with Evan Purkhiser&apos;s `mkinitcpio-colors`_.
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

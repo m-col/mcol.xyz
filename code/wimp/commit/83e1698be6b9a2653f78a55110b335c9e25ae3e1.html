@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Don&apos;t try to render windows that are offscreen</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/83e1698be6b9a2653f78a55110b335c9e25ae3e1.html">83e1698be6b9a2653f78a55110b335c9e25ae3e1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/39e493eb5bf766599c21abad7e37693e3ab22911.html">39e493eb5bf766599c21abad7e37693e3ab22911</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-28 22:23:53 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-28 22:23:53 +0000
+
+Don&apos;t try to render windows that are offscreen
+
+Closes #13
+</pre><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -32,17 +32,8 @@
+<span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    double x = 0, y = 0;
+</span><span class="sub">-    struct wlr_output_layout_output *ol;
+</span><span class="sub">-    wl_list_for_each(ol, &amp;wimp.output_layout-&gt;outputs, link) {
+</span><span class="sub">-	if (ol-&gt;output == output) {
+</span><span class="sub">-	    x = - (double)ol-&gt;x;
+</span><span class="sub">-	    y = - (double)ol-&gt;y;
+</span><span class="sub">-	    break;
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-    x = (x + rdata-&gt;x + sx) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="sub">-    y = (y + rdata-&gt;y + sy) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="add">+    int x = (rdata-&gt;x + sx) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="add">+    int y = (rdata-&gt;y + sy) * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="def">     int width = surface-&gt;current.width * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="def">     int height = surface-&gt;current.height * output-&gt;scale * rdata-&gt;zoom;
+</span><span class="def"> 
+</span>@@ -68,11 +59,10 @@
+<span class="def"> 	.width = width,
+</span><span class="def"> 	.height = height,
+</span><span class="def">     };
+</span><span class="add">+
+</span><span class="def">     float matrix[9];
+</span><span class="sub">-    enum wl_output_transform transform =
+</span><span class="sub">-	wlr_output_transform_invert(surface-&gt;current.transform);
+</span><span class="sub">-    wlr_matrix_project_box(matrix, &amp;box, transform, 0,
+</span><span class="sub">-	output-&gt;transform_matrix);
+</span><span class="add">+    enum wl_output_transform transform = wlr_output_transform_invert(surface-&gt;current.transform);
+</span><span class="add">+    wlr_matrix_project_box(matrix, &amp;box, transform, 0, output-&gt;transform_matrix);
+</span><span class="def">     wlr_render_texture_with_matrix(rdata-&gt;renderer, texture, matrix, 1);
+</span><span class="def"> 
+</span><span class="def">     wlr_surface_send_frame_done(surface, rdata-&gt;when);
+</span>@@ -108,6 +98,16 @@
+<span class="def"> 	.y = 0,
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="add">+    double ox, oy;
+</span><span class="add">+    struct wlr_output_layout_output *ol;
+</span><span class="add">+    wl_list_for_each(ol, &amp;wimp.output_layout-&gt;outputs, link) {
+</span><span class="add">+	if (ol-&gt;output == output-&gt;wlr_output) {
+</span><span class="add">+	    ox = (double)ol-&gt;x;
+</span><span class="add">+	    oy = (double)ol-&gt;y;
+</span><span class="add">+	    break;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     // paint wallpaper
+</span><span class="def">     struct wallpaper *wallpaper = desk-&gt;wallpaper;
+</span><span class="def">     if (wallpaper != NULL) {
+</span>@@ -139,9 +139,17 @@
+<span class="def">     // paint clients
+</span><span class="def">     struct view *view;
+</span><span class="def">     struct view *focussed = wl_container_of(wimp.current_desk-&gt;views.next, focussed, link);
+</span><span class="add">+    int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="def">     wl_list_for_each_reverse(view, &amp;desk-&gt;views, link) {
+</span><span class="sub">-	rdata.x = view-&gt;x;
+</span><span class="sub">-	rdata.y = view-&gt;y;
+</span><span class="add">+	if (
+</span><span class="add">+		(view-&gt;x + view-&gt;surface-&gt;geometry.width + border_width &lt; 0) ||
+</span><span class="add">+		(view-&gt;y + view-&gt;surface-&gt;geometry.height + border_width &lt; 0) ||
+</span><span class="add">+		(view-&gt;x - border_width &gt; width) || (view-&gt;y - border_width &gt; height)
+</span><span class="add">+	) {
+</span><span class="add">+	    continue;
+</span><span class="add">+	}
+</span><span class="add">+	rdata.x = view-&gt;x + ox;
+</span><span class="add">+	rdata.y = view-&gt;y + oy;
+</span><span class="def"> 	rdata.is_focussed = (view == focussed);
+</span><span class="def"> 	rdata.bordered = view-&gt;surface-&gt;surface;
+</span><span class="def"> 	wlr_xdg_surface_for_each_surface(view-&gt;surface, render_surface, &amp;rdata);
+</span></pre>
+</div></div>
+  </body>
+</html>

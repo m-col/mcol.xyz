@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - simplify resizing and make compatible with zoom</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/da019873de50ce1830b0113e67acfb78078fb80a.html">da019873de50ce1830b0113e67acfb78078fb80a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/e2bdcdb1daaf7ffcf9e4e93adfb0f18bc88ad958.html">e2bdcdb1daaf7ffcf9e4e93adfb0f18bc88ad958</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-12 00:53:54 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-12 00:53:54 +0000
+
+simplify resizing and make compatible with zoom
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -80,23 +80,14 @@
+<span class="def">     server-&gt;grabbed_view = view;
+</span><span class="def">     server-&gt;cursor_mode = mode;
+</span><span class="def"> 
+</span><span class="sub">-    if (mode == CURSOR_MOVE) {
+</span><span class="sub">-	double zoom = server-&gt;current_desk-&gt;zoom;
+</span><span class="sub">-	server-&gt;grab_x = server-&gt;cursor-&gt;x - view-&gt;x * zoom;
+</span><span class="sub">-	server-&gt;grab_y = server-&gt;cursor-&gt;y - view-&gt;y * zoom;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	struct wlr_box geo_box;
+</span><span class="sub">-	wlr_xdg_surface_get_geometry(view-&gt;surface, &amp;geo_box);
+</span><span class="sub">-
+</span><span class="sub">-	double border_x = (view-&gt;x + geo_box.x) + ((edges &amp; WLR_EDGE_RIGHT) ? geo_box.width : 0);
+</span><span class="sub">-	double border_y = (view-&gt;y + geo_box.y) + ((edges &amp; WLR_EDGE_BOTTOM) ? geo_box.height : 0);
+</span><span class="sub">-	server-&gt;grab_x = server-&gt;cursor-&gt;x - border_x;
+</span><span class="sub">-	server-&gt;grab_y = server-&gt;cursor-&gt;y - border_y;
+</span><span class="sub">-
+</span><span class="sub">-	server-&gt;grab_geobox = geo_box;
+</span><span class="sub">-	server-&gt;grab_geobox.x += view-&gt;x;
+</span><span class="sub">-	server-&gt;grab_geobox.y += view-&gt;y;
+</span><span class="sub">-
+</span><span class="add">+    double zoom = server-&gt;current_desk-&gt;zoom;
+</span><span class="add">+    server-&gt;grab_x = server-&gt;cursor-&gt;x - view-&gt;x * zoom;
+</span><span class="add">+    server-&gt;grab_y = server-&gt;cursor-&gt;y - view-&gt;y * zoom;
+</span><span class="add">+
+</span><span class="add">+    if (mode == CURSOR_RESIZE) {
+</span><span class="add">+	wlr_xdg_surface_get_geometry(view-&gt;surface, &amp;server-&gt;grab_geobox);
+</span><span class="add">+	server-&gt;grab_geobox.x = view-&gt;x;
+</span><span class="add">+	server-&gt;grab_geobox.y = view-&gt;y;
+</span><span class="def"> 	server-&gt;resize_edges = edges;
+</span><span class="def">     }
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,7 +4,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> void process_cursor_move(struct server *server, uint32_t time, double zoom);
+</span><span class="sub">-void process_cursor_resize(struct server *server, uint32_t time);
+</span><span class="add">+void process_cursor_resize(struct server *server, uint32_t time, double zoom);
+</span><span class="def"> bool view_at(
+</span><span class="def">     struct view *view, double lx, double ly, struct wlr_surface **surface,
+</span><span class="def">     double *sx, double *sy
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,46 +19,32 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void process_cursor_resize(struct server *server, uint32_t time) {
+</span><span class="add">+void process_cursor_resize(struct server *server, uint32_t time, double zoom) {
+</span><span class="def">     struct view *view = server-&gt;grabbed_view;
+</span><span class="sub">-    double border_x = server-&gt;cursor-&gt;x - server-&gt;grab_x;
+</span><span class="sub">-    double border_y = server-&gt;cursor-&gt;y - server-&gt;grab_y;
+</span><span class="sub">-    int new_left = server-&gt;grab_geobox.x;
+</span><span class="sub">-    int new_right = server-&gt;grab_geobox.x + server-&gt;grab_geobox.width;
+</span><span class="sub">-    int new_top = server-&gt;grab_geobox.y;
+</span><span class="sub">-    int new_bottom = server-&gt;grab_geobox.y + server-&gt;grab_geobox.height; 
+</span><span class="add">+    int x = server-&gt;grab_geobox.x;
+</span><span class="add">+    int width = server-&gt;grab_geobox.width;
+</span><span class="add">+    int y = server-&gt;grab_geobox.y;
+</span><span class="add">+    int height = server-&gt;grab_geobox.height;
+</span><span class="add">+
+</span><span class="add">+    double cx = (server-&gt;cursor-&gt;x - server-&gt;grab_x) / zoom;
+</span><span class="add">+    double cy = (server-&gt;cursor-&gt;y - server-&gt;grab_y) / zoom;
+</span><span class="def"> 
+</span><span class="def">     if (server-&gt;resize_edges &amp; WLR_EDGE_TOP) {
+</span><span class="sub">-        new_top = border_y;
+</span><span class="sub">-        if (new_top &gt;= new_bottom) {
+</span><span class="sub">-            new_top = new_bottom - 1;
+</span><span class="sub">-        }
+</span><span class="add">+	height -= cy - y;
+</span><span class="add">+	y = cy;
+</span><span class="def">     } else if (server-&gt;resize_edges &amp; WLR_EDGE_BOTTOM) {
+</span><span class="sub">-        new_bottom = border_y;
+</span><span class="sub">-        if (new_bottom &lt;= new_top) {
+</span><span class="sub">-            new_bottom = new_top + 1;
+</span><span class="sub">-        }
+</span><span class="add">+        height += cy - y;
+</span><span class="def">     }
+</span><span class="def">     if (server-&gt;resize_edges &amp; WLR_EDGE_LEFT) {
+</span><span class="sub">-        new_left = border_x;
+</span><span class="sub">-        if (new_left &gt;= new_right) {
+</span><span class="sub">-            new_left = new_right - 1;
+</span><span class="sub">-        }
+</span><span class="add">+        width -= cx - x;
+</span><span class="add">+	x = cx;
+</span><span class="def">     } else if (server-&gt;resize_edges &amp; WLR_EDGE_RIGHT) {
+</span><span class="sub">-        new_right = border_x;
+</span><span class="sub">-        if (new_right &lt;= new_left) {
+</span><span class="sub">-            new_right = new_left + 1;
+</span><span class="sub">-        }
+</span><span class="add">+        width += cx - x;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    struct wlr_box geo_box;
+</span><span class="sub">-    wlr_xdg_surface_get_geometry(view-&gt;surface, &amp;geo_box);
+</span><span class="sub">-    view-&gt;x = new_left - geo_box.x;
+</span><span class="sub">-    view-&gt;y = new_top - geo_box.y;
+</span><span class="sub">-
+</span><span class="sub">-    int new_width = new_right - new_left;
+</span><span class="sub">-    int new_height = new_bottom - new_top;
+</span><span class="sub">-    wlr_xdg_toplevel_set_size(view-&gt;surface, new_width, new_height);
+</span><span class="add">+    view-&gt;x = x;
+</span><span class="add">+    view-&gt;y = y;
+</span><span class="add">+    wlr_xdg_toplevel_set_size(view-&gt;surface, width, height);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -144,7 +130,7 @@
+<span class="def"> 	    break;
+</span><span class="def"> 
+</span><span class="def"> 	case CURSOR_RESIZE:
+</span><span class="sub">-	    process_cursor_resize(server, time);
+</span><span class="add">+	    process_cursor_resize(server, time, zoom);
+</span><span class="def"> 	    break;
+</span><span class="def">     }
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

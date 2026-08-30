@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add test for index scope</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/3d895657661f67901fd76253a717c489c6ac5870.html">3d895657661f67901fd76253a717c489c6ac5870</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/e653755174c0ebb4a814fc4d262182e2d31d3341.html">e653755174c0ebb4a814fc4d262182e2d31d3341</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-26 01:51:12 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-26 01:51:12 +0000
+
+Add test for index scope
+</pre><div class="diff">
+  <p>
+    <b>test/templates/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,10 @@
+<span class="def"> {% extends &quot;title.html.include&quot; %}
+</span><span class="def"> {%- block title -%}{{ host }}{%- endblock -%}
+</span><span class="def"> {% block body %}
+</span><span class="sub">-{{ repositories }}
+</span><span class="add">+scope: index
+</span><span class="add">+host: {{ host }}
+</span><span class="add">+repositories: {{ repositories }}
+</span><span class="add">+    repositories[0]: {{ repositories[0] }}
+</span><span class="add">+    repositories[0].name: {{ repositories[0].name }}
+</span><span class="add">+    repositories[0].description: {{ repositories[0].description }}
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,2 +1,8 @@
+<span class="def"> https://github.com/m-col/gitserve
+</span><span class="sub">-gitserve
+</span><span class="add">+scope: index
+</span><span class="add">+host: https://github.com/m-col/gitserve
+</span><span class="add">+repositories: gitserve
+</span><span class="add">+    repositories[0]: gitserve
+</span><span class="add">+    repositories[0].name: gitserve
+</span><span class="add">+    repositories[0].description: 🐙 Templated web page generator for your git repositories
+</span><span class="add">+
+</span></pre>
+</div></div>
+  </body>
+</html>

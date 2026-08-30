@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bdf2flf - malloc enough bytes for all bdf font sizes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/bdf2flf">bdf2flf</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Convert BDF bitmap fonts to flf fonts for figlet</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/bdf2flf">https://github.com/m-col/bdf2flf</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/bdf2flf/tree.html">Files</a> | <a href="https://mcol.xyz/code/bdf2flf/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/bdf2flf/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/bdf2flf/commit/c70a21514c3464c9e0bdd2ef411086c546a9ef9d.html">c70a21514c3464c9e0bdd2ef411086c546a9ef9d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/bdf2flf/commit/cba8f74bc5ce7dd3c01e6514483b7e4bf361f490.html">cba8f74bc5ce7dd3c01e6514483b7e4bf361f490</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-27 14:07:23 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-27 14:07:23 +0000
+
+malloc enough bytes for all bdf font sizes
+</pre><div class="diff">
+  <p>
+    <b>bdf2flf.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -132,7 +132,8 @@
+<span class="def"> 	die(&quot;Could not allocate memory.\n&quot;);
+</span><span class="def"> 
+</span><span class="def">     // extract individual char data
+</span><span class="sub">-    for (;;) { if (!fgets(linebuf, sizeof(linebuf), in))
+</span><span class="add">+    for (;;) {
+</span><span class="add">+	if (!fgets(linebuf, sizeof(linebuf), in))
+</span><span class="def"> 	    break;
+</span><span class="def"> 	if (!(s = strtok(linebuf, &quot; \t\n\r&quot;)))
+</span><span class="def"> 	    continue;
+</span>@@ -145,7 +146,7 @@
+<span class="def"> 		die(&quot;bdf font has incorrect CHARS value.\n&quot;);
+</span><span class="def"> 	    i = 0;
+</span><span class="def"> 	    chars[n].printed = 0;
+</span><span class="sub">-	    chars[n].bitmap = malloc(1);
+</span><span class="add">+	    chars[n].bitmap = malloc((width + 7) / 8 * height * 2);
+</span><span class="def"> 	    chars[n].bitmap[0] = &apos;\0&apos;;
+</span><span class="def"> 	    for (;;) {
+</span><span class="def"> 		fgets(linebuf, sizeof(linebuf), in);
+</span>@@ -204,7 +205,7 @@
+<span class="def"> 		&quot; and figlet font data is output to stdout.\n&quot;);
+</span><span class="def"> 	exit(EXIT_SUCCESS);
+</span><span class="def">     }
+</span><span class="sub">-    
+</span><span class="add">+
+</span><span class="def">     bdf2flf(stdin, stdout);
+</span><span class="def"> 
+</span><span class="def">     (void)(argv);  // shush the compiler
+</span></pre>
+</div></div>
+  </body>
+</html>

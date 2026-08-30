@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add install script</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/e6a6acb6d1d327cc978a5752bd4f5d7a6b053127.html">e6a6acb6d1d327cc978a5752bd4f5d7a6b053127</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/d5f9e6e934449c871a12b06a16e38cd4b66c875d.html">d5f9e6e934449c871a12b06a16e38cd4b66c875d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 10:23:12 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 10:23:12 +0000
+
+add install script
+</pre><div class="diff">
+  <p>
+    <b>install</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,7 @@
+<span class="add">+#!/usr/bin/env bash
+</span><span class="add">+
+</span><span class="add">+# vim-misc directory 
+</span><span class="add">+dir=&quot;source $(dirname &quot;$(readlink -f &quot;$0&quot;)&quot;)&quot;
+</span><span class="add">+
+</span><span class="add">+echo &quot;source $dir/vimrc&quot; &gt;&gt; ~/.vimrc
+</span><span class="add">+echo &quot;source $dir/tmux.conf&quot; &gt;&gt; ~/.tmux.conf
+</span></pre>
+</div></div>
+  </body>
+</html>

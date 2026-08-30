@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - update program name in makefile install</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/b7e214b7d84216c7202dac31b20350fc0f6a6083.html">b7e214b7d84216c7202dac31b20350fc0f6a6083</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/519915731c42e103f10eb15c0de61f4ec13422a1.html">519915731c42e103f10eb15c0de61f4ec13422a1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-20 12:44:39 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-20 12:44:39 +0100
+
+update program name in makefile install
+</pre><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,7 +14,7 @@
+<span class="def"> 
+</span><span class="def"> install:
+</span><span class="def"> 	mkdir -p &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span><span class="sub">-	cp -pf xinf &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span><span class="add">+	cp -pf &quot;$(OUT)&quot; &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span><span class="def"> 
+</span><span class="def"> uninstall:
+</span><span class="def"> 	rm -f &quot;$(DESTDIR)$(BINPREFIX)&quot;/xoop
+</span></pre>
+</div></div>
+  </body>
+</html>

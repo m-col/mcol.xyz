@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add basic config parser, and opt to set background colour</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/e2a3df6207b354f9b92aeaa686a59d484680a019.html">e2a3df6207b354f9b92aeaa686a59d484680a019</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/fb891291b73beb6716cbf20a4b1b7948735bd02e.html">fb891291b73beb6716cbf20a4b1b7948735bd02e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-06 01:43:28 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-06 01:43:28 +0000
+
+add basic config parser, and opt to set background colour
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -30,6 +30,7 @@
+<span class="def">     struct wlr_xdg_shell *shell;
+</span><span class="def">     struct wl_listener new_xdg_surface_listener;
+</span><span class="def">     struct wl_list views;
+</span><span class="add">+    float background[4];
+</span><span class="def"> 
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -60,8 +60,7 @@
+<span class="def">     wlr_output_effective_resolution(output-&gt;wlr_output, &amp;width, &amp;height);
+</span><span class="def">     wlr_renderer_begin(renderer, width, height);
+</span><span class="def"> 
+</span><span class="sub">-    float color[4] = {0.3, 0.05, 0.7, 1.0};  // background
+</span><span class="sub">-    wlr_renderer_clear(renderer, color);
+</span><span class="add">+    wlr_renderer_clear(renderer, output-&gt;server-&gt;background);
+</span><span class="def"> 
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each_reverse(view, &amp;output-&gt;server-&gt;views, link) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,6 +7,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#include &quot;config.h&quot;
+</span><span class="def"> #include &quot;deskwm.h&quot;
+</span><span class="def"> #include &quot;input.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span>@@ -40,6 +41,9 @@
+<span class="def">     // create
+</span><span class="def">     struct server server = create_server();
+</span><span class="def"> 
+</span><span class="add">+    // read config
+</span><span class="add">+    load_config(&amp;server);
+</span><span class="add">+
+</span><span class="def">     // configure
+</span><span class="def">     set_up_outputs(&amp;server);
+</span><span class="def">     set_up_shell(&amp;server);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,6 @@
+<span class="add">+#pragma once
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void load_config(struct server *server);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,62 @@
+<span class="add">+#include &lt;stdio.h&gt;
+</span><span class="add">+#include &lt;stdlib.h&gt;
+</span><span class="add">+#include &lt;string.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void assign_colour(char *hex, float dest[4]) {
+</span><span class="add">+    switch (strlen(hex)) {
+</span><span class="add">+	case 6:
+</span><span class="add">+	case 8:
+</span><span class="add">+	    break;
+</span><span class="add">+	case 7:
+</span><span class="add">+	case 9:
+</span><span class="add">+	    hex++;
+</span><span class="add">+	    break;
+</span><span class="add">+	default:
+</span><span class="add">+	    return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    char c[2];
+</span><span class="add">+    for (int i = 0; i &lt; 3; i++) {
+</span><span class="add">+	strncpy(c, &amp;hex[i * 2], 2);
+</span><span class="add">+	dest[i] = (float)strtol(c, NULL, 16) / 255;
+</span><span class="add">+    }
+</span><span class="add">+    dest[4] = 1;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_defaults(struct server *server) {
+</span><span class="add">+    assign_colour(&quot;#5D479D&quot;, &amp;server-&gt;background);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void load_config(struct server *server) {
+</span><span class="add">+    set_defaults(server);
+</span><span class="add">+
+</span><span class="add">+    char config[1024] = &quot;&quot;;
+</span><span class="add">+    strcpy(config, getenv(&quot;HOME&quot;));
+</span><span class="add">+    strcat(config, &quot;/.config/deskwm.conf&quot;);
+</span><span class="add">+
+</span><span class="add">+    if(access(config, R_OK) == -1) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+    FILE *fd = fopen(config, &quot;r&quot;);
+</span><span class="add">+
+</span><span class="add">+    char *s;
+</span><span class="add">+    char linebuf[1024];
+</span><span class="add">+    while (fgets(linebuf, sizeof(linebuf), fd)) {
+</span><span class="add">+	if (!(s = strtok(linebuf, &quot; \t\n\r&quot;)) || s[0] == &apos;#&apos;) {
+</span><span class="add">+	    continue;
+</span><span class="add">+	}
+</span><span class="add">+	if (!strcasecmp(s, &quot;background&quot;)) {
+</span><span class="add">+	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+		assign_colour(s, &amp;server-&gt;background);
+</span><span class="add">+	    }
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;modifier&quot;)) {
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    fclose(fd);
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

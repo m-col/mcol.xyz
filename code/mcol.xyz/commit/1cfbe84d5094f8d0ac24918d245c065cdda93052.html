@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - add FTP upload</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/1cfbe84d5094f8d0ac24918d245c065cdda93052.html">1cfbe84d5094f8d0ac24918d245c065cdda93052</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/66272cc6b14e625aabc5fe7f458bd21aac96935b.html">66272cc6b14e625aabc5fe7f458bd21aac96935b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-03-01 16:36:02 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-03-01 16:36:02 +0000
+
+add FTP upload
+</pre><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,6 +14,10 @@
+<span class="def"> SSH_TARGET_DIR=/home/mcol/mcol.xyz
+</span><span class="def"> SSH_TARGET_DIR_ONION=/home/mcol/mcol.onion
+</span><span class="def"> 
+</span><span class="add">+FTP_USER=mcol@mcol.xyz
+</span><span class="add">+FTP_HOST=mcol.xyz
+</span><span class="add">+FTP_TARGET_DIR=/
+</span><span class="add">+
+</span><span class="def"> DEBUG ?= 0
+</span><span class="def"> ifeq ($(DEBUG), 1)
+</span><span class="def"> 	PELICANOPTS += -D
+</span>@@ -37,6 +41,7 @@
+<span class="def"> 	@echo &apos;   make devserver [PORT=8000]          serve and regenerate together      &apos;
+</span><span class="def"> 	@echo &apos;   make ssh_upload                     upload the web site via SSH        &apos;
+</span><span class="def"> 	@echo &apos;   make rsync_upload                   upload the web site via rsync+ssh  &apos;
+</span><span class="add">+	@echo &apos;   make ftp_upload                     upload the web site via FTP        &apos;
+</span><span class="def"> 	@echo &apos;                                                                          &apos;
+</span><span class="def"> 	@echo &apos;Set the DEBUG variable to 1 to enable debugging, e.g. make DEBUG=1 html   &apos;
+</span><span class="def"> 	@echo &apos;Set the RELATIVE variable to 1 to enable relative urls                    &apos;
+</span>@@ -83,5 +88,8 @@
+<span class="def"> 	rsync -e &quot;ssh -p $(SSH_PORT)&quot; -P -rczz --cvs-exclude --delete --chmod=D755,F644 --copy-dirlinks \
+</span><span class="def"> 	    $(OUTPUTDIR)/ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
+</span><span class="def"> 
+</span><span class="add">+ftp_upload: publish
+</span><span class="add">+	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) $(FTP_TARGET_DIR) $(OUTPUTDIR)/*
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="sub">-.PHONY: html help clean regenerate serve serve-global devserver stopserver publish ssh_upload rsync_upload
+</span><span class="add">+.PHONY: html help clean regenerate serve serve-global devserver stopserver publish ssh_upload rsync_upload ftp_upload
+</span></pre>
+</div></div>
+  </body>
+</html>

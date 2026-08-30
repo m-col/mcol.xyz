@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - focus highest visible window when going to a mark</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/0a777ae52efaa44cfaff42f840822ab0f324ee1f.html">0a777ae52efaa44cfaff42f840822ab0f324ee1f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/ba59c57d4ac751fdb186cd90507891ba7e58be1c.html">ba59c57d4ac751fdb186cd90507891ba7e58be1c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-31 21:16:38 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-31 21:16:38 +0000
+
+focus highest visible window when going to a mark
+</pre><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -134,8 +134,7 @@
+<span class="def">     double dx = motion.dx / desk-&gt;zoom;
+</span><span class="def">     double dy = motion.dy / desk-&gt;zoom;
+</span><span class="def">     if (motion.is_percentage) {
+</span><span class="sub">-	struct wlr_box *extents =
+</span><span class="sub">-	    wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span><span class="add">+	struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span><span class="def"> 	dx = extents-&gt;width * (dx / 100);
+</span><span class="def"> 	dy = extents-&gt;height * (dy / 100);
+</span><span class="def">     }
+</span>@@ -270,17 +269,31 @@
+<span class="def"> 
+</span><span class="def">     wl_list_for_each(mark, &amp;wimp.marks, link) {
+</span><span class="def"> 	if (mark-&gt;key == sym) {
+</span><span class="sub">-	    unfullscreen();
+</span><span class="sub">-	    struct motion motion = {
+</span><span class="sub">-		.dx = mark-&gt;desk-&gt;panned_x - mark-&gt;x,
+</span><span class="sub">-		.dy = mark-&gt;desk-&gt;panned_y - mark-&gt;y,
+</span><span class="sub">-		.is_percentage = false,
+</span><span class="sub">-	    };
+</span><span class="sub">-	    mark-&gt;desk-&gt;zoom = mark-&gt;zoom;
+</span><span class="sub">-	    set_desk(mark-&gt;desk);
+</span><span class="sub">-	    pan_desk(&amp;motion);
+</span><span class="sub">-	    return;
+</span><span class="add">+	    break;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    unfullscreen();
+</span><span class="add">+    struct motion motion = {
+</span><span class="add">+	.dx = mark-&gt;desk-&gt;panned_x - mark-&gt;x,
+</span><span class="add">+	.dy = mark-&gt;desk-&gt;panned_y - mark-&gt;y,
+</span><span class="add">+	.is_percentage = false,
+</span><span class="add">+    };
+</span><span class="add">+    mark-&gt;desk-&gt;zoom = mark-&gt;zoom;
+</span><span class="add">+    set_desk(mark-&gt;desk);
+</span><span class="add">+    pan_desk(&amp;motion);
+</span><span class="add">+
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span><span class="add">+    wl_list_for_each(view, &amp;wimp.current_desk-&gt;views, link) {
+</span><span class="add">+	if (
+</span><span class="add">+	    view-&gt;x + view-&gt;surface-&gt;geometry.width &lt; 0 || extents-&gt;width &lt; view-&gt;x ||
+</span><span class="add">+	    view-&gt;y + view-&gt;surface-&gt;geometry.height &lt; 0 || extents-&gt;height &lt; view-&gt;y
+</span><span class="add">+	) {
+</span><span class="add">+	    continue;
+</span><span class="def"> 	}
+</span><span class="add">+	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+	return;
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -371,6 +384,7 @@
+<span class="def">     wlr_xdg_toplevel_set_tiled(view-&gt;surface, true);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> void reload_config(void *data) {
+</span><span class="def">     load_config();
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add zfunc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/e9fbfb6eaaaaedb227840f772b4121401618efa0.html">e9fbfb6eaaaaedb227840f772b4121401618efa0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/b3ccdb37b2576bc1b34158daf3f73e2e5d06ae2b.html">b3ccdb37b2576bc1b34158daf3f73e2e5d06ae2b</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2025-11-12 12:04:30 +0000
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2025-11-12 12:04:30 +0000
+
+add zfunc
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,7 +24,7 @@
+<span class="def"> COMPLETION_WAITING_DOTS=&quot;true&quot;
+</span><span class="def"> ZSH_COMPDUMP=&quot;$HOME/.zcompdump&quot;
+</span><span class="def"> setopt NO_nomatch
+</span><span class="sub">-fpath=(~/.zfunc $fpath)
+</span><span class="add">+fpath=(~/.zfunc $ZSH/zfunc $fpath)
+</span><span class="def"> 
+</span><span class="def"> # zsh history
+</span><span class="def"> HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>zfunc/_gita</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,473 @@
+<span class="add">+#compdef gita
+</span><span class="add">+
+</span><span class="add">+__gita_get_repos() {
+</span><span class="add">+    local -a repositories
+</span><span class="add">+    repositories=($(_call_program commands gita ls))
+</span><span class="add">+    _describe -t repositories &apos;gita repositories&apos; repositories
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+__gita_get_context() {
+</span><span class="add">+    local -a context
+</span><span class="add">+    context=(
+</span><span class="add">+        &quot;auto&quot;
+</span><span class="add">+        &quot;none&quot;
+</span><span class="add">+    )
+</span><span class="add">+    _describe -t context &apos;gita context&apos; context
+</span><span class="add">+    __gita_get_groups
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+__gita_get_infos() {
+</span><span class="add">+    local -a all_infos infos_in_used infos_unused
+</span><span class="add">+    all_infos=($(_call_program commands gita info ll | cut -d &quot;:&quot; -f2))
+</span><span class="add">+    infos_in_used=($(echo ${all_infos[1]} | tr &apos;,&apos; &apos; &apos;))
+</span><span class="add">+    infos_unused=($(echo ${all_infos[2]} | tr &apos;,&apos; &apos; &apos;))
+</span><span class="add">+    _describe -t infos_used &apos;gita infos in used&apos; infos_in_used
+</span><span class="add">+    _describe -t infos_unused &apos;gita infos unused&apos; infos_unused
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+__gita_get_groups() {
+</span><span class="add">+    local -a groups
+</span><span class="add">+
+</span><span class="add">+    groups=($(_call_program commands gita group ls))
+</span><span class="add">+    _describe -t groups &apos;gita groups&apos; groups
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+__gita_commands() {
+</span><span class="add">+    local -a commands
+</span><span class="add">+    commands=(
+</span><span class="add">+        &apos;add:Add repo(s)&apos;
+</span><span class="add">+        &apos;rm:remove repo(s)&apos;
+</span><span class="add">+        &apos;freeze:Print all repo information&apos;
+</span><span class="add">+        &apos;clone:Clone repos&apos;
+</span><span class="add">+        &apos;rename:Rename a repo&apos;
+</span><span class="add">+        &apos;flags:Git flags configuration&apos;
+</span><span class="add">+        &apos;color:Color configuration&apos;
+</span><span class="add">+        &apos;info:Information setting&apos;
+</span><span class="add">+        &apos;ll:Display summary of all repos&apos;
+</span><span class="add">+        &apos;context:Set context&apos;
+</span><span class="add">+        &apos;ls:Show repo(s) or repo path&apos;
+</span><span class="add">+        &apos;group:Group repos&apos;
+</span><span class="add">+        &apos;super:Run any git command/alias&apos;
+</span><span class="add">+        &apos;shell:Run any shell command&apos;
+</span><span class="add">+        &apos;clear:Removes all groups and repositories&apos;
+</span><span class="add">+    )
+</span><span class="add">+    _describe -t commands &apos;gita sub-commands&apos; commands
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_add [[[
+</span><span class="add">+_gita_add() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &apos;(-n --dry-run)&apos;{-n,--dry-run}&apos;[dry run]&apos; \
+</span><span class="add">+        &apos;(-g --group)&apos;{-g=,--group=}&apos;[add repo(s) to the specified group]:Gita groups:__gita_get_groups&apos; \
+</span><span class="add">+        &apos;(-s --skip-modules)&apos;{-s,--skip-modules}&apos;[skip submodule repo(s)]&apos; \
+</span><span class="add">+        &apos;(-r --recursive)&apos;{-r,--recursive}&apos;[recursively add repo(s) in the given path(s)]&apos; \
+</span><span class="add">+        &apos;(-a --auto-group)&apos;{-a,--auto-group}&apos;[recursively add repo(s) in the given path(s) and create hierarchical groups based on folder structure]&apos; \
+</span><span class="add">+        &apos;(-b --bare)&apos;{-b,--bare}&apos;[add bare repo(s)]&apos; \
+</span><span class="add">+        &quot;(-h --help -)*:Directories:_directories&quot;
+</span><span class="add">+    ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_rm [[[
+</span><span class="add">+_gita_rm() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &quot;(-h --help -)*:gita repositories:__gita_get_repos&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_freeze [[[
+</span><span class="add">+_gita_freeze() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &apos;(-g --group)&apos;{-g=,--group=}&apos;[freeze repos in the specified group]:Gita groups:__gita_get_groups&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_clone [[[
+</span><span class="add">+_gita_clone() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &apos;(-C --directory)&apos;{-C=,--directory=}&apos;[ Change to DIRECTORY before doing anything]:Directories:_directories&apos; \
+</span><span class="add">+        &apos;(-p --preserve-path)&apos;{-p,--preserve-path}&apos;[clone repo(s) in their original paths]&apos; \
+</span><span class="add">+        &apos;(-n --dry-run)&apos;{-n,--dry-run}&apos;[dry run]&apos; \
+</span><span class="add">+        &apos;(-g --group)&apos;{-g=,--group=}&apos;[If set, add repo to the specified group after cloning, otherwise add to gita without group]:Gita groups:__gita_get_groups&apos; \
+</span><span class="add">+        &apos;(-f --from-file)&apos;{-f=,--from-file=}&apos;[ If set, clone repos in a config file rendered from `gita freeze`]:File:_path_files&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_rename [[[
+</span><span class="add">+_gita_rename() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &quot;(-h --help -):Gita repositories:__gita_get_repos&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_flags_commands[[[
+</span><span class="add">+_gita_flags_commands() {
+</span><span class="add">+
+</span><span class="add">+    local -a subcommands
+</span><span class="add">+    subcommands=(
+</span><span class="add">+        &apos;ll:Display repos with custom flags&apos;
+</span><span class="add">+        &apos;set:Set flags for repo&apos;
+</span><span class="add">+    )
+</span><span class="add">+    _describe -t subcommands &apos;gita flag sub-commands&apos; subcommands
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_flags_ll [[[
+</span><span class="add">+_gita_flags_ll() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_flags_set [[[
+</span><span class="add">+_gita_flags_set() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &quot;(-h --help -):Gita repositories:__gita_get_repos&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_flags[[[
+</span><span class="add">+_gita_flags() {
+</span><span class="add">+    local curcontext=&quot;$curcontext&quot; state state_descr line expl
+</span><span class="add">+    local tmp ret=1
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos;
+</span><span class="add">+
+</span><span class="add">+    _arguments -C \
+</span><span class="add">+        &quot;1: :-&gt;cmds&quot; \
+</span><span class="add">+        &quot;*::arg:-&gt;args&quot;
+</span><span class="add">+    case &quot;$state&quot; in
+</span><span class="add">+    cmds)
+</span><span class="add">+        _gita_flags_commands &amp;&amp; return 0
+</span><span class="add">+        ;;
+</span><span class="add">+    args)
+</span><span class="add">+        local cmd=&quot;${line[1]}&quot;
+</span><span class="add">+        curcontext=&quot;${curcontext%:*}-${cmd}:${curcontext##*:}&quot;
+</span><span class="add">+        local completion_func=&quot;_gita_flags_${cmd//-/_}&quot;
+</span><span class="add">+        _call_function ret &quot;${completion_func}&quot; &amp;&amp; return ret
+</span><span class="add">+        _message &quot;a completion function is not defined for command or alias: ${cmd}&quot;
+</span><span class="add">+        return 1
+</span><span class="add">+        ;;
+</span><span class="add">+    esac
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_color_commands[[[
+</span><span class="add">+_gita_color_commands() {
+</span><span class="add">+
+</span><span class="add">+    local -a subcommands
+</span><span class="add">+    subcommands=(
+</span><span class="add">+        &apos;ll:Display available colors and the current branch coloring in the ll sub-command&apos;
+</span><span class="add">+        &apos;set:Set color for local/remote situation&apos;
+</span><span class="add">+        &apos;reset:Reset color scheme&apos;
+</span><span class="add">+    )
+</span><span class="add">+    _describe -t subcommands &apos;gita color sub-commands&apos; subcommands
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_color_ll [[[
+</span><span class="add">+_gita_color_ll() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_color_set [[[
+</span><span class="add">+_gita_color_set() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_color_reset [[[
+</span><span class="add">+_gita_color_reset() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_color[[[
+</span><span class="add">+_gita_color() {
+</span><span class="add">+    local curcontext=&quot;$curcontext&quot; state state_descr line expl
+</span><span class="add">+    local tmp ret=1
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos;
+</span><span class="add">+
+</span><span class="add">+    _arguments -C \
+</span><span class="add">+        &quot;1: :-&gt;cmds&quot; \
+</span><span class="add">+        &quot;*::arg:-&gt;args&quot;
+</span><span class="add">+    case &quot;$state&quot; in
+</span><span class="add">+    cmds)
+</span><span class="add">+        _gita_color_commands &amp;&amp; return 0
+</span><span class="add">+        ;;
+</span><span class="add">+    args)
+</span><span class="add">+        local cmd=&quot;${line[1]}&quot;
+</span><span class="add">+        curcontext=&quot;${curcontext%:*}-${cmd}:${curcontext##*:}&quot;
+</span><span class="add">+        local completion_func=&quot;_gita_color_${cmd//-/_}&quot;
+</span><span class="add">+        _call_function ret &quot;${completion_func}&quot; &amp;&amp; return ret
+</span><span class="add">+        _message &quot;a completion function is not defined for command or alias: ${cmd}&quot;
+</span><span class="add">+        return 1
+</span><span class="add">+        ;;
+</span><span class="add">+    esac
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_info_commands[[[
+</span><span class="add">+_gita_info_commands() {
+</span><span class="add">+
+</span><span class="add">+    local -a subcommands
+</span><span class="add">+    subcommands=(
+</span><span class="add">+        &apos;ll:Show used and unused information items of the ll sub-command&apos;
+</span><span class="add">+        &apos;add:Enable information item&apos;
+</span><span class="add">+        &apos;rm:Disable information item&apos;
+</span><span class="add">+    )
+</span><span class="add">+    _describe -t subcommands &apos;gita info sub-commands&apos; subcommands
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_info_ll [[[
+</span><span class="add">+_gita_info_ll() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_info_add [[[
+</span><span class="add">+_gita_info_add() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &quot;(-h --help -):Gita infos:__gita_get_infos&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_info_rm [[[
+</span><span class="add">+_gita_info_rm() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &quot;(-h --help -):Gita infos:__gita_get_infos&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_info[[[
+</span><span class="add">+_gita_info() {
+</span><span class="add">+    local curcontext=&quot;$curcontext&quot; state state_descr line expl
+</span><span class="add">+    local tmp ret=1
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos;
+</span><span class="add">+
+</span><span class="add">+    _arguments -C \
+</span><span class="add">+        &quot;1: :-&gt;cmds&quot; \
+</span><span class="add">+        &quot;*::arg:-&gt;args&quot;
+</span><span class="add">+    case &quot;$state&quot; in
+</span><span class="add">+    cmds)
+</span><span class="add">+        _gita_info_commands &amp;&amp; return 0
+</span><span class="add">+        ;;
+</span><span class="add">+    args)
+</span><span class="add">+        local cmd=&quot;${line[1]}&quot;
+</span><span class="add">+        curcontext=&quot;${curcontext%:*}-${cmd}:${curcontext##*:}&quot;
+</span><span class="add">+        local completion_func=&quot;_gita_info_${cmd//-/_}&quot;
+</span><span class="add">+        _call_function ret &quot;${completion_func}&quot; &amp;&amp; return ret
+</span><span class="add">+        _message &quot;a completion function is not defined for command or alias: ${cmd}&quot;
+</span><span class="add">+        return 1
+</span><span class="add">+        ;;
+</span><span class="add">+    esac
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_ll [[[
+</span><span class="add">+_gita_ll() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &apos;(-C --no-colors)&apos;{-C,--no-colors}&apos;[Disable coloring on the branch names]&apos; \
+</span><span class="add">+        &apos;(-g)&apos;-g&apos;[Show repo summaries by group]&apos; \
+</span><span class="add">+        &quot;(-h --help -):Groups name:__gita_get_groups&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_context [[[
+</span><span class="add">+_gita_context() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &quot;(-h --help -):Gita context:__gita_get_context&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_ls [[[
+</span><span class="add">+_gita_ls() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &quot;(-h --help -):Gita repositories:__gita_get_repos&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_group_commands[[[
+</span><span class="add">+_gita_group_commands() {
+</span><span class="add">+
+</span><span class="add">+    local -a subcommands
+</span><span class="add">+    subcommands=(
+</span><span class="add">+        &apos;ll:List all groups with repos.&apos;
+</span><span class="add">+        &apos;ls:List all group names&apos;
+</span><span class="add">+        &apos;add:Add repo(s) to a group&apos;
+</span><span class="add">+        &apos;rmrepo:remove repo(s) from a group&apos;
+</span><span class="add">+        &apos;rename:Change group name&apos;
+</span><span class="add">+        &apos;rm:Remove group(s)&apos;
+</span><span class="add">+    )
+</span><span class="add">+    _describe -t subcommands &apos;gita group sub-commands&apos; subcommands
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_group_ll [[[
+</span><span class="add">+_gita_group_ll() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &quot;(-h --help -):Groups name:__gita_get_groups&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_group_ls [[[
+</span><span class="add">+_gita_group_ls() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_group_add [[[
+</span><span class="add">+_gita_group_add() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &apos;(-n --name)&apos;{-n=,--name=}&apos;[group-name,]:Groups name:__gita_get_groups&apos; \
+</span><span class="add">+        &apos;(-p --path)&apos;{-p=,--path=}&apos;[group-path]:Group path:_directories&apos; \
+</span><span class="add">+        &quot;(-h --help -)*:Gita repositories:__gita_get_repos&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_group_rmrepo [[[
+</span><span class="add">+_gita_group_rmrepo() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &apos;(-n --name)&apos;{-n=,--name=}&apos;[group-name,]:Groups name:__gita_get_groups&apos; \
+</span><span class="add">+        &quot;(-h --help -)*:Gita repositories:__gita_get_repos&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_group_rename [[[
+</span><span class="add">+_gita_group_rename() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help -)&apos;{-h,--help}&apos;[show this help message and exit]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_group_rm [[[
+</span><span class="add">+_gita_group_rm() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &quot;(-h --help -)*:Groups name:__gita_get_groups&quot; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_group[[[
+</span><span class="add">+_gita_group() {
+</span><span class="add">+    local curcontext=&quot;$curcontext&quot; state state_descr line expl
+</span><span class="add">+    local tmp ret=1
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos;
+</span><span class="add">+
+</span><span class="add">+    _arguments -C \
+</span><span class="add">+        &quot;1: :-&gt;cmds&quot; \
+</span><span class="add">+        &quot;*::arg:-&gt;args&quot;
+</span><span class="add">+    case &quot;$state&quot; in
+</span><span class="add">+    cmds)
+</span><span class="add">+        _gita_group_commands &amp;&amp; return 0
+</span><span class="add">+        ;;
+</span><span class="add">+    args)
+</span><span class="add">+        local cmd=&quot;${line[1]}&quot;
+</span><span class="add">+        curcontext=&quot;${curcontext%:*}-${cmd}:${curcontext##*:}&quot;
+</span><span class="add">+        local completion_func=&quot;_gita_group_${cmd//-/_}&quot;
+</span><span class="add">+        _call_function ret &quot;${completion_func}&quot; &amp;&amp; return ret
+</span><span class="add">+        _message &quot;a completion function is not defined for command or alias: ${cmd}&quot;
+</span><span class="add">+        return 1
+</span><span class="add">+        ;;
+</span><span class="add">+    esac
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_super [[[
+</span><span class="add">+_gita_super() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &apos;(-q --quote-mode)&apos;{-q,--quote-mode}&apos;[use quote mode]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_shell [[[
+</span><span class="add">+_gita_shell() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &apos;(-q --quote-mode)&apos;{-q,--quote-mode}&apos;[use quote mode]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita_clear [[[
+</span><span class="add">+_gita_clear() {
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; &amp;&amp;
+</span><span class="add">+        ret=0
+</span><span class="add">+}
+</span><span class="add">+#]]]
+</span><span class="add">+
+</span><span class="add">+# FUNCTION: _gita [[[
+</span><span class="add">+_gita() {
+</span><span class="add">+    local curcontext=&quot;$curcontext&quot; state state_descr line expl
+</span><span class="add">+    local tmp ret=1
+</span><span class="add">+    _arguments -A \
+</span><span class="add">+        &apos;(-h --help)&apos;{-h,--help}&apos;[show this help message and exit]&apos; \
+</span><span class="add">+        &apos;(-v --version)&apos;{-v,--version}&apos;[show program&apos;\&apos;&apos;s version number and exit]&apos;
+</span><span class="add">+
+</span><span class="add">+    _arguments -C \
+</span><span class="add">+        &quot;1: :-&gt;cmds&quot; \
+</span><span class="add">+        &quot;*::arg:-&gt;args&quot;
+</span><span class="add">+    case &quot;$state&quot; in
+</span><span class="add">+    cmds)
+</span><span class="add">+        __gita_commands &amp;&amp; return 0
+</span><span class="add">+        ;;
+</span><span class="add">+    args)
+</span><span class="add">+        local cmd=&quot;${line[1]}&quot;
+</span><span class="add">+        curcontext=&quot;${curcontext%:*}-${cmd}:${curcontext##*:}&quot;
+</span><span class="add">+        local completion_func=&quot;_gita_${cmd//-/_}&quot;
+</span><span class="add">+        _call_function ret &quot;${completion_func}&quot; &amp;&amp; return ret
+</span><span class="add">+        _message &quot;a completion function is not defined for command or alias: ${cmd}&quot;
+</span><span class="add">+        return 1
+</span><span class="add">+        ;;
+</span><span class="add">+    esac
+</span><span class="add">+} # ]]]
+</span><span class="add">+
+</span><span class="add">+_gita &quot;$@&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>set_groot.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,16 +0,0 @@
+<span class="sub">-#
+</span><span class="sub">-# Set ~g to point to current git root
+</span><span class="sub">-#
+</span><span class="sub">-
+</span><span class="sub">-#function _set_groot() {
+</span><span class="sub">-#    local groot
+</span><span class="sub">-#    if groot=$(git rev-parse --show-toplevel 2&gt; /dev/null)
+</span><span class="sub">-#    then
+</span><span class="sub">-#	hash -d g=&quot;$groot&quot;
+</span><span class="sub">-#    else
+</span><span class="sub">-#	disable g
+</span><span class="sub">-#    fi
+</span><span class="sub">-#}
+</span><span class="sub">-#
+</span><span class="sub">-#autoload -Uz add-zsh-hook
+</span><span class="sub">-#add-zsh-hook precmd _set_groot
+</span></pre>
+</div></div>
+  </body>
+</html>

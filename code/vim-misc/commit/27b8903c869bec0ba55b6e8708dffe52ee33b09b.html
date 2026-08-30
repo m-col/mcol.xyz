@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - more typescript and ale stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/27b8903c869bec0ba55b6e8708dffe52ee33b09b.html">27b8903c869bec0ba55b6e8708dffe52ee33b09b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/9baeb912407cd9291f75fd55aac77b32f7e329de.html">9baeb912407cd9291f75fd55aac77b32f7e329de</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2025-05-13 16:58:22 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-05-13 17:03:36 +0100
+
+more typescript and ale stuff
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -45,6 +45,7 @@
+<span class="def"> set wildmode=full:list		&quot; format wildmenu to expand and scroll with tab
+</span><span class="def"> 
+</span><span class="def"> set autochdir			&quot; cwd to current file
+</span><span class="add">+set updatetime=500		&quot; update time for swap files (unused) and e.g. ALE hover
+</span><span class="def"> 
+</span><span class="def"> let g:netrw_liststyle=0		&quot; Set netrw style to thin listing
+</span><span class="def"> 
+</span>@@ -81,6 +82,7 @@
+<span class="def"> \   &apos;haskell&apos;: [&apos;hlint&apos;],
+</span><span class="def"> \   &apos;python&apos;: [&apos;flake8&apos;, &apos;pyright&apos;, &apos;ruff&apos;],
+</span><span class="def"> \   &apos;typescriptreact&apos;: [&apos;tsserver&apos;, &apos;eslint&apos;],
+</span><span class="add">+\   &apos;typescript&apos;: [&apos;tsserver&apos;, &apos;eslint&apos;],
+</span><span class="def"> \}
+</span><span class="def"> &quot; Don&apos;t show errors in virtual text or signs column; rely on echoed message instead
+</span><span class="def"> let g:ale_virtualtext_cursor = 0
+</span>@@ -90,8 +92,10 @@
+<span class="def"> \   &apos;haskell&apos;: [&apos;ormolu&apos;],
+</span><span class="def"> \   &apos;python&apos;: [&apos;black&apos;, &apos;ruff&apos;],
+</span><span class="def"> \   &apos;typescriptreact&apos;: [&apos;eslint&apos;],
+</span><span class="add">+\   &apos;typescript&apos;: [&apos;eslint&apos;],
+</span><span class="def"> \}
+</span><span class="def"> &quot;\   &apos;markdown&apos;: [&apos;prettier&apos;],
+</span><span class="add">+let g:ale_echo_cursor = 1
+</span><span class="def"> 
+</span><span class="def"> let g:vim_markdown_conceal = 0
+</span><span class="def"> let g:vim_markdown_conceal_code_blocks = 0
+</span></pre>
+</div></div>
+  </body>
+</html>

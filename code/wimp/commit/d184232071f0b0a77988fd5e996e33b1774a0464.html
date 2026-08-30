@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add super basic server decoration manager</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/d184232071f0b0a77988fd5e996e33b1774a0464.html">d184232071f0b0a77988fd5e996e33b1774a0464</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/d90893bc3392b7829dfc864c43d375150c8a9ec6.html">d90893bc3392b7829dfc864c43d375150c8a9ec6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 11:03:39 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 11:03:39 +0000
+
+add super basic server decoration manager
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,6 +10,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_cursor.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_server_decoration.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xdg_decoration_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span>@@ -52,6 +53,7 @@
+<span class="def"> 
+</span><span class="def">     struct wlr_xdg_decoration_manager_v1 *decoration_manager;
+</span><span class="def">     struct wl_listener decoration_listener;
+</span><span class="add">+    struct wlr_server_decoration_manager *server_decoration_manager;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/decorations.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,12 +3,6 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-struct decoration {
+</span><span class="sub">-    struct wlr_xdg_toplevel_decoration_v1 *wlr_xdg_decoration;
+</span><span class="sub">-    struct wl_listener destroy_listener;
+</span><span class="sub">-    struct wl_listener request_mode_listener;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="def"> void set_up_decorations(struct server *server);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/decorations.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,13 @@
+<span class="def"> #include &quot;decorations.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+struct decoration {
+</span><span class="add">+    struct wlr_xdg_toplevel_decoration_v1 *wlr_xdg_decoration;
+</span><span class="add">+    struct wl_listener destroy_listener;
+</span><span class="add">+    struct wl_listener request_mode_listener;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void on_destroy(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct decoration *deco = wl_container_of(listener, deco, destroy_listener);
+</span><span class="def">     wl_list_remove(&amp;deco-&gt;destroy_listener.link);
+</span>@@ -40,6 +47,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void set_up_decorations(struct server *server) {
+</span><span class="add">+    // xdg_decoration
+</span><span class="def">     server-&gt;decoration_manager = wlr_xdg_decoration_manager_v1_create(server-&gt;display);
+</span><span class="def"> 
+</span><span class="def">     server-&gt;decoration_listener.notify = on_new_decoration;
+</span>@@ -47,4 +55,11 @@
+<span class="def">         &amp;server-&gt;decoration_manager-&gt;events.new_toplevel_decoration,
+</span><span class="def">         &amp;server-&gt;decoration_listener
+</span><span class="def">     );
+</span><span class="add">+
+</span><span class="add">+    // server_decoration
+</span><span class="add">+    server-&gt;server_decoration_manager = wlr_server_decoration_manager_create(server-&gt;display);
+</span><span class="add">+    wlr_server_decoration_manager_set_default_mode(
+</span><span class="add">+	server-&gt;server_decoration_manager,
+</span><span class="add">+	WLR_SERVER_DECORATION_MANAGER_MODE_SERVER
+</span><span class="add">+    );
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

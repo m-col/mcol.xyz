@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - rewrite using Xlib&apos;s XFixesCreatePointerBarrier instead of a window</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/e64ec0bd216a7cdb5deca36526c2eecf38b3b32d.html">e64ec0bd216a7cdb5deca36526c2eecf38b3b32d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/0fc77ea1946a0563d7242d781a34566c18d2ed44.html">0fc77ea1946a0563d7242d781a34566c18d2ed44</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-06 01:52:07 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-06 01:52:07 +0100
+
+rewrite using Xlib&apos;s XFixesCreatePointerBarrier instead of a window
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,7 +20,6 @@
+<span class="def"> SOFTWARE.
+</span><span class="def"> */
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> #include &lt;signal.h&gt;
+</span><span class="def"> #include &lt;stdio.h&gt;
+</span><span class="def"> #include &lt;stdlib.h&gt;
+</span>@@ -29,244 +28,172 @@
+<span class="def"> #include &lt;xcb/shape.h&gt;
+</span><span class="def"> #include &lt;xcb/xcb.h&gt;
+</span><span class="def"> #include &lt;xcb/xcb_event.h&gt;
+</span><span class="add">+#include &lt;xcb/xfixes.h&gt;
+</span><span class="add">+#include &lt;xcb/xinput.h&gt;
+</span><span class="add">+#include &lt;X11/Xlib-xcb.h&gt;
+</span><span class="add">+#include &lt;X11/extensions/Xfixes.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #define PROGNAME &quot;xoop&quot;
+</span><span class="def"> 
+</span><span class="sub">-xcb_connection_t    *conn;
+</span><span class="sub">-xcb_screen_t	    *screen;
+</span><span class="sub">-xcb_window_t	     wid;
+</span><span class="add">+Display                 *dpy;
+</span><span class="add">+xcb_connection_t	*conn;
+</span><span class="add">+xcb_screen_t		*screen;
+</span><span class="add">+xcb_input_device_id_t	deviceid;
+</span><span class="add">+PointerBarrier          barriers[4];
+</span><span class="def"> 
+</span><span class="add">+int num_barriers = 0;
+</span><span class="def"> int debug = 0;
+</span><span class="sub">-int randr_base = 0;
+</span><span class="sub">-uint32_t axis = 0; /* 0: both, 1: x, 2: y, 3: both specified */
+</span><span class="add">+int axis = 0;
+</span><span class="add">+const int BOTH_AXES = 0;
+</span><span class="add">+const int X_ONLY = 1;
+</span><span class="add">+const int Y_ONLY = 2;
+</span><span class="add">+int fixes_opcode, fixes_event_base, fixes_error_base;
+</span><span class="add">+uint8_t op_randr = 0;
+</span><span class="add">+uint8_t op_xinput = 0;
+</span><span class="def"> 
+</span><span class="add">+int16_t width, height;
+</span><span class="def"> 
+</span><span class="sub">-void set_window_type() {
+</span><span class="sub">-    xcb_intern_atom_reply_t *wm_window_type,
+</span><span class="sub">-			    *wm_window_type_dock,
+</span><span class="sub">-			    *wm_state,
+</span><span class="sub">-			    *wm_state_above,
+</span><span class="sub">-			    *wm_desktop;
+</span><span class="def"> 
+</span><span class="sub">-    wm_window_type = xcb_intern_atom_reply(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	xcb_intern_atom(conn, 0, 19, &quot;_NET_WM_WINDOW_TYPE&quot;),
+</span><span class="sub">-	NULL
+</span><span class="sub">-    );
+</span><span class="sub">-    wm_window_type_dock = xcb_intern_atom_reply(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	xcb_intern_atom(conn, 0, 24, &quot;_NET_WM_WINDOW_TYPE_DOCK&quot;),
+</span><span class="sub">-	NULL
+</span><span class="sub">-    );
+</span><span class="sub">-    xcb_change_property(
+</span><span class="sub">-	conn, XCB_PROP_MODE_REPLACE, wid, wm_window_type-&gt;atom, XCB_ATOM_ATOM, 32, 1, &amp;wm_window_type_dock-&gt;atom
+</span><span class="sub">-    );
+</span><span class="add">+void exit_angrily(char msg[])
+</span><span class="add">+{
+</span><span class="add">+    fprintf(stderr, msg);
+</span><span class="add">+    xcb_disconnect(conn);
+</span><span class="add">+    exit(EXIT_FAILURE);
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="sub">-    wm_state = xcb_intern_atom_reply(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	xcb_intern_atom(conn, 0, 13, &quot;_NET_WM_STATE&quot;),
+</span><span class="sub">-	NULL
+</span><span class="sub">-    );
+</span><span class="sub">-    wm_state_above = xcb_intern_atom_reply(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	xcb_intern_atom(conn, 0, 19, &quot;_NET_WM_STATE_ABOVE&quot;),
+</span><span class="sub">-	NULL
+</span><span class="sub">-    );
+</span><span class="sub">-    xcb_change_property(
+</span><span class="sub">-	conn, XCB_PROP_MODE_REPLACE, wid, wm_state-&gt;atom, XCB_ATOM_ATOM, 32, 1, &amp;wm_state_above-&gt;atom
+</span><span class="sub">-    );
+</span><span class="def"> 
+</span><span class="sub">-    wm_desktop = xcb_intern_atom_reply(
+</span><span class="sub">-        conn,
+</span><span class="sub">-        xcb_intern_atom(conn, 0, 15, &quot;_NET_WM_DESKTOP&quot;),
+</span><span class="sub">-        NULL
+</span><span class="sub">-    );
+</span><span class="sub">-    xcb_change_property(
+</span><span class="sub">-        conn, XCB_PROP_MODE_REPLACE, wid, wm_desktop-&gt;atom, XCB_ATOM_INTEGER, 1, 1, (uint32_t []){0xFFFFFFFF}
+</span><span class="sub">-    );
+</span><span class="add">+void create_barriers()
+</span><span class="add">+{
+</span><span class="add">+    int x1 = 0;
+</span><span class="add">+    int y1 = 0;
+</span><span class="add">+    int x2 = (int)width;
+</span><span class="add">+    int y2 = (int)height;
+</span><span class="def"> 
+</span><span class="sub">-    xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, (uint32_t []){XCB_STACK_MODE_ABOVE});
+</span><span class="add">+    if (debug)
+</span><span class="add">+	printf(&quot;Creating barriers: %i %i %i %i\n&quot;, x1, y1, x2, y2);
+</span><span class="def"> 
+</span><span class="sub">-    xcb_change_property(
+</span><span class="sub">-	conn, XCB_PROP_MODE_REPLACE, wid, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, 4, PROGNAME
+</span><span class="sub">-    );
+</span><span class="add">+    if (axis == X_ONLY || axis == BOTH_AXES) {
+</span><span class="add">+	barriers[0] = XFixesCreatePointerBarrier(dpy, DefaultRootWindow(dpy), x1, y1, x1, y2, 0, 0, NULL);
+</span><span class="add">+	barriers[1] = XFixesCreatePointerBarrier(dpy, DefaultRootWindow(dpy), x2, y1, x2, y2, 0, 0, NULL);
+</span><span class="add">+    };
+</span><span class="def"> 
+</span><span class="sub">-    free(wm_window_type);
+</span><span class="sub">-    free(wm_window_type_dock);
+</span><span class="sub">-    free(wm_desktop);
+</span><span class="add">+    if (axis == Y_ONLY || axis == BOTH_AXES) {
+</span><span class="add">+	barriers[2] = XFixesCreatePointerBarrier(dpy, DefaultRootWindow(dpy), x1, y1, x2, y1, 0, 0, NULL);
+</span><span class="add">+	barriers[3] = XFixesCreatePointerBarrier(dpy, DefaultRootWindow(dpy), x1, y2, x2, y2, 0, 0, NULL);
+</span><span class="add">+    };
+</span><span class="add">+    XSync(dpy, False);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void set_window_shape(uint16_t width, uint16_t height)
+</span><span class="add">+void delete_barriers()
+</span><span class="def"> {
+</span><span class="sub">-    if (axis == 1) {
+</span><span class="sub">-	height += 2;
+</span><span class="sub">-    } else if (axis == 2) {
+</span><span class="sub">-	width += 2;
+</span><span class="sub">-    };
+</span><span class="sub">-    uint32_t dimensions[2] = {width, height};
+</span><span class="sub">-    xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, dimensions);
+</span><span class="sub">-
+</span><span class="sub">-    xcb_pixmap_t pixmap = xcb_generate_id(conn);
+</span><span class="sub">-    xcb_gcontext_t gc = xcb_generate_id(conn);
+</span><span class="sub">-    xcb_create_pixmap(conn, 1, pixmap, wid, width, height);
+</span><span class="sub">-    xcb_create_gc(
+</span><span class="sub">-	conn, gc, pixmap, XCB_GC_FOREGROUND, &amp;screen-&gt;white_pixel
+</span><span class="sub">-    );
+</span><span class="sub">-    xcb_rectangle_t rect = {0, 0, width, height};
+</span><span class="sub">-    xcb_poly_fill_rectangle(conn, pixmap, gc, 1, &amp;rect);
+</span><span class="sub">-    xcb_shape_mask(
+</span><span class="sub">-	conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_INPUT, wid, 0, 0, pixmap
+</span><span class="sub">-    );
+</span><span class="add">+    for (int i = 0; i &lt; 4; i++) {
+</span><span class="add">+	if (debug)
+</span><span class="add">+	    printf(&quot;Deleting barrier: %i/4\n&quot;, i + 1);
+</span><span class="add">+        XFixesDestroyPointerBarrier(dpy, barriers[i]);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="sub">-    xcb_pixmap_t pixmap2 = xcb_generate_id(conn);
+</span><span class="sub">-    xcb_gcontext_t gc2 = xcb_generate_id(conn);
+</span><span class="sub">-    xcb_create_pixmap(conn, 1, pixmap2, wid, width, height);
+</span><span class="sub">-    xcb_create_gc(
+</span><span class="sub">-	conn, gc2, pixmap2, XCB_GC_FOREGROUND, &amp;screen-&gt;white_pixel
+</span><span class="sub">-    );
+</span><span class="sub">-    xcb_rectangle_t rect2 = {1, 1, width - 2, height - 2};
+</span><span class="sub">-    xcb_poly_fill_rectangle(conn, pixmap2, gc2, 1, &amp;rect2);
+</span><span class="sub">-    xcb_shape_mask(
+</span><span class="sub">-	conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_INPUT, wid, 0, 0, pixmap2
+</span><span class="sub">-    );
+</span><span class="def"> 
+</span><span class="sub">-    if (debug) {
+</span><span class="sub">-	xcb_shape_mask(
+</span><span class="sub">-	    conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, wid, 0, 0, pixmap
+</span><span class="sub">-	);
+</span><span class="sub">-	xcb_shape_mask(
+</span><span class="sub">-	    conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_BOUNDING, wid, 0, 0, pixmap2
+</span><span class="sub">-	);
+</span><span class="sub">-    };
+</span><span class="sub">-
+</span><span class="sub">-    xcb_free_pixmap(conn, pixmap);
+</span><span class="sub">-    xcb_free_pixmap(conn, pixmap2);
+</span><span class="sub">-    xcb_free_gc(conn, gc);
+</span><span class="sub">-    xcb_free_gc(conn, gc2);
+</span><span class="add">+void exit_nicely()
+</span><span class="add">+{
+</span><span class="add">+    delete_barriers();
+</span><span class="add">+    xcb_disconnect(conn);
+</span><span class="add">+    exit(EXIT_SUCCESS);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void setup_window()
+</span><span class="add">+void check_xfixes()
+</span><span class="def"> {
+</span><span class="sub">-    int class = XCB_WINDOW_CLASS_INPUT_ONLY;
+</span><span class="sub">-    uint32_t value_mask = XCB_CW_EVENT_MASK;
+</span><span class="sub">-    uint32_t value_list[1] = {XCB_EVENT_MASK_ENTER_WINDOW};
+</span><span class="sub">-    uint32_t value_list_debug[2] = {screen-&gt;white_pixel, XCB_EVENT_MASK_ENTER_WINDOW};
+</span><span class="sub">-    uint32_t *values = value_list;
+</span><span class="sub">-
+</span><span class="sub">-    if (debug) {
+</span><span class="sub">-	class = XCB_WINDOW_CLASS_INPUT_OUTPUT;
+</span><span class="sub">-	value_mask |= XCB_CW_BACK_PIXEL;
+</span><span class="sub">-	values = value_list_debug;
+</span><span class="sub">-    };
+</span><span class="sub">-
+</span><span class="sub">-    int16_t x, y = 0;
+</span><span class="sub">-    uint16_t width = screen-&gt;width_in_pixels;
+</span><span class="sub">-    uint16_t height = screen-&gt;height_in_pixels;
+</span><span class="sub">-    if (axis == 1) {
+</span><span class="sub">-	y = -1;
+</span><span class="sub">-	height += 2;
+</span><span class="sub">-    } else if (axis == 2) {
+</span><span class="sub">-	x = -1;
+</span><span class="sub">-	width += 2;
+</span><span class="sub">-    };
+</span><span class="add">+    if (
+</span><span class="add">+	!XQueryExtension(dpy, &quot;XFIXES&quot;, &amp;fixes_opcode, &amp;fixes_event_base, &amp;fixes_error_base)
+</span><span class="add">+    )
+</span><span class="add">+	exit_angrily(&quot;XFixes extension not available.\n&quot;);
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="sub">-    wid = xcb_generate_id(conn);
+</span><span class="sub">-    xcb_create_window(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	XCB_COPY_FROM_PARENT,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	screen-&gt;root,
+</span><span class="sub">-	x,
+</span><span class="sub">-	y,
+</span><span class="sub">-	width,
+</span><span class="sub">-	height,
+</span><span class="sub">-	0,
+</span><span class="sub">-	class,
+</span><span class="sub">-	XCB_COPY_FROM_PARENT,
+</span><span class="sub">-	value_mask,
+</span><span class="sub">-	values
+</span><span class="sub">-    );
+</span><span class="def"> 
+</span><span class="sub">-    set_window_type();
+</span><span class="sub">-    set_window_shape(screen-&gt;width_in_pixels, screen-&gt;height_in_pixels);
+</span><span class="sub">-    xcb_map_window(conn, wid);
+</span><span class="add">+void check_randr()
+</span><span class="add">+{
+</span><span class="add">+    const xcb_query_extension_reply_t *ext = xcb_get_extension_data(conn, &amp;xcb_randr_id);
+</span><span class="add">+    if (!ext || !ext-&gt;present)
+</span><span class="add">+        exit_angrily(&quot;Randr extension not available.\n&quot;);
+</span><span class="add">+    op_randr = ext-&gt;first_event;
+</span><span class="add">+    xcb_randr_select_input(conn, screen-&gt;root, XCB_RANDR_NOTIFY_MASK_SCREEN_CHANGE);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void configure_randr()
+</span><span class="add">+void check_xinput()
+</span><span class="def"> {
+</span><span class="sub">-    const xcb_query_extension_reply_t *randr = xcb_get_extension_data(conn, &amp;xcb_randr_id);
+</span><span class="sub">-    if (randr-&gt;present) {
+</span><span class="sub">-	randr_base = randr-&gt;first_event;
+</span><span class="sub">-	xcb_randr_select_input(conn, screen-&gt;root, XCB_RANDR_NOTIFY_MASK_SCREEN_CHANGE);
+</span><span class="sub">-    };
+</span><span class="add">+    const xcb_query_extension_reply_t *ext = xcb_get_extension_data(conn, &amp;xcb_input_id);
+</span><span class="add">+    if (!ext || !ext-&gt;present)
+</span><span class="add">+        exit_angrily(&quot;XInput extension not available.\n&quot;);
+</span><span class="add">+    struct {
+</span><span class="add">+        xcb_input_event_mask_t head;
+</span><span class="add">+        xcb_input_xi_event_mask_t mask;
+</span><span class="add">+    } mask;
+</span><span class="add">+    mask.head.deviceid = XCB_INPUT_DEVICE_ALL_MASTER;
+</span><span class="add">+    mask.head.mask_len = sizeof(mask.mask) / sizeof(uint32_t);
+</span><span class="add">+    mask.mask = XCB_INPUT_XI_EVENT_MASK_BARRIER_HIT;
+</span><span class="add">+    xcb_input_xi_select_events(conn, screen-&gt;root, 1, &amp;mask.head);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void event_loop()
+</span><span class="add">+void loop_cursor(xcb_generic_event_t *generic_event)
+</span><span class="def"> {
+</span><span class="sub">-    xcb_generic_event_t *event;
+</span><span class="sub">-    xcb_enter_notify_event_t *entry;
+</span><span class="sub">-    xcb_randr_screen_change_notify_event_t *change;
+</span><span class="add">+    xcb_input_barrier_hit_event_t *event = (xcb_input_barrier_hit_event_t *)generic_event;
+</span><span class="def">     int16_t x = 0;
+</span><span class="def">     int16_t y = 0;
+</span><span class="add">+    int32_t far_x = width - 1;
+</span><span class="add">+    int32_t far_y = height - 1;
+</span><span class="add">+    int32_t ev_x = (int32_t)(event-&gt;root_x / (double)UINT16_MAX);
+</span><span class="add">+    int32_t ev_y = (int32_t)(event-&gt;root_y / (double)UINT16_MAX);
+</span><span class="add">+
+</span><span class="add">+    if (ev_x == 0) {
+</span><span class="add">+	x = far_x;
+</span><span class="add">+	y = ev_y;
+</span><span class="add">+    } else if (ev_y == 0){
+</span><span class="add">+	x = ev_x;
+</span><span class="add">+	y = far_y;
+</span><span class="add">+    } else if (ev_x == far_x){
+</span><span class="add">+	y = ev_y;
+</span><span class="add">+    } else if (ev_y == far_y){
+</span><span class="add">+	x = ev_x;
+</span><span class="add">+    };
+</span><span class="add">+    xcb_warp_pointer(conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y);
+</span><span class="def"> 
+</span><span class="sub">-    int16_t far_x = screen-&gt;width_in_pixels - 1;
+</span><span class="sub">-    int16_t far_y = screen-&gt;height_in_pixels - 1;
+</span><span class="add">+    if (debug)
+</span><span class="add">+	printf(&quot;Warp: (%i, %i) to (%i, %i)\n&quot;, ev_x, ev_y, x, y);
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="sub">-    xcb_flush(conn);
+</span><span class="def"> 
+</span><span class="sub">-    while((event = xcb_wait_for_event(conn))) {
+</span><span class="sub">-	switch (event-&gt;response_type) {
+</span><span class="sub">-
+</span><span class="sub">-	    case XCB_ENTER_NOTIFY:
+</span><span class="sub">-		entry = (xcb_enter_notify_event_t *)event;
+</span><span class="sub">-		if (entry-&gt;event_x == 0) {
+</span><span class="sub">-		    x = far_x;
+</span><span class="sub">-		    y = entry-&gt;event_y;
+</span><span class="sub">-		} else if (entry-&gt;event_y == 0){
+</span><span class="sub">-		    x = entry-&gt;event_x;
+</span><span class="sub">-		    y = far_y;
+</span><span class="sub">-		} else if (entry-&gt;event_x == far_x){
+</span><span class="sub">-		    x = 0;
+</span><span class="sub">-		    y = entry-&gt;event_y;
+</span><span class="sub">-		} else if (entry-&gt;event_y == far_y){
+</span><span class="sub">-		    x = entry-&gt;event_x;
+</span><span class="sub">-		    y = 0;
+</span><span class="sub">-		};
+</span><span class="sub">-		xcb_warp_pointer(conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y);
+</span><span class="sub">-		if (debug) {
+</span><span class="sub">-		    printf(&quot;Entry: %d, %d\n&quot;, entry-&gt;event_x, entry-&gt;event_y);
+</span><span class="sub">-		    printf(&quot;Warp: (%d, %d) to (%d, %d)\n&quot;, entry-&gt;event_x, entry-&gt;event_y, x, y);
+</span><span class="sub">-		};
+</span><span class="sub">-		break;
+</span><span class="add">+void reset_screen(xcb_generic_event_t *generic_event)
+</span><span class="add">+{
+</span><span class="add">+    xcb_randr_screen_change_notify_event_t *event = (xcb_randr_screen_change_notify_event_t *)generic_event;
+</span><span class="add">+    width = event-&gt;width;
+</span><span class="add">+    height = event-&gt;height;
+</span><span class="add">+    delete_barriers();
+</span><span class="add">+    create_barriers();
+</span><span class="add">+    if (debug)
+</span><span class="add">+	printf(&quot;Configured screens.\n&quot;);
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="sub">-	    default:
+</span><span class="sub">-		if (event-&gt;response_type == randr_base + XCB_RANDR_SCREEN_CHANGE_NOTIFY) {
+</span><span class="sub">-		    change = (xcb_randr_screen_change_notify_event_t *)event;
+</span><span class="sub">-		    set_window_shape(change-&gt;width, change-&gt;height);
+</span><span class="sub">-		    far_x = change-&gt;width - 1;
+</span><span class="sub">-		    far_y = change-&gt;height - 1;
+</span><span class="sub">-		    if (debug) printf(&quot;Screen changed.\n&quot;);
+</span><span class="sub">-		} else {
+</span><span class="sub">-		    printf(&quot;Unknown event: %d\n&quot;, event-&gt;response_type);
+</span><span class="sub">-		};
+</span><span class="def"> 
+</span><span class="sub">-	}
+</span><span class="add">+void event_loop()
+</span><span class="add">+{
+</span><span class="add">+    xcb_generic_event_t *event;
+</span><span class="add">+    xcb_flush(conn);
+</span><span class="add">+
+</span><span class="add">+    while((event = xcb_wait_for_event(conn))) {
+</span><span class="add">+	if (event-&gt;response_type == XCB_GE_GENERIC) {
+</span><span class="add">+	    loop_cursor(event); /* we only receive 1 event from xinput */
+</span><span class="add">+	} else if (event-&gt;response_type == op_randr + XCB_RANDR_SCREEN_CHANGE_NOTIFY) {
+</span><span class="add">+	    reset_screen(event);
+</span><span class="add">+	} else {
+</span><span class="add">+	    printf(&quot;Unknown event: %d\n&quot;, event-&gt;response_type);
+</span><span class="add">+	};
+</span><span class="def"> 	xcb_flush(conn);
+</span><span class="def"> 	free(event);
+</span><span class="def">     }
+</span><span class="sub">-    free(entry);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void exit_nicely()
+</span><span class="sub">-{
+</span><span class="sub">-    xcb_unmap_window(conn, wid);
+</span><span class="sub">-    xcb_disconnect(conn);
+</span><span class="sub">-    exit(EXIT_SUCCESS);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -310,18 +237,21 @@
+<span class="def">         }
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    if (axis == 3) {
+</span><span class="sub">-	printf(&quot;You specified -x and -y but can only specify one.\n&quot;);
+</span><span class="sub">-	exit(EXIT_FAILURE);
+</span><span class="sub">-    };
+</span><span class="add">+    if (axis == 3)
+</span><span class="add">+	axis = BOTH_AXES;
+</span><span class="def"> 
+</span><span class="sub">-    conn = xcb_connect(NULL, NULL);
+</span><span class="add">+    dpy = XOpenDisplay(NULL);
+</span><span class="add">+    conn = XGetXCBConnection(dpy);
+</span><span class="def">     if (xcb_connection_has_error(conn))
+</span><span class="def"> 	exit(EXIT_FAILURE);
+</span><span class="def"> 
+</span><span class="def">     screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
+</span><span class="sub">-    configure_randr();
+</span><span class="sub">-    setup_window();
+</span><span class="add">+    width = screen-&gt;width_in_pixels;
+</span><span class="add">+    height = screen-&gt;height_in_pixels;
+</span><span class="add">+    check_xfixes();
+</span><span class="add">+    check_randr();
+</span><span class="add">+    check_xinput();
+</span><span class="add">+    create_barriers();
+</span><span class="def"> 
+</span><span class="def">     signal(SIGINT, exit_nicely);
+</span><span class="def">     signal(SIGTERM, exit_nicely);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,8 @@
+<span class="def"> OUT        = xoop
+</span><span class="def"> SRC 	   = xoop.c
+</span><span class="sub">-CFLAGS 	  += -Wall -Wextra -pedantic -lxcb -lxcb-shape -lxcb-randr
+</span><span class="add">+CFLAGS 	  += -Wall -Wextra -pedantic \
+</span><span class="add">+	     -lxcb -lxcb-shape -lxcb-randr -lxcb-xinput -lxcb-xfixes \
+</span><span class="add">+	     -lX11 -lX11-xcb -lXfixes
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

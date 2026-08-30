@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - bunch of config changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/195f3d7532b9a5054a0fccf8c561c2aa7e92ff0b.html">195f3d7532b9a5054a0fccf8c561c2aa7e92ff0b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/d6459f4b8a1f7c382b84f507f24725f9cc364863.html">d6459f4b8a1f7c382b84f507f24725f9cc364863</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-02-16 18:53:19 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-02-16 18:53:19 +0000
+
+bunch of config changes
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,6 +19,10 @@
+<span class="def"> from libqtile.widget.backlight import ChangeDirection
+</span><span class="def"> from libqtile.widget.battery import Battery, BatteryState
+</span><span class="def"> 
+</span><span class="add">+import qtile_extras.widget as widget_extras
+</span><span class="add">+
+</span><span class="add">+assert qtile is not None
+</span><span class="add">+
+</span><span class="def"> if TYPE_CHECKING:
+</span><span class="def">     from typing import Any
+</span><span class="def"> 
+</span>@@ -49,9 +53,6 @@
+<span class="def"> reload(&quot;power_menu&quot;)
+</span><span class="def"> from power_menu import keys_power_menu
+</span><span class="def"> 
+</span><span class="sub">-# reload(&quot;mindfulness&quot;)
+</span><span class="sub">-# from mindfulness import ReMindfulness
+</span><span class="sub">-
+</span><span class="def"> IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+</span><span class="def"> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span><span class="def"> 
+</span>@@ -64,7 +65,7 @@
+<span class="def"> # Colours
+</span><span class="def"> theme = dict(
+</span><span class="def">     foreground=&quot;#CFCCD6&quot;,
+</span><span class="sub">-    background=&quot;#1B2021&quot;,
+</span><span class="add">+    background=&quot;#0C1F20&quot;,
+</span><span class="def">     color0=&quot;#030405&quot;,
+</span><span class="def">     color8=&quot;#1f1c32&quot;,
+</span><span class="def">     color1=&quot;#8742a5&quot;,
+</span>@@ -124,6 +125,7 @@
+<span class="def">         ([mod, &quot;control&quot;], &quot;q&quot;, lazy.window.kill(), &quot;Close window&quot;),
+</span><span class="def">         ([mod], &quot;f&quot;, lazy.window.toggle_fullscreen(), &quot;Toggle fullscreen&quot;),
+</span><span class="def">         ([mod, &quot;shift&quot;], &quot;space&quot;, lazy.window.toggle_floating(), &quot;Toggle floating&quot;),
+</span><span class="add">+        ([mod], &quot;s&quot;, lazy.spawn(&quot;ddg_rofi&quot;), &quot;Search web via rofi&quot;),
+</span><span class="def">         ([mod, &quot;shift&quot;], &quot;s&quot;, lazy.window.static(), &quot;Make window static&quot;),
+</span><span class="def">         (
+</span><span class="def">             [mod],
+</span>@@ -233,15 +235,9 @@
+<span class="def">             &quot;Suspend and lock&quot;,
+</span><span class="def">         ),
+</span><span class="def">         (
+</span><span class="sub">-            [mod, &quot;shift&quot;],
+</span><span class="sub">-            &quot;p&quot;,
+</span><span class="sub">-            lazy.widget[&quot;pomodoro&quot;].toggle_active(),
+</span><span class="sub">-            &quot;Toggle Pomodoro&quot;,
+</span><span class="sub">-        ),
+</span><span class="sub">-        (
+</span><span class="def">             [&quot;control&quot;],
+</span><span class="def">             &quot;space&quot;,
+</span><span class="sub">-            lazy.spawn(&quot;swaync-client -t&quot;),
+</span><span class="add">+            lazy.spawn(&quot;swaync-client -t -sw&quot;),
+</span><span class="def">             &quot;Toggle notification panel&quot;,
+</span><span class="def">         ),
+</span><span class="def">         (
+</span>@@ -257,24 +253,93 @@
+<span class="def"> # Mouse control
+</span><span class="def"> mouse = [
+</span><span class="def">     Click([mod], &quot;Button2&quot;, lazy.window.kill()),
+</span><span class="add">+
+</span><span class="add">+    # Move with drag or swipe
+</span><span class="def">     Drag(
+</span><span class="def">         [mod],
+</span><span class="def">         &quot;Button1&quot;,
+</span><span class="def">         lazy.window.set_position_floating(),
+</span><span class="sub">-        # move_snap_window(snap_dist=20),
+</span><span class="def">         start=lazy.window.get_position(),
+</span><span class="def">     ),
+</span><span class="add">+    #Swipe(
+</span><span class="add">+    #    [mod],
+</span><span class="add">+    #    3,
+</span><span class="add">+    #    lazy.window.set_position_floating(),
+</span><span class="add">+    #    start=lazy.window.get_position(),
+</span><span class="add">+    #),
+</span><span class="add">+
+</span><span class="add">+    # Resize with drag or swipe
+</span><span class="def">     Drag(
+</span><span class="def">         [mod, alt],
+</span><span class="def">         &quot;Button1&quot;,
+</span><span class="def">         lazy.window.set_size_floating(),
+</span><span class="def">         start=lazy.window.get_size(),
+</span><span class="def">     ),
+</span><span class="add">+    #Swipe(
+</span><span class="add">+    #    [mod, alt],
+</span><span class="add">+    #    3,
+</span><span class="add">+    #    lazy.window.set_size_floating(),
+</span><span class="add">+    #    start=lazy.window.get_size(),
+</span><span class="add">+    #),
+</span><span class="add">+
+</span><span class="add">+    # Slide between groups
+</span><span class="add">+    Drag(
+</span><span class="add">+        [mod, &quot;shift&quot;],
+</span><span class="add">+        &quot;Button1&quot;,
+</span><span class="add">+        lazy.screen.group_slide(),
+</span><span class="add">+        start=lazy.screen.start_group_slide(scale=2.5),
+</span><span class="add">+    ),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="add">+if IS_WAYLAND:
+</span><span class="add">+    try:
+</span><span class="add">+        from libqtile.config import Swipe
+</span><span class="add">+    except ImportError:
+</span><span class="add">+        pass
+</span><span class="add">+    else:
+</span><span class="add">+
+</span><span class="add">+        def _slide(qtile):
+</span><span class="add">+            groups = qtile.groups
+</span><span class="add">+            if len(qtile.screens) &gt; 1:
+</span><span class="add">+                if qtile.current_screen.index == 0:
+</span><span class="add">+                    groups = groups[:4]
+</span><span class="add">+                else:
+</span><span class="add">+                    groups = groups[4:]
+</span><span class="add">+            return qtile.current_screen.start_group_slide(
+</span><span class="add">+                groups=groups, scale=1.6, inertia_threshold=15,
+</span><span class="add">+            )
+</span><span class="add">+
+</span><span class="add">+        mouse.append(
+</span><span class="add">+            Swipe(
+</span><span class="add">+                [],
+</span><span class="add">+                3 if IS_XEPHYR else 4,
+</span><span class="add">+                lazy.screen.group_slide(),
+</span><span class="add">+                start=lazy.function(_slide),
+</span><span class="add">+            ),
+</span><span class="add">+        )
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+## Firefox 3-finger vertical swipe to zoom
+</span><span class="add">+#def swipe_zoom(qtile, _dx: int, dy: int) -&gt; None:
+</span><span class="add">+#    if dy % 3:
+</span><span class="add">+#        # Only send key every 10 steps
+</span><span class="add">+#        return
+</span><span class="add">+#    if dy &lt; 0:
+</span><span class="add">+#        qtile.spawn(&quot;wlrctl keyboard type +&quot;, shell=True)
+</span><span class="add">+#    else:
+</span><span class="add">+#        qtile.spawn(&quot;wlrctl keyboard type -&quot;, shell=True)
+</span><span class="add">+#
+</span><span class="add">+#
+</span><span class="add">+#mouse.append(
+</span><span class="add">+#    Swipe(
+</span><span class="add">+#        [],
+</span><span class="add">+#        3,
+</span><span class="add">+#        lazy.function(swipe_zoom).when(focused=Match(wm_class=&quot;firefox&quot;)),
+</span><span class="add">+#    )
+</span><span class="add">+#)
+</span><span class="def"> 
+</span><span class="def"> # Layouts
+</span><span class="sub">-border_focus = [colours[5]]
+</span><span class="add">+border_focus = [colours[5], &quot;323974&quot;]
+</span><span class="def"> border_normal = &quot;001122&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -370,47 +435,48 @@
+<span class="def">     border_normal=&quot;00000000&quot;,
+</span><span class="def">     fullscreen_border_width=0,
+</span><span class="def">     float_rules=[
+</span><span class="add">+        Match(func=base.Window.has_fixed_size),
+</span><span class="add">+        Match(func=base.Window.has_fixed_ratio),
+</span><span class="add">+        Match(func=lambda c: bool(c.is_transient_for())),
+</span><span class="add">+        Match(role=&quot;gimp-file-export&quot;),
+</span><span class="def">         Match(title=&quot;Bluetooth Devices&quot;),
+</span><span class="add">+        Match(title=&quot;File Operation Progress&quot;, wm_class=re.compile(&quot;[Tt]hunar&quot;)),
+</span><span class="add">+        Match(title=&quot;Firefox — Sharing Indicator&quot;),
+</span><span class="add">+        Match(title=&quot;KDE Connect Daemon&quot;),
+</span><span class="def">         Match(title=&quot;Open File&quot;),
+</span><span class="def">         Match(title=&quot;Unlock Database - KeePassXC&quot;),
+</span><span class="sub">-        Match(title=&quot;File Operation Progress&quot;, wm_class=&quot;thunar&quot;),
+</span><span class="sub">-        Match(title=&quot;File Operation Progress&quot;, wm_class=&quot;Thunar&quot;),
+</span><span class="add">+        Match(title=&quot;KeePassXC -  Access Request&quot;),
+</span><span class="def">         Match(title=re.compile(&quot;Presenting: .*&quot;), wm_class=&quot;libreoffice-impress&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;thunar&quot;),
+</span><span class="sub">-        Match(title=&quot;Firefox — Sharing Indicator&quot;),
+</span><span class="def">         Match(wm_class=&quot;Arandr&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;eog&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;org.gnome.clocks&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;org.kde.ark&quot;),
+</span><span class="add">+        Match(wm_class=&quot;Dragon&quot;),
+</span><span class="add">+        Match(wm_class=&quot;Dragon-drag-and-drop&quot;),
+</span><span class="add">+        Match(wm_class=&quot;Pinentry-gtk-2&quot;),
+</span><span class="add">+        Match(wm_class=&quot;Xephyr&quot;),
+</span><span class="def">         Match(wm_class=&quot;confirm&quot;),
+</span><span class="def">         Match(wm_class=&quot;dialog&quot;),
+</span><span class="def">         Match(wm_class=&quot;download&quot;),
+</span><span class="add">+        Match(wm_class=&quot;eog&quot;),
+</span><span class="def">         Match(wm_class=&quot;error&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;fiji-Main&quot;),
+</span><span class="def">         Match(wm_class=&quot;file_progress&quot;),
+</span><span class="def">         Match(wm_class=&quot;imv&quot;),
+</span><span class="add">+        Match(wm_class=&quot;io.github.celluloid_player.Celluloid&quot;),
+</span><span class="def">         Match(wm_class=&quot;lxappearance&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;nm-connection-editor&quot;),
+</span><span class="def">         Match(wm_class=&quot;matplotlib&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;mpv&quot;),
+</span><span class="add">+        #Match(wm_class=&quot;mpv&quot;),
+</span><span class="add">+        Match(wm_class=&quot;nm-connection-editor&quot;),
+</span><span class="def">         Match(wm_class=&quot;notification&quot;),
+</span><span class="add">+        Match(wm_class=&quot;org.gnome.clocks&quot;),
+</span><span class="add">+        Match(wm_class=&quot;org.kde.ark&quot;),
+</span><span class="def">         Match(wm_class=&quot;pavucontrol&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;Pinentry-gtk-2&quot;),
+</span><span class="def">         Match(wm_class=&quot;qt5ct&quot;),
+</span><span class="def">         Match(wm_class=&quot;ssh-askpass&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;Dragon&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;Dragon-drag-and-drop&quot;),
+</span><span class="add">+        Match(wm_class=&quot;thunar&quot;),
+</span><span class="def">         Match(wm_class=&quot;toolbar&quot;),
+</span><span class="def">         Match(wm_class=&quot;tridactyl&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;wlroots&quot;),
+</span><span class="def">         Match(wm_class=&quot;wdisplays&quot;),
+</span><span class="sub">-        Match(wm_class=&quot;Xephyr&quot;),
+</span><span class="add">+        Match(wm_class=&quot;wlroots&quot;),
+</span><span class="def">         Match(wm_class=&quot;zoom&quot;),
+</span><span class="def">         Match(wm_type=&quot;dialog&quot;),
+</span><span class="sub">-        Match(role=&quot;gimp-file-export&quot;),
+</span><span class="sub">-        Match(func=base.Window.has_fixed_size),
+</span><span class="sub">-        Match(func=lambda c: bool(c.is_transient_for())),
+</span><span class="sub">-        Match(title=&quot;KDE Connect Daemon&quot;),
+</span><span class="def">     ],
+</span><span class="def"> )
+</span><span class="def"> 
+</span>@@ -418,7 +484,7 @@
+<span class="def"> # Screens and Bars
+</span><span class="def"> widget_defaults = {
+</span><span class="def">     &quot;padding&quot;: 10,
+</span><span class="sub">-    &quot;foreground&quot;: foreground,
+</span><span class="add">+    &quot;foreground&quot;: colours[6],
+</span><span class="def">     &quot;font&quot;: &quot;Font Awesome 5 Free&quot;,
+</span><span class="def">     &quot;fontsize&quot;: 16,
+</span><span class="def"> }
+</span>@@ -452,8 +518,7 @@
+<span class="def">     name=&quot;mpris&quot;,
+</span><span class="def">     width=1000,
+</span><span class="def">     objname=None,
+</span><span class="sub">-    display_metadata=[&quot;xesam:title&quot;, &quot;xesam:artist&quot;],
+</span><span class="sub">-    foreground=colours[12],
+</span><span class="add">+    format=&quot;{xesam:title} - {xesam:artist}&quot;,
+</span><span class="def">     font=&quot;TamzenForPowerline Bold&quot;,
+</span><span class="def"> )
+</span><span class="def"> 
+</span>@@ -470,12 +535,8 @@
+<span class="def">             self.text = &quot;&quot;
+</span><span class="def">         else:
+</span><span class="def">             self.text = &quot;&quot;
+</span><span class="sub">-        # drawing here crashes Wayland
+</span><span class="def"> 
+</span><span class="sub">-        if IS_WAYLAND:
+</span><span class="sub">-            self.wob = &quot;/tmp/wob-&quot; + qtile.core.display_name
+</span><span class="sub">-
+</span><span class="sub">-    def _update_drawer(self, wob=False):
+</span><span class="add">+    def _update_drawer(self):
+</span><span class="def">         if self.volume &lt;= 0:
+</span><span class="def">             self.text = &quot;&quot;
+</span><span class="def">         elif self.volume &lt;= 15:
+</span>@@ -486,63 +547,42 @@
+<span class="def">             self.text = &quot;&quot;
+</span><span class="def">         self.draw()
+</span><span class="def"> 
+</span><span class="sub">-        if wob:
+</span><span class="sub">-            with open(self.wob, &quot;a&quot;) as f:
+</span><span class="sub">-                f.write(str(self.volume) + &quot;\n&quot;)
+</span><span class="sub">-
+</span><span class="def">     def increase_vol(self):
+</span><span class="def">         subprocess.run(&quot;amixer -c PCH set PCM 3%+&quot;.split(), capture_output=True)
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="sub">-        self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def">     def decrease_vol(self):
+</span><span class="def">         subprocess.run(&quot;amixer -c PCH set PCM 3%-&quot;.split(), capture_output=True)
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="sub">-        self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def">     def mute(self):
+</span><span class="def">         subprocess.run(&quot;amixer -c PCH set PCM toggle&quot;.split(), capture_output=True)
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="sub">-        self._update_drawer(wob=False)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> bklight = widget.Backlight(
+</span><span class="sub">-    backlight_name=os.listdir(&quot;/sys/class/backlight&quot;)[0],
+</span><span class="add">+    backlight_name=os.listdir(&quot;/sys/class/backlight&quot;)[-1],
+</span><span class="def">     step=1,
+</span><span class="def">     update_interval=None,
+</span><span class="def">     format=&quot;&quot;,
+</span><span class="def">     fontsize=icon_font_size,
+</span><span class="def">     change_command=None,
+</span><span class="sub">-    foreground=colours[3],
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-pomodoro = widget.Pomodoro(
+</span><span class="sub">-    prefix_inactive=&quot;&quot;,
+</span><span class="sub">-    foreground=colours[6],
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> volume = MyVolume(
+</span><span class="def">     fontsize=icon_font_size,
+</span><span class="def">     channel=&quot;PCM&quot;,
+</span><span class="def">     font=&quot;Font Awesome 5 Free&quot;,
+</span><span class="sub">-    foreground=colours[4],
+</span><span class="def">     update_interval=60,
+</span><span class="def">     cardid=&quot;PCH&quot;,
+</span><span class="def">     device=None,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="sub">-    systray = widget.StatusNotifier(padding=20)
+</span><span class="add">+    systray = widget_extras.StatusNotifier(padding=20)
+</span><span class="def"> else:
+</span><span class="def">     systray = widget.Systray(padding=20, icon_size=24)
+</span><span class="def"> 
+</span><span class="sub">-# mind = ReMindfulness(
+</span><span class="sub">-#    &quot;&quot;,
+</span><span class="sub">-#    reminder_text=&quot;MIND!&quot;,
+</span><span class="sub">-#    reminder_background=colours[2],
+</span><span class="sub">-#    foreground=colours[2],
+</span><span class="sub">-# )
+</span><span class="sub">-
+</span><span class="def"> 
+</span><span class="def"> class MyBattery(Battery):
+</span><span class="def">     &quot;&quot;&quot;
+</span>@@ -596,7 +636,6 @@
+<span class="def">     low_background=colours[1],
+</span><span class="def">     show_short_text=False,
+</span><span class="def">     low_percentage=0.12,
+</span><span class="sub">-    foreground=colours[6],
+</span><span class="def">     notify_below=12,
+</span><span class="def">     fontsize=icon_font_size + 10,
+</span><span class="def"> )
+</span>@@ -605,7 +644,6 @@
+<span class="def">     format=&quot;%e/%m/%g&quot;,
+</span><span class="def">     fontsize=16,
+</span><span class="def">     font=&quot;TamzenForPowerline Bold&quot;,
+</span><span class="sub">-    foreground=foreground,
+</span><span class="def">     update_interval=60,
+</span><span class="def">     name=&quot;date&quot;,
+</span><span class="def"> )
+</span>@@ -614,7 +652,6 @@
+<span class="def">     fontsize=20,
+</span><span class="def">     font=&quot;TamzenForPowerline Medium&quot;,
+</span><span class="def">     update_interval=60,
+</span><span class="sub">-    foreground=foreground,
+</span><span class="def">     name=&quot;time&quot;,
+</span><span class="def"> )
+</span><span class="def"> 
+</span>@@ -644,20 +681,18 @@
+<span class="def">         groupboxes[0].bar.draw()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-bar_border_width = [0, 3, 0, 3]
+</span><span class="sub">-bar_border_color = [&quot;000000&quot;, colours[5], &quot;000000&quot;, colours[5]]
+</span><span class="add">+#bar_border_width = [0, 3, 0, 3]
+</span><span class="add">+#bar_border_color = [&quot;000000&quot;, colours[5], &quot;000000&quot;, colours[5]]
+</span><span class="def"> 
+</span><span class="def"> screens = [
+</span><span class="def">     Screen(
+</span><span class="sub">-        bottom=bar.Bar(
+</span><span class="add">+        top=bar.Bar(
+</span><span class="def">             [
+</span><span class="def">                 groupboxes[0],
+</span><span class="def">                 widget.Spacer(name=&quot;s1&quot;),
+</span><span class="def">                 mpd2,
+</span><span class="def">                 widget.Spacer(name=&quot;s2&quot;),
+</span><span class="sub">-                pomodoro,
+</span><span class="def">                 systray,
+</span><span class="sub">-                # mind,
+</span><span class="def">                 volume,
+</span><span class="def">                 bklight,
+</span><span class="def">                 battery,
+</span>@@ -665,22 +700,21 @@
+<span class="def">                 time,
+</span><span class="def">             ],
+</span><span class="def">             28,
+</span><span class="sub">-            background=background + &quot;00&quot;,
+</span><span class="add">+            background=background,
+</span><span class="def">         ),
+</span><span class="sub">-        top=bar.Gap(outer_gaps),
+</span><span class="add">+        bottom=bar.Gap(outer_gaps),
+</span><span class="def">         left=bar.Gap(outer_gaps),
+</span><span class="def">         right=bar.Gap(outer_gaps),
+</span><span class="sub">-        wallpaper=&quot;~/pictures/Wallpapers/akira.png&quot;,
+</span><span class="sub">-        wallpaper_mode=&quot;fill&quot;,
+</span><span class="add">+        #wallpaper=&quot;~/pictures/Wallpapers/fractal.bmp&quot;,
+</span><span class="add">+        #wallpaper_mode=&quot;fill&quot;,
+</span><span class="def">     ),
+</span><span class="def">     Screen(
+</span><span class="sub">-        bottom=bar.Bar(
+</span><span class="add">+        top=bar.Bar(
+</span><span class="def">             [
+</span><span class="def">                 groupboxes[1],
+</span><span class="def">                 widget.Spacer(name=&quot;s3&quot;),
+</span><span class="def">                 mpd2,
+</span><span class="def">                 widget.Spacer(name=&quot;s4&quot;),
+</span><span class="sub">-                pomodoro,
+</span><span class="def">                 volume,
+</span><span class="def">                 bklight,
+</span><span class="def">                 battery,
+</span>@@ -688,11 +722,11 @@
+<span class="def">                 time,
+</span><span class="def">             ],
+</span><span class="def">             28,
+</span><span class="sub">-            background=background + &quot;00&quot;,
+</span><span class="add">+            background=background,
+</span><span class="def">         ),
+</span><span class="sub">-        wallpaper=&quot;~/pictures/Wallpapers/akira.png&quot;,
+</span><span class="sub">-        wallpaper_mode=&quot;fill&quot;,
+</span><span class="sub">-        top=bar.Gap(outer_gaps),
+</span><span class="add">+        #wallpaper=&quot;~/pictures/Wallpapers/fractal.bmp&quot;,
+</span><span class="add">+        #wallpaper_mode=&quot;fill&quot;,
+</span><span class="add">+        bottom=bar.Gap(outer_gaps),
+</span><span class="def">         left=bar.Gap(outer_gaps),
+</span><span class="def">         right=bar.Gap(outer_gaps),
+</span><span class="def">     ),
+</span>@@ -712,7 +746,7 @@
+<span class="def"> bring_front_click = True
+</span><span class="def"> cursor_warp = False
+</span><span class="def"> auto_fullscreen = True
+</span><span class="sub">-focus_on_window_activation = &quot;smart&quot;
+</span><span class="add">+focus_on_window_activation = &quot;focus&quot;
+</span><span class="def"> 
+</span><span class="def"> keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+</span><span class="def"> groups.append(scratchpad)
+</span></pre>
+</div></div>
+  </body>
+</html>

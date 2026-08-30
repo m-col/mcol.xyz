@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - add wl shadows config</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/040f497b4df8772ef83ed44d8b836e83fe650247.html">040f497b4df8772ef83ed44d8b836e83fe650247</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/90418e315fe36422489aaa09049fc7ee16baca4d.html">90418e315fe36422489aaa09049fc7ee16baca4d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-06-20 01:11:20 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-06-20 01:11:20 +0100
+
+add wl shadows config
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -45,6 +45,19 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+# Shadows configuration
+</span><span class="add">+#wl_shadows = {
+</span><span class="add">+#    &quot;radius&quot;: 12,
+</span><span class="add">+#    &quot;color&quot;: &quot;#05001088&quot;,
+</span><span class="add">+#    &quot;offset&quot;: (-6, -6),
+</span><span class="add">+#}
+</span><span class="add">+wl_shadows = {
+</span><span class="add">+    &quot;radius&quot;: 5,
+</span><span class="add">+    &quot;color&quot;: &quot;#ff000044&quot;,
+</span><span class="add">+    &quot;offset&quot;: (0, 0),
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> @hook.subscribe.client_new
+</span><span class="def"> def _(win):
+</span><span class="def">     # Auto-float some windows
+</span></pre>
+</div></div>
+  </body>
+</html>

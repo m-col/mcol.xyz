@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-microfeed - refresh article list upon each site generation to prevent accumulation</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-microfeed">pelican-microfeed</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to create tiny single-page feeds</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-microfeed">https://github.com/m-col/pelican-microfeed</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-microfeed/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-microfeed/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-microfeed/file/README.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-microfeed/commit/9f305fd922dad3b7022375a76277957eeb16751b.html">9f305fd922dad3b7022375a76277957eeb16751b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-microfeed/commit/1c46921d8abf70e4099f84c5fb672f34e1f28fde.html">1c46921d8abf70e4099f84c5fb672f34e1f28fde</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-11-17 15:54:47 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-11-17 15:54:47 +0000
+
+refresh article list upon each site generation to prevent accumulation
+</pre><div class="diff">
+  <p>
+    <b>microfeed.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -25,6 +25,14 @@
+<span class="def">     categories = ()
+</span><span class="def">     articles = {}
+</span><span class="def"> 
+</span><span class="add">+    def setup_dict(self):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Sets microfeed.articles to contain a key for each category, each holding an
+</span><span class="add">+        empty list.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        for cat in self.categories:
+</span><span class="add">+            self.articles[cat] = []
+</span><span class="add">+
+</span><span class="def"> microfeed = Microfeed()
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -32,21 +40,18 @@
+<span class="def">     &quot;&quot;&quot;
+</span><span class="def">     Collect the list of categories that the user wants to turn into microfeeds.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-    print(&apos;====&gt; GETTING MICROFEED CATEGORIES&apos;)
+</span><span class="def">     categories = pelican.settings.get(&apos;MICROFEEDS&apos;, None)
+</span><span class="def">     if categories and type(categories) in (list, set, tuple):
+</span><span class="def">         microfeed.categories = categories
+</span><span class="sub">-        for cat in categories:
+</span><span class="sub">-            microfeed.articles[cat] = []
+</span><span class="add">+        microfeed.setup_dict()
+</span><span class="def"> 
+</span><span class="def"> def collect_microfeed_articles(article_generator):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     Collect the microfeed articles from the article generator and move them to the
+</span><span class="def">     microfeed object for later use.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-    print(&apos;====&gt; COLLECTING MICROFEED ARTICLES&apos;)
+</span><span class="def">     if microfeed.categories:
+</span><span class="sub">-
+</span><span class="add">+        microfeed.setup_dict()
+</span><span class="def">         normal_articles = []
+</span><span class="def">         for article in article_generator.articles:
+</span><span class="def">             if article.category in microfeed.categories:
+</span>@@ -60,7 +65,6 @@
+<span class="def">     Expose the microfeed object to the page generator&apos;s context for use in page
+</span><span class="def">     templates&apos;
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-    print(&apos;====&gt; ADDING MICROFEED TO PAGE CONTEXT&apos;)
+</span><span class="def">     for cat in microfeed.categories:
+</span><span class="def">         setattr(microfeed, cat, microfeed.articles[cat])
+</span><span class="def">     page_generator.context[&apos;microfeed&apos;] = microfeed
+</span>@@ -69,7 +73,6 @@
+<span class="def">     &quot;&quot;&quot;
+</span><span class="def">     Optionally generate an ATOM/RSS feed for each microfeed.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-    print(&apos;====&gt; GENERATING MICROFEED ATOM/RSS FEED&apos;)
+</span><span class="def">     for cat_name in microfeed.categories:
+</span><span class="def">         cat = microfeed.articles[cat_name][0].category
+</span><span class="def"> 
+</span>@@ -101,6 +104,5 @@
+<span class="def"> def register():
+</span><span class="def">     signals.initialized.connect(get_categories)
+</span><span class="def">     signals.article_generator_pretaxonomy.connect(collect_microfeed_articles)
+</span><span class="sub">-    #signals.page_generator_context.connect(add_microfeed_to_context)
+</span><span class="def">     signals.page_generator_finalized.connect(add_microfeed_to_context)
+</span><span class="def">     signals.article_writer_finalized.connect(gen_microfeed_feed)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+__pycache__
+</span></pre>
+</div></div>
+  </body>
+</html>

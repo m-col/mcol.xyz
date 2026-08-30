@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add pylint for makefile</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/5b45f1633695d4cb7a5c24b8a240b5006f605a03.html">5b45f1633695d4cb7a5c24b8a240b5006f605a03</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/4c04fa3656b506ea4c546d2650320afafff1fa0a.html">4c04fa3656b506ea4c546d2650320afafff1fa0a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-02-29 10:14:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-02-29 10:14:36 +0000
+
+add pylint for makefile
+</pre><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,13 +1,22 @@
+<span class="def"> help:
+</span><span class="def"> 	@echo &apos;make:                 Display this message&apos;
+</span><span class="def"> 	@echo &apos;make clean:           Remove the compiled files (*.pyc, *.pyo)&apos;
+</span><span class="add">+	@echo &apos;make pylint:          Test using pylint&apos;
+</span><span class="def"> 	@echo &apos;make flake8:          Test using flake8&apos;
+</span><span class="def"> 
+</span><span class="def"> clean:
+</span><span class="def"> 	find qtools -regex .\*\.py[co]\$$ -delete
+</span><span class="def"> 	find qtools -depth -name __pycache__ -type d -exec rm -r -- {} \;
+</span><span class="def"> 
+</span><span class="add">+TEST_PATHS = \
+</span><span class="add">+	qtools
+</span><span class="add">+
+</span><span class="add">+pylint:
+</span><span class="add">+	@echo &quot;Running pylint...&quot;
+</span><span class="add">+	pylint --rcfile=setup.cfg $(TEST_PATHS)
+</span><span class="add">+
+</span><span class="def"> flake8:
+</span><span class="sub">-	flake8 qtools
+</span><span class="add">+	@echo &quot;Running flake8...&quot;
+</span><span class="add">+	flake8 $(TEST_PATHS)
+</span><span class="def"> 
+</span><span class="def"> .PHONY: default help clean flake8
+</span></pre>
+</div></div>
+  </body>
+</html>

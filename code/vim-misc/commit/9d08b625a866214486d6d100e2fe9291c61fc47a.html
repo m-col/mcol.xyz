@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - bsptm into repo</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/9d08b625a866214486d6d100e2fe9291c61fc47a.html">9d08b625a866214486d6d100e2fe9291c61fc47a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/279465acef73d893c7038798b365ebfb8f76432f.html">279465acef73d893c7038798b365ebfb8f76432f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 10:22:40 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 10:22:40 +0000
+
+bsptm into repo
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,16 +19,19 @@
+<span class="def"> call vundle#begin()
+</span><span class="def"> 
+</span><span class="def"> Plugin &apos;VundleVim/Vundle.vim&apos;	    &quot; required
+</span><span class="add">+if hostname() == &quot;zenbook&quot;
+</span><span class="add">+    Plugin &apos;mcolligan/vimlab&apos;	    &quot; vimlab
+</span><span class="add">+    Plugin &apos;git@192.168.0.65:/media/usbhdd1/git/vim-myspell&apos;    &quot; my spelling
+</span><span class="add">+    Plugin &apos;vimwiki/vimwiki&apos;	    &quot; vimwiki
+</span><span class="add">+endif
+</span><span class="add">+Plugin &apos;junegunn/goyo.vim&apos;
+</span><span class="def"> Plugin &apos;mcolligan/vim-misc&apos;	    &quot; my vimrc and misc functions 
+</span><span class="sub">-Plugin &apos;mcolligan/vimlab&apos;	    &quot; vimlab
+</span><span class="def"> Plugin &apos;mcolligan/tide&apos;		    &quot; tmux ide
+</span><span class="sub">-Plugin &apos;git@192.168.0.65:/media/usbhdd1/git/vim-myspell&apos;    &quot; my spelling
+</span><span class="def"> Plugin &apos;christoomey/vim-tmux-navigator&apos;	    &quot; navigate vim and tmux splits seamlessly
+</span><span class="sub">-Plugin &apos;vimwiki/vimwiki&apos;	    &quot; vimwiki
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()            &quot; required
+</span><span class="def"> filetype plugin indent on    &quot; required
+</span><span class="sub">-&quot;
+</span><span class="add">+
+</span><span class="def"> &quot; Brief help
+</span><span class="def"> &quot; :PluginList       - lists configured plugins
+</span><span class="def"> &quot; :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+</span>@@ -84,10 +87,6 @@
+<span class="def"> set wildignorecase		&quot; disable wildmenu case sensitivity
+</span><span class="def"> set wildmode=full:list		&quot; format wildmenu to expand and scroll with tab
+</span><span class="def"> 
+</span><span class="sub">-if hostname() == &quot;zenbook&quot;
+</span><span class="sub">-    packadd! matchit		&quot; needed for matlab indentation functionality
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="def"> set autochdir			&quot; cwd to current file
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -109,10 +108,9 @@
+<span class="def"> 
+</span><span class="def"> &quot; machine specific settings
+</span><span class="def"> if hostname() == &quot;zenbook&quot;
+</span><span class="add">+    packadd! matchit		&quot; needed for matlab indentation functionality
+</span><span class="def">     let g:mlint_path_to_mlint = expand(&quot;$HOME&quot;) . &quot;/applications/MATLAB/R2018b/bin/glnxa64/mlint&quot;
+</span><span class="def">     let g:vimwiki_list = [{&apos;path&apos;: &apos;~/work/research/research.wiki/&apos;, &apos;path_html&apos;: &apos;~/work/research/research.wiki.html/&apos;}]
+</span><span class="sub">-else
+</span><span class="sub">-    let g:mlint_path_to_mlint = &quot;to be filled in later&quot;
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> &quot; session saving
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,4 @@
+<span class="sub">-# symlink this to ~/.tmux.conf
+</span><span class="add">+# tmux.conf
+</span><span class="def"> 
+</span><span class="def"> # make C-a prefix
+</span><span class="def"> unbind C-b
+</span>@@ -8,8 +8,8 @@
+<span class="def"> # bindings
+</span><span class="def"> bind r source-file ~/.tmux.conf
+</span><span class="def"> #bind-key C-a last-window
+</span><span class="sub">-bind-key | split-window -hb \; run-shell &quot;bsptm&quot;
+</span><span class="sub">-bind-key -n C-d kill-pane \; run-shell &quot;bsptm&quot;
+</span><span class="add">+bind-key | split-window -hb \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="add">+bind-key -n C-d kill-pane \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="def"> bind C-l send-keys &apos;C-l&apos;
+</span><span class="def"> 
+</span><span class="def"> # general settings
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>bsptm</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,70 @@
+<span class="add">+#!/bin/sh
+</span><span class="add">+#
+</span><span class="add">+# binary space partitioning for tmux panes
+</span><span class="add">+
+</span><span class="add">+# Written in 2016 by Suraj N. Kurapati &lt;https://github.com/sunaku&gt;
+</span><span class="add">+# Documented at &lt;https://sunaku.github.io/tmux-layout-dwindle.html&gt;
+</span><span class="add">+# and modified
+</span><span class="add">+
+</span><span class="add">+# parse any orientation flags specified among the command-line arguments
+</span><span class="add">+spiral_tb=+
+</span><span class="add">+spiral_lr=+
+</span><span class="add">+modulo_hv=1 is_vertical=true
+</span><span class="add">+is_spiral=true
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# gather information about the current state of the window and its panes
+</span><span class="add">+set -- $(tmux list-panes -F &apos;#{pane_id}&apos;)
+</span><span class="add">+selected_pane=$(tmux display-message -p &apos;#{pane_id}&apos;)
+</span><span class="add">+window_height=$(tmux display-message -p &apos;#{window_height}&apos;)
+</span><span class="add">+historic_pane=$(tmux last-pane 2&gt;/dev/null \;\
+</span><span class="add">+    display-message -p &apos;#{pane_id}&apos; \;\
+</span><span class="add">+    last-pane) ||: # exit 1 - no last pane
+</span><span class="add">+
+</span><span class="add">+# execute all tmux commands in one shot to avoid flickering and slowness
+</span><span class="add">+exec tmux $({
+</span><span class="add">+# flatten current layout, stacking all panes vertically like pancakes
+</span><span class="add">+echo select-layout even-vertical
+</span><span class="add">+# transform pane stack into binary space partitions of dwindling size
+</span><span class="add">+count=1
+</span><span class="add">+for pane_id; do
+</span><span class="add">+    if [ $count -eq $# ]; then
+</span><span class="add">+	break # skip last pane because .+1 wraps around to the first pane
+</span><span class="add">+    elif [ $(( count % 2 )) -eq $modulo_hv ]; then
+</span><span class="add">+	move_h=+
+</span><span class="add">+	if $is_spiral &amp;&amp; [ $(( count % 5 )) -gt 2 ]
+</span><span class="add">+	then move_b=$spiral_lr
+</span><span class="add">+	fi
+</span><span class="add">+    else
+</span><span class="add">+	move_h=
+</span><span class="add">+	if $is_spiral &amp;&amp; [ $(( count % 5 )) -gt 2 ]
+</span><span class="add">+	then move_b=$spiral_tb
+</span><span class="add">+	fi
+</span><span class="add">+    fi
+</span><span class="add">+    echo resize-pane -t $pane_id -y $window_height # make room for move
+</span><span class="add">+    echo select-pane -t $pane_id # for relative pane addressing in move
+</span><span class="add">+    echo move-pane -d -s .+1 -t . ${move_h:+-h} ${move_b:+-b} # move it
+</span><span class="add">+    count=$(( count + 1 ))
+</span><span class="add">+done
+</span><span class="add">+# divide available space evenly among panes (binary space partitions)
+</span><span class="add">+branch_height=$window_height
+</span><span class="add">+count=1
+</span><span class="add">+for pane_id; do
+</span><span class="add">+    if [ $count -eq $# ] &amp;&amp; ! $is_vertical; then
+</span><span class="add">+	break # skip last pane because it will already be sized correctly
+</span><span class="add">+    elif [ $(( count % 2 )) -eq 1 ]; then
+</span><span class="add">+	# every other pane is a branch in the binary space partition tree
+</span><span class="add">+	parent_height=$branch_height
+</span><span class="add">+	branch_height=$(( 62 * branch_height / 100 ))
+</span><span class="add">+	if $is_vertical
+</span><span class="add">+	then resize_y=$parent_height
+</span><span class="add">+	else resize_y=$branch_height
+</span><span class="add">+	fi
+</span><span class="add">+	echo resize-pane -t $pane_id -y $resize_y
+</span><span class="add">+    fi
+</span><span class="add">+    count=$(( count + 1 ))
+</span><span class="add">+done
+</span><span class="add">+# restore pane selection back to how it was before we did any of this
+</span><span class="add">+test -n &quot;$historic_pane&quot; &amp;&amp; echo select-pane -t $historic_pane
+</span><span class="add">+echo select-pane -t $selected_pane
+</span><span class="add">+} | sed &apos;s/$/ ;/&apos;)
+</span></pre>
+</div></div>
+  </body>
+</html>

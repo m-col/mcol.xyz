@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - damage only view area when focussing</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/377f27ff1cfd1987a606509b20d7faeb78ada015.html">377f27ff1cfd1987a606509b20d7faeb78ada015</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/99f45f2e5b97490b5ee36f25aac4c56066e59f59.html">99f45f2e5b97490b5ee36f25aac4c56066e59f59</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-07 23:50:45 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-07 23:50:45 +0000
+
+damage only view area when focussing
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,38 +19,36 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface) {
+</span><span class="sub">-    if (view == NULL) {
+</span><span class="sub">-	wlr_seat_keyboard_notify_clear_focus(wimp.seat);
+</span><span class="sub">-	damage_all_outputs();
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="sub">-    struct wlr_seat *seat = wimp.seat;
+</span><span class="sub">-    struct wlr_surface *prev_surface = seat-&gt;keyboard_state.focused_surface;
+</span><span class="add">+    struct wlr_surface *prev_surface = wimp.seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     if (prev_surface == surface) {
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="add">+    wlr_seat_keyboard_notify_clear_focus(wimp.seat);
+</span><span class="add">+
+</span><span class="def">     if (prev_surface &amp;&amp; wlr_surface_is_xdg_surface(prev_surface)) {
+</span><span class="sub">-	struct wlr_xdg_surface *previous = wlr_xdg_surface_from_wlr_surface(
+</span><span class="sub">-	    seat-&gt;keyboard_state.focused_surface
+</span><span class="sub">-	);
+</span><span class="add">+	struct wlr_xdg_surface *previous = wlr_xdg_surface_from_wlr_surface(prev_surface);
+</span><span class="def"> 	wlr_xdg_toplevel_set_activated(previous, false);
+</span><span class="add">+	damage_by_view(previous-&gt;data, true);
+</span><span class="def">     }
+</span><span class="sub">-    struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat);
+</span><span class="def"> 
+</span><span class="sub">-    if (view-&gt;is_scratchpad) {
+</span><span class="sub">-	struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="sub">-	scratchpad-&gt;is_mapped = true;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	wl_list_remove(&amp;view-&gt;link);
+</span><span class="sub">-	wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+</span><span class="sub">-    }
+</span><span class="add">+    if (view) {
+</span><span class="add">+	if (view-&gt;is_scratchpad) {
+</span><span class="add">+	    struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="add">+	    scratchpad-&gt;is_mapped = true;
+</span><span class="add">+	} else {
+</span><span class="add">+	    wl_list_remove(&amp;view-&gt;link);
+</span><span class="add">+	    wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+</span><span class="add">+	}
+</span><span class="def"> 
+</span><span class="sub">-    wlr_xdg_toplevel_set_activated(view-&gt;surface, true);
+</span><span class="sub">-    wlr_seat_keyboard_notify_enter(
+</span><span class="sub">-	seat, view-&gt;surface-&gt;surface, keyboard-&gt;keycodes,
+</span><span class="sub">-	keyboard-&gt;num_keycodes, &amp;keyboard-&gt;modifiers
+</span><span class="sub">-    );
+</span><span class="sub">-    damage_all_outputs();
+</span><span class="add">+	wlr_xdg_toplevel_set_activated(view-&gt;surface, true);
+</span><span class="add">+
+</span><span class="add">+	struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(wimp.seat);
+</span><span class="add">+	wlr_seat_keyboard_notify_enter(
+</span><span class="add">+	    wimp.seat, view-&gt;surface-&gt;surface, keyboard-&gt;keycodes,
+</span><span class="add">+	    keyboard-&gt;num_keycodes, &amp;keyboard-&gt;modifiers
+</span><span class="add">+	);
+</span><span class="add">+	damage_by_view(view, true);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -191,6 +189,7 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     wl_list_remove(&amp;view-&gt;commit_listener.link);
+</span><span class="add">+    damage_by_view(view, true);
+</span><span class="def"> 
+</span><span class="def">     if (view-&gt;surface-&gt;surface != wimp.seat-&gt;keyboard_state.focused_surface) {
+</span><span class="def"> 	return;
+</span>@@ -204,9 +203,11 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="sub">-	view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="sub">-	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="sub">-	return;
+</span><span class="add">+	struct view *next = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="add">+	if (view != next) {
+</span><span class="add">+	    focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="def">     focus_view(NULL, NULL);
+</span>@@ -283,6 +284,7 @@
+<span class="def"> 
+</span><span class="def">     struct view *view = calloc(1, sizeof(struct view));
+</span><span class="def">     view-&gt;surface = surface;
+</span><span class="add">+    surface-&gt;data = view;
+</span><span class="def"> 
+</span><span class="def">     view-&gt;map_listener.notify = on_map;
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.map, &amp;view-&gt;map_listener);
+</span></pre>
+</div></div>
+  </body>
+</html>

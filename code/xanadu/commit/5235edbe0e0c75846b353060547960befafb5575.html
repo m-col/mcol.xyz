@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Improve Icons.hs style</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/5235edbe0e0c75846b353060547960befafb5575.html">5235edbe0e0c75846b353060547960befafb5575</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/e1003adb9258a8813914bc632112b3ae244bfb4e.html">e1003adb9258a8813914bc632112b3ae244bfb4e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-31 15:42:30 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-31 15:42:30 +0000
+
+Improve Icons.hs style
+</pre><div class="diff">
+  <p>
+    <b>xanadu.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,6 +20,7 @@
+<span class="def">   default-language:    Haskell2010
+</span><span class="def">   build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+</span><span class="def">                      , directory
+</span><span class="add">+                     , filepath
+</span><span class="def">                      , gi-gdk
+</span><span class="def">                      , gi-gdkpixbuf
+</span><span class="def">                      , gi-gio
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Icons.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,13 +5,12 @@
+<span class="def"> ) where
+</span><span class="def"> 
+</span><span class="def"> import Control.Applicative
+</span><span class="sub">-import Control.Monad (liftM)
+</span><span class="def"> import Control.Monad.IO.Class (liftIO)
+</span><span class="def"> import Control.Monad.Trans.Maybe
+</span><span class="sub">-import Data.Maybe
+</span><span class="def"> import Data.Text (pack)
+</span><span class="def"> import System.Directory (doesDirectoryExist, listDirectory, getHomeDirectory)
+</span><span class="def"> import System.Environment (lookupEnv)
+</span><span class="add">+import System.FilePath ((&lt;/&gt;))
+</span><span class="def"> import System.IO (hFlush, stdout)
+</span><span class="def"> 
+</span><span class="def"> import Data.GI.Base
+</span>@@ -42,12 +41,12 @@
+<span class="def"> getRoot = do
+</span><span class="def">     fromEnv &lt;- lookupEnv &quot;XDG_DESKTOP_DIR&quot;
+</span><span class="def">     case fromEnv of
+</span><span class="sub">-        Nothing -&gt; liftM (flip (&lt;&gt;) &quot;/Desktop&quot;) getHomeDirectory
+</span><span class="sub">-        Just &quot;&quot; -&gt; liftM (flip (&lt;&gt;) &quot;/Desktop&quot;) getHomeDirectory
+</span><span class="add">+        Nothing -&gt; (&lt;/&gt; &quot;/Desktop&quot;) &lt;$&gt; getHomeDirectory
+</span><span class="add">+        Just &quot;&quot; -&gt; (&lt;/&gt; &quot;/Desktop&quot;) &lt;$&gt; getHomeDirectory
+</span><span class="def">         Just path -&gt; return path
+</span><span class="def"> 
+</span><span class="def"> populate :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span><span class="sub">-populate listStore iconTheme root = getItems root &gt;&gt;= mconcat . map (addItem listStore iconTheme)
+</span><span class="add">+populate listStore iconTheme root = mconcat . map (addItem listStore iconTheme) =&lt;&lt; getItems root
+</span><span class="def"> 
+</span><span class="def"> addItem :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; Item -&gt; IO ()
+</span><span class="def"> addItem listStore iconTheme item = do
+</span>@@ -74,7 +73,7 @@
+<span class="def"> getItems :: FilePath -&gt; IO [Item]
+</span><span class="def"> getItems root = do
+</span><span class="def">     path &lt;- listDirectory root
+</span><span class="sub">-    isDir &lt;- sequence $ doesDirectoryExist . ((&lt;&gt;) $ root &lt;&gt; &quot;/&quot;) &lt;$&gt; path
+</span><span class="add">+    isDir &lt;- mapM (doesDirectoryExist . (root &lt;/&gt;)) path
+</span><span class="def">     return . getZipList $ Item &lt;$&gt; ZipList path &lt;*&gt; ZipList isDir
+</span><span class="def"> 
+</span><span class="def"> onItemActivated :: Gtk.ListStore -&gt; FilePath -&gt; Gtk.TreePath -&gt; IO ()
+</span></pre>
+</div></div>
+  </body>
+</html>

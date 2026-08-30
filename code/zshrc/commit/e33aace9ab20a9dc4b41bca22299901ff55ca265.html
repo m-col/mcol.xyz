@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - fixed ban theme right prompt to not show random triangles</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/e33aace9ab20a9dc4b41bca22299901ff55ca265.html">e33aace9ab20a9dc4b41bca22299901ff55ca265</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/07e479ea7d43b15857eb64acb813bf28ad976534.html">07e479ea7d43b15857eb64acb813bf28ad976534</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 11:34:58 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 11:34:58 +0000
+
+fixed ban theme right prompt to not show random triangles
+</pre><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,9 +10,11 @@
+<span class="def"> # prompt segment shape: arrow or square
+</span><span class="def"> if $is_ssh
+</span><span class="def"> then
+</span><span class="sub">-    SEGMENT_SEPARATOR=$&apos;\ue0b0&apos;
+</span><span class="add">+    SEGMENT_SEPARATOR_L=$&apos;\ue0b0&apos;
+</span><span class="add">+    SEGMENT_SEPARATOR_R=$&apos;&apos;
+</span><span class="def"> else
+</span><span class="sub">-    SEGMENT_SEPARATOR=$&apos;&apos;
+</span><span class="add">+    SEGMENT_SEPARATOR_L=$&apos;&apos;
+</span><span class="add">+    SEGMENT_SEPARATOR_R=$&apos;&apos;
+</span><span class="def"> fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -122,11 +124,12 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> ##### vi mode
+</span><span class="sub">-VIM_PROMPT=&quot;--INSERT--&quot;
+</span><span class="sub">-export KEYTIMEOUT=1
+</span><span class="add">+#VIM_PROMPT=&quot;--INSERT--&quot;
+</span><span class="add">+export KEYTIMEOUT=1	# reduce delay to 0.1s
+</span><span class="def"> bindkey -v
+</span><span class="def"> prompt_vi(){
+</span><span class="sub">-    prompt_segment default white $VIM_PROMPT
+</span><span class="add">+    # only add to prompt if not empty
+</span><span class="add">+    [[ -n $VIM_PROMPT ]] &amp;&amp; prompt_segment default white $VIM_PROMPT
+</span><span class="def"> }
+</span><span class="def"> zle-line-init() { zle -K viins; }
+</span><span class="def"> zle -N zle-line-init
+</span>@@ -135,6 +138,7 @@
+<span class="def"> ## Main left prompt
+</span><span class="def"> build_prompt() {
+</span><span class="def">     RETVAL=$?
+</span><span class="add">+    local SEGMENT_SEPARATOR=$SEGMENT_SEPARATOR_L
+</span><span class="def">     prompt_context
+</span><span class="def">     prompt_dir
+</span><span class="def">     prompt_mes
+</span>@@ -143,6 +147,7 @@
+<span class="def"> 
+</span><span class="def"> build_rprompt() {
+</span><span class="def">     RETVAL=$?
+</span><span class="add">+    local SEGMENT_SEPARATOR=$SEGMENT_SEPARATOR_R
+</span><span class="def">     prompt_virtualenv
+</span><span class="def">     prompt_vi
+</span><span class="def">     prompt_git
+</span>@@ -154,18 +159,18 @@
+<span class="def"> 
+</span><span class="def"> # redraw prompt on mode changes
+</span><span class="def"> zle-keymap-select() {
+</span><span class="sub">-if [ $KEYMAP = vicmd ]; then
+</span><span class="sub">-    printf &quot;\033[2 q&quot; # block cursor
+</span><span class="sub">-    VIM_PROMPT=&quot;-- NORMAL --&quot;
+</span><span class="sub">-else
+</span><span class="sub">-    printf &quot;\033[4 q&quot; # underline. Change 4 to 6 for vertical line
+</span><span class="sub">-    VIM_PROMPT=&quot;&quot;
+</span><span class="sub">-fi
+</span><span class="add">+    if [ $KEYMAP = vicmd ]; then
+</span><span class="add">+	printf &quot;\033[2 q&quot; # block cursor
+</span><span class="add">+	VIM_PROMPT=&quot;-- NORMAL --&quot;
+</span><span class="add">+    else
+</span><span class="add">+	printf &quot;\033[4 q&quot; # underline. Change 4 to 6 for vertical line
+</span><span class="add">+	VIM_PROMPT=&quot;&quot;
+</span><span class="add">+    fi
+</span><span class="def"> 
+</span><span class="sub">-PROMPT=&apos;%{%f%b%k%}$(build_prompt) &apos;
+</span><span class="sub">-RPROMPT=&apos;%{%f%b%k%}$(build_rprompt)&apos;
+</span><span class="sub">-zle reset-prompt
+</span><span class="sub">-zle -R
+</span><span class="add">+    PROMPT=&apos;%{%f%b%k%}$(build_prompt) &apos;
+</span><span class="add">+    RPROMPT=&apos;%{%f%b%k%}$(build_rprompt)&apos;
+</span><span class="add">+    zle reset-prompt
+</span><span class="add">+    zle -R
+</span><span class="def"> }
+</span><span class="def"> zle -N zle-keymap-select
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

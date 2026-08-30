@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tide - search for section header only at start of line</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/tide">tide</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/tide">https://github.com/m-col/tide</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/tide/tree.html">Files</a> | <a href="https://mcol.xyz/code/tide/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/tide/file/README.md.html">Readme</a>     | <a href="https://mcol.xyz/code/tide/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/tide/commit/f39849401508fbcbf36784cee48f88d009dc3082.html">f39849401508fbcbf36784cee48f88d009dc3082</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/tide/commit/7ef2df2d41978b46b04b92ad9b31135377360003.html">7ef2df2d41978b46b04b92ad9b31135377360003</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-12 00:32:14 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-12 00:32:14 +0000
+
+search for section header only at start of line
+</pre><div class="diff">
+  <p>
+    <b>plugin/tide.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,12 @@
+<span class="def"> &quot; tide: tmux IDE
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="add">+&quot; load once
+</span><span class="add">+if exists(&apos;g:loaded_tide&apos;)
+</span><span class="add">+  finish
+</span><span class="add">+endif
+</span><span class="add">+let g:loaded_tide = 1
+</span><span class="add">+
+</span><span class="def"> &quot; command to prefix text
+</span><span class="def"> if !exists(&quot;g:tmux_cmd&quot;)
+</span><span class="def">     let g:tmux_cmd = &quot;tmux send -t .+ &quot;
+</span>@@ -53,26 +59,28 @@
+<span class="def"> 
+</span><span class="def"> &quot; send current section delimited by double comments
+</span><span class="def"> function! s:TmuxSendSection()
+</span><span class="sub">-    let g:com = split(&amp;comments, &quot;,&quot;)
+</span><span class="sub">-    let g:scom = substitute(g:com[0], &quot;^.*:&quot;, &apos;&apos;, &apos;&apos;)
+</span><span class="sub">-    for g:i in g:com
+</span><span class="sub">-	let g:ncom = substitute(g:i, &quot;^.*:&quot;, &apos;&apos;, &apos;&apos;)
+</span><span class="sub">-	if len(g:ncom) &lt; len(g:scom)
+</span><span class="sub">-	    let g:scom = g:ncom
+</span><span class="add">+    &quot; find shortest comment character
+</span><span class="add">+    let s:com = split(&amp;comments, &quot;,&quot;)
+</span><span class="add">+    let s:scom = substitute(s:com[0], &quot;^.*:&quot;, &apos;&apos;, &apos;&apos;)
+</span><span class="add">+    for s:i in s:com
+</span><span class="add">+	let s:ncom = substitute(s:i, &quot;^.*:&quot;, &apos;&apos;, &apos;&apos;)
+</span><span class="add">+	if len(s:ncom) &lt; len(s:scom)
+</span><span class="add">+	    let s:scom = s:ncom
+</span><span class="def"> 	endif
+</span><span class="def">     endfor
+</span><span class="sub">-    let g:tcom = g:scom . g:scom
+</span><span class="sub">-    let g:top = search(g:tcom . &apos;\|\%^?&apos;, &apos;cbnW&apos;)
+</span><span class="sub">-    let g:bottom = search(g:tcom . &apos;\|\%$&apos;, &apos;nW&apos;)
+</span><span class="sub">-    if g:bottom &lt;= g:top
+</span><span class="sub">-	let g:bottom = line(&apos;$&apos;)
+</span><span class="sub">-    elseif g:bottom != line(&apos;$&apos;)
+</span><span class="sub">-	let g:bottom = g:bottom - 1
+</span><span class="add">+    &quot; let 2com
+</span><span class="add">+    let s:header = &quot;^\s*&quot; . s:scom . s:scom
+</span><span class="add">+    let s:top = search(s:header . &apos;\|\%^?&apos;, &apos;cbnW&apos;)
+</span><span class="add">+    let s:bottom = search(s:header . &apos;\|\%$&apos;, &apos;nW&apos;)
+</span><span class="add">+    if s:bottom &lt;= s:top
+</span><span class="add">+	let s:bottom = line(&apos;$&apos;)
+</span><span class="add">+    elseif s:bottom != line(&apos;$&apos;)
+</span><span class="add">+	let s:bottom = s:bottom - 1
+</span><span class="def">     endif
+</span><span class="sub">-    if g:top == 0
+</span><span class="sub">-	let g:top = 1
+</span><span class="add">+    if s:top == 0
+</span><span class="add">+	let s:top = 1
+</span><span class="def">     endif
+</span><span class="sub">-    call s:TmuxSendLines(g:top, g:bottom)
+</span><span class="add">+    call s:TmuxSendLines(s:top, s:bottom)
+</span><span class="def"> endfunction
+</span><span class="def"> 
+</span><span class="def"> &quot; send visual selection
+</span></pre>
+</div></div>
+  </body>
+</html>

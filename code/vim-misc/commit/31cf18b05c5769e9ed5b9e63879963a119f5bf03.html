@@ -1,0 +1,1944 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - move around some vim files to use native packaging</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/31cf18b05c5769e9ed5b9e63879963a119f5bf03.html">31cf18b05c5769e9ed5b9e63879963a119f5bf03</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/d88821e9701d44cddc17b54f0af0d4ee5675103b.html">d88821e9701d44cddc17b54f0af0d4ee5675103b</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2023-06-17 21:18:16 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2023-06-17 21:18:16 +0100
+
+move around some vim files to use native packaging
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,11 +14,8 @@
+<span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="def"> set nocompatible			    &quot; be iMproved, required
+</span><span class="sub">-filetype off				    &quot; required
+</span><span class="sub">-set rtp+=~/.vim/bundle/Vundle.vim	    &quot; required
+</span><span class="sub">-call vundle#begin()
+</span><span class="add">+filetype plugin indent on		    &quot; required
+</span><span class="def"> 
+</span><span class="sub">-Plugin &apos;VundleVim/Vundle.vim&apos;		    &quot; required
+</span><span class="def"> Plugin &apos;dense-analysis/ale&apos;		    &quot; ALE
+</span><span class="def"> Plugin &apos;neovimhaskell/haskell-vim&apos;	    &quot; better haskell syntax highlighting
+</span><span class="def"> Plugin &apos;https://gitlab.com/gi1242/vim-emoji-ab.git&apos; &quot; emoji input support
+</span>@@ -28,15 +25,6 @@
+<span class="def"> Plugin &apos;https://mcol.xyz/code/tide&apos;	    &quot; tmux ide 
+</span><span class="def"> Plugin &apos;Yggdroot/indentLine&apos;                &quot; Show indentation lines
+</span><span class="def"> 
+</span><span class="sub">-call vundle#end()			    &quot; required
+</span><span class="sub">-filetype plugin indent on		    &quot; required
+</span><span class="sub">-&quot; Brief help
+</span><span class="sub">-&quot; :PluginList       - lists configured plugins
+</span><span class="sub">-&quot; :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+</span><span class="sub">-&quot; :PluginSearch foo - searches for foo; append `!` to refresh local cache
+</span><span class="sub">-&quot; :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+</span><span class="sub">-&quot; see :h vundle for more details or wiki for FAQ
+</span><span class="sub">-
+</span><span class="def"> 
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> &quot; General settings                                                 &quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/plugin/theme.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,78 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Ricing                                                           &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-&quot; statusline
+</span><span class="sub">-set laststatus=2			    &quot; always show status bar
+</span><span class="sub">-set statusline =
+</span><span class="sub">-if $USER == &apos;root&apos;
+</span><span class="sub">-    let hostname = hostname()
+</span><span class="sub">-    exec &apos;set statusline +=%7*\ &apos; . $USER . &apos;@&apos; . hostname . &apos;\ %*&apos;
+</span><span class="sub">-endif
+</span><span class="sub">-if ! empty($TMUX)
+</span><span class="sub">-    set statusline +=%6*%*
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-set statusline +=%1*\ \ %&lt;%F\ \ %*	    &quot; full path
+</span><span class="sub">-set statusline +=%2*\ \ %y%*                &quot; file type
+</span><span class="sub">-set statusline +=%2*\ %m\ %*                &quot; modified flag
+</span><span class="sub">-set statusline +=%3*%{noscrollbar#statusline(12,&apos;\ &apos;,&apos;-&apos;)}
+</span><span class="sub">-set statusline +=%4*%=%*		    &quot; centre padding
+</span><span class="sub">-set statusline +=%5*\ \ %l\ /\ %L\ \ %*	    &quot; current / total lines
+</span><span class="sub">-set statusline +=%1*\ %n\ %*		    &quot; buffer number 
+</span><span class="sub">-
+</span><span class="sub">-hi User1 ctermfg=0 ctermbg=5 cterm=none
+</span><span class="sub">-hi User2 ctermfg=0 ctermbg=4 cterm=none
+</span><span class="sub">-hi User3 ctermfg=0 ctermbg=14 cterm=none
+</span><span class="sub">-hi User4 ctermfg=0 ctermbg=2 cterm=none
+</span><span class="sub">-hi User5 ctermfg=0 ctermbg=3 cterm=none
+</span><span class="sub">-hi User6 ctermfg=3 ctermbg=5 cterm=none
+</span><span class="sub">-hi User7 ctermfg=0 ctermbg=9 cterm=none
+</span><span class="sub">-
+</span><span class="sub">-&quot; tab bar
+</span><span class="sub">-hi TabLineFill ctermfg=0 ctermbg=1
+</span><span class="sub">-hi TabLine ctermfg=0 ctermbg=13
+</span><span class="sub">-hi TabLineSel ctermfg=0 ctermbg=12
+</span><span class="sub">-hi Title ctermfg=0 ctermbg=12
+</span><span class="sub">-
+</span><span class="sub">-&quot; vimdiff  &quot; commented out as it was disrupting git gutter
+</span><span class="sub">-&quot;hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="sub">-&quot;hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="sub">-&quot;hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="sub">-&quot;hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="sub">-
+</span><span class="sub">-&quot; folds
+</span><span class="sub">-hi Folded ctermbg=8 ctermfg=4 cterm=none
+</span><span class="sub">-
+</span><span class="sub">-&quot; visual mode highlighting
+</span><span class="sub">-hi Visual ctermbg=7 ctermfg=0
+</span><span class="sub">-
+</span><span class="sub">-&quot; title highlighting needs changing so that text doesn&apos;t go invisible due to cursor line
+</span><span class="sub">-hi Title ctermfg=3 ctermbg=0
+</span><span class="sub">-
+</span><span class="sub">-&quot; matched brackets
+</span><span class="sub">-hi MatchParen ctermfg=7 cterm=underline ctermbg=0 
+</span><span class="sub">-
+</span><span class="sub">-&quot; line numbers
+</span><span class="sub">-set number relativenumber
+</span><span class="sub">-hi LineNr ctermfg=5
+</span><span class="sub">-
+</span><span class="sub">-&quot; highlight cursor line
+</span><span class="sub">-highlight CursorLine ctermbg=8 cterm=bold
+</span><span class="sub">-augroup CursorLine
+</span><span class="sub">-    au!
+</span><span class="sub">-    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+</span><span class="sub">-    au WinLeave * setlocal nocursorline
+</span><span class="sub">-augroup END
+</span><span class="sub">-
+</span><span class="sub">-&quot; change cursor shape in insert mode
+</span><span class="sub">-let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="sub">-let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="sub">-augroup myCmds
+</span><span class="sub">-    au!
+</span><span class="sub">-    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="sub">-augroup END
+</span><span class="sub">-
+</span><span class="sub">-&quot; character for split barrier
+</span><span class="sub">-set fillchars=vert:\ 
+</span><span class="sub">-hi VertSplit cterm=bold term=bold ctermbg=12
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/plugin/noscrollbar.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,115 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; noscrollbar plugin from github.com/gcavallanti/vim-noscrollbar
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-if &amp;cp || exists(&apos;g:noscrollbar_loaded&apos;)
+</span><span class="sub">-  finish
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-let g:noscrollbar_loaded = 1
+</span><span class="sub">-
+</span><span class="sub">-function! noscrollbar#statusline(...)
+</span><span class="sub">-    let top_line = line(&quot;w0&quot;)
+</span><span class="sub">-    let bottom_line = line(&quot;w$&quot;)
+</span><span class="sub">-    let current_line = line(&apos;.&apos;)
+</span><span class="sub">-    let lines_count = line(&apos;$&apos;)
+</span><span class="sub">-
+</span><span class="sub">-    &quot; Default values
+</span><span class="sub">-    let length = 20
+</span><span class="sub">-    let tracksymbol = &apos;-&apos;
+</span><span class="sub">-    let grippersymbol = &apos;#&apos;
+</span><span class="sub">-    let gripperleftsymbols = []
+</span><span class="sub">-    let gripperrightsymbols = []
+</span><span class="sub">-    let part = &apos;a&apos;
+</span><span class="sub">-
+</span><span class="sub">-    if a:0 &gt;= 3
+</span><span class="sub">-      let length = a:1
+</span><span class="sub">-      let tracksymbol = a:2
+</span><span class="sub">-      let grippersymbol = a:3
+</span><span class="sub">-    endif
+</span><span class="sub">-
+</span><span class="sub">-    if a:0 &gt;= 5 &amp;&amp; type(a:4) == 3 &amp;&amp; type(a:5) == 3
+</span><span class="sub">-                \ &amp;&amp; len(a:4) == len(a:5) 
+</span><span class="sub">-        let gripperleftsymbols = a:4
+</span><span class="sub">-        let gripperrightsymbols = a:5
+</span><span class="sub">-    endif
+</span><span class="sub">-
+</span><span class="sub">-    if a:0 &gt;= 6
+</span><span class="sub">-      let part = a:6
+</span><span class="sub">-    endif
+</span><span class="sub">-
+</span><span class="sub">-    let scaling = len(gripperleftsymbols) + 1 
+</span><span class="sub">-
+</span><span class="sub">-    &quot; Compute gripper position and size as if we have scaling times a:1
+</span><span class="sub">-    &quot; characters available. Will shrink everything back just before returning 
+</span><span class="sub">-    let scrollbar_length = str2nr(length) * scaling
+</span><span class="sub">-
+</span><span class="sub">-    &quot; Gripper positions are 0 based (0..scrollbar_length-1)
+</span><span class="sub">-    let gripper_position = float2nr((top_line - 1.0) / lines_count 
+</span><span class="sub">-\       * scrollbar_length)
+</span><span class="sub">-    let gripper_length = float2nr(ceil((bottom_line - top_line + 1.0)  
+</span><span class="sub">-\       / lines_count * scrollbar_length)) 
+</span><span class="sub">-
+</span><span class="sub">-    &quot; Users expect to see the scrollbar in the leftmost position only if we
+</span><span class="sub">-    &quot; are at the very top of the buffer
+</span><span class="sub">-    if (top_line &gt; 1) &amp;&amp; (gripper_position == 0)
+</span><span class="sub">-        &quot; Since the top line is not visible shift the gripper by one position
+</span><span class="sub">-        let gripper_position = 1
+</span><span class="sub">-        if (gripper_position + gripper_length &gt; scrollbar_length)
+</span><span class="sub">-            &quot; Shrink the gripper if we end up after the end of the scrollbar 
+</span><span class="sub">-            let gripper_length = gripper_length - 1
+</span><span class="sub">-        endif
+</span><span class="sub">-    endif
+</span><span class="sub">-
+</span><span class="sub">-    if (bottom_line &lt; lines_count) 
+</span><span class="sub">-\       &amp;&amp; (gripper_position + gripper_length == scrollbar_length)
+</span><span class="sub">-        &quot; As before, if the last line is not on the screen but the scrollbar
+</span><span class="sub">-        &quot; seems to indicate so then either move the scrollbar position leftwise
+</span><span class="sub">-        &quot; by one position or decrease its length
+</span><span class="sub">-        if gripper_position &gt; 0
+</span><span class="sub">-            let gripper_position = gripper_position - 1
+</span><span class="sub">-        else
+</span><span class="sub">-            let gripper_length = gripper_length - 1
+</span><span class="sub">-        endif
+</span><span class="sub">-    endif
+</span><span class="sub">-
+</span><span class="sub">-    &quot; Shrink everything back to the range [0, a:1)
+</span><span class="sub">-    let gripper_position = 1.0 * gripper_position / scaling
+</span><span class="sub">-    let gripper_length = 1.0 * gripper_length / scaling
+</span><span class="sub">-    let scrollbar_length = 1.0 * scrollbar_length / scaling
+</span><span class="sub">-
+</span><span class="sub">-    &quot; The left of the gripper is broken in 3 parts.  The left and right are
+</span><span class="sub">-    &quot; fractionals in the range [0, len(a:4)). 
+</span><span class="sub">-    let gripper_length_left = ceil(gripper_position) - gripper_position
+</span><span class="sub">-    &quot; Hackish rounding errors workaround. If `gripper_length
+</span><span class="sub">-    &quot; - gripper_lenght_left` is 0.9999.. we force it to 1 before rounding it
+</span><span class="sub">-    let gripper_length_middle = floor(round((gripper_length 
+</span><span class="sub">-                \ - gripper_length_left)*100.0)/100.0)
+</span><span class="sub">-    let gripper_length_right = gripper_length - gripper_length_left 
+</span><span class="sub">-                \ - gripper_length_middle
+</span><span class="sub">-
+</span><span class="sub">-    &quot; Time to assemble the actual scrollbar
+</span><span class="sub">-    let scrollbar = &apos;&apos;
+</span><span class="sub">-    if part != &apos;m&apos; &amp;&amp; part != &apos;r&apos;
+</span><span class="sub">-        let scrollbar .= repeat(tracksymbol, float2nr(floor(gripper_position)))
+</span><span class="sub">-
+</span><span class="sub">-        let grippersymbol_index = float2nr(round(gripper_length_left * scaling))
+</span><span class="sub">-        if grippersymbol_index != 0
+</span><span class="sub">-            let scrollbar .= gripperleftsymbols[grippersymbol_index - 1]
+</span><span class="sub">-        endif
+</span><span class="sub">-    endif
+</span><span class="sub">-    
+</span><span class="sub">-    if part != &apos;l&apos; &amp;&amp; part != &apos;r&apos;
+</span><span class="sub">-        let scrollbar .= repeat(grippersymbol, float2nr(gripper_length_middle)) 
+</span><span class="sub">-    endif
+</span><span class="sub">-
+</span><span class="sub">-    if part != &apos;l&apos; &amp;&amp; part != &apos;m&apos;
+</span><span class="sub">-        let grippersymbol_index = float2nr(round(gripper_length_right * scaling))
+</span><span class="sub">-        if grippersymbol_index != 0
+</span><span class="sub">-            let scrollbar .= gripperrightsymbols[grippersymbol_index - 1]
+</span><span class="sub">-        endif
+</span><span class="sub">-        let scrollbar .= repeat(tracksymbol, float2nr(scrollbar_length 
+</span><span class="sub">-                    \ - ceil(gripper_position + gripper_length)))
+</span><span class="sub">-    endif
+</span><span class="sub">-
+</span><span class="sub">-    return scrollbar
+</span><span class="sub">-endfunction
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/plugin/keybindings.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,128 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Global keybindings                                               &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-&quot; reload current buffer
+</span><span class="sub">-&quot;nnoremap &lt;C-l&gt; :e&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; toggle fold
+</span><span class="sub">-nnoremap &lt;space&gt; za
+</span><span class="sub">-
+</span><span class="sub">-&quot; yank to end of line
+</span><span class="sub">-nnoremap Y y$
+</span><span class="sub">-
+</span><span class="sub">-&quot; buffer navigation
+</span><span class="sub">-nnoremap &lt;leader&gt;b :ls&lt;CR&gt;:b&lt;space&gt;
+</span><span class="sub">-nnoremap &lt;Leader&gt;v :ls&lt;CR&gt;:vert sb&lt;space&gt;
+</span><span class="sub">-nnoremap &lt;Leader&gt;j :bnext&lt;CR&gt; 
+</span><span class="sub">-nnoremap &lt;Leader&gt;k :bprevious&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;Leader&gt;&lt;BS&gt; :w&lt;CR&gt;:bdelete&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; move between tabs
+</span><span class="sub">-nnoremap &lt;Leader&gt;n gT
+</span><span class="sub">-nnoremap &lt;Leader&gt;m gt
+</span><span class="sub">-
+</span><span class="sub">-&quot; indent selection
+</span><span class="sub">-vnoremap &lt; &lt;gv
+</span><span class="sub">-vnoremap &gt; &gt;gv
+</span><span class="sub">-
+</span><span class="sub">-&quot; quitting and writing shortcuts
+</span><span class="sub">-nnoremap QQ :q&lt;CR&gt;
+</span><span class="sub">-nnoremap !Q :q!&lt;CR&gt;
+</span><span class="sub">-nnoremap QW :wq&lt;CR&gt;
+</span><span class="sub">-nnoremap :Q :q
+</span><span class="sub">-nnoremap :W :w
+</span><span class="sub">-
+</span><span class="sub">-&quot; disable K man
+</span><span class="sub">-nnoremap K k
+</span><span class="sub">-
+</span><span class="sub">-&quot; copy and paste system clipboard
+</span><span class="sub">-nmap &lt;C-y&gt; &quot;+y
+</span><span class="sub">-nmap &lt;C-y&gt;&lt;C-y&gt; ms0v$&quot;+y`s
+</span><span class="sub">-vmap &lt;C-y&gt; &quot;+y
+</span><span class="sub">-imap &lt;C-y&gt; &lt;Esc&gt;&quot;+y
+</span><span class="sub">-if exists(&quot;$WAYLAND_DISPLAY&quot;)
+</span><span class="sub">-    xmap &quot;+y y:call system(&quot;wl-copy&quot;, @&quot;)\|echo &apos;&apos; &lt;cr&gt;
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-&quot; save read-only file with sudo trick
+</span><span class="sub">-cnoremap w!! w !sudo tee &gt; /dev/null %
+</span><span class="sub">-
+</span><span class="sub">-&quot; move between split views (these are configured by the vim-tmux plugin)
+</span><span class="sub">-&quot; except for insert mode:
+</span><span class="sub">-&quot;inoremap &lt;silent&gt; &lt;C-H&gt; &lt;Esc&gt;:TmuxNavigateLeft&lt;cr&gt;
+</span><span class="sub">-&quot;inoremap &lt;silent&gt; &lt;C-J&gt; &lt;Esc&gt;:TmuxNavigateDown&lt;cr&gt;
+</span><span class="sub">-&quot;inoremap &lt;silent&gt; &lt;C-K&gt; &lt;Esc&gt;:TmuxNavigateUp&lt;cr&gt;
+</span><span class="sub">-&quot;inoremap &lt;silent&gt; &lt;C-L&gt; &lt;Esc&gt;:TmuxNavigateRight&lt;cr&gt;
+</span><span class="sub">-&quot;inoremap &lt;silent&gt; &lt;C-\&gt; &lt;Esc&gt;:TmuxNavigatePrevious&lt;cr&gt;
+</span><span class="sub">-nnoremap &lt;C-H&gt; &lt;C-W&gt;&lt;C-H&gt;
+</span><span class="sub">-nnoremap &lt;C-J&gt; &lt;C-W&gt;&lt;C-J&gt;
+</span><span class="sub">-nnoremap &lt;C-K&gt; &lt;C-W&gt;&lt;C-K&gt;
+</span><span class="sub">-nnoremap &lt;C-L&gt; &lt;C-W&gt;&lt;C-L&gt;
+</span><span class="sub">-inoremap &lt;C-H&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-H&gt;
+</span><span class="sub">-inoremap &lt;C-J&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-J&gt;
+</span><span class="sub">-inoremap &lt;C-K&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-K&gt;
+</span><span class="sub">-inoremap &lt;C-L&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-L&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; move to start or end of line more easily
+</span><span class="sub">-nnoremap 0 ^
+</span><span class="sub">-nnoremap H 0
+</span><span class="sub">-nnoremap L $
+</span><span class="sub">-vnoremap H 0
+</span><span class="sub">-vnoremap L g_
+</span><span class="sub">-
+</span><span class="sub">-&quot; resize splits
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;Up&gt; :res -1&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;Down&gt; :res +1&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;Left&gt; :vertical resize -5&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;Right&gt; :vertical resize +5&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; toggle search highlight
+</span><span class="sub">-nnoremap &lt;Leader&gt;h :set hlsearch!&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; shortcut to fix lines
+</span><span class="sub">-nnoremap &lt;leader&gt;p gqip
+</span><span class="sub">-
+</span><span class="sub">-&quot; shortcut to vert split
+</span><span class="sub">-nnoremap vs :vsp&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; toggle spell checking
+</span><span class="sub">-nnoremap &lt;leader&gt;S :setlocal spell! spelllang=en_gb spell?&lt;CR&gt;:echo &quot;zg to add new word&quot;&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; toggle [ ] tick box on current line with ctrl-space
+</span><span class="sub">-function! ToggleTodo()
+</span><span class="sub">-    let l:line = getline(&apos;.&apos;)
+</span><span class="sub">-    if match(l:line, &apos;\[x\]&apos;) != -1
+</span><span class="sub">-	let l:line = substitute(l:line, &apos;\[x\]&apos;, &apos;\[ \]&apos;, &apos;&apos;)
+</span><span class="sub">-	call setline(&apos;.&apos;, l:line)
+</span><span class="sub">-    elseif match(l:line, &apos;\[ \]&apos;) != -1
+</span><span class="sub">-	let l:line = substitute(l:line, &apos;\[ \]&apos;, &apos;\[x\]&apos;, &apos;&apos;)
+</span><span class="sub">-	call setline(&apos;.&apos;, l:line)
+</span><span class="sub">-    endif
+</span><span class="sub">-endfunction
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;C-@&gt; :call ToggleTodo()&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; quickfix navigation
+</span><span class="sub">-nnoremap &lt;localleader&gt;cn :cn&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;localleader&gt;cp :cp&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; netrw
+</span><span class="sub">-nmap &lt;C-n&gt; :Explore&lt;CR&gt;
+</span><span class="sub">-let g:netrw_sort_sequence=&apos;[\/]$&apos;
+</span><span class="sub">-
+</span><span class="sub">-&quot; bind number keys to scroll so i can use foot terminal&apos;s alt scrolling
+</span><span class="sub">-map &lt;Down&gt; j
+</span><span class="sub">-map &lt;Up&gt; k
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-&quot; bind scroll to move cursor up and down
+</span><span class="sub">-nnoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="sub">-nnoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="sub">-inoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="sub">-inoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="sub">-vnoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="sub">-vnoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; ALE navigation
+</span><span class="sub">-nmap &lt;silent&gt; &lt;C-S-k&gt; &lt;Plug&gt;(ale_previous_wrap)
+</span><span class="sub">-nmap &lt;silent&gt; &lt;C-S-j&gt; &lt;Plug&gt;(ale_next_wrap)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/plugin/indent.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,13 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------
+</span><span class="sub">-&quot;  Indentation of entire file
+</span><span class="sub">-&quot;------------------------------------------------------------------
+</span><span class="sub">-
+</span><span class="sub">-&quot;function! IndentFile()
+</span><span class="sub">-&quot;    mkview
+</span><span class="sub">-&quot;    let l:win_view = winsaveview()
+</span><span class="sub">-&quot;    :normal! gg=G
+</span><span class="sub">-&quot;    silent loadview
+</span><span class="sub">-&quot;    call winrestview(l:win_view)
+</span><span class="sub">-&quot;endfunction
+</span><span class="sub">-&quot;
+</span><span class="sub">-&quot;nnoremap &lt;C-i&gt; :call IndentFile()&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/plugin/folds.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,34 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Global folding rules
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-&quot; format folded section header text
+</span><span class="sub">-function! GenericFoldText()
+</span><span class="sub">-    let line = getline(v:foldstart)
+</span><span class="sub">-
+</span><span class="sub">-    let nucolwidth = &amp;fdc + &amp;number * &amp;numberwidth
+</span><span class="sub">-    let windowwidth = winwidth(0) - nucolwidth - 3
+</span><span class="sub">-    let foldedlinecount = v:foldend - v:foldstart
+</span><span class="sub">-
+</span><span class="sub">-    let onetab = strpart(&apos;          &apos;, 0, &amp;tabstop)
+</span><span class="sub">-    let line = substitute(line, &apos;\t&apos;, onetab, &apos;g&apos;)
+</span><span class="sub">-
+</span><span class="sub">-    let line = strpart(line, 0, windowwidth - len(foldedlinecount))
+</span><span class="sub">-    let fillcharcount = windowwidth - len(line) - len(foldedlinecount)
+</span><span class="sub">-    return line . repeat(&quot; &quot;,fillcharcount) . &apos; &apos; . foldedlinecount
+</span><span class="sub">-endfunction
+</span><span class="sub">-set foldtext=GenericFoldText()
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-&quot;function! GenericFolds()
+</span><span class="sub">-&quot;    if match(getline(v:lnum), &apos;^\s*&apos; . &amp;commentstring[0] . &amp;commentstring[0]) &gt;=0
+</span><span class="sub">-&quot;	return &quot;&gt;1&quot;
+</span><span class="sub">-&quot;    else
+</span><span class="sub">-&quot;	return &quot;=&quot;
+</span><span class="sub">-&quot;    endif
+</span><span class="sub">-&quot;endfunction
+</span><span class="sub">-&quot;
+</span><span class="sub">-&quot;
+</span><span class="sub">-&quot;set foldmethod=expr
+</span><span class="sub">-&quot;set foldexpr=GenericFolds()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/plugin/bclose.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,87 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; :bclose                                                          &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-&quot; Delete buffer while keeping window layout (don&apos;t close buffer&apos;s windows).
+</span><span class="sub">-&quot; Version 2008-11-18 from http://vim.wikia.com/wiki/VimTip165
+</span><span class="sub">-if v:version &lt; 700 || exists(&apos;loaded_bclose&apos;) || &amp;cp
+</span><span class="sub">-    finish
+</span><span class="sub">-endif
+</span><span class="sub">-let loaded_bclose = 1
+</span><span class="sub">-if !exists(&apos;bclose_multiple&apos;)
+</span><span class="sub">-    let bclose_multiple = 1
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-&quot; Display an error message.
+</span><span class="sub">-function! s:Warn(msg)
+</span><span class="sub">-    echohl ErrorMsg
+</span><span class="sub">-    echomsg a:msg
+</span><span class="sub">-    echohl NONE
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-&quot; Command &apos;:Bclose&apos; executes &apos;:bd&apos; to delete buffer in current window.
+</span><span class="sub">-&quot; The window will show the alternate buffer (Ctrl-^) if it exists,
+</span><span class="sub">-&quot; or the previous buffer (:bp), or a blank buffer if no previous.
+</span><span class="sub">-&quot; Command &apos;:Bclose!&apos; is the same, but executes &apos;:bd!&apos; (discard changes).
+</span><span class="sub">-&quot; An optional argument can specify which buffer to close (name or number).
+</span><span class="sub">-function! s:Bclose(bang, buffer)
+</span><span class="sub">-    if empty(a:buffer)
+</span><span class="sub">-	let btarget = bufnr(&apos;%&apos;)
+</span><span class="sub">-    elseif a:buffer =~ &apos;^\d\+$&apos;
+</span><span class="sub">-	let btarget = bufnr(str2nr(a:buffer))
+</span><span class="sub">-    else
+</span><span class="sub">-	let btarget = bufnr(a:buffer)
+</span><span class="sub">-    endif
+</span><span class="sub">-    if btarget &lt; 0
+</span><span class="sub">-	call s:Warn(&apos;No matching buffer for &apos;.a:buffer)
+</span><span class="sub">-	return
+</span><span class="sub">-    endif
+</span><span class="sub">-    if empty(a:bang) &amp;&amp; getbufvar(btarget, &apos;&amp;modified&apos;)
+</span><span class="sub">-	call s:Warn(&apos;No write since last change for buffer &apos;.btarget.&apos; (use :Bclose!)&apos;)
+</span><span class="sub">-	return
+</span><span class="sub">-    endif
+</span><span class="sub">-    &quot; Numbers of windows that view target buffer which we will delete.
+</span><span class="sub">-    let wnums = filter(range(1, winnr(&apos;$&apos;)), &apos;winbufnr(v:val) == btarget&apos;)
+</span><span class="sub">-    if !g:bclose_multiple &amp;&amp; len(wnums) &gt; 1
+</span><span class="sub">-	call s:Warn(&apos;Buffer is in multiple windows (use &quot;:let bclose_multiple=1&quot;)&apos;)
+</span><span class="sub">-	return
+</span><span class="sub">-    endif
+</span><span class="sub">-    let wcurrent = winnr()
+</span><span class="sub">-    for w in wnums
+</span><span class="sub">-	execute w.&apos;wincmd w&apos;
+</span><span class="sub">-	let prevbuf = bufnr(&apos;#&apos;)
+</span><span class="sub">-	if prevbuf &gt; 0 &amp;&amp; buflisted(prevbuf) &amp;&amp; prevbuf != w
+</span><span class="sub">-	    buffer #
+</span><span class="sub">-	else
+</span><span class="sub">-	    bprevious
+</span><span class="sub">-	endif
+</span><span class="sub">-	if btarget == bufnr(&apos;%&apos;)
+</span><span class="sub">-	    &quot; Numbers of listed buffers which are not the target to be deleted.
+</span><span class="sub">-	    let blisted = filter(range(1, bufnr(&apos;$&apos;)), &apos;buflisted(v:val) &amp;&amp; v:val != btarget&apos;)
+</span><span class="sub">-	    &quot; Listed, not target, and not displayed.
+</span><span class="sub">-	    let bhidden = filter(copy(blisted), &apos;bufwinnr(v:val) &lt; 0&apos;)
+</span><span class="sub">-	    &quot; Take the first buffer, if any (could be more intelligent).
+</span><span class="sub">-	    let bjump = (bhidden + blisted + [-1])[0]
+</span><span class="sub">-	    if bjump &gt; 0
+</span><span class="sub">-		execute &apos;buffer &apos;.bjump
+</span><span class="sub">-	    else
+</span><span class="sub">-		execute &apos;enew&apos;.a:bang
+</span><span class="sub">-	    endif
+</span><span class="sub">-	endif
+</span><span class="sub">-    endfor
+</span><span class="sub">-    silent! execute &apos;bdelete&apos;.a:bang.&apos; &apos;.btarget
+</span><span class="sub">-    silent! execute wcurrent.&apos;wincmd w&apos;
+</span><span class="sub">-endfunction
+</span><span class="sub">-command! -bang -complete=buffer -nargs=? Bclose call s:Bclose(&apos;&lt;bang&gt;&apos;, &apos;&lt;args&gt;&apos;)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-if v:servername == &quot;VIMLAB&quot;
+</span><span class="sub">-    nnoremap &lt;buffer&gt; &lt;silent&gt; &lt;BS&gt; &lt;Plug&gt;Kwbd
+</span><span class="sub">-else
+</span><span class="sub">-    autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;empty(bufname(v:val)) &amp;&amp; buflisted(v:val)&apos;)) == 1 &amp;&amp; v:servername != &quot;VIMLAB&quot; | quit | endif
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;BS&gt; :Bclose&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/plugin/autohighlight.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,23 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Highlight all instances of word under cursor, when idle.
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-function! AutoHighlightToggle()
+</span><span class="sub">-  let @/ = &apos;&apos;
+</span><span class="sub">-  if exists(&apos;#auto_highlight&apos;)
+</span><span class="sub">-    au! auto_highlight
+</span><span class="sub">-    augroup! auto_highlight
+</span><span class="sub">-    setl updatetime=4000
+</span><span class="sub">-    echo &apos;Highlight current word: off&apos;
+</span><span class="sub">-    return 0
+</span><span class="sub">-  else
+</span><span class="sub">-    augroup auto_highlight
+</span><span class="sub">-      au!
+</span><span class="sub">-      au CursorHold * let @/ = &apos;\V\&lt;&apos;.escape(expand(&apos;&lt;cword&gt;&apos;), &apos;\&apos;).&apos;\&gt;&apos;
+</span><span class="sub">-    augroup end
+</span><span class="sub">-    setl updatetime=500
+</span><span class="sub">-    echo &apos;Highlight current word: ON&apos;
+</span><span class="sub">-    return 1
+</span><span class="sub">-  endif
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-nnoremap &lt;bar&gt; :if AutoHighlightToggle()&lt;Bar&gt;set hls&lt;Bar&gt;endif&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/vimwiki.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,42 +0,0 @@
+<span class="sub">-&quot;&quot;&quot;&quot; These commented commands are in vimrc, so ARE active:
+</span><span class="sub">-&quot;&quot;&quot; split open index of vimwiki.
+</span><span class="sub">-&quot;nmap &lt;Leader&gt;wv :vsp&lt;CR&gt;&lt;Leader&gt;ww
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot;&quot;&quot; These commented commands are defaukts, so ARE active:
+</span><span class="sub">-&quot;&quot;&quot; \ww opens it normally, which is default, in new buffer
+</span><span class="sub">-&quot;nmap &lt;Leader&gt;wh Vimwiki2HTML
+</span><span class="sub">-&quot;nmap &lt;Leader&gt;whh Vimwiki2HTMLBrowse
+</span><span class="sub">-
+</span><span class="sub">-&quot; open index wiki in horizontal split	
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;ws :sp&lt;CR&gt;&lt;Leader&gt;ww
+</span><span class="sub">-
+</span><span class="sub">-&quot; go to papers page
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;gp /[[/papers/papers&lt;CR&gt;&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; save all as HTML
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;wa :VimwikiAll2HTML&lt;CR&gt;
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;wah :VimwikiAll2HTML&lt;CR&gt;:Vimwiki2HTMLBrowse&lt;CR&gt;&lt;CR&gt;
+</span><span class="sub">-&quot; save as HTML and quit
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;wq :VimwikiAll2HTML&lt;CR&gt;:wq&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; follow next link
+</span><span class="sub">-nmap &lt;buffer&gt; g&lt;CR&gt; /[[&lt;CR&gt;&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; paste copied bullet pointed link as title
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;p 0f\|yy&lt;CR&gt;Pdf\|$xx===o&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; open pdf from papers page
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;o 0f\|lvt]y:let a = substitute(@*, &apos; &apos;, &apos;_&apos;, &apos;g&apos;) \| exec &quot;!qpdfview --unique ~/work/research/papers/&quot; . a . &quot;.pdf &amp;&quot;&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; update papers page with new pdf files
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;u :!vimwiki_add_papers.sh&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; run goyo
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;g :Goyo&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-setlocal wrap
+</span><span class="sub">-setlocal linebreak
+</span><span class="sub">-setlocal breakindent
+</span><span class="sub">-
+</span><span class="sub">-nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/tex.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,11 +0,0 @@
+<span class="sub">-setlocal tabstop=4
+</span><span class="sub">-setlocal softtabstop=4
+</span><span class="sub">-setlocal shiftwidth=4
+</span><span class="sub">-setlocal textwidth=110
+</span><span class="sub">-setlocal expandtab
+</span><span class="sub">-
+</span><span class="sub">-nnoremap K :VimtexDocPackage&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-nnoremap &lt;localleader&gt;lw :exe &apos;cexpr system(&quot;texcount &apos; . expand(&apos;%&apos;) . &apos;&quot;)&apos;&lt;CR&gt;:copen&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-nnoremap &lt;localleader&gt;c :VimtexCompile&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/sh.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-setlocal textwidth=79
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/rst.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +0,0 @@
+<span class="sub">-setlocal textwidth=79
+</span><span class="sub">-&quot;setlocal spell spelllang=en_gb
+</span><span class="sub">-nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-nnoremap &lt;C-e&gt;t :RivTableCreate&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;C-e&gt;l :RivCreateLink&lt;CR&gt;
+</span><span class="sub">-&quot;&lt;C-e&gt;s[1,2,3] will make current line a heading
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/python.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +0,0 @@
+<span class="sub">-setlocal tabstop=4
+</span><span class="sub">-setlocal softtabstop=4
+</span><span class="sub">-setlocal shiftwidth=4
+</span><span class="sub">-setlocal textwidth=88
+</span><span class="sub">-setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/netrw.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,2 +0,0 @@
+<span class="sub">-map &lt;buffer&gt; h -
+</span><span class="sub">-map &lt;buffer&gt; l &lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/matlab.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-let g:tmux_cmd = &quot;tmux send -t MATLAB:MATLAB &quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/markdown.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,43 +0,0 @@
+<span class="sub">-setlocal tabstop=4
+</span><span class="sub">-setlocal softtabstop=4
+</span><span class="sub">-setlocal shiftwidth=4
+</span><span class="sub">-setlocal textwidth=101
+</span><span class="sub">-setlocal noautoindent
+</span><span class="sub">-setlocal nosmartindent
+</span><span class="sub">-&quot;setlocal formatoptions+=a
+</span><span class="sub">-&quot;setlocal spell spelllang=en_gb
+</span><span class="sub">-
+</span><span class="sub">-&quot; format folded section header text
+</span><span class="sub">-function! GenericFoldText()
+</span><span class="sub">-    let line = getline(v:foldstart)
+</span><span class="sub">-
+</span><span class="sub">-    let nucolwidth = &amp;fdc + &amp;number * &amp;numberwidth
+</span><span class="sub">-    let windowwidth = winwidth(0) - nucolwidth - 3
+</span><span class="sub">-    let foldedlinecount = v:foldend - v:foldstart
+</span><span class="sub">-
+</span><span class="sub">-    let onetab = strpart(&apos;          &apos;, 0, &amp;tabstop)
+</span><span class="sub">-    let line = substitute(line, &apos;\t&apos;, onetab, &apos;g&apos;)
+</span><span class="sub">-
+</span><span class="sub">-    let line = strpart(line, 0, windowwidth - len(foldedlinecount))
+</span><span class="sub">-    let level = (len(split(line)[0]) - 1) * 3
+</span><span class="sub">-    let level_indent = repeat(&quot; &quot;, level)
+</span><span class="sub">-    let fillcharcount = windowwidth - len(line) - len(foldedlinecount) - level
+</span><span class="sub">-    return level_indent . line . repeat(&quot; &quot;,fillcharcount) . &apos; &apos; . foldedlinecount
+</span><span class="sub">-endfunction
+</span><span class="sub">-setlocal foldtext=GenericFoldText()
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-&quot;function! MarkdownFixParagraph()
+</span><span class="sub">-&quot;    let start = line(&quot;&apos;{&quot;)
+</span><span class="sub">-&quot;    let end = line(&quot;&apos;}&quot;)
+</span><span class="sub">-&quot;    let g:ale_markdown_prettier_fix_options =
+</span><span class="sub">-&quot;	\ &apos;--prose-wrap=always --print-width=101 --range-start=&apos; . start . &apos; --range-end=&apos; . end
+</span><span class="sub">-&quot;    &quot;ALEFix
+</span><span class="sub">-&quot;endfunction
+</span><span class="sub">-&quot;
+</span><span class="sub">-&quot;&quot;nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span><span class="sub">-&quot;nnoremap &lt;localleader&gt;c :call MarkdownFixParagraph()&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot;let b:ale_lint_on_text_changed = 1
+</span><span class="sub">-&quot;let b:ale_fix_on_save = 1
+</span><span class="sub">-&quot;let b:ale_lint_delay = 1000
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/javascript.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +0,0 @@
+<span class="sub">-setlocal tabstop=2
+</span><span class="sub">-setlocal softtabstop=2
+</span><span class="sub">-setlocal shiftwidth=2
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/include.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-setlocal filetype=html
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/html.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +0,0 @@
+<span class="sub">-setlocal tabstop=2
+</span><span class="sub">-setlocal softtabstop=2
+</span><span class="sub">-setlocal shiftwidth=2
+</span><span class="sub">-setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/help.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,2 +0,0 @@
+<span class="sub">-&quot; this overrides :Bclose in help windows
+</span><span class="sub">-nnoremap &lt;buffer&gt; &lt;BS&gt; :bd&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/haskell.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +0,0 @@
+<span class="sub">-setlocal tabstop=4
+</span><span class="sub">-setlocal softtabstop=4
+</span><span class="sub">-setlocal shiftwidth=4
+</span><span class="sub">-setlocal textwidth=88
+</span><span class="sub">-setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ftplugin/h.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-setlocal filetype=c
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/after/plugin/theme.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre></pre>
+</div><div class="diff">
+  <p>
+    <b>start/after/plugin/gitgutter.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,16 +0,0 @@
+<span class="sub">-&quot;&quot;turn off realtime updates for gitgutter but update upon write
+</span><span class="sub">-&quot;let g:gitgutter_enabled = 0
+</span><span class="sub">-&quot;autocmd! gitgutter CursorHold,CursorHoldI
+</span><span class="sub">-&quot;autocmd BufWritePost * GitGutter
+</span><span class="sub">-&quot;
+</span><span class="sub">-&quot;&quot; gitgutter
+</span><span class="sub">-&quot;nmap &lt;localleader&gt;g :GitGutterToggle&lt;CR&gt;
+</span><span class="sub">-&quot;nmap gp &lt;Plug&gt;(GitGutterPreviewHunk)
+</span><span class="sub">-&quot;nmap gs &lt;Plug&gt;(GitGutterStageHunk)
+</span><span class="sub">-&quot;nmap gu &lt;Plug&gt;(GitGutterUndoHunk)
+</span><span class="sub">-&quot;nmap [g &lt;Plug&gt;(GitGutterPrevHunk)
+</span><span class="sub">-&quot;nmap ]g &lt;Plug&gt;(GitGutterNextHunk)
+</span><span class="sub">-&quot;omap ig &lt;Plug&gt;(GitGutterTextObjectInnerPending)
+</span><span class="sub">-&quot;omap ag &lt;Plug&gt;(GitGutterTextObjectOuterPending)
+</span><span class="sub">-&quot;xmap ig &lt;Plug&gt;(GitGutterTextObjectInnerVisual)
+</span><span class="sub">-&quot;xmap ag &lt;Plug&gt;(GitGutterTextObjectOuterVisual)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/after/plugin/emoji-config.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Config for https://gitlab.com/gi1242/vim-emoji-ab.git
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-&quot; reload current buffer
+</span><span class="sub">-&quot;runtime macros/emojis.vim
+</span><span class="sub">-
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/after/ftplugin/markdown.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,77 +0,0 @@
+<span class="sub">-&quot; Identify HTML comment-like blocks as markdown comments
+</span><span class="sub">-setlocal comments+=s:&lt;!---,e:--&gt;
+</span><span class="sub">-&quot; couldn&apos;t get this to work, so just sticking in &lt;br&gt; where needed
+</span><span class="sub">-&quot;setlocal comments+=s:![**,e:](
+</span><span class="sub">-
+</span><span class="sub">-&quot; Folding logic below is derived from the vim-markdown-folding plugin
+</span><span class="sub">-function! StackedMarkdownFolds()
+</span><span class="sub">-  let thisline = getline(v:lnum)
+</span><span class="sub">-  let prevline = getline(v:lnum - 1)
+</span><span class="sub">-  let nextline = getline(v:lnum + 1)
+</span><span class="sub">-  if thisline =~ &apos;^```.*$&apos; &amp;&amp; prevline =~ &apos;^\s*$&apos;  &quot; start of a fenced block
+</span><span class="sub">-    return &quot;&gt;2&quot;
+</span><span class="sub">-  elseif thisline =~ &apos;^```$&apos; &amp;&amp; nextline =~ &apos;^\s*$&apos;  &quot; end of a fenced block
+</span><span class="sub">-    return &quot;&lt;2&quot;
+</span><span class="sub">-  endif
+</span><span class="sub">-
+</span><span class="sub">-  if HeadingDepth(v:lnum) &gt; 0
+</span><span class="sub">-    return &quot;&gt;1&quot;
+</span><span class="sub">-  else
+</span><span class="sub">-    return &quot;=&quot;
+</span><span class="sub">-  endif
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-function! HeadingDepth(lnum)
+</span><span class="sub">-  let level=0
+</span><span class="sub">-  let thisline = getline(a:lnum)
+</span><span class="sub">-  if thisline =~ &apos;^#\+\s\+&apos;
+</span><span class="sub">-    let hashCount = len(matchstr(thisline, &apos;^#\{1,6}&apos;))
+</span><span class="sub">-    if hashCount &gt; 0
+</span><span class="sub">-      let level = hashCount
+</span><span class="sub">-    endif
+</span><span class="sub">-  else
+</span><span class="sub">-    if thisline != &apos;&apos;
+</span><span class="sub">-      let nextline = getline(a:lnum + 1)
+</span><span class="sub">-      if nextline =~ &apos;^=\+\s*$&apos;
+</span><span class="sub">-        let level = 1
+</span><span class="sub">-      elseif nextline =~ &apos;^-\+\s*$&apos;
+</span><span class="sub">-        let level = 2
+</span><span class="sub">-      endif
+</span><span class="sub">-    endif
+</span><span class="sub">-  endif
+</span><span class="sub">-  if level &gt; 0 &amp;&amp; HasSyntaxGroup(a:lnum, &apos;\vmarkdown(Code|Highlight)&apos;)
+</span><span class="sub">-    &quot; Ignore # or === if they appear within fenced code blocks
+</span><span class="sub">-    let level = 0
+</span><span class="sub">-  endif
+</span><span class="sub">-  return level
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-function! HasSyntaxGroup(lnum, targetGroup)
+</span><span class="sub">-  let syntaxGroup = map(synstack(a:lnum, 1), &apos;synIDattr(v:val, &quot;name&quot;)&apos;)
+</span><span class="sub">-  for value in syntaxGroup
+</span><span class="sub">-    if value =~ a:targetGroup
+</span><span class="sub">-        return 1
+</span><span class="sub">-    endif
+</span><span class="sub">-  endfor
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-function! s:FoldText()
+</span><span class="sub">-  let level = HeadingDepth(v:foldstart)
+</span><span class="sub">-  let indent = repeat(&apos;#&apos;, level)
+</span><span class="sub">-  let title = substitute(getline(v:foldstart), &apos;^#\+\s\+&apos;, &apos;&apos;, &apos;&apos;)
+</span><span class="sub">-
+</span><span class="sub">-  let spaces_1 = repeat(&apos; &apos;, level) . &apos;   &apos;
+</span><span class="sub">-  let spaces_2 = repeat(&apos; &apos;, 200)
+</span><span class="sub">-
+</span><span class="sub">-  return indent.spaces_1.title.spaces_2
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-setlocal foldmethod=expr
+</span><span class="sub">-
+</span><span class="sub">-let &amp;l:foldtext = expand(&apos;&lt;SID&gt;&apos;) . &apos;FoldText()&apos;
+</span><span class="sub">-let &amp;l:foldexpr = &apos;StackedMarkdownFolds()&apos;
+</span><span class="sub">-
+</span><span class="sub">-if !exists(&quot;b:undo_ftplugin&quot;) | let b:undo_ftplugin = &apos;&apos; | endif
+</span><span class="sub">-let b:undo_ftplugin .= &apos;
+</span><span class="sub">-  \ | setlocal foldmethod&lt; foldtext&lt; foldexpr&lt;
+</span><span class="sub">-  \ &apos;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/plugin/theme.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,78 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Ricing                                                           &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; statusline
+</span><span class="add">+set laststatus=2			    &quot; always show status bar
+</span><span class="add">+set statusline =
+</span><span class="add">+if $USER == &apos;root&apos;
+</span><span class="add">+    let hostname = hostname()
+</span><span class="add">+    exec &apos;set statusline +=%7*\ &apos; . $USER . &apos;@&apos; . hostname . &apos;\ %*&apos;
+</span><span class="add">+endif
+</span><span class="add">+if ! empty($TMUX)
+</span><span class="add">+    set statusline +=%6*%*
+</span><span class="add">+endif
+</span><span class="add">+
+</span><span class="add">+set statusline +=%1*\ \ %&lt;%F\ \ %*	    &quot; full path
+</span><span class="add">+set statusline +=%2*\ \ %y%*                &quot; file type
+</span><span class="add">+set statusline +=%2*\ %m\ %*                &quot; modified flag
+</span><span class="add">+set statusline +=%3*%{noscrollbar#statusline(12,&apos;\ &apos;,&apos;-&apos;)}
+</span><span class="add">+set statusline +=%4*%=%*		    &quot; centre padding
+</span><span class="add">+set statusline +=%5*\ \ %l\ /\ %L\ \ %*	    &quot; current / total lines
+</span><span class="add">+set statusline +=%1*\ %n\ %*		    &quot; buffer number 
+</span><span class="add">+
+</span><span class="add">+hi User1 ctermfg=0 ctermbg=5 cterm=none
+</span><span class="add">+hi User2 ctermfg=0 ctermbg=4 cterm=none
+</span><span class="add">+hi User3 ctermfg=0 ctermbg=14 cterm=none
+</span><span class="add">+hi User4 ctermfg=0 ctermbg=2 cterm=none
+</span><span class="add">+hi User5 ctermfg=0 ctermbg=3 cterm=none
+</span><span class="add">+hi User6 ctermfg=3 ctermbg=5 cterm=none
+</span><span class="add">+hi User7 ctermfg=0 ctermbg=9 cterm=none
+</span><span class="add">+
+</span><span class="add">+&quot; tab bar
+</span><span class="add">+hi TabLineFill ctermfg=0 ctermbg=1
+</span><span class="add">+hi TabLine ctermfg=0 ctermbg=13
+</span><span class="add">+hi TabLineSel ctermfg=0 ctermbg=12
+</span><span class="add">+hi Title ctermfg=0 ctermbg=12
+</span><span class="add">+
+</span><span class="add">+&quot; vimdiff  &quot; commented out as it was disrupting git gutter
+</span><span class="add">+&quot;hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="add">+&quot;hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="add">+&quot;hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="add">+&quot;hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="add">+
+</span><span class="add">+&quot; folds
+</span><span class="add">+hi Folded ctermbg=8 ctermfg=4 cterm=none
+</span><span class="add">+
+</span><span class="add">+&quot; visual mode highlighting
+</span><span class="add">+hi Visual ctermbg=7 ctermfg=0
+</span><span class="add">+
+</span><span class="add">+&quot; title highlighting needs changing so that text doesn&apos;t go invisible due to cursor line
+</span><span class="add">+hi Title ctermfg=3 ctermbg=0
+</span><span class="add">+
+</span><span class="add">+&quot; matched brackets
+</span><span class="add">+hi MatchParen ctermfg=7 cterm=underline ctermbg=0 
+</span><span class="add">+
+</span><span class="add">+&quot; line numbers
+</span><span class="add">+set number relativenumber
+</span><span class="add">+hi LineNr ctermfg=5
+</span><span class="add">+
+</span><span class="add">+&quot; highlight cursor line
+</span><span class="add">+highlight CursorLine ctermbg=8 cterm=bold
+</span><span class="add">+augroup CursorLine
+</span><span class="add">+    au!
+</span><span class="add">+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+</span><span class="add">+    au WinLeave * setlocal nocursorline
+</span><span class="add">+augroup END
+</span><span class="add">+
+</span><span class="add">+&quot; change cursor shape in insert mode
+</span><span class="add">+let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="add">+let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="add">+augroup myCmds
+</span><span class="add">+    au!
+</span><span class="add">+    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="add">+augroup END
+</span><span class="add">+
+</span><span class="add">+&quot; character for split barrier
+</span><span class="add">+set fillchars=vert:\ 
+</span><span class="add">+hi VertSplit cterm=bold term=bold ctermbg=12
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/plugin/noscrollbar.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,115 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; noscrollbar plugin from github.com/gcavallanti/vim-noscrollbar
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+if &amp;cp || exists(&apos;g:noscrollbar_loaded&apos;)
+</span><span class="add">+  finish
+</span><span class="add">+endif
+</span><span class="add">+
+</span><span class="add">+let g:noscrollbar_loaded = 1
+</span><span class="add">+
+</span><span class="add">+function! noscrollbar#statusline(...)
+</span><span class="add">+    let top_line = line(&quot;w0&quot;)
+</span><span class="add">+    let bottom_line = line(&quot;w$&quot;)
+</span><span class="add">+    let current_line = line(&apos;.&apos;)
+</span><span class="add">+    let lines_count = line(&apos;$&apos;)
+</span><span class="add">+
+</span><span class="add">+    &quot; Default values
+</span><span class="add">+    let length = 20
+</span><span class="add">+    let tracksymbol = &apos;-&apos;
+</span><span class="add">+    let grippersymbol = &apos;#&apos;
+</span><span class="add">+    let gripperleftsymbols = []
+</span><span class="add">+    let gripperrightsymbols = []
+</span><span class="add">+    let part = &apos;a&apos;
+</span><span class="add">+
+</span><span class="add">+    if a:0 &gt;= 3
+</span><span class="add">+      let length = a:1
+</span><span class="add">+      let tracksymbol = a:2
+</span><span class="add">+      let grippersymbol = a:3
+</span><span class="add">+    endif
+</span><span class="add">+
+</span><span class="add">+    if a:0 &gt;= 5 &amp;&amp; type(a:4) == 3 &amp;&amp; type(a:5) == 3
+</span><span class="add">+                \ &amp;&amp; len(a:4) == len(a:5) 
+</span><span class="add">+        let gripperleftsymbols = a:4
+</span><span class="add">+        let gripperrightsymbols = a:5
+</span><span class="add">+    endif
+</span><span class="add">+
+</span><span class="add">+    if a:0 &gt;= 6
+</span><span class="add">+      let part = a:6
+</span><span class="add">+    endif
+</span><span class="add">+
+</span><span class="add">+    let scaling = len(gripperleftsymbols) + 1 
+</span><span class="add">+
+</span><span class="add">+    &quot; Compute gripper position and size as if we have scaling times a:1
+</span><span class="add">+    &quot; characters available. Will shrink everything back just before returning 
+</span><span class="add">+    let scrollbar_length = str2nr(length) * scaling
+</span><span class="add">+
+</span><span class="add">+    &quot; Gripper positions are 0 based (0..scrollbar_length-1)
+</span><span class="add">+    let gripper_position = float2nr((top_line - 1.0) / lines_count 
+</span><span class="add">+\       * scrollbar_length)
+</span><span class="add">+    let gripper_length = float2nr(ceil((bottom_line - top_line + 1.0)  
+</span><span class="add">+\       / lines_count * scrollbar_length)) 
+</span><span class="add">+
+</span><span class="add">+    &quot; Users expect to see the scrollbar in the leftmost position only if we
+</span><span class="add">+    &quot; are at the very top of the buffer
+</span><span class="add">+    if (top_line &gt; 1) &amp;&amp; (gripper_position == 0)
+</span><span class="add">+        &quot; Since the top line is not visible shift the gripper by one position
+</span><span class="add">+        let gripper_position = 1
+</span><span class="add">+        if (gripper_position + gripper_length &gt; scrollbar_length)
+</span><span class="add">+            &quot; Shrink the gripper if we end up after the end of the scrollbar 
+</span><span class="add">+            let gripper_length = gripper_length - 1
+</span><span class="add">+        endif
+</span><span class="add">+    endif
+</span><span class="add">+
+</span><span class="add">+    if (bottom_line &lt; lines_count) 
+</span><span class="add">+\       &amp;&amp; (gripper_position + gripper_length == scrollbar_length)
+</span><span class="add">+        &quot; As before, if the last line is not on the screen but the scrollbar
+</span><span class="add">+        &quot; seems to indicate so then either move the scrollbar position leftwise
+</span><span class="add">+        &quot; by one position or decrease its length
+</span><span class="add">+        if gripper_position &gt; 0
+</span><span class="add">+            let gripper_position = gripper_position - 1
+</span><span class="add">+        else
+</span><span class="add">+            let gripper_length = gripper_length - 1
+</span><span class="add">+        endif
+</span><span class="add">+    endif
+</span><span class="add">+
+</span><span class="add">+    &quot; Shrink everything back to the range [0, a:1)
+</span><span class="add">+    let gripper_position = 1.0 * gripper_position / scaling
+</span><span class="add">+    let gripper_length = 1.0 * gripper_length / scaling
+</span><span class="add">+    let scrollbar_length = 1.0 * scrollbar_length / scaling
+</span><span class="add">+
+</span><span class="add">+    &quot; The left of the gripper is broken in 3 parts.  The left and right are
+</span><span class="add">+    &quot; fractionals in the range [0, len(a:4)). 
+</span><span class="add">+    let gripper_length_left = ceil(gripper_position) - gripper_position
+</span><span class="add">+    &quot; Hackish rounding errors workaround. If `gripper_length
+</span><span class="add">+    &quot; - gripper_lenght_left` is 0.9999.. we force it to 1 before rounding it
+</span><span class="add">+    let gripper_length_middle = floor(round((gripper_length 
+</span><span class="add">+                \ - gripper_length_left)*100.0)/100.0)
+</span><span class="add">+    let gripper_length_right = gripper_length - gripper_length_left 
+</span><span class="add">+                \ - gripper_length_middle
+</span><span class="add">+
+</span><span class="add">+    &quot; Time to assemble the actual scrollbar
+</span><span class="add">+    let scrollbar = &apos;&apos;
+</span><span class="add">+    if part != &apos;m&apos; &amp;&amp; part != &apos;r&apos;
+</span><span class="add">+        let scrollbar .= repeat(tracksymbol, float2nr(floor(gripper_position)))
+</span><span class="add">+
+</span><span class="add">+        let grippersymbol_index = float2nr(round(gripper_length_left * scaling))
+</span><span class="add">+        if grippersymbol_index != 0
+</span><span class="add">+            let scrollbar .= gripperleftsymbols[grippersymbol_index - 1]
+</span><span class="add">+        endif
+</span><span class="add">+    endif
+</span><span class="add">+    
+</span><span class="add">+    if part != &apos;l&apos; &amp;&amp; part != &apos;r&apos;
+</span><span class="add">+        let scrollbar .= repeat(grippersymbol, float2nr(gripper_length_middle)) 
+</span><span class="add">+    endif
+</span><span class="add">+
+</span><span class="add">+    if part != &apos;l&apos; &amp;&amp; part != &apos;m&apos;
+</span><span class="add">+        let grippersymbol_index = float2nr(round(gripper_length_right * scaling))
+</span><span class="add">+        if grippersymbol_index != 0
+</span><span class="add">+            let scrollbar .= gripperrightsymbols[grippersymbol_index - 1]
+</span><span class="add">+        endif
+</span><span class="add">+        let scrollbar .= repeat(tracksymbol, float2nr(scrollbar_length 
+</span><span class="add">+                    \ - ceil(gripper_position + gripper_length)))
+</span><span class="add">+    endif
+</span><span class="add">+
+</span><span class="add">+    return scrollbar
+</span><span class="add">+endfunction
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/plugin/keybindings.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,128 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Global keybindings                                               &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; reload current buffer
+</span><span class="add">+&quot;nnoremap &lt;C-l&gt; :e&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; toggle fold
+</span><span class="add">+nnoremap &lt;space&gt; za
+</span><span class="add">+
+</span><span class="add">+&quot; yank to end of line
+</span><span class="add">+nnoremap Y y$
+</span><span class="add">+
+</span><span class="add">+&quot; buffer navigation
+</span><span class="add">+nnoremap &lt;leader&gt;b :ls&lt;CR&gt;:b&lt;space&gt;
+</span><span class="add">+nnoremap &lt;Leader&gt;v :ls&lt;CR&gt;:vert sb&lt;space&gt;
+</span><span class="add">+nnoremap &lt;Leader&gt;j :bnext&lt;CR&gt; 
+</span><span class="add">+nnoremap &lt;Leader&gt;k :bprevious&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;Leader&gt;&lt;BS&gt; :w&lt;CR&gt;:bdelete&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; move between tabs
+</span><span class="add">+nnoremap &lt;Leader&gt;n gT
+</span><span class="add">+nnoremap &lt;Leader&gt;m gt
+</span><span class="add">+
+</span><span class="add">+&quot; indent selection
+</span><span class="add">+vnoremap &lt; &lt;gv
+</span><span class="add">+vnoremap &gt; &gt;gv
+</span><span class="add">+
+</span><span class="add">+&quot; quitting and writing shortcuts
+</span><span class="add">+nnoremap QQ :q&lt;CR&gt;
+</span><span class="add">+nnoremap !Q :q!&lt;CR&gt;
+</span><span class="add">+nnoremap QW :wq&lt;CR&gt;
+</span><span class="add">+nnoremap :Q :q
+</span><span class="add">+nnoremap :W :w
+</span><span class="add">+
+</span><span class="add">+&quot; disable K man
+</span><span class="add">+nnoremap K k
+</span><span class="add">+
+</span><span class="add">+&quot; copy and paste system clipboard
+</span><span class="add">+nmap &lt;C-y&gt; &quot;+y
+</span><span class="add">+nmap &lt;C-y&gt;&lt;C-y&gt; ms0v$&quot;+y`s
+</span><span class="add">+vmap &lt;C-y&gt; &quot;+y
+</span><span class="add">+imap &lt;C-y&gt; &lt;Esc&gt;&quot;+y
+</span><span class="add">+if exists(&quot;$WAYLAND_DISPLAY&quot;)
+</span><span class="add">+    xmap &quot;+y y:call system(&quot;wl-copy&quot;, @&quot;)\|echo &apos;&apos; &lt;cr&gt;
+</span><span class="add">+endif
+</span><span class="add">+
+</span><span class="add">+&quot; save read-only file with sudo trick
+</span><span class="add">+cnoremap w!! w !sudo tee &gt; /dev/null %
+</span><span class="add">+
+</span><span class="add">+&quot; move between split views (these are configured by the vim-tmux plugin)
+</span><span class="add">+&quot; except for insert mode:
+</span><span class="add">+&quot;inoremap &lt;silent&gt; &lt;C-H&gt; &lt;Esc&gt;:TmuxNavigateLeft&lt;cr&gt;
+</span><span class="add">+&quot;inoremap &lt;silent&gt; &lt;C-J&gt; &lt;Esc&gt;:TmuxNavigateDown&lt;cr&gt;
+</span><span class="add">+&quot;inoremap &lt;silent&gt; &lt;C-K&gt; &lt;Esc&gt;:TmuxNavigateUp&lt;cr&gt;
+</span><span class="add">+&quot;inoremap &lt;silent&gt; &lt;C-L&gt; &lt;Esc&gt;:TmuxNavigateRight&lt;cr&gt;
+</span><span class="add">+&quot;inoremap &lt;silent&gt; &lt;C-\&gt; &lt;Esc&gt;:TmuxNavigatePrevious&lt;cr&gt;
+</span><span class="add">+nnoremap &lt;C-H&gt; &lt;C-W&gt;&lt;C-H&gt;
+</span><span class="add">+nnoremap &lt;C-J&gt; &lt;C-W&gt;&lt;C-J&gt;
+</span><span class="add">+nnoremap &lt;C-K&gt; &lt;C-W&gt;&lt;C-K&gt;
+</span><span class="add">+nnoremap &lt;C-L&gt; &lt;C-W&gt;&lt;C-L&gt;
+</span><span class="add">+inoremap &lt;C-H&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-H&gt;
+</span><span class="add">+inoremap &lt;C-J&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-J&gt;
+</span><span class="add">+inoremap &lt;C-K&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-K&gt;
+</span><span class="add">+inoremap &lt;C-L&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-L&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; move to start or end of line more easily
+</span><span class="add">+nnoremap 0 ^
+</span><span class="add">+nnoremap H 0
+</span><span class="add">+nnoremap L $
+</span><span class="add">+vnoremap H 0
+</span><span class="add">+vnoremap L g_
+</span><span class="add">+
+</span><span class="add">+&quot; resize splits
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Up&gt; :res -1&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Down&gt; :res +1&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Left&gt; :vertical resize -5&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Right&gt; :vertical resize +5&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; toggle search highlight
+</span><span class="add">+nnoremap &lt;Leader&gt;h :set hlsearch!&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; shortcut to fix lines
+</span><span class="add">+nnoremap &lt;leader&gt;p gqip
+</span><span class="add">+
+</span><span class="add">+&quot; shortcut to vert split
+</span><span class="add">+nnoremap vs :vsp&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; toggle spell checking
+</span><span class="add">+nnoremap &lt;leader&gt;S :setlocal spell! spelllang=en_gb spell?&lt;CR&gt;:echo &quot;zg to add new word&quot;&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; toggle [ ] tick box on current line with ctrl-space
+</span><span class="add">+function! ToggleTodo()
+</span><span class="add">+    let l:line = getline(&apos;.&apos;)
+</span><span class="add">+    if match(l:line, &apos;\[x\]&apos;) != -1
+</span><span class="add">+	let l:line = substitute(l:line, &apos;\[x\]&apos;, &apos;\[ \]&apos;, &apos;&apos;)
+</span><span class="add">+	call setline(&apos;.&apos;, l:line)
+</span><span class="add">+    elseif match(l:line, &apos;\[ \]&apos;) != -1
+</span><span class="add">+	let l:line = substitute(l:line, &apos;\[ \]&apos;, &apos;\[x\]&apos;, &apos;&apos;)
+</span><span class="add">+	call setline(&apos;.&apos;, l:line)
+</span><span class="add">+    endif
+</span><span class="add">+endfunction
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;C-@&gt; :call ToggleTodo()&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; quickfix navigation
+</span><span class="add">+nnoremap &lt;localleader&gt;cn :cn&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;localleader&gt;cp :cp&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; netrw
+</span><span class="add">+nmap &lt;C-n&gt; :Explore&lt;CR&gt;
+</span><span class="add">+let g:netrw_sort_sequence=&apos;[\/]$&apos;
+</span><span class="add">+
+</span><span class="add">+&quot; bind number keys to scroll so i can use foot terminal&apos;s alt scrolling
+</span><span class="add">+map &lt;Down&gt; j
+</span><span class="add">+map &lt;Up&gt; k
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot; bind scroll to move cursor up and down
+</span><span class="add">+nnoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="add">+nnoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="add">+inoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="add">+inoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="add">+vnoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="add">+vnoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; ALE navigation
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-S-k&gt; &lt;Plug&gt;(ale_previous_wrap)
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-S-j&gt; &lt;Plug&gt;(ale_next_wrap)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/plugin/indent.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,13 @@
+<span class="add">+&quot;------------------------------------------------------------------
+</span><span class="add">+&quot;  Indentation of entire file
+</span><span class="add">+&quot;------------------------------------------------------------------
+</span><span class="add">+
+</span><span class="add">+&quot;function! IndentFile()
+</span><span class="add">+&quot;    mkview
+</span><span class="add">+&quot;    let l:win_view = winsaveview()
+</span><span class="add">+&quot;    :normal! gg=G
+</span><span class="add">+&quot;    silent loadview
+</span><span class="add">+&quot;    call winrestview(l:win_view)
+</span><span class="add">+&quot;endfunction
+</span><span class="add">+&quot;
+</span><span class="add">+&quot;nnoremap &lt;C-i&gt; :call IndentFile()&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/plugin/folds.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,34 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Global folding rules
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot; format folded section header text
+</span><span class="add">+function! GenericFoldText()
+</span><span class="add">+    let line = getline(v:foldstart)
+</span><span class="add">+
+</span><span class="add">+    let nucolwidth = &amp;fdc + &amp;number * &amp;numberwidth
+</span><span class="add">+    let windowwidth = winwidth(0) - nucolwidth - 3
+</span><span class="add">+    let foldedlinecount = v:foldend - v:foldstart
+</span><span class="add">+
+</span><span class="add">+    let onetab = strpart(&apos;          &apos;, 0, &amp;tabstop)
+</span><span class="add">+    let line = substitute(line, &apos;\t&apos;, onetab, &apos;g&apos;)
+</span><span class="add">+
+</span><span class="add">+    let line = strpart(line, 0, windowwidth - len(foldedlinecount))
+</span><span class="add">+    let fillcharcount = windowwidth - len(line) - len(foldedlinecount)
+</span><span class="add">+    return line . repeat(&quot; &quot;,fillcharcount) . &apos; &apos; . foldedlinecount
+</span><span class="add">+endfunction
+</span><span class="add">+set foldtext=GenericFoldText()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot;function! GenericFolds()
+</span><span class="add">+&quot;    if match(getline(v:lnum), &apos;^\s*&apos; . &amp;commentstring[0] . &amp;commentstring[0]) &gt;=0
+</span><span class="add">+&quot;	return &quot;&gt;1&quot;
+</span><span class="add">+&quot;    else
+</span><span class="add">+&quot;	return &quot;=&quot;
+</span><span class="add">+&quot;    endif
+</span><span class="add">+&quot;endfunction
+</span><span class="add">+&quot;
+</span><span class="add">+&quot;
+</span><span class="add">+&quot;set foldmethod=expr
+</span><span class="add">+&quot;set foldexpr=GenericFolds()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/plugin/bclose.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,87 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; :bclose                                                          &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; Delete buffer while keeping window layout (don&apos;t close buffer&apos;s windows).
+</span><span class="add">+&quot; Version 2008-11-18 from http://vim.wikia.com/wiki/VimTip165
+</span><span class="add">+if v:version &lt; 700 || exists(&apos;loaded_bclose&apos;) || &amp;cp
+</span><span class="add">+    finish
+</span><span class="add">+endif
+</span><span class="add">+let loaded_bclose = 1
+</span><span class="add">+if !exists(&apos;bclose_multiple&apos;)
+</span><span class="add">+    let bclose_multiple = 1
+</span><span class="add">+endif
+</span><span class="add">+
+</span><span class="add">+&quot; Display an error message.
+</span><span class="add">+function! s:Warn(msg)
+</span><span class="add">+    echohl ErrorMsg
+</span><span class="add">+    echomsg a:msg
+</span><span class="add">+    echohl NONE
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+&quot; Command &apos;:Bclose&apos; executes &apos;:bd&apos; to delete buffer in current window.
+</span><span class="add">+&quot; The window will show the alternate buffer (Ctrl-^) if it exists,
+</span><span class="add">+&quot; or the previous buffer (:bp), or a blank buffer if no previous.
+</span><span class="add">+&quot; Command &apos;:Bclose!&apos; is the same, but executes &apos;:bd!&apos; (discard changes).
+</span><span class="add">+&quot; An optional argument can specify which buffer to close (name or number).
+</span><span class="add">+function! s:Bclose(bang, buffer)
+</span><span class="add">+    if empty(a:buffer)
+</span><span class="add">+	let btarget = bufnr(&apos;%&apos;)
+</span><span class="add">+    elseif a:buffer =~ &apos;^\d\+$&apos;
+</span><span class="add">+	let btarget = bufnr(str2nr(a:buffer))
+</span><span class="add">+    else
+</span><span class="add">+	let btarget = bufnr(a:buffer)
+</span><span class="add">+    endif
+</span><span class="add">+    if btarget &lt; 0
+</span><span class="add">+	call s:Warn(&apos;No matching buffer for &apos;.a:buffer)
+</span><span class="add">+	return
+</span><span class="add">+    endif
+</span><span class="add">+    if empty(a:bang) &amp;&amp; getbufvar(btarget, &apos;&amp;modified&apos;)
+</span><span class="add">+	call s:Warn(&apos;No write since last change for buffer &apos;.btarget.&apos; (use :Bclose!)&apos;)
+</span><span class="add">+	return
+</span><span class="add">+    endif
+</span><span class="add">+    &quot; Numbers of windows that view target buffer which we will delete.
+</span><span class="add">+    let wnums = filter(range(1, winnr(&apos;$&apos;)), &apos;winbufnr(v:val) == btarget&apos;)
+</span><span class="add">+    if !g:bclose_multiple &amp;&amp; len(wnums) &gt; 1
+</span><span class="add">+	call s:Warn(&apos;Buffer is in multiple windows (use &quot;:let bclose_multiple=1&quot;)&apos;)
+</span><span class="add">+	return
+</span><span class="add">+    endif
+</span><span class="add">+    let wcurrent = winnr()
+</span><span class="add">+    for w in wnums
+</span><span class="add">+	execute w.&apos;wincmd w&apos;
+</span><span class="add">+	let prevbuf = bufnr(&apos;#&apos;)
+</span><span class="add">+	if prevbuf &gt; 0 &amp;&amp; buflisted(prevbuf) &amp;&amp; prevbuf != w
+</span><span class="add">+	    buffer #
+</span><span class="add">+	else
+</span><span class="add">+	    bprevious
+</span><span class="add">+	endif
+</span><span class="add">+	if btarget == bufnr(&apos;%&apos;)
+</span><span class="add">+	    &quot; Numbers of listed buffers which are not the target to be deleted.
+</span><span class="add">+	    let blisted = filter(range(1, bufnr(&apos;$&apos;)), &apos;buflisted(v:val) &amp;&amp; v:val != btarget&apos;)
+</span><span class="add">+	    &quot; Listed, not target, and not displayed.
+</span><span class="add">+	    let bhidden = filter(copy(blisted), &apos;bufwinnr(v:val) &lt; 0&apos;)
+</span><span class="add">+	    &quot; Take the first buffer, if any (could be more intelligent).
+</span><span class="add">+	    let bjump = (bhidden + blisted + [-1])[0]
+</span><span class="add">+	    if bjump &gt; 0
+</span><span class="add">+		execute &apos;buffer &apos;.bjump
+</span><span class="add">+	    else
+</span><span class="add">+		execute &apos;enew&apos;.a:bang
+</span><span class="add">+	    endif
+</span><span class="add">+	endif
+</span><span class="add">+    endfor
+</span><span class="add">+    silent! execute &apos;bdelete&apos;.a:bang.&apos; &apos;.btarget
+</span><span class="add">+    silent! execute wcurrent.&apos;wincmd w&apos;
+</span><span class="add">+endfunction
+</span><span class="add">+command! -bang -complete=buffer -nargs=? Bclose call s:Bclose(&apos;&lt;bang&gt;&apos;, &apos;&lt;args&gt;&apos;)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+if v:servername == &quot;VIMLAB&quot;
+</span><span class="add">+    nnoremap &lt;buffer&gt; &lt;silent&gt; &lt;BS&gt; &lt;Plug&gt;Kwbd
+</span><span class="add">+else
+</span><span class="add">+    autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;empty(bufname(v:val)) &amp;&amp; buflisted(v:val)&apos;)) == 1 &amp;&amp; v:servername != &quot;VIMLAB&quot; | quit | endif
+</span><span class="add">+endif
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;BS&gt; :Bclose&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/plugin/autohighlight.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,23 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Highlight all instances of word under cursor, when idle.
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+function! AutoHighlightToggle()
+</span><span class="add">+  let @/ = &apos;&apos;
+</span><span class="add">+  if exists(&apos;#auto_highlight&apos;)
+</span><span class="add">+    au! auto_highlight
+</span><span class="add">+    augroup! auto_highlight
+</span><span class="add">+    setl updatetime=4000
+</span><span class="add">+    echo &apos;Highlight current word: off&apos;
+</span><span class="add">+    return 0
+</span><span class="add">+  else
+</span><span class="add">+    augroup auto_highlight
+</span><span class="add">+      au!
+</span><span class="add">+      au CursorHold * let @/ = &apos;\V\&lt;&apos;.escape(expand(&apos;&lt;cword&gt;&apos;), &apos;\&apos;).&apos;\&gt;&apos;
+</span><span class="add">+    augroup end
+</span><span class="add">+    setl updatetime=500
+</span><span class="add">+    echo &apos;Highlight current word: ON&apos;
+</span><span class="add">+    return 1
+</span><span class="add">+  endif
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;bar&gt; :if AutoHighlightToggle()&lt;Bar&gt;set hls&lt;Bar&gt;endif&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/vimwiki.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,42 @@
+<span class="add">+&quot;&quot;&quot;&quot; These commented commands are in vimrc, so ARE active:
+</span><span class="add">+&quot;&quot;&quot; split open index of vimwiki.
+</span><span class="add">+&quot;nmap &lt;Leader&gt;wv :vsp&lt;CR&gt;&lt;Leader&gt;ww
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;&quot; These commented commands are defaukts, so ARE active:
+</span><span class="add">+&quot;&quot;&quot; \ww opens it normally, which is default, in new buffer
+</span><span class="add">+&quot;nmap &lt;Leader&gt;wh Vimwiki2HTML
+</span><span class="add">+&quot;nmap &lt;Leader&gt;whh Vimwiki2HTMLBrowse
+</span><span class="add">+
+</span><span class="add">+&quot; open index wiki in horizontal split	
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;ws :sp&lt;CR&gt;&lt;Leader&gt;ww
+</span><span class="add">+
+</span><span class="add">+&quot; go to papers page
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;gp /[[/papers/papers&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; save all as HTML
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;wa :VimwikiAll2HTML&lt;CR&gt;
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;wah :VimwikiAll2HTML&lt;CR&gt;:Vimwiki2HTMLBrowse&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+&quot; save as HTML and quit
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;wq :VimwikiAll2HTML&lt;CR&gt;:wq&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; follow next link
+</span><span class="add">+nmap &lt;buffer&gt; g&lt;CR&gt; /[[&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; paste copied bullet pointed link as title
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;p 0f\|yy&lt;CR&gt;Pdf\|$xx===o&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; open pdf from papers page
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;o 0f\|lvt]y:let a = substitute(@*, &apos; &apos;, &apos;_&apos;, &apos;g&apos;) \| exec &quot;!qpdfview --unique ~/work/research/papers/&quot; . a . &quot;.pdf &amp;&quot;&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; update papers page with new pdf files
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;u :!vimwiki_add_papers.sh&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; run goyo
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;g :Goyo&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+setlocal wrap
+</span><span class="add">+setlocal linebreak
+</span><span class="add">+setlocal breakindent
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/tex.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,11 @@
+<span class="add">+setlocal tabstop=4
+</span><span class="add">+setlocal softtabstop=4
+</span><span class="add">+setlocal shiftwidth=4
+</span><span class="add">+setlocal textwidth=110
+</span><span class="add">+setlocal expandtab
+</span><span class="add">+
+</span><span class="add">+nnoremap K :VimtexDocPackage&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;localleader&gt;lw :exe &apos;cexpr system(&quot;texcount &apos; . expand(&apos;%&apos;) . &apos;&quot;)&apos;&lt;CR&gt;:copen&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;localleader&gt;c :VimtexCompile&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/sh.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+setlocal textwidth=79
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/rst.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,8 @@
+<span class="add">+setlocal textwidth=79
+</span><span class="add">+&quot;setlocal spell spelllang=en_gb
+</span><span class="add">+nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;C-e&gt;t :RivTableCreate&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;C-e&gt;l :RivCreateLink&lt;CR&gt;
+</span><span class="add">+&quot;&lt;C-e&gt;s[1,2,3] will make current line a heading
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/python.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,5 @@
+<span class="add">+setlocal tabstop=4
+</span><span class="add">+setlocal softtabstop=4
+</span><span class="add">+setlocal shiftwidth=4
+</span><span class="add">+setlocal textwidth=88
+</span><span class="add">+setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/netrw.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+map &lt;buffer&gt; h -
+</span><span class="add">+map &lt;buffer&gt; l &lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/matlab.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+let g:tmux_cmd = &quot;tmux send -t MATLAB:MATLAB &quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/markdown.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,43 @@
+<span class="add">+setlocal tabstop=4
+</span><span class="add">+setlocal softtabstop=4
+</span><span class="add">+setlocal shiftwidth=4
+</span><span class="add">+setlocal textwidth=101
+</span><span class="add">+setlocal noautoindent
+</span><span class="add">+setlocal nosmartindent
+</span><span class="add">+&quot;setlocal formatoptions+=a
+</span><span class="add">+&quot;setlocal spell spelllang=en_gb
+</span><span class="add">+
+</span><span class="add">+&quot; format folded section header text
+</span><span class="add">+function! GenericFoldText()
+</span><span class="add">+    let line = getline(v:foldstart)
+</span><span class="add">+
+</span><span class="add">+    let nucolwidth = &amp;fdc + &amp;number * &amp;numberwidth
+</span><span class="add">+    let windowwidth = winwidth(0) - nucolwidth - 3
+</span><span class="add">+    let foldedlinecount = v:foldend - v:foldstart
+</span><span class="add">+
+</span><span class="add">+    let onetab = strpart(&apos;          &apos;, 0, &amp;tabstop)
+</span><span class="add">+    let line = substitute(line, &apos;\t&apos;, onetab, &apos;g&apos;)
+</span><span class="add">+
+</span><span class="add">+    let line = strpart(line, 0, windowwidth - len(foldedlinecount))
+</span><span class="add">+    let level = (len(split(line)[0]) - 1) * 3
+</span><span class="add">+    let level_indent = repeat(&quot; &quot;, level)
+</span><span class="add">+    let fillcharcount = windowwidth - len(line) - len(foldedlinecount) - level
+</span><span class="add">+    return level_indent . line . repeat(&quot; &quot;,fillcharcount) . &apos; &apos; . foldedlinecount
+</span><span class="add">+endfunction
+</span><span class="add">+setlocal foldtext=GenericFoldText()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot;function! MarkdownFixParagraph()
+</span><span class="add">+&quot;    let start = line(&quot;&apos;{&quot;)
+</span><span class="add">+&quot;    let end = line(&quot;&apos;}&quot;)
+</span><span class="add">+&quot;    let g:ale_markdown_prettier_fix_options =
+</span><span class="add">+&quot;	\ &apos;--prose-wrap=always --print-width=101 --range-start=&apos; . start . &apos; --range-end=&apos; . end
+</span><span class="add">+&quot;    &quot;ALEFix
+</span><span class="add">+&quot;endfunction
+</span><span class="add">+&quot;
+</span><span class="add">+&quot;&quot;nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span><span class="add">+&quot;nnoremap &lt;localleader&gt;c :call MarkdownFixParagraph()&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot;let b:ale_lint_on_text_changed = 1
+</span><span class="add">+&quot;let b:ale_fix_on_save = 1
+</span><span class="add">+&quot;let b:ale_lint_delay = 1000
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/javascript.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,3 @@
+<span class="add">+setlocal tabstop=2
+</span><span class="add">+setlocal softtabstop=2
+</span><span class="add">+setlocal shiftwidth=2
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/include.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+setlocal filetype=html
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/html.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,4 @@
+<span class="add">+setlocal tabstop=2
+</span><span class="add">+setlocal softtabstop=2
+</span><span class="add">+setlocal shiftwidth=2
+</span><span class="add">+setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/help.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+&quot; this overrides :Bclose in help windows
+</span><span class="add">+nnoremap &lt;buffer&gt; &lt;BS&gt; :bd&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/haskell.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,5 @@
+<span class="add">+setlocal tabstop=4
+</span><span class="add">+setlocal softtabstop=4
+</span><span class="add">+setlocal shiftwidth=4
+</span><span class="add">+setlocal textwidth=88
+</span><span class="add">+setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/ftplugin/h.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+setlocal filetype=c
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/after/plugin/theme.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/after/plugin/gitgutter.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,16 @@
+<span class="add">+&quot;&quot;turn off realtime updates for gitgutter but update upon write
+</span><span class="add">+&quot;let g:gitgutter_enabled = 0
+</span><span class="add">+&quot;autocmd! gitgutter CursorHold,CursorHoldI
+</span><span class="add">+&quot;autocmd BufWritePost * GitGutter
+</span><span class="add">+&quot;
+</span><span class="add">+&quot;&quot; gitgutter
+</span><span class="add">+&quot;nmap &lt;localleader&gt;g :GitGutterToggle&lt;CR&gt;
+</span><span class="add">+&quot;nmap gp &lt;Plug&gt;(GitGutterPreviewHunk)
+</span><span class="add">+&quot;nmap gs &lt;Plug&gt;(GitGutterStageHunk)
+</span><span class="add">+&quot;nmap gu &lt;Plug&gt;(GitGutterUndoHunk)
+</span><span class="add">+&quot;nmap [g &lt;Plug&gt;(GitGutterPrevHunk)
+</span><span class="add">+&quot;nmap ]g &lt;Plug&gt;(GitGutterNextHunk)
+</span><span class="add">+&quot;omap ig &lt;Plug&gt;(GitGutterTextObjectInnerPending)
+</span><span class="add">+&quot;omap ag &lt;Plug&gt;(GitGutterTextObjectOuterPending)
+</span><span class="add">+&quot;xmap ig &lt;Plug&gt;(GitGutterTextObjectInnerVisual)
+</span><span class="add">+&quot;xmap ag &lt;Plug&gt;(GitGutterTextObjectOuterVisual)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/after/plugin/emoji-config.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,7 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Config for https://gitlab.com/gi1242/vim-emoji-ab.git
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; reload current buffer
+</span><span class="add">+&quot;runtime macros/emojis.vim
+</span><span class="add">+
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config/start/after/ftplugin/markdown.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,77 @@
+<span class="add">+&quot; Identify HTML comment-like blocks as markdown comments
+</span><span class="add">+setlocal comments+=s:&lt;!---,e:--&gt;
+</span><span class="add">+&quot; couldn&apos;t get this to work, so just sticking in &lt;br&gt; where needed
+</span><span class="add">+&quot;setlocal comments+=s:![**,e:](
+</span><span class="add">+
+</span><span class="add">+&quot; Folding logic below is derived from the vim-markdown-folding plugin
+</span><span class="add">+function! StackedMarkdownFolds()
+</span><span class="add">+  let thisline = getline(v:lnum)
+</span><span class="add">+  let prevline = getline(v:lnum - 1)
+</span><span class="add">+  let nextline = getline(v:lnum + 1)
+</span><span class="add">+  if thisline =~ &apos;^```.*$&apos; &amp;&amp; prevline =~ &apos;^\s*$&apos;  &quot; start of a fenced block
+</span><span class="add">+    return &quot;&gt;2&quot;
+</span><span class="add">+  elseif thisline =~ &apos;^```$&apos; &amp;&amp; nextline =~ &apos;^\s*$&apos;  &quot; end of a fenced block
+</span><span class="add">+    return &quot;&lt;2&quot;
+</span><span class="add">+  endif
+</span><span class="add">+
+</span><span class="add">+  if HeadingDepth(v:lnum) &gt; 0
+</span><span class="add">+    return &quot;&gt;1&quot;
+</span><span class="add">+  else
+</span><span class="add">+    return &quot;=&quot;
+</span><span class="add">+  endif
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+function! HeadingDepth(lnum)
+</span><span class="add">+  let level=0
+</span><span class="add">+  let thisline = getline(a:lnum)
+</span><span class="add">+  if thisline =~ &apos;^#\+\s\+&apos;
+</span><span class="add">+    let hashCount = len(matchstr(thisline, &apos;^#\{1,6}&apos;))
+</span><span class="add">+    if hashCount &gt; 0
+</span><span class="add">+      let level = hashCount
+</span><span class="add">+    endif
+</span><span class="add">+  else
+</span><span class="add">+    if thisline != &apos;&apos;
+</span><span class="add">+      let nextline = getline(a:lnum + 1)
+</span><span class="add">+      if nextline =~ &apos;^=\+\s*$&apos;
+</span><span class="add">+        let level = 1
+</span><span class="add">+      elseif nextline =~ &apos;^-\+\s*$&apos;
+</span><span class="add">+        let level = 2
+</span><span class="add">+      endif
+</span><span class="add">+    endif
+</span><span class="add">+  endif
+</span><span class="add">+  if level &gt; 0 &amp;&amp; HasSyntaxGroup(a:lnum, &apos;\vmarkdown(Code|Highlight)&apos;)
+</span><span class="add">+    &quot; Ignore # or === if they appear within fenced code blocks
+</span><span class="add">+    let level = 0
+</span><span class="add">+  endif
+</span><span class="add">+  return level
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+function! HasSyntaxGroup(lnum, targetGroup)
+</span><span class="add">+  let syntaxGroup = map(synstack(a:lnum, 1), &apos;synIDattr(v:val, &quot;name&quot;)&apos;)
+</span><span class="add">+  for value in syntaxGroup
+</span><span class="add">+    if value =~ a:targetGroup
+</span><span class="add">+        return 1
+</span><span class="add">+    endif
+</span><span class="add">+  endfor
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+function! s:FoldText()
+</span><span class="add">+  let level = HeadingDepth(v:foldstart)
+</span><span class="add">+  let indent = repeat(&apos;#&apos;, level)
+</span><span class="add">+  let title = substitute(getline(v:foldstart), &apos;^#\+\s\+&apos;, &apos;&apos;, &apos;&apos;)
+</span><span class="add">+
+</span><span class="add">+  let spaces_1 = repeat(&apos; &apos;, level) . &apos;   &apos;
+</span><span class="add">+  let spaces_2 = repeat(&apos; &apos;, 200)
+</span><span class="add">+
+</span><span class="add">+  return indent.spaces_1.title.spaces_2
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+setlocal foldmethod=expr
+</span><span class="add">+
+</span><span class="add">+let &amp;l:foldtext = expand(&apos;&lt;SID&gt;&apos;) . &apos;FoldText()&apos;
+</span><span class="add">+let &amp;l:foldexpr = &apos;StackedMarkdownFolds()&apos;
+</span><span class="add">+
+</span><span class="add">+if !exists(&quot;b:undo_ftplugin&quot;) | let b:undo_ftplugin = &apos;&apos; | endif
+</span><span class="add">+let b:undo_ftplugin .= &apos;
+</span><span class="add">+  \ | setlocal foldmethod&lt; foldtext&lt; foldexpr&lt;
+</span><span class="add">+  \ &apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

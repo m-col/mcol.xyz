@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mini-theme - add screenshots template</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mini-theme">mini-theme</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A mini theme for the pelican static site generator</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mini-theme">https://github.com/m-col/mini-theme</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mini-theme/tree.html">Files</a> | <a href="https://mcol.xyz/code/mini-theme/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mini-theme/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mini-theme/commit/f55427af2280e5b21b9d117b56940864e60ea922.html">f55427af2280e5b21b9d117b56940864e60ea922</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mini-theme/commit/2bd5e018eae5521498049c3cf340a06994495b68.html">2bd5e018eae5521498049c3cf340a06994495b68</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-02 23:32:32 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-02 23:32:32 +0100
+
+add screenshots template
+</pre><div class="diff">
+  <p>
+    <b>templates/screenshots.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,24 @@
+<span class="add">+{% extends &quot;base.html&quot; %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block title %}{{ SITENAME }} / {{ page.title }}{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block header %}
+</span><span class="add">+&lt;a href=/&gt;mcol.xyz&lt;/a&gt; /
+</span><span class="add">+&lt;a href=/{{ output_file }}&gt;{{ page.title }}&lt;/a&gt;
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block content %}
+</span><span class="add">+{% for img in SCREENSHOTS %}
+</span><span class="add">+{% if loop.index != 1 %}
+</span><span class="add">+&lt;hr&gt;
+</span><span class="add">+{% endif %}
+</span><span class="add">+&lt;table&gt;
+</span><span class="add">+	&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;/screenshots/{{ img }}&quot;&gt;&lt;img class=&quot;maim&quot; src=&quot;/screenshots/{{ img }}&quot;/&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+{% endfor %}
+</span><span class="add">+
+</span><span class="add">+&lt;footer&gt;&lt;hr&gt;- mcol.xyz -&lt;/footer&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div></div>
+  </body>
+</html>

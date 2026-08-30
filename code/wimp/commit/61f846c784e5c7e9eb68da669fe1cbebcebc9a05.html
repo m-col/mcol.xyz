@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - free everything when exiting</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/61f846c784e5c7e9eb68da669fe1cbebcebc9a05.html">61f846c784e5c7e9eb68da669fe1cbebcebc9a05</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/96e20bbc3c799275a645bf3b3f6bae3501f8f0b8.html">96e20bbc3c799275a645bf3b3f6bae3501f8f0b8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 22:17:18 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 22:31:13 +0000
+
+free everything when exiting
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -97,6 +97,12 @@
+<span class="def">     double x, y;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+struct output {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    struct wlr_output *wlr_output;
+</span><span class="add">+    struct wl_listener frame_listener;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> struct keyboard {
+</span><span class="def">     struct wl_list link;
+</span><span class="def">     struct wlr_input_device *device;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,13 +6,6 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-struct output {
+</span><span class="sub">-    struct wl_list link;
+</span><span class="sub">-    struct wlr_output *wlr_output;
+</span><span class="sub">-    struct wl_listener frame_listener;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> struct render_data {
+</span><span class="def">     struct wlr_output *output;
+</span><span class="def">     struct wlr_renderer *renderer;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,6 +44,55 @@
+<span class="def"> ;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void free_stuff() {
+</span><span class="add">+    struct binding *kb, *tkb;
+</span><span class="add">+    wl_list_for_each_safe(kb, tkb, &amp;wimp.mouse_bindings, link) {
+</span><span class="add">+	wl_list_remove(&amp;kb-&gt;link);
+</span><span class="add">+	if (kb-&gt;data) {
+</span><span class="add">+	    free(kb-&gt;data);
+</span><span class="add">+	}
+</span><span class="add">+	free(kb);
+</span><span class="add">+    };
+</span><span class="add">+    wl_list_for_each_safe(kb, tkb, &amp;wimp.key_bindings, link) {
+</span><span class="add">+	wl_list_remove(&amp;kb-&gt;link);
+</span><span class="add">+	if (kb-&gt;data) {
+</span><span class="add">+	    free(kb-&gt;data);
+</span><span class="add">+	}
+</span><span class="add">+	free(kb);
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    struct desk *desk, *tdesk;
+</span><span class="add">+    struct view *view, *tview;
+</span><span class="add">+    wl_list_for_each_safe(desk, tdesk, &amp;wimp.desks, link) {
+</span><span class="add">+	wl_list_for_each_safe(view, tview, &amp;desk-&gt;views, link) {
+</span><span class="add">+	    wl_list_remove(&amp;view-&gt;link);
+</span><span class="add">+	    free(view);
+</span><span class="add">+	};
+</span><span class="add">+	wl_list_remove(&amp;desk-&gt;link);
+</span><span class="add">+	free(desk-&gt;wallpaper);
+</span><span class="add">+	free(desk);
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    struct output *output, *toutput;
+</span><span class="add">+    wl_list_for_each_safe(output, toutput, &amp;wimp.outputs, link) {
+</span><span class="add">+	wl_list_remove(&amp;output-&gt;link);
+</span><span class="add">+	free(output);
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    struct keyboard *keyboard, *tkeyboard;
+</span><span class="add">+    wl_list_for_each_safe(keyboard, tkeyboard, &amp;wimp.keyboards, link) {
+</span><span class="add">+	wl_list_remove(&amp;keyboard-&gt;link);
+</span><span class="add">+	free(keyboard);
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    struct mark *mark, *tmark;
+</span><span class="add">+    wl_list_for_each_safe(mark, tmark, &amp;wimp.marks, link) {
+</span><span class="add">+	wl_list_remove(&amp;mark-&gt;link);
+</span><span class="add">+	free(mark);
+</span><span class="add">+    };
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> int main(int argc, char *argv[])
+</span><span class="def"> {
+</span><span class="def">     int opt;
+</span>@@ -117,6 +166,7 @@
+<span class="def"> 
+</span><span class="def">     // stop
+</span><span class="def">     wl_display_destroy_clients(wimp.display);
+</span><span class="add">+    free_stuff();
+</span><span class="def">     wlr_backend_destroy(wimp.backend);
+</span><span class="def">     wl_display_destroy(wimp.display);
+</span><span class="def">     return EXIT_SUCCESS;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - focus: also focus between windows and empty screens</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/5cfd45707dda9a4f7242691d8368c875f9ef879f.html">5cfd45707dda9a4f7242691d8368c875f9ef879f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/1928c8efb7e459871562ae917d6e0cc7c6fad659.html">1928c8efb7e459871562ae917d6e0cc7c6fad659</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-07 10:33:55 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-07 10:33:55 +0100
+
+focus: also focus between windows and empty screens
+</pre><div class="diff">
+  <p>
+    <b>qtools/focus/focus.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +1,8 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="sub">-This plugin exposes four functions - up, down, left and right - that when called will
+</span><span class="add">+This plugin exports four functions - up, down, left and right - that when called will
+</span><span class="def"> move window focus to the first window in that general direction. Focussing is based
+</span><span class="def"> entirely on position and geometry, so is independent of screens, layouts and whether
+</span><span class="sub">-windows are floating or tiled.
+</span><span class="add">+windows are floating or tiled. It can also move focus to and from empty screens.
+</span><span class="def"> 
+</span><span class="def"> Example usage:
+</span><span class="def"> 
+</span>@@ -17,6 +17,9 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+from libqtile.config import Screen
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> def up(qtile):
+</span><span class="def">     _focus_window(qtile, -1, &apos;y&apos;)
+</span><span class="def"> 
+</span>@@ -38,27 +41,35 @@
+<span class="def">     win_wide = None
+</span><span class="def">     dist = 10000
+</span><span class="def">     dist_wide = 10000
+</span><span class="add">+    cur = qtile.current_window
+</span><span class="add">+    if not cur:
+</span><span class="add">+        cur = qtile.current_screen
+</span><span class="def"> 
+</span><span class="def">     if axis == &apos;x&apos;:
+</span><span class="def">         dim = &apos;width&apos;
+</span><span class="def">         band_axis = &apos;y&apos;
+</span><span class="def">         band_dim = &apos;height&apos;
+</span><span class="sub">-        cur_pos, band_min, _, band_max = qtile.current_window.edges
+</span><span class="add">+        cur_pos = cur.x
+</span><span class="add">+        band_min = cur.y
+</span><span class="add">+        band_max = cur.y + cur.height
+</span><span class="def">     else:
+</span><span class="def">         dim = &apos;height&apos;
+</span><span class="def">         band_axis = &apos;x&apos;
+</span><span class="def">         band_dim = &apos;width&apos;
+</span><span class="sub">-        band_min, cur_pos, band_max, _ = qtile.current_window.edges
+</span><span class="add">+        band_min = cur.x
+</span><span class="add">+        cur_pos = cur.y
+</span><span class="add">+        band_max = cur.x + cur.width
+</span><span class="def"> 
+</span><span class="sub">-    cur_pos += getattr(qtile.current_window, dim) / 2
+</span><span class="add">+    cur_pos += getattr(cur, dim) / 2
+</span><span class="def"> 
+</span><span class="def">     windows = [w for g in qtile.groups if g.screen for w in g.windows]
+</span><span class="add">+    windows.extend([s for s in qtile.screens if not s.group.windows])
+</span><span class="def"> 
+</span><span class="sub">-    if qtile.current_window in windows:
+</span><span class="sub">-        windows.remove(qtile.current_window)
+</span><span class="add">+    if cur in windows:
+</span><span class="add">+        windows.remove(cur)
+</span><span class="def"> 
+</span><span class="def">     for w in windows:
+</span><span class="sub">-        if not w.minimized:
+</span><span class="add">+        if isinstance(w, Screen) or not w.minimized:
+</span><span class="def">             pos = getattr(w, axis) + getattr(w, dim) / 2
+</span><span class="def">             gap = dir * (pos - cur_pos)
+</span><span class="def">             if gap &gt; 0:
+</span>@@ -77,4 +88,5 @@
+<span class="def">     if win:
+</span><span class="def">         qtile.focus_screen(win.group.screen.index)
+</span><span class="def">         win.group.focus(win, True)
+</span><span class="sub">-        win.focus(False)
+</span><span class="add">+        if not isinstance(win, Screen):
+</span><span class="add">+            win.focus(False)
+</span></pre>
+</div></div>
+  </body>
+</html>

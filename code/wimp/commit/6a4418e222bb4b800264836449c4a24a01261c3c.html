@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - translate windows relative to cursor when zooming, and zoom wallpaper too</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/6a4418e222bb4b800264836449c4a24a01261c3c.html">6a4418e222bb4b800264836449c4a24a01261c3c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/bc4199994ead3c8b05d3891258294298ba958dcb.html">bc4199994ead3c8b05d3891258294298ba958dcb</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-12 22:21:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-12 22:21:06 +0000
+
+translate windows relative to cursor when zooming, and zoom wallpaper too
+</pre><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -65,17 +65,22 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     int width, height;
+</span><span class="add">+    double zoom = desk-&gt;zoom;
+</span><span class="def">     wlr_output_effective_resolution(output-&gt;wlr_output, &amp;width, &amp;height);
+</span><span class="def">     wlr_renderer_begin(renderer, width, height);
+</span><span class="def">     wlr_renderer_clear(renderer, desk-&gt;background);
+</span><span class="add">+
+</span><span class="add">+    // paint wallpaper
+</span><span class="def">     struct wallpaper *wallpaper = desk-&gt;wallpaper;
+</span><span class="def">     if (wallpaper != NULL) {
+</span><span class="def"> 	int wh = wallpaper-&gt;height;
+</span><span class="def"> 	int ww = wallpaper-&gt;width;
+</span><span class="sub">-	for (int x = ((int)desk-&gt;panned_x % ww) - ww; x &lt; width; x += ww) {
+</span><span class="sub">-	    for (int y = ((int)desk-&gt;panned_y % wh) - wh; y &lt; height; y += wh) {
+</span><span class="sub">-		wlr_render_texture(renderer, wallpaper-&gt;texture,
+</span><span class="sub">-		    output-&gt;wlr_output-&gt;transform_matrix, x, y, 1.0f);
+</span><span class="add">+	float mat[9];
+</span><span class="add">+	memcpy(mat, output-&gt;wlr_output-&gt;transform_matrix, 9 * sizeof(float));
+</span><span class="add">+	wlr_matrix_scale(mat, zoom, zoom);
+</span><span class="add">+	for (int x = ((int)desk-&gt;panned_x % ww) - ww; x &lt; width / zoom; x += ww) {
+</span><span class="add">+	    for (int y = ((int)desk-&gt;panned_y % wh) - wh; y &lt; height / zoom; y += wh) {
+</span><span class="add">+		wlr_render_texture(renderer, wallpaper-&gt;texture, mat, x, y, 1.0f);
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span>@@ -87,7 +92,7 @@
+<span class="def"> 	    .view = view,
+</span><span class="def"> 	    .renderer = renderer,
+</span><span class="def"> 	    .when = &amp;now,
+</span><span class="sub">-	    .zoom = desk-&gt;zoom,
+</span><span class="add">+	    .zoom = zoom,
+</span><span class="def"> 	};
+</span><span class="def"> 	wlr_xdg_surface_for_each_surface(
+</span><span class="def"> 	    view-&gt;surface, render_surface, &amp;rdata
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -80,4 +80,13 @@
+<span class="def">     /* dir &gt; 0 ? zoom in : zoom out */
+</span><span class="def">     double f = dir &gt; 0 ? 1.015 : 1/1.015;
+</span><span class="def">     desk-&gt;zoom *= f;
+</span><span class="add">+    double fx = desk-&gt;server-&gt;cursor-&gt;x * (f - 1) / desk-&gt;zoom;
+</span><span class="add">+    double fy = desk-&gt;server-&gt;cursor-&gt;y * (f - 1) / desk-&gt;zoom;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="add">+	view-&gt;x -= fx;
+</span><span class="add">+	view-&gt;y -= fy;
+</span><span class="add">+    }
+</span><span class="add">+    desk-&gt;panned_x -= fx;
+</span><span class="add">+    desk-&gt;panned_y -= fy;
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

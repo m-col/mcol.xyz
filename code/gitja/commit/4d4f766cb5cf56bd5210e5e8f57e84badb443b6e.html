@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - use RunRepo alias for Index</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/4d4f766cb5cf56bd5210e5e8f57e84badb443b6e.html">4d4f766cb5cf56bd5210e5e8f57e84badb443b6e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/18592683c27243b1878b6cbb5863d9a482c5a327.html">18592683c27243b1878b6cbb5863d9a482c5a327</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-05-28 22:27:25 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-05-28 22:34:26 +0100
+
+use RunRepo alias for Index
+</pre><div class="diff">
+  <p>
+    <b>src/Index.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,9 +12,8 @@
+<span class="def"> import System.Directory (removeFile)
+</span><span class="def"> import System.FilePath (combine)
+</span><span class="def"> import Text.Ginger.GVal (GVal, toGVal)
+</span><span class="sub">-import Text.Ginger.Html (Html, htmlSource)
+</span><span class="sub">-import Text.Ginger.Parse (SourcePos)
+</span><span class="sub">-import Text.Ginger.Run (Run, easyRenderM)
+</span><span class="add">+import Text.Ginger.Html (htmlSource)
+</span><span class="add">+import Text.Ginger.Run (easyRenderM)
+</span><span class="def"> 
+</span><span class="def"> import Env (Env (..))
+</span><span class="def"> import Templates (Template (..))
+</span>@@ -44,7 +43,7 @@
+<span class="def"> packageIndex ::
+</span><span class="def">     Env -&gt;
+</span><span class="def">     [Repo] -&gt;
+</span><span class="sub">-    HashMap.HashMap Text (GVal (Run SourcePos IO Html))
+</span><span class="add">+    HashMap.HashMap Text (GVal RunRepo)
+</span><span class="def"> packageIndex env repos =
+</span><span class="def">     HashMap.fromList
+</span><span class="def">         [ (&quot;host&quot;, toGVal $ envHost env)
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - remove Maybe wrapping templates passed to genTarget</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/ce7c8ba7f02f33730b8a5560e8570baa007e213b.html">ce7c8ba7f02f33730b8a5560e8570baa007e213b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/b4107e8d1c66fae385337b5e7d7ceb5f9d1e45ba.html">b4107e8d1c66fae385337b5e7d7ceb5f9d1e45ba</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-24 22:42:55 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-24 22:42:55 +0100
+
+remove Maybe wrapping templates passed to genTarget
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -137,13 +137,21 @@
+<span class="def">                 liftIO . ensureDir $ output &lt;/&gt; fileDir
+</span><span class="def"> 
+</span><span class="def">                 -- Run the generator --
+</span><span class="sub">-                let (quiet, force, commitT, fileT) =
+</span><span class="sub">-                        (,,,) &lt;$&gt; envQuiet &lt;*&gt; envForce &lt;*&gt; envCommitTemplate &lt;*&gt; envFileTemplate $ env
+</span><span class="sub">-
+</span><span class="def">                 mapM_ (genRepo output scope) $ envRepoTemplates env
+</span><span class="sub">-                let gen = genTarget output scope quiet force
+</span><span class="sub">-                mapM_ (\c -&gt; gen commitT &quot;commit&quot; (commitHref c) (toGVal c)) commits
+</span><span class="sub">-                mapM_ (\c -&gt; gen fileT &quot;file&quot; (fileHref c) (toGVal c)) tree -- TODO: detect file changes
+</span><span class="add">+
+</span><span class="add">+                let quiet = envQuiet env
+</span><span class="add">+                    force = envForce env
+</span><span class="add">+                    gen = genTarget output scope quiet force
+</span><span class="add">+
+</span><span class="add">+                case envCommitTemplate env of
+</span><span class="add">+                    Just commitT -&gt;
+</span><span class="add">+                        mapM_ (\c -&gt; gen commitT &quot;commit&quot; (commitHref c) (toGVal c)) commits
+</span><span class="add">+                    Nothing -&gt; return ()
+</span><span class="add">+
+</span><span class="add">+                case envFileTemplate env of
+</span><span class="add">+                    Just fileT -&gt;
+</span><span class="add">+                        mapM_ (\c -&gt; gen fileT &quot;file&quot; (fileHref c) (toGVal c)) tree -- TODO: detect file changes
+</span><span class="add">+                    Nothing -&gt; return ()
+</span><span class="def"> 
+</span><span class="def">                 -- Copy any static files/folders into the output folder --
+</span><span class="def">                 liftIO . envRepoCopyStatics env $ output
+</span>@@ -376,13 +384,12 @@
+<span class="def">     HashMap.HashMap Text (GVal RunRepo) -&gt;
+</span><span class="def">     Bool -&gt;
+</span><span class="def">     Bool -&gt;
+</span><span class="sub">-    Maybe Template -&gt;
+</span><span class="add">+    Template -&gt;
+</span><span class="def">     FilePath -&gt;
+</span><span class="def">     FilePath -&gt;
+</span><span class="def">     GVal RunRepo -&gt;
+</span><span class="def">     ReaderT LgRepo IO ()
+</span><span class="sub">-genTarget _ _ _ _ Nothing _ _ _ = return ()
+</span><span class="sub">-genTarget output scope quiet force (Just template) category href target = do
+</span><span class="add">+genTarget output scope quiet force template category href target = do
+</span><span class="def">     outFile &lt;- liftIO $ (&lt;/&gt;) &lt;$&gt; parseRelDir category &lt;*&gt; parseRelFile href
+</span><span class="def">     let output&apos; = output &lt;/&gt; outFile
+</span><span class="def">     exists &lt;- liftIO . doesFileExist $ output&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

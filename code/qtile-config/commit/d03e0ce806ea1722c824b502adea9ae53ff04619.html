@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - close startup programs at exit</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/d03e0ce806ea1722c824b502adea9ae53ff04619.html">d03e0ce806ea1722c824b502adea9ae53ff04619</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/ba5c2cde7f199d54f288cf44bf91d06d4a395dcd.html">ba5c2cde7f199d54f288cf44bf91d06d4a395dcd</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-19 17:11:03 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-19 17:11:12 +0100
+
+close startup programs at exit
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,6 @@
+<span class="def"> import subprocess
+</span><span class="def"> 
+</span><span class="def"> from libqtile import hook, qtile
+</span><span class="sub">-from libqtile.backend.wayland import InputConfig
+</span><span class="def"> from libqtile.backend.wayland.window import Window
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.log_utils import logger
+</span>@@ -37,9 +36,13 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Configure libinput devices
+</span><span class="sub">-wayland_libinput_config = {
+</span><span class="sub">-    &quot;type:pointer&quot;: InputConfig(drag=True, tap=True, pointer_accel=0.4)
+</span><span class="sub">-}
+</span><span class="add">+try:
+</span><span class="add">+    from libqtile.backend.wayland import InputConfig
+</span><span class="add">+    wayland_libinput_config = {
+</span><span class="add">+        &quot;type:pointer&quot;: InputConfig(drag=True, tap=True, pointer_accel=0.4)
+</span><span class="add">+    }
+</span><span class="add">+except ImportError:
+</span><span class="add">+    wayland_libinput_config = None
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> @hook.subscribe.client_new
+</span>@@ -69,7 +72,8 @@
+<span class="def">     env[&quot;WOB_BACKGROUND&quot;] = &quot;#00000000&quot;
+</span><span class="def">     env[&quot;WOB_BAR&quot;] = &quot;#66CFCCD6&quot;
+</span><span class="def">     HOME = os.path.expanduser(&apos;~&apos;)
+</span><span class="sub">-    subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True, env=env)
+</span><span class="add">+    p = subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True, env=env)
+</span><span class="add">+    hook.subscribe.shutdown(p.terminate)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> if IS_XEPHYR:
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,12 +2,18 @@
+<span class="def"> #
+</span><span class="def"> # Qtile Wayland startup script
+</span><span class="def"> 
+</span><span class="sub">-foot --server &amp;
+</span><span class="sub">-swaybg -c &apos;#1B2021&apos; &amp;
+</span><span class="add">+QTILE_PID=$PPID
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="add">+{
+</span><span class="add">+    foot --server &amp;
+</span><span class="add">+    swaybg -c &apos;#1B2021&apos; &amp;
+</span><span class="add">+} &amp;&gt; /dev/null
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# wob
+</span><span class="def"> FIFO=/tmp/wob-$WAYLAND_DISPLAY
+</span><span class="def"> test -e $FIFO || mkfifo $FIFO
+</span><span class="sub">-
+</span><span class="def"> tail -f $FIFO | wob -a bottom \
+</span><span class="def">     -M ${WOB_MARGIN:-0} -H ${WOB_HEIGHT:-32} -W ${WOB_WIDTH:-400} \
+</span><span class="def">     -o ${WOB_OFFSET:-0} -b ${WOB_BORDER:-0} -p ${WOB_PADDING:-0} \
+</span>@@ -15,20 +21,24 @@
+<span class="def">     --bar-color ${WOB_BAR:-#00ffffff} -t 800 &amp;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-# Things after this are only run on a TTY
+</span><span class="sub">-[[ -n &quot;$QTILE_XEPHYR&quot; ]] || exit  
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-run_if_new() { pgrep $1 || $@; }
+</span><span class="sub">-
+</span><span class="sub">-{
+</span><span class="sub">-    run_if_new mako &amp;
+</span><span class="sub">-    run_if_new keepassxc &amp;
+</span><span class="sub">-
+</span><span class="sub">-    pgrep wlsunset &amp;&amp; pkill -SIGKILL wlsunset
+</span><span class="sub">-    wlsunset -t 3100 -T 5700 -l 55.7 -L -3.1 &amp;
+</span><span class="add">+# TTY session only
+</span><span class="add">+[[ -z &quot;$QTILE_XEPHYR&quot; ]] &amp;&amp; {
+</span><span class="add">+    mako &amp;
+</span><span class="add">+    keepassxc &amp;
+</span><span class="add">+    firefox &amp;
+</span><span class="def">     kanshi &amp;
+</span><span class="add">+    wlsunset -t 3100 -T 5700 -l 55.7 -L -3.1 &amp;
+</span><span class="add">+
+</span><span class="add">+    sleep 3
+</span><span class="add">+    check_systemd
+</span><span class="def"> } &amp;&gt; /dev/null
+</span><span class="def"> 
+</span><span class="sub">-sleep 3
+</span><span class="sub">-check_systemd
+</span><span class="add">+
+</span><span class="add">+# Clean up
+</span><span class="add">+clean() {
+</span><span class="add">+    pkill -P $$
+</span><span class="add">+    test -e $FIFO &amp;&amp; rm $FIFO
+</span><span class="add">+}
+</span><span class="add">+trap clean SIGINT SIGTERM
+</span><span class="add">+sleep infinity &amp;
+</span><span class="add">+wait $!
+</span></pre>
+</div></div>
+  </body>
+</html>

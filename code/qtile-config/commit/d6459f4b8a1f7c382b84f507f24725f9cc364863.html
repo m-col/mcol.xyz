@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - some backend-specific changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/d6459f4b8a1f7c382b84f507f24725f9cc364863.html">d6459f4b8a1f7c382b84f507f24725f9cc364863</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/3a88369a072e0573b27fa278bb840dc56550292d.html">3a88369a072e0573b27fa278bb840dc56550292d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-02-16 18:48:34 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-02-16 18:48:34 +0000
+
+some backend-specific changes
+</pre><div class="diff">
+  <p>
+    <b>x11.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,14 +22,14 @@
+<span class="def">     [
+</span><span class="def">         # ([mod],             &apos;d&apos;,
+</span><span class="def">         #   lazy.spawn(&apos;rofi -show run -theme ~/.config/rofi/common-large.rasi&apos;), &quot;rofi: run&quot;),
+</span><span class="sub">-        ([], &quot;XF86PowerOff&quot;, lazy.spawn(&quot;power-menu&quot;), &quot;Power menu&quot;),
+</span><span class="add">+        #([], &quot;XF86PowerOff&quot;, lazy.spawn(&quot;power-menu&quot;), &quot;Power menu&quot;),
+</span><span class="def">         ([mod, &quot;shift&quot;], &quot;x&quot;, lazy.spawn(&quot;set_monitors&quot;), &quot;Configure monitors&quot;),
+</span><span class="sub">-        (
+</span><span class="sub">-            [mod, &quot;shift&quot;],
+</span><span class="sub">-            &quot;i&quot;,
+</span><span class="sub">-            lazy.spawn(&quot;slock systemctl suspend -i&quot;),
+</span><span class="sub">-            &quot;Suspend system and lock&quot;,
+</span><span class="sub">-        ),
+</span><span class="add">+        # (
+</span><span class="add">+        #     [mod, &quot;shift&quot;],
+</span><span class="add">+        #     &quot;i&quot;,
+</span><span class="add">+        #     lazy.spawn(&quot;slock systemctl suspend -i&quot;),
+</span><span class="add">+        #     &quot;Suspend system and lock&quot;,
+</span><span class="add">+        # ),
+</span><span class="def">     ]
+</span><span class="def"> )
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,6 +10,7 @@
+<span class="def"> from libqtile.backend.wayland import InputConfig
+</span><span class="def"> from libqtile.backend.wayland.xdgwindow import XdgWindow
+</span><span class="def"> from libqtile.backend.wayland.xwindow import XWindow
+</span><span class="add">+from libqtile.backend.wayland.layer import LayerStatic
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> 
+</span><span class="def"> IS_XEPHYR = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0))
+</span>@@ -37,13 +38,11 @@
+<span class="def">         kb_repeat_rate=50,
+</span><span class="def">         kb_repeat_delay=250,
+</span><span class="def">     ),
+</span><span class="sub">-    # Zenbook touchpad
+</span><span class="sub">-    &quot;1267:12377:ELAN1300:00 04F3:3059 Touchpad&quot;: InputConfig(
+</span><span class="sub">-        drag=True, tap=True, dwt=False, pointer_accel=0.3
+</span><span class="sub">-    ),
+</span><span class="add">+    # All touchpads
+</span><span class="add">+    &quot;type:touchpad&quot;: InputConfig(drag=True, tap=True, dwt=False, pointer_accel=0.3),
+</span><span class="def">     # Roccat Kiro mouse
+</span><span class="def">     &quot;7805:11320:ROCCAT ROCCAT Kiro Mouse&quot;: InputConfig(
+</span><span class="sub">-        left_handed=True,
+</span><span class="add">+        #left_handed=True,
+</span><span class="def">         pointer_accel=-1.0,
+</span><span class="def">     ),
+</span><span class="def">     # Anker mouse
+</span>@@ -122,32 +121,36 @@
+<span class="def">     hook.subscribe.shutdown(p.terminate)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-@hook.subscribe.screen_change
+</span><span class="sub">-def _(*_):
+</span><span class="sub">-    # Temporary hacky fix for the dell monitor on my desk which for some mysterious
+</span><span class="sub">-    # reason doesn&apos;t advertise that it supports any HD mode. Qtile does support setting
+</span><span class="sub">-    # custom modes via the protocol, but neither kanshi nor wdisplays do. So instead,
+</span><span class="sub">-    # I&apos;ll detect if that monitor is present and set the desired custom mode here.
+</span><span class="sub">-    for output in qtile.core.outputs:
+</span><span class="sub">-        wlr_output = output.wlr_output
+</span><span class="sub">-        # Not only does this monitor not report modes correctly, it ALSO doesn&apos;t report
+</span><span class="sub">-        # a make or model.
+</span><span class="sub">-        if wlr_output.make == wlr_output.model == &quot;&lt;Unknown&gt;&quot;:
+</span><span class="sub">-            if wlr_output.current_mode.width == 1024:
+</span><span class="sub">-                break
+</span><span class="sub">-    else:
+</span><span class="sub">-        return
+</span><span class="sub">-
+</span><span class="sub">-    wlr_output.set_custom_mode(1920, 1080, 0)
+</span><span class="sub">-    # Lastly, while reconfigure_screens will be fired right after this hook, as it
+</span><span class="sub">-    # gets subscribed to this hook right after the config is loaded, the backend doesn&apos;t
+</span><span class="sub">-    # get a change to actually apply the mode, so let&apos;s flush it.
+</span><span class="sub">-    qtile.core.flush()
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-if IS_XEPHYR:
+</span><span class="sub">-    # To adapt to whatever window size it was given
+</span><span class="sub">-    @hook.subscribe.startup_once
+</span><span class="sub">-    async def _():
+</span><span class="sub">-        await asyncio.sleep(0.5)
+</span><span class="sub">-        qtile.reconfigure_screens()
+</span><span class="add">+## I don&apos;t use this monitor, but keep this around for testing
+</span><span class="add">+#
+</span><span class="add">+#@hook.subscribe.screen_change
+</span><span class="add">+#def _(*_):
+</span><span class="add">+#    # Temporary hacky fix for the dell monitor on my desk which for some mysterious
+</span><span class="add">+#    # reason doesn&apos;t advertise that it supports any HD mode. Qtile does support setting
+</span><span class="add">+#    # custom modes via the protocol, but neither kanshi nor wdisplays do. So instead,
+</span><span class="add">+#    # I&apos;ll detect if that monitor is present and set the desired custom mode here.
+</span><span class="add">+#    for output in qtile.core.outputs:
+</span><span class="add">+#        wlr_output = output.wlr_output
+</span><span class="add">+#        # Not only does this monitor not report modes correctly, it ALSO doesn&apos;t report
+</span><span class="add">+#        # a make or model.
+</span><span class="add">+#        if wlr_output.make == wlr_output.model == &quot;&lt;Unknown&gt;&quot;:
+</span><span class="add">+#            if wlr_output.current_mode.width == 1024:
+</span><span class="add">+#                break
+</span><span class="add">+#    else:
+</span><span class="add">+#        return
+</span><span class="add">+#
+</span><span class="add">+#    wlr_output.set_custom_mode(1920, 1080, 0)
+</span><span class="add">+#    # Lastly, while reconfigure_screens will be fired right after this hook, as it
+</span><span class="add">+#    # gets subscribed to this hook right after the config is loaded, the backend doesn&apos;t
+</span><span class="add">+#    # get a chance to actually apply the mode, so let&apos;s flush it.
+</span><span class="add">+#    qtile.core.flush()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+## UNNECESSARY? The backend should update the output with reconfigre_screens=True
+</span><span class="add">+#
+</span><span class="add">+#if IS_XEPHYR:
+</span><span class="add">+#    # To adapt to whatever window size it was given
+</span><span class="add">+#    @hook.subscribe.startup_once
+</span><span class="add">+#    async def _():
+</span><span class="add">+#        await asyncio.sleep(0.5)
+</span><span class="add">+#        qtile.reconfigure_screens()
+</span></pre>
+</div></div>
+  </body>
+</html>

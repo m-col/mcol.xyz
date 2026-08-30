@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Implement replace_id on Notifier instances</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/44424a42f940c0ed0a8fc5223670a099e5115e9d.html">44424a42f940c0ed0a8fc5223670a099e5115e9d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/dbda507e9faba5661419f2faebb37c7a182e10a6.html">dbda507e9faba5661419f2faebb37c7a182e10a6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-25 17:43:45 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-25 17:43:45 +0000
+
+Implement replace_id on Notifier instances
+</pre><div class="diff">
+  <p>
+    <b>qtools/__init__.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,6 +7,7 @@
+<span class="def"> gi.require_version(&apos;Notify&apos;, &apos;0.7&apos;)
+</span><span class="def"> from gi.repository import Notify
+</span><span class="def"> 
+</span><span class="add">+from random import randint
+</span><span class="def"> from xcffib.xproto import StackMode
+</span><span class="def"> 
+</span><span class="def"> from libqtile import configurable, pangocffi, window
+</span>@@ -37,6 +38,7 @@
+<span class="def">             config.get(&apos;summary&apos;, &apos;Notifier&apos;), &apos;&apos;
+</span><span class="def">         )
+</span><span class="def">         self.timeout = config.get(&apos;timeout&apos;, -1)
+</span><span class="add">+        self.id = randint(10, 100)
+</span><span class="def"> 
+</span><span class="def">     def __getattr__(self, name):
+</span><span class="def">         &quot;&quot;&quot;
+</span>@@ -60,6 +62,8 @@
+<span class="def">         if not isinstance(body, str):
+</span><span class="def">             body = str(body)
+</span><span class="def">         self.notifier.update(self.summary, body)
+</span><span class="add">+        if hasattr(self, &apos;id&apos;):
+</span><span class="add">+            self.notifier.set_property(&apos;id&apos;, self.id)
+</span><span class="def">         self.notifier.show()
+</span><span class="def"> 
+</span><span class="def">     def hide(self):
+</span>@@ -130,6 +134,8 @@
+<span class="def">         self.y = self.win.y
+</span><span class="def">         self.width = self.win.width
+</span><span class="def">         self.height = self.win.height
+</span><span class="add">+        if not self.border_width:
+</span><span class="add">+            self.border = None
+</span><span class="def"> 
+</span><span class="def">     def _handle_Expose(self, e):
+</span><span class="def">         pass
+</span></pre>
+</div></div>
+  </body>
+</html>

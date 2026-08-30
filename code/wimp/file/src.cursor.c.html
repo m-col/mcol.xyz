@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - src/cursor.c</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- src/cursor.c</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> #include &lt;inttypes.h&gt;
+<a href="#l2" class="line" id="l2">      2</a> #include &lt;linux/input-event-codes.h&gt;
+<a href="#l3" class="line" id="l3">      3</a> #include &lt;unistd.h&gt;
+<a href="#l4" class="line" id="l4">      4</a> #include &lt;wlr/types/wlr_cursor.h&gt;
+<a href="#l5" class="line" id="l5">      5</a> #include &lt;wlr/types/wlr_layer_shell_v1.h&gt;
+<a href="#l6" class="line" id="l6">      6</a> #include &lt;wlr/types/wlr_pointer_gestures_v1.h&gt;
+<a href="#l7" class="line" id="l7">      7</a> #include &lt;wlr/types/wlr_xcursor_manager.h&gt;
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> #include &quot;action.h&quot;
+<a href="#l10" class="line" id="l10">     10</a> #include &quot;cursor.h&quot;
+<a href="#l11" class="line" id="l11">     11</a> #include &quot;shell.h&quot;
+<a href="#l12" class="line" id="l12">     12</a> #include &quot;types.h&quot;
+<a href="#l13" class="line" id="l13">     13</a> 
+<a href="#l14" class="line" id="l14">     14</a> #define SNAP_WIDTH 42
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a> bool try_snap() {
+<a href="#l18" class="line" id="l18">     18</a>     double x = wimp.cursor-&gt;x;
+<a href="#l19" class="line" id="l19">     19</a>     double y = wimp.cursor-&gt;y;
+<a href="#l20" class="line" id="l20">     20</a>     struct wlr_box snap_to;
+<a href="#l21" class="line" id="l21">     21</a>     bool can_snap = false;
+<a href="#l22" class="line" id="l22">     22</a>     struct wlr_output *output = wlr_output_layout_output_at(wimp.output_layout, x, y);
+<a href="#l23" class="line" id="l23">     23</a>     struct wlr_box *outgeo = wlr_output_layout_get_box(wimp.output_layout, output);
+<a href="#l24" class="line" id="l24">     24</a> 
+<a href="#l25" class="line" id="l25">     25</a>     if (x &lt; SNAP_WIDTH) {
+<a href="#l26" class="line" id="l26">     26</a> 	can_snap = true;
+<a href="#l27" class="line" id="l27">     27</a> 	snap_to.x = outgeo-&gt;x;
+<a href="#l28" class="line" id="l28">     28</a> 	snap_to.width = outgeo-&gt;width / 2;
+<a href="#l29" class="line" id="l29">     29</a> 	if (y &lt;= outgeo-&gt;height / 3) {
+<a href="#l30" class="line" id="l30">     30</a> 	    snap_to.y = outgeo-&gt;y;
+<a href="#l31" class="line" id="l31">     31</a> 	    snap_to.height = outgeo-&gt;height / 2;
+<a href="#l32" class="line" id="l32">     32</a> 	} else if (y &lt;= 2 * outgeo-&gt;height / 3) {
+<a href="#l33" class="line" id="l33">     33</a> 	    snap_to.y = outgeo-&gt;y;
+<a href="#l34" class="line" id="l34">     34</a> 	    snap_to.height = outgeo-&gt;height;
+<a href="#l35" class="line" id="l35">     35</a> 	} else {
+<a href="#l36" class="line" id="l36">     36</a> 	    snap_to.y = outgeo-&gt;y + outgeo-&gt;height / 2;
+<a href="#l37" class="line" id="l37">     37</a> 	    snap_to.height = outgeo-&gt;height / 2;
+<a href="#l38" class="line" id="l38">     38</a> 	}
+<a href="#l39" class="line" id="l39">     39</a>     }
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a>     else if (x &gt; outgeo-&gt;width - SNAP_WIDTH) {
+<a href="#l42" class="line" id="l42">     42</a> 	can_snap = true;
+<a href="#l43" class="line" id="l43">     43</a> 	snap_to.x = outgeo-&gt;width / 2;
+<a href="#l44" class="line" id="l44">     44</a> 	snap_to.width = outgeo-&gt;width / 2;
+<a href="#l45" class="line" id="l45">     45</a> 	if (y &lt;= outgeo-&gt;height / 3) {
+<a href="#l46" class="line" id="l46">     46</a> 	    snap_to.y = outgeo-&gt;y;
+<a href="#l47" class="line" id="l47">     47</a> 	    snap_to.height = outgeo-&gt;height / 2;
+<a href="#l48" class="line" id="l48">     48</a> 	} else if (y &lt;= 2 * outgeo-&gt;height / 3) {
+<a href="#l49" class="line" id="l49">     49</a> 	    snap_to.y = outgeo-&gt;y;
+<a href="#l50" class="line" id="l50">     50</a> 	    snap_to.height = outgeo-&gt;height;
+<a href="#l51" class="line" id="l51">     51</a> 	} else {
+<a href="#l52" class="line" id="l52">     52</a> 	    snap_to.y = outgeo-&gt;y + outgeo-&gt;height / 2;
+<a href="#l53" class="line" id="l53">     53</a> 	    snap_to.height = outgeo-&gt;height / 2;
+<a href="#l54" class="line" id="l54">     54</a> 	}
+<a href="#l55" class="line" id="l55">     55</a>     }
+<a href="#l56" class="line" id="l56">     56</a> 
+<a href="#l57" class="line" id="l57">     57</a>     else if (y &lt; SNAP_WIDTH) {
+<a href="#l58" class="line" id="l58">     58</a> 	can_snap = true;
+<a href="#l59" class="line" id="l59">     59</a> 	snap_to.y = outgeo-&gt;y;
+<a href="#l60" class="line" id="l60">     60</a> 	snap_to.height = outgeo-&gt;height / 2;
+<a href="#l61" class="line" id="l61">     61</a> 	if (x &lt;= outgeo-&gt;width / 3) {
+<a href="#l62" class="line" id="l62">     62</a> 	    snap_to.x = outgeo-&gt;x;
+<a href="#l63" class="line" id="l63">     63</a> 	    snap_to.width = outgeo-&gt;width / 2;
+<a href="#l64" class="line" id="l64">     64</a> 	} else if (x &lt; 2 * outgeo-&gt;width / 3) {
+<a href="#l65" class="line" id="l65">     65</a> 	    snap_to.x = outgeo-&gt;x;
+<a href="#l66" class="line" id="l66">     66</a> 	    snap_to.width = outgeo-&gt;width;
+<a href="#l67" class="line" id="l67">     67</a> 	} else {
+<a href="#l68" class="line" id="l68">     68</a> 	    snap_to.x = outgeo-&gt;x + outgeo-&gt;width / 2;
+<a href="#l69" class="line" id="l69">     69</a> 	    snap_to.width = outgeo-&gt;width / 2;
+<a href="#l70" class="line" id="l70">     70</a> 	}
+<a href="#l71" class="line" id="l71">     71</a>     }
+<a href="#l72" class="line" id="l72">     72</a> 
+<a href="#l73" class="line" id="l73">     73</a>     else if (y &gt; outgeo-&gt;height - SNAP_WIDTH) {
+<a href="#l74" class="line" id="l74">     74</a> 	can_snap = true;
+<a href="#l75" class="line" id="l75">     75</a> 	snap_to.y = outgeo-&gt;height / 2;
+<a href="#l76" class="line" id="l76">     76</a> 	snap_to.height = outgeo-&gt;height / 2;
+<a href="#l77" class="line" id="l77">     77</a> 	if (x &lt;= outgeo-&gt;width / 3) {
+<a href="#l78" class="line" id="l78">     78</a> 	    snap_to.x = outgeo-&gt;x;
+<a href="#l79" class="line" id="l79">     79</a> 	    snap_to.width = outgeo-&gt;width / 2;
+<a href="#l80" class="line" id="l80">     80</a> 	} else if (x &lt;= 2 * outgeo-&gt;width / 3) {
+<a href="#l81" class="line" id="l81">     81</a> 	    snap_to.x = outgeo-&gt;x;
+<a href="#l82" class="line" id="l82">     82</a> 	    snap_to.width = outgeo-&gt;width;
+<a href="#l83" class="line" id="l83">     83</a> 	} else {
+<a href="#l84" class="line" id="l84">     84</a> 	    snap_to.x = outgeo-&gt;x + outgeo-&gt;width / 2;
+<a href="#l85" class="line" id="l85">     85</a> 	    snap_to.width = outgeo-&gt;width / 2;
+<a href="#l86" class="line" id="l86">     86</a> 	}
+<a href="#l87" class="line" id="l87">     87</a>     }
+<a href="#l88" class="line" id="l88">     88</a> 
+<a href="#l89" class="line" id="l89">     89</a>     wimp.snap_geobox = snap_to;
+<a href="#l90" class="line" id="l90">     90</a>     return can_snap;
+<a href="#l91" class="line" id="l91">     91</a> }
+<a href="#l92" class="line" id="l92">     92</a> 
+<a href="#l93" class="line" id="l93">     93</a> 
+<a href="#l94" class="line" id="l94">     94</a> void centre_cursor() {
+<a href="#l95" class="line" id="l95">     95</a>     struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+<a href="#l96" class="line" id="l96">     96</a>     double cx, cy;
+<a href="#l97" class="line" id="l97">     97</a>     wlr_output_layout_closest_point(
+<a href="#l98" class="line" id="l98">     98</a> 	wimp.output_layout, NULL, extents-&gt;width / 2, extents-&gt;height / 2, &amp;cx, &amp;cy
+<a href="#l99" class="line" id="l99">     99</a>     );
+<a href="#l100" class="line" id="l100">    100</a>     wlr_cursor_warp_closest(wimp.cursor, NULL, cx, cy);
+<a href="#l101" class="line" id="l101">    101</a> }
+<a href="#l102" class="line" id="l102">    102</a> 
+<a href="#l103" class="line" id="l103">    103</a> 
+<a href="#l104" class="line" id="l104">    104</a> static void on_request_cursor(struct wl_listener *listener, void *data) {
+<a href="#l105" class="line" id="l105">    105</a>     struct wlr_seat_pointer_request_set_cursor_event *event = data;
+<a href="#l106" class="line" id="l106">    106</a>     if (wimp.seat-&gt;pointer_state.focused_client == event-&gt;seat_client) {
+<a href="#l107" class="line" id="l107">    107</a> 	wlr_cursor_set_surface(
+<a href="#l108" class="line" id="l108">    108</a> 	    wimp.cursor, event-&gt;surface, event-&gt;hotspot_x, event-&gt;hotspot_y
+<a href="#l109" class="line" id="l109">    109</a> 	);
+<a href="#l110" class="line" id="l110">    110</a>     }
+<a href="#l111" class="line" id="l111">    111</a> }
+<a href="#l112" class="line" id="l112">    112</a> 
+<a href="#l113" class="line" id="l113">    113</a> 
+<a href="#l114" class="line" id="l114">    114</a> static void process_cursor_move(uint32_t time, double zoom) {
+<a href="#l115" class="line" id="l115">    115</a>     wimp.grabbed_view-&gt;x = (wimp.cursor-&gt;x - wimp.grab_x) / zoom;
+<a href="#l116" class="line" id="l116">    116</a>     wimp.grabbed_view-&gt;y = (wimp.cursor-&gt;y - wimp.grab_y) / zoom;
+<a href="#l117" class="line" id="l117">    117</a> }
+<a href="#l118" class="line" id="l118">    118</a> 
+<a href="#l119" class="line" id="l119">    119</a> 
+<a href="#l120" class="line" id="l120">    120</a> static void process_cursor_resize(uint32_t time, double zoom) {
+<a href="#l121" class="line" id="l121">    121</a>     struct view *view = wimp.grabbed_view;
+<a href="#l122" class="line" id="l122">    122</a>     double cx = (wimp.cursor-&gt;x - wimp.grab_x) / zoom;
+<a href="#l123" class="line" id="l123">    123</a>     double cy = (wimp.cursor-&gt;y - wimp.grab_y) / zoom;
+<a href="#l124" class="line" id="l124">    124</a>     struct wlr_box new;
+<a href="#l125" class="line" id="l125">    125</a>     memcpy(&amp;new, &amp;wimp.grab_geobox, sizeof(struct wlr_box));
+<a href="#l126" class="line" id="l126">    126</a> 
+<a href="#l127" class="line" id="l127">    127</a>     if (wimp.resize_edges &amp; WLR_EDGE_TOP) {
+<a href="#l128" class="line" id="l128">    128</a> 	new.height -= cy - new.y;
+<a href="#l129" class="line" id="l129">    129</a> 	new.y = cy;
+<a href="#l130" class="line" id="l130">    130</a>     } else if (wimp.resize_edges &amp; WLR_EDGE_BOTTOM) {
+<a href="#l131" class="line" id="l131">    131</a>         new.height += cy - new.y;
+<a href="#l132" class="line" id="l132">    132</a>     }
+<a href="#l133" class="line" id="l133">    133</a>     if (wimp.resize_edges &amp; WLR_EDGE_LEFT) {
+<a href="#l134" class="line" id="l134">    134</a>         new.width -= cx - new.x;
+<a href="#l135" class="line" id="l135">    135</a> 	new.x = cx;
+<a href="#l136" class="line" id="l136">    136</a>     } else if (wimp.resize_edges &amp; WLR_EDGE_RIGHT) {
+<a href="#l137" class="line" id="l137">    137</a>         new.width += cx - new.x;
+<a href="#l138" class="line" id="l138">    138</a>     }
+<a href="#l139" class="line" id="l139">    139</a> 
+<a href="#l140" class="line" id="l140">    140</a>     view_apply_geometry(view, &amp;new);
+<a href="#l141" class="line" id="l141">    141</a> }
+<a href="#l142" class="line" id="l142">    142</a> 
+<a href="#l143" class="line" id="l143">    143</a> 
+<a href="#l144" class="line" id="l144">    144</a> void *under_pointer(struct wlr_surface **surface, double *sx, double *sy, bool *is_layer) {
+<a href="#l145" class="line" id="l145">    145</a>     double x = wimp.cursor-&gt;x;
+<a href="#l146" class="line" id="l146">    146</a>     double y = wimp.cursor-&gt;y;
+<a href="#l147" class="line" id="l147">    147</a>     double tsx, tsy;
+<a href="#l148" class="line" id="l148">    148</a>     struct view *view;
+<a href="#l149" class="line" id="l149">    149</a>     struct layer_view *lview;
+<a href="#l150" class="line" id="l150">    150</a>     struct wlr_surface *tsurface;
+<a href="#l151" class="line" id="l151">    151</a>     struct wlr_output *wlr_output = wlr_output_layout_output_at(wimp.output_layout, x, y);
+<a href="#l152" class="line" id="l152">    152</a>     struct output *output = wlr_output-&gt;data;
+<a href="#l153" class="line" id="l153">    153</a>     int border_width = wimp.current_desk-&gt;border_width;
+<a href="#l154" class="line" id="l154">    154</a> 
+<a href="#l155" class="line" id="l155">    155</a>     // overlay and top layers
+<a href="#l156" class="line" id="l156">    156</a>     uint32_t above[] = { ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY, ZWLR_LAYER_SHELL_V1_LAYER_TOP };
+<a href="#l157" class="line" id="l157">    157</a>     size_t nlayers = sizeof(above) / sizeof(above[0]);
+<a href="#l158" class="line" id="l158">    158</a>     for (size_t i = 0; i &lt; nlayers; i++) {
+<a href="#l159" class="line" id="l159">    159</a> 	wl_list_for_each(lview, &amp;output-&gt;layer_views[above[i]], link) {
+<a href="#l160" class="line" id="l160">    160</a> 	    tsurface = wlr_layer_surface_v1_surface_at(
+<a href="#l161" class="line" id="l161">    161</a> 		lview-&gt;surface, x - lview-&gt;geo.x, y - lview-&gt;geo.y, &amp;tsx, &amp;tsy
+<a href="#l162" class="line" id="l162">    162</a> 	    );
+<a href="#l163" class="line" id="l163">    163</a> 	    if (tsurface) {
+<a href="#l164" class="line" id="l164">    164</a> 		*sx = tsx;
+<a href="#l165" class="line" id="l165">    165</a> 		*sy = tsy;
+<a href="#l166" class="line" id="l166">    166</a> 		*surface = tsurface;
+<a href="#l167" class="line" id="l167">    167</a> 		*is_layer = true;
+<a href="#l168" class="line" id="l168">    168</a> 		return lview;
+<a href="#l169" class="line" id="l169">    169</a> 	    }
+<a href="#l170" class="line" id="l170">    170</a> 	}
+<a href="#l171" class="line" id="l171">    171</a>     }
+<a href="#l172" class="line" id="l172">    172</a> 
+<a href="#l173" class="line" id="l173">    173</a>     // scratchpads
+<a href="#l174" class="line" id="l174">    174</a>     struct scratchpad *scratchpad;
+<a href="#l175" class="line" id="l175">    175</a>     wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+<a href="#l176" class="line" id="l176">    176</a> 	if (scratchpad-&gt;is_mapped) {
+<a href="#l177" class="line" id="l177">    177</a> 	    view = scratchpad-&gt;view;
+<a href="#l178" class="line" id="l178">    178</a> 	    tsurface = wlr_xdg_surface_surface_at(
+<a href="#l179" class="line" id="l179">    179</a> 		view-&gt;surface, x - view-&gt;x, y - view-&gt;y, &amp;tsx, &amp;tsy
+<a href="#l180" class="line" id="l180">    180</a> 	    );
+<a href="#l181" class="line" id="l181">    181</a> 	    if (tsurface) {
+<a href="#l182" class="line" id="l182">    182</a> 		*sx = tsx;
+<a href="#l183" class="line" id="l183">    183</a> 		*sy = tsy;
+<a href="#l184" class="line" id="l184">    184</a> 		*surface = tsurface;
+<a href="#l185" class="line" id="l185">    185</a> 		*is_layer = false;
+<a href="#l186" class="line" id="l186">    186</a> 		return view;
+<a href="#l187" class="line" id="l187">    187</a> 	    }
+<a href="#l188" class="line" id="l188">    188</a> 	}
+<a href="#l189" class="line" id="l189">    189</a>     }
+<a href="#l190" class="line" id="l190">    190</a> 
+<a href="#l191" class="line" id="l191">    191</a>     // clients
+<a href="#l192" class="line" id="l192">    192</a>     double zoom = wimp.current_desk-&gt;zoom;
+<a href="#l193" class="line" id="l193">    193</a>     double zx = x / zoom;
+<a href="#l194" class="line" id="l194">    194</a>     double zy = y / zoom;
+<a href="#l195" class="line" id="l195">    195</a> 
+<a href="#l196" class="line" id="l196">    196</a>     wl_list_for_each(view, &amp;wimp.current_desk-&gt;views, link) {
+<a href="#l197" class="line" id="l197">    197</a> 	tsurface = wlr_xdg_surface_surface_at(
+<a href="#l198" class="line" id="l198">    198</a> 	    view-&gt;surface, zx - view-&gt;x, zy - view-&gt;y, &amp;tsx, &amp;tsy
+<a href="#l199" class="line" id="l199">    199</a> 	);
+<a href="#l200" class="line" id="l200">    200</a> 	if (tsurface) {
+<a href="#l201" class="line" id="l201">    201</a> 	    *sx = tsx;
+<a href="#l202" class="line" id="l202">    202</a> 	    *sy = tsy;
+<a href="#l203" class="line" id="l203">    203</a> 	    *surface = tsurface;
+<a href="#l204" class="line" id="l204">    204</a> 	    *is_layer = false;
+<a href="#l205" class="line" id="l205">    205</a> 	    return view;
+<a href="#l206" class="line" id="l206">    206</a> 	}
+<a href="#l207" class="line" id="l207">    207</a> 	if (border_width) {
+<a href="#l208" class="line" id="l208">    208</a> 	    struct wlr_box bordered = {
+<a href="#l209" class="line" id="l209">    209</a> 		.x = (view-&gt;x - border_width) * zoom,
+<a href="#l210" class="line" id="l210">    210</a> 		.y = (view-&gt;y - border_width) * zoom,
+<a href="#l211" class="line" id="l211">    211</a> 		.width = (view-&gt;surface-&gt;geometry.width + border_width * 2) * zoom,
+<a href="#l212" class="line" id="l212">    212</a> 		.height = (view-&gt;surface-&gt;geometry.height + border_width * 2) * zoom,
+<a href="#l213" class="line" id="l213">    213</a> 	    };
+<a href="#l214" class="line" id="l214">    214</a> 	    if (wlr_box_contains_point(&amp;bordered, zx, zy)) {
+<a href="#l215" class="line" id="l215">    215</a> 		*sx = tsx;
+<a href="#l216" class="line" id="l216">    216</a> 		*sy = tsy;
+<a href="#l217" class="line" id="l217">    217</a> 		*surface = view-&gt;surface-&gt;surface;
+<a href="#l218" class="line" id="l218">    218</a> 		*is_layer = false;
+<a href="#l219" class="line" id="l219">    219</a> 		return view;
+<a href="#l220" class="line" id="l220">    220</a> 	    }
+<a href="#l221" class="line" id="l221">    221</a> 	}
+<a href="#l222" class="line" id="l222">    222</a>     }
+<a href="#l223" class="line" id="l223">    223</a> 
+<a href="#l224" class="line" id="l224">    224</a>     // bottom and background layers
+<a href="#l225" class="line" id="l225">    225</a>     uint32_t below[] = { ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM, ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND };
+<a href="#l226" class="line" id="l226">    226</a>     for (size_t i = 0; i &lt; nlayers; i++) {
+<a href="#l227" class="line" id="l227">    227</a> 	wl_list_for_each(lview, &amp;output-&gt;layer_views[below[i]], link) {
+<a href="#l228" class="line" id="l228">    228</a> 	    tsurface = wlr_layer_surface_v1_surface_at(
+<a href="#l229" class="line" id="l229">    229</a> 		lview-&gt;surface, x - lview-&gt;geo.x, y - lview-&gt;geo.y, &amp;tsx, &amp;tsy
+<a href="#l230" class="line" id="l230">    230</a> 	    );
+<a href="#l231" class="line" id="l231">    231</a> 	    if (tsurface) {
+<a href="#l232" class="line" id="l232">    232</a> 		*sx = tsx;
+<a href="#l233" class="line" id="l233">    233</a> 		*sy = tsy;
+<a href="#l234" class="line" id="l234">    234</a> 		*surface = tsurface;
+<a href="#l235" class="line" id="l235">    235</a> 		*is_layer = true;
+<a href="#l236" class="line" id="l236">    236</a> 		return lview;
+<a href="#l237" class="line" id="l237">    237</a> 	    }
+<a href="#l238" class="line" id="l238">    238</a> 	}
+<a href="#l239" class="line" id="l239">    239</a>     }
+<a href="#l240" class="line" id="l240">    240</a> 
+<a href="#l241" class="line" id="l241">    241</a>     return NULL;
+<a href="#l242" class="line" id="l242">    242</a> }
+<a href="#l243" class="line" id="l243">    243</a> 
+<a href="#l244" class="line" id="l244">    244</a> 
+<a href="#l245" class="line" id="l245">    245</a> static enum wlr_edges pointer_in_view_corner(struct view *view) {
+<a href="#l246" class="line" id="l246">    246</a>     /* It is assumed that the pointer is above the view. */
+<a href="#l247" class="line" id="l247">    247</a>     double x = wimp.cursor-&gt;x;
+<a href="#l248" class="line" id="l248">    248</a>     double y = wimp.cursor-&gt;y;
+<a href="#l249" class="line" id="l249">    249</a>     double zoom = wimp.current_desk-&gt;zoom;
+<a href="#l250" class="line" id="l250">    250</a>     int border_width = wimp.current_desk-&gt;border_width;
+<a href="#l251" class="line" id="l251">    251</a>     enum wlr_edges edges = WLR_EDGE_NONE;
+<a href="#l252" class="line" id="l252">    252</a> 
+<a href="#l253" class="line" id="l253">    253</a>     struct wlr_box inner = {
+<a href="#l254" class="line" id="l254">    254</a> 	.x = view-&gt;x * zoom,
+<a href="#l255" class="line" id="l255">    255</a> 	.y = view-&gt;y * zoom,
+<a href="#l256" class="line" id="l256">    256</a> 	.width = view-&gt;surface-&gt;geometry.width * zoom,
+<a href="#l257" class="line" id="l257">    257</a> 	.height = view-&gt;surface-&gt;geometry.height * zoom,
+<a href="#l258" class="line" id="l258">    258</a>     };
+<a href="#l259" class="line" id="l259">    259</a>     struct wlr_box outer = {
+<a href="#l260" class="line" id="l260">    260</a> 	.x = inner.x - border_width * zoom,
+<a href="#l261" class="line" id="l261">    261</a> 	.y = inner.y - border_width * zoom,
+<a href="#l262" class="line" id="l262">    262</a> 	.width = inner.width + border_width * 2 * zoom,
+<a href="#l263" class="line" id="l263">    263</a> 	.height = inner.height + border_width * 2 * zoom,
+<a href="#l264" class="line" id="l264">    264</a>     };
+<a href="#l265" class="line" id="l265">    265</a> 
+<a href="#l266" class="line" id="l266">    266</a>     if (x &lt;= inner.x) {
+<a href="#l267" class="line" id="l267">    267</a> 	edges |= WLR_EDGE_LEFT;
+<a href="#l268" class="line" id="l268">    268</a> 	if (y &lt;= outer.y + CORNER) {
+<a href="#l269" class="line" id="l269">    269</a> 	    edges |= WLR_EDGE_TOP;
+<a href="#l270" class="line" id="l270">    270</a> 	} else if (outer.y + outer.height - CORNER &lt;= y) {
+<a href="#l271" class="line" id="l271">    271</a> 	    edges |= WLR_EDGE_BOTTOM;
+<a href="#l272" class="line" id="l272">    272</a> 	}
+<a href="#l273" class="line" id="l273">    273</a> 	return edges;
+<a href="#l274" class="line" id="l274">    274</a>     }
+<a href="#l275" class="line" id="l275">    275</a>     if (inner.x + inner.width &lt;= x) {
+<a href="#l276" class="line" id="l276">    276</a> 	edges |= WLR_EDGE_RIGHT;
+<a href="#l277" class="line" id="l277">    277</a> 	if (y &lt;= outer.y + CORNER) {
+<a href="#l278" class="line" id="l278">    278</a> 	    edges |= WLR_EDGE_TOP;
+<a href="#l279" class="line" id="l279">    279</a> 	} else if (outer.y + outer.height - CORNER &lt;= y) {
+<a href="#l280" class="line" id="l280">    280</a> 	    edges |= WLR_EDGE_BOTTOM;
+<a href="#l281" class="line" id="l281">    281</a> 	}
+<a href="#l282" class="line" id="l282">    282</a> 	return edges;
+<a href="#l283" class="line" id="l283">    283</a>     }
+<a href="#l284" class="line" id="l284">    284</a>     if (y &lt;= inner.y) {
+<a href="#l285" class="line" id="l285">    285</a> 	edges |= WLR_EDGE_TOP;
+<a href="#l286" class="line" id="l286">    286</a> 	if (x &lt;= outer.x + CORNER) {
+<a href="#l287" class="line" id="l287">    287</a> 	    edges |= WLR_EDGE_LEFT;
+<a href="#l288" class="line" id="l288">    288</a> 	} else if (outer.x + outer.width - CORNER &lt;= x) {
+<a href="#l289" class="line" id="l289">    289</a> 	    edges |= WLR_EDGE_RIGHT;
+<a href="#l290" class="line" id="l290">    290</a> 	}
+<a href="#l291" class="line" id="l291">    291</a> 	return edges;
+<a href="#l292" class="line" id="l292">    292</a>     }
+<a href="#l293" class="line" id="l293">    293</a>     if (inner.y + inner.height &lt;= y) {
+<a href="#l294" class="line" id="l294">    294</a> 	edges |= WLR_EDGE_BOTTOM;
+<a href="#l295" class="line" id="l295">    295</a> 	if (x &lt;= outer.x + CORNER) {
+<a href="#l296" class="line" id="l296">    296</a> 	    edges |= WLR_EDGE_LEFT;
+<a href="#l297" class="line" id="l297">    297</a> 	} else if (outer.x + outer.width - CORNER &lt;= x) {
+<a href="#l298" class="line" id="l298">    298</a> 	    edges |= WLR_EDGE_RIGHT;
+<a href="#l299" class="line" id="l299">    299</a> 	}
+<a href="#l300" class="line" id="l300">    300</a> 	return edges;
+<a href="#l301" class="line" id="l301">    301</a>     }
+<a href="#l302" class="line" id="l302">    302</a>     return edges;
+<a href="#l303" class="line" id="l303">    303</a> }
+<a href="#l304" class="line" id="l304">    304</a> 
+<a href="#l305" class="line" id="l305">    305</a> 
+<a href="#l306" class="line" id="l306">    306</a> static void process_cursor_motion(uint32_t time, double dx, double dy) {
+<a href="#l307" class="line" id="l307">    307</a>     double sx, sy;
+<a href="#l308" class="line" id="l308">    308</a>     struct wlr_seat *seat;
+<a href="#l309" class="line" id="l309">    309</a>     struct wlr_surface *surface;
+<a href="#l310" class="line" id="l310">    310</a>     double zoom = wimp.current_desk-&gt;zoom;
+<a href="#l311" class="line" id="l311">    311</a> 
+<a href="#l312" class="line" id="l312">    312</a>     switch (wimp.cursor_mode) {
+<a href="#l313" class="line" id="l313">    313</a> 	case CURSOR_PASSTHROUGH:
+<a href="#l314" class="line" id="l314">    314</a> 	    seat = wimp.seat;
+<a href="#l315" class="line" id="l315">    315</a> 	    surface = NULL;
+<a href="#l316" class="line" id="l316">    316</a> 	    bool is_layer;
+<a href="#l317" class="line" id="l317">    317</a> 	    struct view *view = under_pointer(&amp;surface, &amp;sx, &amp;sy, &amp;is_layer);
+<a href="#l318" class="line" id="l318">    318</a> 	    if (!view) {
+<a href="#l319" class="line" id="l319">    319</a> 		wlr_xcursor_manager_set_cursor_image(wimp.cursor_manager, &quot;left_ptr&quot;, wimp.cursor);
+<a href="#l320" class="line" id="l320">    320</a> 	    }
+<a href="#l321" class="line" id="l321">    321</a> 	    if (surface) {
+<a href="#l322" class="line" id="l322">    322</a> 		wlr_seat_pointer_notify_enter(seat, surface, sx, sy);
+<a href="#l323" class="line" id="l323">    323</a> 		if (seat-&gt;pointer_state.focused_surface == surface) {
+<a href="#l324" class="line" id="l324">    324</a> 		    wlr_seat_pointer_notify_motion(seat, time, sx, sy);
+<a href="#l325" class="line" id="l325">    325</a> 		}
+<a href="#l326" class="line" id="l326">    326</a> 		if (wimp.auto_focus &amp;&amp; seat-&gt;keyboard_state.focused_surface != surface) {
+<a href="#l327" class="line" id="l327">    327</a> 		    focus(view, surface, is_layer);
+<a href="#l328" class="line" id="l328">    328</a> 		}
+<a href="#l329" class="line" id="l329">    329</a> 	    } else {
+<a href="#l330" class="line" id="l330">    330</a> 		wlr_seat_pointer_clear_focus(seat);
+<a href="#l331" class="line" id="l331">    331</a> 	    }
+<a href="#l332" class="line" id="l332">    332</a> 	    break;
+<a href="#l333" class="line" id="l333">    333</a> 
+<a href="#l334" class="line" id="l334">    334</a> 	case CURSOR_MOD:
+<a href="#l335" class="line" id="l335">    335</a> 	    if (wimp.on_mouse_motion) {
+<a href="#l336" class="line" id="l336">    336</a> 		struct motion motion = {
+<a href="#l337" class="line" id="l337">    337</a> 		    .dx = dx / zoom,
+<a href="#l338" class="line" id="l338">    338</a> 		    .dy = dy / zoom,
+<a href="#l339" class="line" id="l339">    339</a> 		    .is_percentage = false,
+<a href="#l340" class="line" id="l340">    340</a> 		};
+<a href="#l341" class="line" id="l341">    341</a> 		wimp.on_mouse_motion(&amp;motion);
+<a href="#l342" class="line" id="l342">    342</a> 	    }
+<a href="#l343" class="line" id="l343">    343</a> 	    if (wimp.grabbed_view) {
+<a href="#l344" class="line" id="l344">    344</a> 		wimp.can_snap = try_snap();
+<a href="#l345" class="line" id="l345">    345</a> 	    }
+<a href="#l346" class="line" id="l346">    346</a> 	    break;
+<a href="#l347" class="line" id="l347">    347</a> 
+<a href="#l348" class="line" id="l348">    348</a> 	case CURSOR_MOVE:
+<a href="#l349" class="line" id="l349">    349</a> 	    process_cursor_move(time, zoom);
+<a href="#l350" class="line" id="l350">    350</a> 	    break;
+<a href="#l351" class="line" id="l351">    351</a> 
+<a href="#l352" class="line" id="l352">    352</a> 	case CURSOR_RESIZE:
+<a href="#l353" class="line" id="l353">    353</a> 	    process_cursor_resize(time, zoom);
+<a href="#l354" class="line" id="l354">    354</a> 	    break;
+<a href="#l355" class="line" id="l355">    355</a>     }
+<a href="#l356" class="line" id="l356">    356</a> }
+<a href="#l357" class="line" id="l357">    357</a> 
+<a href="#l358" class="line" id="l358">    358</a> 
+<a href="#l359" class="line" id="l359">    359</a> static void on_cursor_motion(struct wl_listener *listener, void *data){
+<a href="#l360" class="line" id="l360">    360</a>     struct wlr_event_pointer_motion *event = data;
+<a href="#l361" class="line" id="l361">    361</a>     if (wimp.resize_edges) {
+<a href="#l362" class="line" id="l362">    362</a> 	if (wimp.resize_edges &amp; WLR_EDGE_TOP) {
+<a href="#l363" class="line" id="l363">    363</a> 	    if (wimp.grabbed_view-&gt;surface-&gt;geometry.height &lt;= CORNER &amp;&amp; event-&gt;delta_y &gt; 0) {
+<a href="#l364" class="line" id="l364">    364</a> 		event-&gt;delta_y = 0;
+<a href="#l365" class="line" id="l365">    365</a> 	    }
+<a href="#l366" class="line" id="l366">    366</a> 	} else if (wimp.resize_edges &amp; WLR_EDGE_BOTTOM) {
+<a href="#l367" class="line" id="l367">    367</a> 	    if (wimp.grabbed_view-&gt;surface-&gt;geometry.height &lt;= CORNER &amp;&amp; event-&gt;delta_y &lt; 0) {
+<a href="#l368" class="line" id="l368">    368</a> 		event-&gt;delta_y = 0;
+<a href="#l369" class="line" id="l369">    369</a> 	    }
+<a href="#l370" class="line" id="l370">    370</a> 	}
+<a href="#l371" class="line" id="l371">    371</a> 	if (wimp.resize_edges &amp; WLR_EDGE_LEFT) {
+<a href="#l372" class="line" id="l372">    372</a> 	    if (wimp.grabbed_view-&gt;surface-&gt;geometry.width &lt;= CORNER &amp;&amp; event-&gt;delta_x &gt; 0) {
+<a href="#l373" class="line" id="l373">    373</a> 		event-&gt;delta_x = 0;
+<a href="#l374" class="line" id="l374">    374</a> 	    }
+<a href="#l375" class="line" id="l375">    375</a> 	} else if (wimp.resize_edges &amp; WLR_EDGE_RIGHT) {
+<a href="#l376" class="line" id="l376">    376</a> 	    if (wimp.grabbed_view-&gt;surface-&gt;geometry.width &lt;= CORNER &amp;&amp; event-&gt;delta_x &lt; 0) {
+<a href="#l377" class="line" id="l377">    377</a> 		event-&gt;delta_x = 0;
+<a href="#l378" class="line" id="l378">    378</a> 	    }
+<a href="#l379" class="line" id="l379">    379</a> 	}
+<a href="#l380" class="line" id="l380">    380</a>     }
+<a href="#l381" class="line" id="l381">    381</a> 
+<a href="#l382" class="line" id="l382">    382</a>     double x = wimp.cursor-&gt;x;
+<a href="#l383" class="line" id="l383">    383</a>     double y = wimp.cursor-&gt;y;
+<a href="#l384" class="line" id="l384">    384</a>     wlr_cursor_move(wimp.cursor, event-&gt;device, event-&gt;delta_x, event-&gt;delta_y);
+<a href="#l385" class="line" id="l385">    385</a>     if (x == wimp.cursor-&gt;x) {
+<a href="#l386" class="line" id="l386">    386</a> 	event-&gt;delta_x = 0;
+<a href="#l387" class="line" id="l387">    387</a>     }
+<a href="#l388" class="line" id="l388">    388</a>     if (y == wimp.cursor-&gt;y) {
+<a href="#l389" class="line" id="l389">    389</a> 	event-&gt;delta_y = 0;
+<a href="#l390" class="line" id="l390">    390</a>     }
+<a href="#l391" class="line" id="l391">    391</a> 
+<a href="#l392" class="line" id="l392">    392</a>     process_cursor_motion(event-&gt;time_msec, event-&gt;delta_x, event-&gt;delta_y);
+<a href="#l393" class="line" id="l393">    393</a> }
+<a href="#l394" class="line" id="l394">    394</a> 
+<a href="#l395" class="line" id="l395">    395</a> 
+<a href="#l396" class="line" id="l396">    396</a> static void on_cursor_motion_absolute(struct wl_listener *listener, void *data) {
+<a href="#l397" class="line" id="l397">    397</a>     struct wlr_event_pointer_motion_absolute *event = data;
+<a href="#l398" class="line" id="l398">    398</a>     double lx, ly;
+<a href="#l399" class="line" id="l399">    399</a>     wlr_cursor_absolute_to_layout_coords(
+<a href="#l400" class="line" id="l400">    400</a> 	wimp.cursor, event-&gt;device, event-&gt;x, event-&gt;y, &amp;lx, &amp;ly
+<a href="#l401" class="line" id="l401">    401</a>     );
+<a href="#l402" class="line" id="l402">    402</a> 
+<a href="#l403" class="line" id="l403">    403</a>     struct wlr_event_pointer_motion relative = {
+<a href="#l404" class="line" id="l404">    404</a> 	.device = event-&gt;device,
+<a href="#l405" class="line" id="l405">    405</a> 	.delta_x = lx - wimp.cursor-&gt;x,
+<a href="#l406" class="line" id="l406">    406</a> 	.delta_y = ly - wimp.cursor-&gt;y,
+<a href="#l407" class="line" id="l407">    407</a>     };
+<a href="#l408" class="line" id="l408">    408</a>     on_cursor_motion(NULL, &amp;relative);
+<a href="#l409" class="line" id="l409">    409</a> }
+<a href="#l410" class="line" id="l410">    410</a> 
+<a href="#l411" class="line" id="l411">    411</a> 
+<a href="#l412" class="line" id="l412">    412</a> static void on_cursor_button(struct wl_listener *listener, void *data) {
+<a href="#l413" class="line" id="l413">    413</a>     struct wlr_event_pointer_button *event = data;
+<a href="#l414" class="line" id="l414">    414</a>     wlr_seat_pointer_notify_button(wimp.seat, event-&gt;time_msec, event-&gt;button, event-&gt;state);
+<a href="#l415" class="line" id="l415">    415</a>     double sx, sy;
+<a href="#l416" class="line" id="l416">    416</a>     struct wlr_surface *surface;
+<a href="#l417" class="line" id="l417">    417</a>     bool is_layer;
+<a href="#l418" class="line" id="l418">    418</a> 
+<a href="#l419" class="line" id="l419">    419</a>     if (event-&gt;state == WLR_BUTTON_RELEASED) {
+<a href="#l420" class="line" id="l420">    420</a> 	if (wimp.cursor_mode == CURSOR_MOD) {
+<a href="#l421" class="line" id="l421">    421</a> 	    wimp.on_mouse_motion = NULL;
+<a href="#l422" class="line" id="l422">    422</a> 	    struct binding *kb;
+<a href="#l423" class="line" id="l423">    423</a> 	    wl_list_for_each(kb, &amp;wimp.mouse_bindings, link) {
+<a href="#l424" class="line" id="l424">    424</a> 		if (kb-&gt;key == MOTION) {
+<a href="#l425" class="line" id="l425">    425</a> 		    wimp.on_mouse_motion = kb-&gt;action;
+<a href="#l426" class="line" id="l426">    426</a> 		    break;
+<a href="#l427" class="line" id="l427">    427</a> 		}
+<a href="#l428" class="line" id="l428">    428</a> 	    }
+<a href="#l429" class="line" id="l429">    429</a> 	} else {
+<a href="#l430" class="line" id="l430">    430</a> 	    wimp.cursor_mode = CURSOR_PASSTHROUGH;
+<a href="#l431" class="line" id="l431">    431</a> 	}
+<a href="#l432" class="line" id="l432">    432</a> 	if (wimp.grabbed_view) {
+<a href="#l433" class="line" id="l433">    433</a> 	    if (try_snap()) {
+<a href="#l434" class="line" id="l434">    434</a> 		int border_width = wimp.current_desk-&gt;border_width;
+<a href="#l435" class="line" id="l435">    435</a> 		double zoom = wimp.current_desk-&gt;zoom;
+<a href="#l436" class="line" id="l436">    436</a> 		wimp.snap_geobox.x = (wimp.snap_geobox.x + border_width) / zoom;
+<a href="#l437" class="line" id="l437">    437</a> 		wimp.snap_geobox.y = (wimp.snap_geobox.y + border_width) / zoom;
+<a href="#l438" class="line" id="l438">    438</a> 		wimp.snap_geobox.width = (wimp.snap_geobox.width - border_width * 2) / zoom;
+<a href="#l439" class="line" id="l439">    439</a> 		wimp.snap_geobox.height = (wimp.snap_geobox.height - border_width * 2) / zoom;
+<a href="#l440" class="line" id="l440">    440</a> 		view_apply_geometry(wimp.grabbed_view, &amp;wimp.snap_geobox);
+<a href="#l441" class="line" id="l441">    441</a> 	    }
+<a href="#l442" class="line" id="l442">    442</a> 	    wimp.grabbed_view = NULL;
+<a href="#l443" class="line" id="l443">    443</a> 	    wimp.can_snap = false;
+<a href="#l444" class="line" id="l444">    444</a> 	    wimp.resize_edges = 0;
+<a href="#l445" class="line" id="l445">    445</a> 	}
+<a href="#l446" class="line" id="l446">    446</a>     }
+<a href="#l447" class="line" id="l447">    447</a> 
+<a href="#l448" class="line" id="l448">    448</a>     else if (wimp.cursor_mode == CURSOR_MOD) {
+<a href="#l449" class="line" id="l449">    449</a> 	bool grab = true;
+<a href="#l450" class="line" id="l450">    450</a> 	switch (event-&gt;button) {
+<a href="#l451" class="line" id="l451">    451</a> 	    case BTN_LEFT:
+<a href="#l452" class="line" id="l452">    452</a> 		wimp.on_mouse_motion = wimp.on_drag1;
+<a href="#l453" class="line" id="l453">    453</a> 		break;
+<a href="#l454" class="line" id="l454">    454</a> 	    case BTN_MIDDLE:
+<a href="#l455" class="line" id="l455">    455</a> 		wimp.on_mouse_motion = wimp.on_drag2;
+<a href="#l456" class="line" id="l456">    456</a> 		break;
+<a href="#l457" class="line" id="l457">    457</a> 	    case BTN_RIGHT:
+<a href="#l458" class="line" id="l458">    458</a> 		wimp.on_mouse_motion = wimp.on_drag3;
+<a href="#l459" class="line" id="l459">    459</a> 		break;
+<a href="#l460" class="line" id="l460">    460</a> 	    default:
+<a href="#l461" class="line" id="l461">    461</a> 		grab = false;
+<a href="#l462" class="line" id="l462">    462</a> 	}
+<a href="#l463" class="line" id="l463">    463</a> 	if (grab) {
+<a href="#l464" class="line" id="l464">    464</a> 	    wimp.grabbed_view = under_pointer(&amp;surface, &amp;sx, &amp;sy, &amp;is_layer);
+<a href="#l465" class="line" id="l465">    465</a> 	}
+<a href="#l466" class="line" id="l466">    466</a>     }
+<a href="#l467" class="line" id="l467">    467</a> 
+<a href="#l468" class="line" id="l468">    468</a>     else {
+<a href="#l469" class="line" id="l469">    469</a> 	struct view *view = under_pointer(&amp;surface, &amp;sx, &amp;sy, &amp;is_layer);
+<a href="#l470" class="line" id="l470">    470</a> 	if (!is_layer) {
+<a href="#l471" class="line" id="l471">    471</a> 	    if (view) {
+<a href="#l472" class="line" id="l472">    472</a> 		enum wlr_edges edges = pointer_in_view_corner(view);
+<a href="#l473" class="line" id="l473">    473</a> 		if (edges) {
+<a href="#l474" class="line" id="l474">    474</a> 		    wimp.grabbed_view = view;
+<a href="#l475" class="line" id="l475">    475</a> 		    wimp.resize_edges = edges;
+<a href="#l476" class="line" id="l476">    476</a> 		    wimp.grab_x = wimp.cursor-&gt;x - view-&gt;x * wimp.current_desk-&gt;zoom;
+<a href="#l477" class="line" id="l477">    477</a> 		    wimp.grab_y = wimp.cursor-&gt;y - view-&gt;y * wimp.current_desk-&gt;zoom;
+<a href="#l478" class="line" id="l478">    478</a> 		    wlr_xdg_surface_get_geometry(view-&gt;surface, &amp;wimp.grab_geobox);
+<a href="#l479" class="line" id="l479">    479</a> 		    wimp.grab_geobox.x = view-&gt;x;
+<a href="#l480" class="line" id="l480">    480</a> 		    wimp.grab_geobox.y = view-&gt;y;
+<a href="#l481" class="line" id="l481">    481</a> 		    wimp.cursor_mode = CURSOR_RESIZE;
+<a href="#l482" class="line" id="l482">    482</a> 		} else {
+<a href="#l483" class="line" id="l483">    483</a> 		    focus_view(view, surface);
+<a href="#l484" class="line" id="l484">    484</a> 		}
+<a href="#l485" class="line" id="l485">    485</a> 	    } else {
+<a href="#l486" class="line" id="l486">    486</a> 		focus_view(view, surface);
+<a href="#l487" class="line" id="l487">    487</a> 	    }
+<a href="#l488" class="line" id="l488">    488</a> 	}
+<a href="#l489" class="line" id="l489">    489</a>     }
+<a href="#l490" class="line" id="l490">    490</a> }
+<a href="#l491" class="line" id="l491">    491</a> 
+<a href="#l492" class="line" id="l492">    492</a> 
+<a href="#l493" class="line" id="l493">    493</a> static void on_cursor_axis(struct wl_listener *listener, void *data) {
+<a href="#l494" class="line" id="l494">    494</a>     struct wlr_event_pointer_axis *event = data;
+<a href="#l495" class="line" id="l495">    495</a>     if (wimp.cursor_mode == CURSOR_MOD) {
+<a href="#l496" class="line" id="l496">    496</a> 	if (wimp.on_mouse_scroll) {
+<a href="#l497" class="line" id="l497">    497</a> 	    struct motion motion = {
+<a href="#l498" class="line" id="l498">    498</a> 		.dx = 0,
+<a href="#l499" class="line" id="l499">    499</a> 		.dy = 0,
+<a href="#l500" class="line" id="l500">    500</a> 		.is_percentage = false,
+<a href="#l501" class="line" id="l501">    501</a> 	    };
+<a href="#l502" class="line" id="l502">    502</a> 	    if (event-&gt;orientation == WLR_AXIS_ORIENTATION_VERTICAL) {
+<a href="#l503" class="line" id="l503">    503</a> 		motion.dy = wimp.reverse_scrolling ? - event-&gt;delta : event-&gt;delta;
+<a href="#l504" class="line" id="l504">    504</a> 	    } else {
+<a href="#l505" class="line" id="l505">    505</a> 		motion.dx = wimp.reverse_scrolling ? - event-&gt;delta : event-&gt;delta;
+<a href="#l506" class="line" id="l506">    506</a> 	    };
+<a href="#l507" class="line" id="l507">    507</a> 	    wimp.on_mouse_scroll(&amp;motion);
+<a href="#l508" class="line" id="l508">    508</a> 	}
+<a href="#l509" class="line" id="l509">    509</a>     } else {
+<a href="#l510" class="line" id="l510">    510</a> 	wlr_seat_pointer_notify_axis(
+<a href="#l511" class="line" id="l511">    511</a> 	    wimp.seat, event-&gt;time_msec, event-&gt;orientation, event-&gt;delta,
+<a href="#l512" class="line" id="l512">    512</a> 	    event-&gt;delta_discrete, event-&gt;source
+<a href="#l513" class="line" id="l513">    513</a> 	);
+<a href="#l514" class="line" id="l514">    514</a>     }
+<a href="#l515" class="line" id="l515">    515</a> }
+<a href="#l516" class="line" id="l516">    516</a> 
+<a href="#l517" class="line" id="l517">    517</a> 
+<a href="#l518" class="line" id="l518">    518</a> static void on_cursor_frame(struct wl_listener *listener, void *data) {
+<a href="#l519" class="line" id="l519">    519</a>     wlr_seat_pointer_notify_frame(wimp.seat);
+<a href="#l520" class="line" id="l520">    520</a> }
+<a href="#l521" class="line" id="l521">    521</a> 
+<a href="#l522" class="line" id="l522">    522</a> 
+<a href="#l523" class="line" id="l523">    523</a> static void on_pinch_end(struct wl_listener *listener, void *data) {
+<a href="#l524" class="line" id="l524">    524</a>     struct wlr_event_pointer_pinch_end *event = data;
+<a href="#l525" class="line" id="l525">    525</a>     if (wimp.cursor_mode == CURSOR_PASSTHROUGH) {
+<a href="#l526" class="line" id="l526">    526</a> 	wlr_pointer_gestures_v1_send_pinch_end(
+<a href="#l527" class="line" id="l527">    527</a> 	    wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;cancelled
+<a href="#l528" class="line" id="l528">    528</a> 	);
+<a href="#l529" class="line" id="l529">    529</a>     }
+<a href="#l530" class="line" id="l530">    530</a> }
+<a href="#l531" class="line" id="l531">    531</a> 
+<a href="#l532" class="line" id="l532">    532</a> 
+<a href="#l533" class="line" id="l533">    533</a> static void on_pinch_update(struct wl_listener *listener, void *data) {
+<a href="#l534" class="line" id="l534">    534</a>     struct wlr_event_pointer_pinch_update *event = data;
+<a href="#l535" class="line" id="l535">    535</a>     if (wimp.cursor_mode == CURSOR_MOD) {
+<a href="#l536" class="line" id="l536">    536</a> 	if (wimp.on_pinch) {
+<a href="#l537" class="line" id="l537">    537</a> 	    wimp.on_pinch(&amp;event-&gt;scale);
+<a href="#l538" class="line" id="l538">    538</a> 	}
+<a href="#l539" class="line" id="l539">    539</a>     } else {
+<a href="#l540" class="line" id="l540">    540</a> 	wlr_pointer_gestures_v1_send_pinch_update(
+<a href="#l541" class="line" id="l541">    541</a> 	    wimp.pointer_gestures, wimp.seat, event-&gt;time_msec,
+<a href="#l542" class="line" id="l542">    542</a> 	    event-&gt;dx, event-&gt;dy, event-&gt;scale, event-&gt;rotation
+<a href="#l543" class="line" id="l543">    543</a> 	);
+<a href="#l544" class="line" id="l544">    544</a>     }
+<a href="#l545" class="line" id="l545">    545</a> }
+<a href="#l546" class="line" id="l546">    546</a> 
+<a href="#l547" class="line" id="l547">    547</a> 
+<a href="#l548" class="line" id="l548">    548</a> static void on_pinch_begin(struct wl_listener *listener, void *data) {
+<a href="#l549" class="line" id="l549">    549</a>     struct wlr_event_pointer_pinch_begin *event = data;
+<a href="#l550" class="line" id="l550">    550</a>     if (wimp.cursor_mode == CURSOR_MOD) {
+<a href="#l551" class="line" id="l551">    551</a> 	if (wimp.on_pinch_begin) {
+<a href="#l552" class="line" id="l552">    552</a> 	    wimp.on_pinch_begin(NULL);
+<a href="#l553" class="line" id="l553">    553</a> 	}
+<a href="#l554" class="line" id="l554">    554</a>     } else {
+<a href="#l555" class="line" id="l555">    555</a> 	wlr_pointer_gestures_v1_send_pinch_begin(
+<a href="#l556" class="line" id="l556">    556</a> 	    wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;fingers
+<a href="#l557" class="line" id="l557">    557</a> 	);
+<a href="#l558" class="line" id="l558">    558</a>     }
+<a href="#l559" class="line" id="l559">    559</a> }
+<a href="#l560" class="line" id="l560">    560</a> 
+<a href="#l561" class="line" id="l561">    561</a> 
+<a href="#l562" class="line" id="l562">    562</a> static void on_swipe_end(struct wl_listener *listener, void *data) {
+<a href="#l563" class="line" id="l563">    563</a>     struct wlr_event_pointer_swipe_end *event = data;
+<a href="#l564" class="line" id="l564">    564</a>     wlr_pointer_gestures_v1_send_swipe_end(
+<a href="#l565" class="line" id="l565">    565</a> 	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;cancelled
+<a href="#l566" class="line" id="l566">    566</a>     );
+<a href="#l567" class="line" id="l567">    567</a> }
+<a href="#l568" class="line" id="l568">    568</a> 
+<a href="#l569" class="line" id="l569">    569</a> 
+<a href="#l570" class="line" id="l570">    570</a> static void on_swipe_update(struct wl_listener *listener, void *data) {
+<a href="#l571" class="line" id="l571">    571</a>     struct wlr_event_pointer_swipe_update *event = data;
+<a href="#l572" class="line" id="l572">    572</a>     wlr_pointer_gestures_v1_send_swipe_update(
+<a href="#l573" class="line" id="l573">    573</a> 	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;dx, event-&gt;dy
+<a href="#l574" class="line" id="l574">    574</a>     );
+<a href="#l575" class="line" id="l575">    575</a> }
+<a href="#l576" class="line" id="l576">    576</a> 
+<a href="#l577" class="line" id="l577">    577</a> 
+<a href="#l578" class="line" id="l578">    578</a> static void on_swipe_begin(struct wl_listener *listener, void *data) {
+<a href="#l579" class="line" id="l579">    579</a>     struct wlr_event_pointer_swipe_begin *event = data;
+<a href="#l580" class="line" id="l580">    580</a>     wlr_pointer_gestures_v1_send_swipe_begin(
+<a href="#l581" class="line" id="l581">    581</a> 	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;fingers
+<a href="#l582" class="line" id="l582">    582</a>     );
+<a href="#l583" class="line" id="l583">    583</a> }
+<a href="#l584" class="line" id="l584">    584</a> 
+<a href="#l585" class="line" id="l585">    585</a> 
+<a href="#l586" class="line" id="l586">    586</a> void set_up_cursor() {
+<a href="#l587" class="line" id="l587">    587</a>     wimp.cursor = wlr_cursor_create();
+<a href="#l588" class="line" id="l588">    588</a>     wlr_cursor_attach_output_layout(wimp.cursor, wimp.output_layout);
+<a href="#l589" class="line" id="l589">    589</a>     wimp.cursor_manager = wlr_xcursor_manager_create(NULL, 24);
+<a href="#l590" class="line" id="l590">    590</a>     wlr_xcursor_manager_load(wimp.cursor_manager, 1);
+<a href="#l591" class="line" id="l591">    591</a> 
+<a href="#l592" class="line" id="l592">    592</a>     wimp.request_cursor_listener.notify = on_request_cursor;
+<a href="#l593" class="line" id="l593">    593</a>     wl_signal_add(&amp;wimp.seat-&gt;events.request_set_cursor, &amp;wimp.request_cursor_listener);
+<a href="#l594" class="line" id="l594">    594</a> 
+<a href="#l595" class="line" id="l595">    595</a>     wimp.cursor_axis_listener.notify = on_cursor_axis;
+<a href="#l596" class="line" id="l596">    596</a>     wimp.cursor_frame_listener.notify = on_cursor_frame;
+<a href="#l597" class="line" id="l597">    597</a>     wimp.cursor_button_listener.notify = on_cursor_button;
+<a href="#l598" class="line" id="l598">    598</a>     wimp.cursor_motion_listener.notify = on_cursor_motion;
+<a href="#l599" class="line" id="l599">    599</a>     wimp.cursor_motion_absolute_listener.notify = on_cursor_motion_absolute;
+<a href="#l600" class="line" id="l600">    600</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.axis, &amp;wimp.cursor_axis_listener);
+<a href="#l601" class="line" id="l601">    601</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.frame, &amp;wimp.cursor_frame_listener);
+<a href="#l602" class="line" id="l602">    602</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.button, &amp;wimp.cursor_button_listener);
+<a href="#l603" class="line" id="l603">    603</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.motion, &amp;wimp.cursor_motion_listener);
+<a href="#l604" class="line" id="l604">    604</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.motion_absolute, &amp;wimp.cursor_motion_absolute_listener);
+<a href="#l605" class="line" id="l605">    605</a> 
+<a href="#l606" class="line" id="l606">    606</a>     wimp.pointer_gestures = wlr_pointer_gestures_v1_create(wimp.display);
+<a href="#l607" class="line" id="l607">    607</a>     wimp.pinch_end_listener.notify = on_pinch_end;
+<a href="#l608" class="line" id="l608">    608</a>     wimp.pinch_begin_listener.notify = on_pinch_begin;
+<a href="#l609" class="line" id="l609">    609</a>     wimp.pinch_update_listener.notify = on_pinch_update;
+<a href="#l610" class="line" id="l610">    610</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.pinch_end, &amp;wimp.pinch_end_listener);
+<a href="#l611" class="line" id="l611">    611</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.pinch_begin, &amp;wimp.pinch_begin_listener);
+<a href="#l612" class="line" id="l612">    612</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.pinch_update, &amp;wimp.pinch_update_listener);
+<a href="#l613" class="line" id="l613">    613</a>     wimp.swipe_end_listener.notify = on_swipe_end;
+<a href="#l614" class="line" id="l614">    614</a>     wimp.swipe_begin_listener.notify = on_swipe_begin;
+<a href="#l615" class="line" id="l615">    615</a>     wimp.swipe_update_listener.notify = on_swipe_update;
+<a href="#l616" class="line" id="l616">    616</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.swipe_end, &amp;wimp.swipe_end_listener);
+<a href="#l617" class="line" id="l617">    617</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.swipe_begin, &amp;wimp.swipe_begin_listener);
+<a href="#l618" class="line" id="l618">    618</a>     wl_signal_add(&amp;wimp.cursor-&gt;events.swipe_update, &amp;wimp.swipe_update_listener);
+<a href="#l619" class="line" id="l619">    619</a> }
+<a href="#l620" class="line" id="l620">    620</a> 
+</pre>
+  </div>
+  </body>
+</html>

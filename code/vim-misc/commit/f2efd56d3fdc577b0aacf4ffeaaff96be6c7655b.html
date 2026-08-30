@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - split vimrc into files</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/f2efd56d3fdc577b0aacf4ffeaaff96be6c7655b.html">f2efd56d3fdc577b0aacf4ffeaaff96be6c7655b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/f1903fa7be2d07772d36d98753007b824def7960.html">f1903fa7be2d07772d36d98753007b824def7960</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-01 12:40:00 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-01 12:40:00 +0000
+
+split vimrc into files
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -85,144 +85,6 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Ricing                                                           &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-&quot; statusline
+</span><span class="sub">-set laststatus=2			    &quot; always show status bar
+</span><span class="sub">-set statusline =
+</span><span class="sub">-set statusline +=%1*\ \ %&lt;%F\ \ %*	    &quot; full path
+</span><span class="sub">-set statusline +=%2*\ \ %y%*                &quot; file type
+</span><span class="sub">-set statusline +=%2*\ %m\ %*                &quot; modified flag
+</span><span class="sub">-set statusline +=%3*%=%*		    &quot; centre padding
+</span><span class="sub">-set statusline +=%4*\ \ %l\ /\ %L\ \ %*	    &quot; current / total lines
+</span><span class="sub">-set statusline +=%5*\ %n\ %*		    &quot; buffer number
+</span><span class="sub">-
+</span><span class="sub">-hi User1 ctermfg=0 ctermbg=5 cterm=none 
+</span><span class="sub">-hi User2 ctermfg=0 ctermbg=4 cterm=none 
+</span><span class="sub">-hi User3 ctermfg=0 ctermbg=14 cterm=none 
+</span><span class="sub">-hi User4 ctermfg=0 ctermbg=2 cterm=none 
+</span><span class="sub">-hi User5 ctermfg=0 ctermbg=3 cterm=none 
+</span><span class="sub">-
+</span><span class="sub">-&quot; vimdiff
+</span><span class="sub">-hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="sub">-hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="sub">-hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="sub">-hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="sub">-
+</span><span class="sub">-&quot; folds
+</span><span class="sub">-hi Folded ctermbg=8 ctermfg=4 cterm=none
+</span><span class="sub">-
+</span><span class="sub">-&quot; visual mode highlighting
+</span><span class="sub">-hi Visual ctermbg=7 ctermfg=0
+</span><span class="sub">-
+</span><span class="sub">-&quot; matched brackets
+</span><span class="sub">-hi MatchParen ctermfg=7 cterm=underline ctermbg=0 
+</span><span class="sub">-
+</span><span class="sub">-&quot; line numbers
+</span><span class="sub">-set number relativenumber
+</span><span class="sub">-hi LineNr ctermfg=5
+</span><span class="sub">-
+</span><span class="sub">-&quot; highlight cursor line
+</span><span class="sub">-highlight CursorLine ctermbg=8 cterm=bold
+</span><span class="sub">-augroup CursorLine
+</span><span class="sub">-    au!
+</span><span class="sub">-    au VimEnter,WinEnter,BufWinEnter * setlocal  cursorline
+</span><span class="sub">-    au WinLeave * setlocal nocursorline
+</span><span class="sub">-augroup END
+</span><span class="sub">-
+</span><span class="sub">-&quot; change cursor shape in insert mode
+</span><span class="sub">-let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="sub">-let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="sub">-augroup myCmds
+</span><span class="sub">-    au!
+</span><span class="sub">-    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="sub">-augroup END
+</span><span class="sub">-
+</span><span class="sub">-&quot; character for line in split
+</span><span class="sub">-set fillchars=vert:\|    
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Global keybindings                                               &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-&quot; reload current buffer
+</span><span class="sub">-&quot;nnoremap &lt;C-l&gt; :e&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; toggle fold
+</span><span class="sub">-nnoremap &lt;space&gt; za
+</span><span class="sub">-
+</span><span class="sub">-&quot; buffer navigation
+</span><span class="sub">-nnoremap &lt;leader&gt;b :ls&lt;CR&gt;:b&lt;space&gt;
+</span><span class="sub">-nnoremap &lt;Leader&gt;v :ls&lt;CR&gt;:vert sb&lt;space&gt;
+</span><span class="sub">-nnoremap &lt;Leader&gt;j :bnext&lt;CR&gt; 
+</span><span class="sub">-nnoremap &lt;Leader&gt;k :bprevious&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;BS&gt; :bdelete&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;Leader&gt;&lt;BS&gt; :w&lt;CR&gt;:bdelete&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; move between tabs
+</span><span class="sub">-nnoremap &lt;Leader&gt;n gT
+</span><span class="sub">-nnoremap &lt;Leader&gt;m gt
+</span><span class="sub">-
+</span><span class="sub">-&quot; indent selection
+</span><span class="sub">-vnoremap &lt; &lt;gv
+</span><span class="sub">-vnoremap &gt; &gt;gv
+</span><span class="sub">-
+</span><span class="sub">-&quot; quitting and writing shortcuts
+</span><span class="sub">-nnoremap Q &lt;nop&gt;
+</span><span class="sub">-nnoremap QQ :q&lt;CR&gt;
+</span><span class="sub">-nnoremap !Q :q!&lt;CR&gt;
+</span><span class="sub">-nnoremap QW :wq&lt;CR&gt;
+</span><span class="sub">-nnoremap :Q :q
+</span><span class="sub">-nnoremap :W :w
+</span><span class="sub">-
+</span><span class="sub">-&quot; yank to end of line
+</span><span class="sub">-nnoremap Y y$
+</span><span class="sub">-
+</span><span class="sub">-&quot; copy and paste system clipboard
+</span><span class="sub">-nnoremap &lt;C-p&gt; &quot;+p
+</span><span class="sub">-nnoremap &lt;C-y&gt; &quot;+y
+</span><span class="sub">-nnoremap &lt;C-y&gt;&lt;C-y&gt; ms0v$&quot;+y`s
+</span><span class="sub">-vnoremap &lt;C-p&gt; &quot;+p
+</span><span class="sub">-vnoremap &lt;C-y&gt; &quot;+y
+</span><span class="sub">-&quot;next one needs fixing:
+</span><span class="sub">-&quot;inoremap &lt;C-p&gt; &lt;Esc&gt;&quot;+p
+</span><span class="sub">-inoremap &lt;C-y&gt; &lt;Esc&gt;&quot;+y
+</span><span class="sub">-
+</span><span class="sub">-&quot; save read-only file with sudo trick
+</span><span class="sub">-cnoremap w!! w !sudo tee &gt; /dev/null %
+</span><span class="sub">-
+</span><span class="sub">-&quot; move between split views
+</span><span class="sub">-nnoremap &lt;C-H&gt; &lt;C-W&gt;&lt;C-H&gt;
+</span><span class="sub">-nnoremap &lt;C-J&gt; &lt;C-W&gt;&lt;C-J&gt;
+</span><span class="sub">-nnoremap &lt;C-K&gt; &lt;C-W&gt;&lt;C-K&gt;
+</span><span class="sub">-nnoremap &lt;C-L&gt; &lt;C-W&gt;&lt;C-L&gt;
+</span><span class="sub">-inoremap &lt;C-H&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-H&gt;
+</span><span class="sub">-inoremap &lt;C-J&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-J&gt;
+</span><span class="sub">-inoremap &lt;C-K&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-K&gt;
+</span><span class="sub">-inoremap &lt;C-L&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-L&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; move to start or end of line more easily
+</span><span class="sub">-nnoremap H 0
+</span><span class="sub">-nnoremap L $
+</span><span class="sub">-vnoremap H 0
+</span><span class="sub">-vnoremap L g_
+</span><span class="sub">-
+</span><span class="sub">-&quot; resize splits
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;Up&gt; :res -1&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;Down&gt; :res +1&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;Left&gt; :vertical resize -5&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;Right&gt; :vertical resize +5&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; toggle search highlight
+</span><span class="sub">-nnoremap &lt;Leader&gt;h :set hlsearch!&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; shortcuts to open files
+</span><span class="sub">-cnoremap modrc e ~/.vimrc&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="def"> &quot; Misc                                                             &quot;
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span>@@ -232,23 +94,24 @@
+<span class="def"> 	    \ |   exe &quot;normal! g`\&quot;&quot;
+</span><span class="def"> 	    \ | endif
+</span><span class="def"> 
+</span><span class="sub">-&quot; set wiki path
+</span><span class="sub">-let g:vimwiki_list = [{&apos;path&apos;: &apos;~/work/research/research.wiki/&apos;, &apos;path_html&apos;: &apos;~/work/research/research.wiki.html/&apos;}]
+</span><span class="sub">-
+</span><span class="def"> &quot; netrw
+</span><span class="def"> nmap &lt;C-n&gt; :Explore&lt;CR&gt;
+</span><span class="def"> nmap &lt;C-t&gt; :Texplore&lt;CR&gt;
+</span><span class="def"> let g:netrw_sort_sequence=&apos;[\/]$&apos;
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> &quot; vimlab setup
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="def"> &quot; vim-slime 
+</span><span class="sub">-let g:slime_target = &quot;tmux&quot;
+</span><span class="sub">-let g:slime_dont_ask_default = 1
+</span><span class="sub">-let g:slime_default_config = {&quot;socket_name&quot;: &quot;default&quot;, &quot;target_pane&quot;: &quot;1&quot;}
+</span><span class="sub">-let g:slime_paste_file = &quot;/tmp/slime_paste&quot;
+</span><span class="add">+if hostname() == &quot;zenbook&quot;
+</span><span class="add">+    let g:slime_target = &quot;tmux&quot;
+</span><span class="add">+    let g:slime_dont_ask_default = 1
+</span><span class="add">+    let g:slime_default_config = {&quot;socket_name&quot;: &quot;default&quot;, &quot;target_pane&quot;: &quot;1&quot;}
+</span><span class="add">+    let g:slime_paste_file = &quot;/tmp/slime_paste&quot;
+</span><span class="add">+endif
+</span><span class="def"> 
+</span><span class="def"> &quot; mlint code checking 
+</span><span class="def"> if hostname() == &quot;zenbook&quot;
+</span>@@ -256,7 +119,7 @@
+<span class="def"> else
+</span><span class="def">     let g:mlint_path_to_mlint = &quot;to be filled in later&quot;
+</span><span class="def"> endif
+</span><span class="sub">-let g:mlint_hover = 1
+</span><span class="add">+let g:mlint_hover = 0
+</span><span class="def"> 
+</span><span class="def"> &quot; session saving
+</span><span class="def"> let g:vimlab_session = &quot;~/.cache/vim/sessions/matlab-session.vim&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/theme.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,57 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Ricing                                                           &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; statusline
+</span><span class="add">+set laststatus=2			    &quot; always show status bar
+</span><span class="add">+set statusline =
+</span><span class="add">+set statusline +=%1*\ \ %&lt;%F\ \ %*	    &quot; full path
+</span><span class="add">+set statusline +=%2*\ \ %y%*                &quot; file type
+</span><span class="add">+set statusline +=%2*\ %m\ %*                &quot; modified flag
+</span><span class="add">+set statusline +=%3*%=%*		    &quot; centre padding
+</span><span class="add">+set statusline +=%4*\ \ %l\ /\ %L\ \ %*	    &quot; current / total lines
+</span><span class="add">+set statusline +=%5*\ %n\ %*		    &quot; buffer number
+</span><span class="add">+
+</span><span class="add">+hi User1 ctermfg=0 ctermbg=5 cterm=none 
+</span><span class="add">+hi User2 ctermfg=0 ctermbg=4 cterm=none 
+</span><span class="add">+hi User3 ctermfg=0 ctermbg=14 cterm=none 
+</span><span class="add">+hi User4 ctermfg=0 ctermbg=2 cterm=none 
+</span><span class="add">+hi User5 ctermfg=0 ctermbg=3 cterm=none 
+</span><span class="add">+
+</span><span class="add">+&quot; vimdiff
+</span><span class="add">+hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="add">+hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="add">+hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="add">+hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="add">+
+</span><span class="add">+&quot; folds
+</span><span class="add">+hi Folded ctermbg=8 ctermfg=4 cterm=none
+</span><span class="add">+
+</span><span class="add">+&quot; visual mode highlighting
+</span><span class="add">+hi Visual ctermbg=7 ctermfg=0
+</span><span class="add">+
+</span><span class="add">+&quot; matched brackets
+</span><span class="add">+hi MatchParen ctermfg=7 cterm=underline ctermbg=0 
+</span><span class="add">+
+</span><span class="add">+&quot; line numbers
+</span><span class="add">+set number relativenumber
+</span><span class="add">+hi LineNr ctermfg=5
+</span><span class="add">+
+</span><span class="add">+&quot; highlight cursor line
+</span><span class="add">+highlight CursorLine ctermbg=8 cterm=bold
+</span><span class="add">+augroup CursorLine
+</span><span class="add">+    au!
+</span><span class="add">+    au VimEnter,WinEnter,BufWinEnter * setlocal  cursorline
+</span><span class="add">+    au WinLeave * setlocal nocursorline
+</span><span class="add">+augroup END
+</span><span class="add">+
+</span><span class="add">+&quot; change cursor shape in insert mode
+</span><span class="add">+let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="add">+let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="add">+augroup myCmds
+</span><span class="add">+    au!
+</span><span class="add">+    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="add">+augroup END
+</span><span class="add">+
+</span><span class="add">+&quot; character for line in split
+</span><span class="add">+set fillchars=vert:\|    
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/keybindings.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,74 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Global keybindings                                               &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; reload current buffer
+</span><span class="add">+&quot;nnoremap &lt;C-l&gt; :e&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; toggle fold
+</span><span class="add">+nnoremap &lt;space&gt; za
+</span><span class="add">+
+</span><span class="add">+&quot; buffer navigation
+</span><span class="add">+nnoremap &lt;leader&gt;b :ls&lt;CR&gt;:b&lt;space&gt;
+</span><span class="add">+nnoremap &lt;Leader&gt;v :ls&lt;CR&gt;:vert sb&lt;space&gt;
+</span><span class="add">+nnoremap &lt;Leader&gt;j :bnext&lt;CR&gt; 
+</span><span class="add">+nnoremap &lt;Leader&gt;k :bprevious&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;BS&gt; :bdelete&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;Leader&gt;&lt;BS&gt; :w&lt;CR&gt;:bdelete&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; move between tabs
+</span><span class="add">+nnoremap &lt;Leader&gt;n gT
+</span><span class="add">+nnoremap &lt;Leader&gt;m gt
+</span><span class="add">+
+</span><span class="add">+&quot; indent selection
+</span><span class="add">+vnoremap &lt; &lt;gv
+</span><span class="add">+vnoremap &gt; &gt;gv
+</span><span class="add">+
+</span><span class="add">+&quot; quitting and writing shortcuts
+</span><span class="add">+nnoremap Q &lt;nop&gt;
+</span><span class="add">+nnoremap QQ :q&lt;CR&gt;
+</span><span class="add">+nnoremap !Q :q!&lt;CR&gt;
+</span><span class="add">+nnoremap QW :wq&lt;CR&gt;
+</span><span class="add">+nnoremap :Q :q
+</span><span class="add">+nnoremap :W :w
+</span><span class="add">+
+</span><span class="add">+&quot; yank to end of line
+</span><span class="add">+nnoremap Y y$
+</span><span class="add">+
+</span><span class="add">+&quot; copy and paste system clipboard
+</span><span class="add">+nnoremap &lt;C-p&gt; &quot;+p
+</span><span class="add">+nnoremap &lt;C-y&gt; &quot;+y
+</span><span class="add">+nnoremap &lt;C-y&gt;&lt;C-y&gt; ms0v$&quot;+y`s
+</span><span class="add">+vnoremap &lt;C-p&gt; &quot;+p
+</span><span class="add">+vnoremap &lt;C-y&gt; &quot;+y
+</span><span class="add">+&quot;next one needs fixing:
+</span><span class="add">+&quot;inoremap &lt;C-p&gt; &lt;Esc&gt;&quot;+p
+</span><span class="add">+inoremap &lt;C-y&gt; &lt;Esc&gt;&quot;+y
+</span><span class="add">+
+</span><span class="add">+&quot; save read-only file with sudo trick
+</span><span class="add">+cnoremap w!! w !sudo tee &gt; /dev/null %
+</span><span class="add">+
+</span><span class="add">+&quot; move between split views
+</span><span class="add">+nnoremap &lt;C-H&gt; &lt;C-W&gt;&lt;C-H&gt;
+</span><span class="add">+nnoremap &lt;C-J&gt; &lt;C-W&gt;&lt;C-J&gt;
+</span><span class="add">+nnoremap &lt;C-K&gt; &lt;C-W&gt;&lt;C-K&gt;
+</span><span class="add">+nnoremap &lt;C-L&gt; &lt;C-W&gt;&lt;C-L&gt;
+</span><span class="add">+inoremap &lt;C-H&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-H&gt;
+</span><span class="add">+inoremap &lt;C-J&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-J&gt;
+</span><span class="add">+inoremap &lt;C-K&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-K&gt;
+</span><span class="add">+inoremap &lt;C-L&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-L&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; move to start or end of line more easily
+</span><span class="add">+nnoremap H 0
+</span><span class="add">+nnoremap L $
+</span><span class="add">+vnoremap H 0
+</span><span class="add">+vnoremap L g_
+</span><span class="add">+
+</span><span class="add">+&quot; resize splits
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Up&gt; :res -1&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Down&gt; :res +1&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Left&gt; :vertical resize -5&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Right&gt; :vertical resize +5&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; toggle search highlight
+</span><span class="add">+nnoremap &lt;Leader&gt;h :set hlsearch!&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

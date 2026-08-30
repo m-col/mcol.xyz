@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Docs: if folder contains 1 item, render its contents too</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/a6171632c7bed6c70d9cf875f50cbd7d32e1e800.html">a6171632c7bed6c70d9cf875f50cbd7d32e1e800</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/433568bcb220a8deba4dfcc4af1771acfb1775a2.html">433568bcb220a8deba4dfcc4af1771acfb1775a2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-12-04 16:41:40 +0300
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-12-04 16:41:40 +0300
+
+Docs: if folder contains 1 item, render its contents too
+</pre><div class="diff">
+  <p>
+    <b>templates/docs/repo/file.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,6 +23,18 @@
+<span class="def">     {% endfor %}
+</span><span class="def">   &lt;/tbody&gt;
+</span><span class="def"> &lt;/table&gt;
+</span><span class="add">+
+</span><span class="add">+  {%- if length(file.contents) == 1 -%}
+</span><span class="add">+    {%- set child = file.contents[0] -%}
+</span><span class="add">+    {% if child.is_binary %}
+</span><span class="add">+    (Child is binary)
+</span><span class="add">+    {% else %}
+</span><span class="add">+&lt;pre id=&quot;blob&quot;&gt;{% for line in split(child.contents, &apos;\n&apos;) %}
+</span><span class="add">+&lt;a href=&quot;#l{{ loop.index }}&quot; class=&quot;line&quot; id=&quot;l{{ loop.index }}&quot;&gt;{{ printf(&quot;%5v&quot;, loop.index) }}&lt;/a&gt;  {{ line }}
+</span><span class="add">+{% endfor %}&lt;/pre&gt;
+</span><span class="add">+    {% endif %}
+</span><span class="add">+  {%- endif -%}
+</span><span class="add">+
+</span><span class="def"> {% else %}
+</span><span class="def">   {% if file.is_binary %}
+</span><span class="def">   (File is binary)
+</span></pre>
+</div></div>
+  </body>
+</html>

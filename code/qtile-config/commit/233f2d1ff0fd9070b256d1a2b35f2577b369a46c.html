@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - ensure wlsunset is dead before starting it again</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/233f2d1ff0fd9070b256d1a2b35f2577b369a46c.html">233f2d1ff0fd9070b256d1a2b35f2577b369a46c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/5423cf39f3ee271725a3110479f30cb8925ef2cd.html">5423cf39f3ee271725a3110479f30cb8925ef2cd</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-09-03 03:24:15 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-09-03 03:24:15 +0100
+
+ensure wlsunset is dead before starting it again
+</pre><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -29,7 +29,7 @@
+<span class="def"> 
+</span><span class="def">     # Services
+</span><span class="def">     kanshi &amp;
+</span><span class="sub">-    wlsunset -t 1000 -T 6700 -l 55.7 -L -3.1 &amp;
+</span><span class="add">+    pkill wlsunset; wlsunset -t 1000 -T 6700 -l 55.7 -L -3.1 &amp;
+</span><span class="def">     swayidle &amp;
+</span><span class="def">     mpDris2 &amp;
+</span><span class="def">     sway-mpris-idle-inhibit &amp;
+</span></pre>
+</div></div>
+  </body>
+</html>

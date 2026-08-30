@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add toggletodo() function</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/5da12254f0cd1f0a0963f8918c7466cff4823650.html">5da12254f0cd1f0a0963f8918c7466cff4823650</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/52ab3ee2e324798016813b44ca7601720289016b.html">52ab3ee2e324798016813b44ca7601720289016b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-20 19:18:31 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-20 19:18:31 +0000
+
+add toggletodo() function
+</pre><div class="diff">
+  <p>
+    <b>plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -67,6 +67,7 @@
+<span class="def"> &quot;inoremap &lt;C-L&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-L&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; move to start or end of line more easily
+</span><span class="add">+nnoremap 0 ^
+</span><span class="def"> nnoremap H 0
+</span><span class="def"> nnoremap L $
+</span><span class="def"> vnoremap H 0
+</span>@@ -89,3 +90,16 @@
+<span class="def"> 
+</span><span class="def"> &quot; toggle spell checking
+</span><span class="def"> nnoremap &lt;leader&gt;S :setlocal spell! spelllang=en_gb spell?&lt;CR&gt;:echo &quot;zg to add new word&quot;&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; toggle [ ] tick box on current line with ctrl-space
+</span><span class="add">+function! ToggleTodo()
+</span><span class="add">+    let l:line = getline(&apos;.&apos;)
+</span><span class="add">+    if match(l:line, &apos;\[x\]&apos;) != -1
+</span><span class="add">+	let l:line = substitute(l:line, &apos;\[x\]&apos;, &apos;\[ \]&apos;, &apos;&apos;)
+</span><span class="add">+	call setline(&apos;.&apos;, l:line)
+</span><span class="add">+    elseif match(l:line, &apos;\[ \]&apos;) != -1
+</span><span class="add">+	let l:line = substitute(l:line, &apos;\[ \]&apos;, &apos;\[x\]&apos;, &apos;&apos;)
+</span><span class="add">+	call setline(&apos;.&apos;, l:line)
+</span><span class="add">+    endif
+</span><span class="add">+endfunction
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;C-@&gt; :call ToggleTodo()&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

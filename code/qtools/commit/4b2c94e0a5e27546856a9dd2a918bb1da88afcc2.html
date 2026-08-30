@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add python native play_sound function and let Notifier use it</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/4b2c94e0a5e27546856a9dd2a918bb1da88afcc2.html">4b2c94e0a5e27546856a9dd2a918bb1da88afcc2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/449ddf3371fa052e4a665195b69e241dc4cbc337.html">449ddf3371fa052e4a665195b69e241dc4cbc337</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-03-29 21:30:10 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-03-29 21:30:10 +0100
+
+add python native play_sound function and let Notifier use it
+</pre><div class="diff">
+  <p>
+    <b>qtools/__init__.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,16 +3,20 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+import os
+</span><span class="def"> from random import randint
+</span><span class="def"> 
+</span><span class="def"> import gi
+</span><span class="add">+gi.require_version(&apos;Gst&apos;, &apos;1.0&apos;)
+</span><span class="add">+from gi.repository import Gst
+</span><span class="def"> gi.require_version(&apos;Notify&apos;, &apos;0.7&apos;)
+</span><span class="def"> from gi.repository import Notify
+</span><span class="def"> 
+</span><span class="def"> from xcffib.xproto import StackMode
+</span><span class="sub">-from libqtile import configurable, pangocffi, window
+</span><span class="sub">-from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.drawer import Drawer
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from libqtile import configurable, pangocffi, window
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> class Notifier(configurable.Configurable):
+</span>@@ -25,6 +29,7 @@
+<span class="def">     defaults = [
+</span><span class="def">         (&apos;summary&apos;, &apos;Notifier&apos;, &apos;Notification summary.&apos;),
+</span><span class="def">         (&apos;timeout&apos;, -1, &apos;Timeout for notifications.&apos;),
+</span><span class="add">+        (&apos;sound&apos;, None, &apos;Sound to make when sending notification&apos;),
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def">     def __init__(self, **config):
+</span>@@ -38,7 +43,10 @@
+<span class="def">             config.get(&apos;summary&apos;, &apos;Notifier&apos;), &apos;&apos;
+</span><span class="def">         )
+</span><span class="def">         self.timeout = config.get(&apos;timeout&apos;, -1)
+</span><span class="sub">-        self.id = randint(10, 100)
+</span><span class="add">+        self.id = randint(10, 1000)
+</span><span class="add">+
+</span><span class="add">+        if self.sound is not None:
+</span><span class="add">+            self.sound = os.path.expanduser(self.sound)
+</span><span class="def"> 
+</span><span class="def">     def __getattr__(self, name):
+</span><span class="def">         &quot;&quot;&quot;
+</span>@@ -65,11 +73,32 @@
+<span class="def">         if hasattr(self, &apos;id&apos;):
+</span><span class="def">             self.notifier.set_property(&apos;id&apos;, self.id)
+</span><span class="def">         self.notifier.show()
+</span><span class="add">+        if self.sound is not None:
+</span><span class="add">+            play_sound(self.sound)
+</span><span class="def"> 
+</span><span class="def">     def hide(self):
+</span><span class="def">         self.notifier.hide()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+Gst.init(None)
+</span><span class="add">+
+</span><span class="add">+def play_sound(path):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Play an audio file. This accepts a full path to an audio file. This is mostly a
+</span><span class="add">+    snippet from the playsound library.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    playbin = Gst.ElementFactory.make(&apos;playbin&apos;, &apos;playbin&apos;)
+</span><span class="add">+    playbin.props.uri = &apos;file://&apos; + path
+</span><span class="add">+
+</span><span class="add">+    set_result = playbin.set_state(Gst.State.PLAYING)
+</span><span class="add">+    if set_result == Gst.StateChangeReturn.ASYNC:
+</span><span class="add">+        bus = playbin.get_bus()
+</span><span class="add">+        bus.poll(Gst.MessageType.EOS, Gst.CLOCK_TIME_NONE)
+</span><span class="add">+        playbin.set_state(Gst.State.NULL)
+</span><span class="add">+    else:
+</span><span class="add">+        logger.exception(&quot;qtools.play_sound failed with file: {0}&quot;.format(path))
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> ALIGNMENTS = {
+</span><span class="def">     &apos;left&apos;: pangocffi.pango.PANGO_ALIGN_LEFT,
+</span><span class="def">     &apos;center&apos;: pangocffi.pango.PANGO_ALIGN_CENTER,
+</span></pre>
+</div></div>
+  </body>
+</html>

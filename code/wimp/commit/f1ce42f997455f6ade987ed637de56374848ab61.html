@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add min and max zoom bounds</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/f1ce42f997455f6ade987ed637de56374848ab61.html">f1ce42f997455f6ade987ed637de56374848ab61</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/97cc262356e06759da4c61b2364590182934320c.html">97cc262356e06759da4c61b2364590182934320c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-13 11:11:23 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-13 11:11:23 +0000
+
+add min and max zoom bounds
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -52,6 +52,7 @@
+<span class="def">     double grab_x, grab_y;
+</span><span class="def">     struct wlr_box grab_geobox;
+</span><span class="def">     uint32_t resize_edges;
+</span><span class="add">+    double zoom_min, zoom_max;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> struct view {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -78,10 +78,17 @@
+<span class="def"> 
+</span><span class="def"> void zoom_desk(struct desk *desk, int dir) {
+</span><span class="def">     /* dir &gt; 0 ? zoom in : zoom out */
+</span><span class="add">+    struct server *server = desk-&gt;server;
+</span><span class="def">     double f = dir &gt; 0 ? 1.015 : 1/1.015;
+</span><span class="add">+    if (
+</span><span class="add">+	(f &gt; 1 &amp;&amp; desk-&gt;zoom &gt;= server-&gt;zoom_max) ||
+</span><span class="add">+	(f &lt; 1 &amp;&amp; desk-&gt;zoom &lt;= server-&gt;zoom_min)
+</span><span class="add">+    ) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="def">     desk-&gt;zoom *= f;
+</span><span class="sub">-    double fx = desk-&gt;server-&gt;cursor-&gt;x * (f - 1) / desk-&gt;zoom;
+</span><span class="sub">-    double fy = desk-&gt;server-&gt;cursor-&gt;y * (f - 1) / desk-&gt;zoom;
+</span><span class="add">+    double fx = server-&gt;cursor-&gt;x * (f - 1) / desk-&gt;zoom;
+</span><span class="add">+    double fy = server-&gt;cursor-&gt;y * (f - 1) / desk-&gt;zoom;
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="def"> 	view-&gt;x -= fx;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,6 +10,8 @@
+<span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+#define is_decimal(s) (strspn(s, &quot;0123456789.&quot;) == strlen(s))
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> void assign_colour(char *hex, float dest[4]) {
+</span><span class="def">     if (strlen(hex) != 7 || hex[0] != &apos;#&apos;) {
+</span>@@ -86,6 +88,8 @@
+<span class="def">     add_desk(server);
+</span><span class="def">     server-&gt;current_desk =
+</span><span class="def"> 	wl_container_of(server-&gt;desks.next, server-&gt;current_desk, link);
+</span><span class="add">+    server-&gt;zoom_min = 0.5;
+</span><span class="add">+    server-&gt;zoom_max = 3;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -123,7 +127,14 @@
+<span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="def"> 		set_wallpaper(server, s);
+</span><span class="def"> 	    }
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;modifier&quot;)) {
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;zoom_min&quot;)) {
+</span><span class="add">+	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_decimal(s)) {
+</span><span class="add">+		server-&gt;zoom_min = strtod(s, NULL);
+</span><span class="add">+	    }
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;zoom_max&quot;)) {
+</span><span class="add">+	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_decimal(s)) {
+</span><span class="add">+		server-&gt;zoom_max = strtod(s, NULL);
+</span><span class="add">+	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def">     fclose(fd);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,7 +10,12 @@
+<span class="def"> # example deskwm configuration file
+</span><span class="def"> #
+</span><span class="def"> # All possible options are described here. Lines that start with &apos;#&apos; are
+</span><span class="sub">-# ignored.
+</span><span class="add">+# ignored. Options that are commented out contain their default values.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# These specify the min and max magnification bounds when zooming.
+</span><span class="add">+#zoom_min 0.5
+</span><span class="add">+#zoom_max 3
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> ## Configure desks
+</span></pre>
+</div></div>
+  </body>
+</html>

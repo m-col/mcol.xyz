@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - readme.rst</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- readme.rst</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> mkinitcpio-welcome
+<a href="#l2" class="line" id="l2">      2</a> ==================
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> A mkinitcpio_ hook that draws out the word &quot;Welcome&quot; in big letters early
+<a href="#l5" class="line" id="l5">      5</a> during the boot process and accepts input for disk decryption. A box is drawn
+<a href="#l6" class="line" id="l6">      6</a> underneath for inputting the password and printing the output of the &apos;fsck&apos;
+<a href="#l7" class="line" id="l7">      7</a> hook.
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> The hook wraps and replaces the encrypt hook so that it can have greater
+<a href="#l10" class="line" id="l10">     10</a> control over the cursor and any printed messages.
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> If you find that the message is squeezed into a smaller number of columns that
+<a href="#l13" class="line" id="l13">     13</a> can fit on screen, you may need to enable early `kernel mode setting`_,
+<a href="#l14" class="line" id="l14">     14</a> although I found enabling the `consolefont` hook also fixed the issue.
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> It works very well with Evan Purkhiser&apos;s `mkinitcpio-colors`_.
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> Usage
+<a href="#l20" class="line" id="l20">     20</a> -----
+<a href="#l21" class="line" id="l21">     21</a> 
+<a href="#l22" class="line" id="l22">     22</a> 0. Ensure that you can successfully use the `encrypt` hook without first.
+<a href="#l23" class="line" id="l23">     23</a> 1. Copy `hooks/welcome` into `/etc/initcpio/hooks`.
+<a href="#l24" class="line" id="l24">     24</a> 2. Copy `install/welcome` into `/etc/initcpio/install`.
+<a href="#l25" class="line" id="l25">     25</a> 3. Add the `welcome` hook to `/etc/mkinitcpio.conf` replacing the `encrypt` hook.
+<a href="#l26" class="line" id="l26">     26</a> 4. Optionally configure the colours to use in `/etc/vconsole.conf`:
+<a href="#l27" class="line" id="l27">     27</a> 
+<a href="#l28" class="line" id="l28">     28</a> .. code-block:: sh
+<a href="#l29" class="line" id="l29">     29</a> 
+<a href="#l30" class="line" id="l30">     30</a>    WELCOME_BG=0    # background
+<a href="#l31" class="line" id="l31">     31</a>    WELCOME_FG=5    # foreground (&quot;Welcome&quot;)
+<a href="#l32" class="line" id="l32">     32</a>    WELCOME_IN=6    # input box frame
+<a href="#l33" class="line" id="l33">     33</a> 
+<a href="#l34" class="line" id="l34">     34</a> where the number is 0-15 corresponding to the 16 defined console colours.
+<a href="#l35" class="line" id="l35">     35</a> 
+<a href="#l36" class="line" id="l36">     36</a> 5. Rebuild the initramfs image with `mkinitcpio`.
+<a href="#l37" class="line" id="l37">     37</a> 
+<a href="#l38" class="line" id="l38">     38</a> 
+<a href="#l39" class="line" id="l39">     39</a> Contact
+<a href="#l40" class="line" id="l40">     40</a> -------
+<a href="#l41" class="line" id="l41">     41</a> Email me @ mcol@posteo.net for questions or contributions.
+<a href="#l42" class="line" id="l42">     42</a> 
+<a href="#l43" class="line" id="l43">     43</a> 
+<a href="#l44" class="line" id="l44">     44</a> .. _mkinitcpio: https://wiki.archlinux.org/index.php/mkinitcpio
+<a href="#l45" class="line" id="l45">     45</a> .. _mkinitcpio-colors: https://github.com/EvanPurkhiser/mkinitcpio-colors
+<a href="#l46" class="line" id="l46">     46</a> 
+</pre>
+  </div>
+  </body>
+</html>

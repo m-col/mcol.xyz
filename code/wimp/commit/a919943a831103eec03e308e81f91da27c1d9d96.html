@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - map and unmap views when setting new desk</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/a919943a831103eec03e308e81f91da27c1d9d96.html">a919943a831103eec03e308e81f91da27c1d9d96</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/2f1a499e9cf4b20ffb8af7e8bf3b41466659ef34.html">2f1a499e9cf4b20ffb8af7e8bf3b41466659ef34</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-08 18:33:05 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-08 18:33:05 +0000
+
+map and unmap views when setting new desk
+</pre><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +1,9 @@
+<span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> static int num_desks = 0;
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -22,6 +24,18 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void set_desk(struct server *server, struct desk *desk) {
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="add">+	unmap_view(view);
+</span><span class="add">+    }
+</span><span class="add">+    server-&gt;current_desk = desk;
+</span><span class="add">+    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="add">+	map_view(view);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void next_desk(struct server *server) {
+</span><span class="def">     struct desk *desk;
+</span><span class="def">     if (server-&gt;current_desk-&gt;index + 1 == num_desks) {
+</span>@@ -29,7 +43,7 @@
+<span class="def">     } else {
+</span><span class="def"> 	desk = wl_container_of(server-&gt;current_desk-&gt;link.next, desk, link);
+</span><span class="def">     }
+</span><span class="sub">-    server-&gt;current_desk = desk;
+</span><span class="add">+    set_desk(server, desk);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -40,5 +54,5 @@
+<span class="def">     } else {
+</span><span class="def"> 	desk = wl_container_of(server-&gt;current_desk-&gt;link.prev, desk, link);
+</span><span class="def">     }
+</span><span class="sub">-    server-&gt;current_desk = desk;
+</span><span class="add">+    set_desk(server, desk);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

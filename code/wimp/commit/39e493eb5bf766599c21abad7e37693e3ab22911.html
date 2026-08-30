@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Organise layers into arrays on struct output</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/39e493eb5bf766599c21abad7e37693e3ab22911.html">39e493eb5bf766599c21abad7e37693e3ab22911</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/d1d22eb074acd47994e76007ba56fb8d525f9b7a.html">d1d22eb074acd47994e76007ba56fb8d525f9b7a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-28 21:50:12 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-28 21:50:12 +0000
+
+Organise layers into arrays on struct output
+
+Closes #15.
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -112,7 +112,7 @@
+<span class="def"> 
+</span><span class="def"> struct output {
+</span><span class="def">     struct wl_list link;
+</span><span class="sub">-    struct wl_list layer_views;
+</span><span class="add">+    struct wl_list layer_views[4];
+</span><span class="def">     struct wlr_output *wlr_output;
+</span><span class="def">     struct wl_listener frame_listener;
+</span><span class="def"> };
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -125,19 +125,15 @@
+<span class="def"> 
+</span><span class="def">     // paint background and bottom layers
+</span><span class="def">     struct layer_view *lview;
+</span><span class="sub">-    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="sub">-	if (lview-&gt;surface-&gt;current.layer == ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND) {
+</span><span class="sub">-	    wlr_surface_for_each_surface(
+</span><span class="sub">-		lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="sub">-	    );
+</span><span class="sub">-	}
+</span><span class="add">+    wl_list_for_each(lview, &amp;output-&gt;layer_views[ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND], link) {
+</span><span class="add">+	wlr_surface_for_each_surface(
+</span><span class="add">+	    lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="add">+	);
+</span><span class="def">     }
+</span><span class="sub">-    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="sub">-	if (lview-&gt;surface-&gt;current.layer == ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM) {
+</span><span class="sub">-	    wlr_surface_for_each_surface(
+</span><span class="sub">-		lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="sub">-	    );
+</span><span class="sub">-	}
+</span><span class="add">+    wl_list_for_each(lview, &amp;output-&gt;layer_views[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM], link) {
+</span><span class="add">+	wlr_surface_for_each_surface(
+</span><span class="add">+	    lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="add">+	);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // paint clients
+</span>@@ -157,19 +153,15 @@
+<span class="def">     rdata.y = 0;
+</span><span class="def"> 
+</span><span class="def">     // paint top and overlay layers
+</span><span class="sub">-    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="sub">-	if (lview-&gt;surface-&gt;current.layer == ZWLR_LAYER_SHELL_V1_LAYER_TOP) {
+</span><span class="sub">-	    wlr_surface_for_each_surface(
+</span><span class="sub">-		lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="sub">-	    );
+</span><span class="sub">-	}
+</span><span class="add">+    wl_list_for_each(lview, &amp;output-&gt;layer_views[ZWLR_LAYER_SHELL_V1_LAYER_TOP], link) {
+</span><span class="add">+	wlr_surface_for_each_surface(
+</span><span class="add">+	    lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="add">+	);
+</span><span class="def">     }
+</span><span class="sub">-    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="sub">-	if (lview-&gt;surface-&gt;current.layer == ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY) {
+</span><span class="sub">-	    wlr_surface_for_each_surface(
+</span><span class="sub">-		lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="sub">-	    );
+</span><span class="sub">-	}
+</span><span class="add">+    wl_list_for_each(lview, &amp;output-&gt;layer_views[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY], link) {
+</span><span class="add">+	wlr_surface_for_each_surface(
+</span><span class="add">+	    lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="add">+	);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // paint mark indicator
+</span>@@ -209,7 +201,10 @@
+<span class="def">     wl_list_insert(&amp;wimp.outputs, &amp;output-&gt;link);
+</span><span class="def">     wlr_output_layout_add_auto(wimp.output_layout, wlr_output);
+</span><span class="def"> 
+</span><span class="sub">-    wl_list_init(&amp;output-&gt;layer_views);
+</span><span class="add">+    wl_list_init(&amp;output-&gt;layer_views[0]);
+</span><span class="add">+    wl_list_init(&amp;output-&gt;layer_views[1]);
+</span><span class="add">+    wl_list_init(&amp;output-&gt;layer_views[2]);
+</span><span class="add">+    wl_list_init(&amp;output-&gt;layer_views[3]);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -83,10 +83,12 @@
+<span class="def">     struct output *output, *toutput;
+</span><span class="def">     struct layer_view *lview, *tlview;
+</span><span class="def">     wl_list_for_each_safe(output, toutput, &amp;wimp.outputs, link) {
+</span><span class="sub">-	wl_list_for_each_safe(lview, tlview, &amp;output-&gt;layer_views, link) {
+</span><span class="sub">-	    wl_list_remove(&amp;lview-&gt;link);
+</span><span class="sub">-	    free(lview);
+</span><span class="sub">-	};
+</span><span class="add">+	for (int i = 0; i &lt; 4; i++ ) {
+</span><span class="add">+	    wl_list_for_each_safe(lview, tlview, &amp;output-&gt;layer_views[i], link) {
+</span><span class="add">+		wl_list_remove(&amp;lview-&gt;link);
+</span><span class="add">+		free(lview);
+</span><span class="add">+	    };
+</span><span class="add">+	}
+</span><span class="def"> 	wl_list_remove(&amp;output-&gt;link);
+</span><span class="def"> 	free(output);
+</span><span class="def">     };
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/layer_shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,14 +8,16 @@
+<span class="def">     struct wlr_layer_surface_v1 *surface;
+</span><span class="def">     struct wlr_layer_surface_v1_state *state;
+</span><span class="def"> 
+</span><span class="sub">-    if (wl_list_empty(&amp;output-&gt;layer_views)) {
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    wl_list_for_each(lview, &amp;output-&gt;layer_views, link) {
+</span><span class="sub">-	surface = lview-&gt;surface;
+</span><span class="sub">-	state = &amp;surface-&gt;current;
+</span><span class="sub">-	wlr_layer_surface_v1_configure(surface, state-&gt;desired_width, state-&gt;desired_height);
+</span><span class="add">+    for (int i = 0; i&lt;4; i++) {
+</span><span class="add">+	if (wl_list_empty(&amp;output-&gt;layer_views[i])) {
+</span><span class="add">+	    continue;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	wl_list_for_each(lview, &amp;output-&gt;layer_views[i], link) {
+</span><span class="add">+	    surface = lview-&gt;surface;
+</span><span class="add">+	    state = &amp;surface-&gt;current;
+</span><span class="add">+	    wlr_layer_surface_v1_configure(surface, state-&gt;desired_width, state-&gt;desired_height);
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -61,7 +63,7 @@
+<span class="def">     wl_signal_add(&amp;surface-&gt;events.map, &amp;lview-&gt;map_listener);
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.unmap, &amp;lview-&gt;unmap_listener);
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.destroy, &amp;lview-&gt;destroy_listener);
+</span><span class="sub">-    
+</span><span class="add">+
+</span><span class="def">     if (!surface-&gt;output) {
+</span><span class="def"> 	surface-&gt;output = wlr_output_layout_output_at(
+</span><span class="def"> 	    wimp.output_layout, wimp.cursor-&gt;x, wimp.cursor-&gt;y
+</span>@@ -69,7 +71,7 @@
+<span class="def">     }
+</span><span class="def">     struct output *output = surface-&gt;output-&gt;data;
+</span><span class="def">     lview-&gt;output = output;
+</span><span class="sub">-    wl_list_insert(&amp;output-&gt;layer_views, &amp;lview-&gt;link);
+</span><span class="add">+    wl_list_insert(&amp;output-&gt;layer_views[surface-&gt;client_pending.layer], &amp;lview-&gt;link);
+</span><span class="def"> 
+</span><span class="def">     layer(lview-&gt;output);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

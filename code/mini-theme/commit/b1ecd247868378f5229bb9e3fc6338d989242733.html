@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mini-theme - add nix rel to screenshots</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mini-theme">mini-theme</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A mini theme for the pelican static site generator</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mini-theme">https://github.com/m-col/mini-theme</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mini-theme/tree.html">Files</a> | <a href="https://mcol.xyz/code/mini-theme/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mini-theme/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mini-theme/commit/b1ecd247868378f5229bb9e3fc6338d989242733.html">b1ecd247868378f5229bb9e3fc6338d989242733</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mini-theme/commit/f55427af2280e5b21b9d117b56940864e60ea922.html">f55427af2280e5b21b9d117b56940864e60ea922</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-02 23:48:32 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-03 00:18:34 +0100
+
+add nix rel to screenshots
+</pre><div class="diff">
+  <p>
+    <b>templates/screenshots.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,7 +16,7 @@
+<span class="def"> &lt;hr&gt;
+</span><span class="def"> {% endif %}
+</span><span class="def"> &lt;table&gt;
+</span><span class="sub">-	&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;/screenshots/{{ img }}&quot;&gt;&lt;img class=&quot;maim&quot; src=&quot;/screenshots/{{ img }}&quot;/&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+	&lt;tr&gt;&lt;td&gt;&lt;a rel=&quot;nix&quot; href=&quot;/screenshots/{{ img }}&quot;&gt;&lt;img class=&quot;maim&quot; src=&quot;/screenshots/{{ img }}&quot;/&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="def"> &lt;/table&gt;
+</span><span class="def"> {% endfor %}
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

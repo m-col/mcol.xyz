@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - add some make commands for profiling</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/04d425d096c9d62b598ee18c71fa6f10048cab37.html">04d425d096c9d62b598ee18c71fa6f10048cab37</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/dd887ab4dff2f47110b7f584e357e86826b76369.html">dd887ab4dff2f47110b7f584e357e86826b76369</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-11-27 16:20:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-11-27 18:12:23 +0000
+
+add some make commands for profiling
+</pre><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,7 +2,7 @@
+<span class="def"> 
+</span><span class="def"> .PHONY: build
+</span><span class="def"> build: ## Compile the binary (Default)
+</span><span class="sub">-	@stack build
+</span><span class="add">+	@stack build --keep-going
+</span><span class="def"> 
+</span><span class="def"> .PHONY: help
+</span><span class="def"> help: ## Show this help
+</span>@@ -38,16 +38,31 @@
+<span class="def"> test: ## Run the &quot;tests&quot;
+</span><span class="def"> 	bash ./test/test.sh
+</span><span class="def"> 
+</span><span class="add">+.PHONY: all
+</span><span class="add">+all: format lint rebuild run test ## Lint, format, rebuild, run, test
+</span><span class="add">+
+</span><span class="def"> .PHONY: prod
+</span><span class="def"> prod: ## Build with optimise flags
+</span><span class="def"> 	@stack build --ghc-options=&quot;-O2&quot;
+</span><span class="def"> 
+</span><span class="add">+.PHONY: dot
+</span><span class="add">+dot: ## Visualise dependencies
+</span><span class="add">+	stack dot --external --depth 1 --prune base,text,bytestring,transformers \
+</span><span class="add">+		|  twopi -Goverlap=false -Tpng -o deps.png
+</span><span class="add">+
+</span><span class="add">+PROF ?= fprof-auto
+</span><span class="add">+# other options: fno-prof-auto fprof-auto-top
+</span><span class="add">+
+</span><span class="def"> .PHONY: prof
+</span><span class="sub">-prof: ## Build with profiling enabled
+</span><span class="sub">-	@stack build --profile
+</span><span class="sub">-	@rm -r output
+</span><span class="sub">-	@stack exec --profile -- gitja -q +RTS -p
+</span><span class="sub">-	@head -n 6 gitja.prof
+</span><span class="add">+prof: _prof_build ## Build with profiling enabled
+</span><span class="add">+	stack exec --profile -- gitja -q +RTS -p -po${PROF}
+</span><span class="add">+	ghc-prof-flamegraph ${PROF}.prof -o ${PROF}.svg
+</span><span class="def"> 
+</span><span class="sub">-.PHONY: all
+</span><span class="sub">-all: format lint rebuild run test ## Lint, format, rebuild, run, test
+</span><span class="add">+.PHONY: prof_speedscope
+</span><span class="add">+prof_speedscope: _prof_build ## Build with profiling enabled (JSON output with speedscope)
+</span><span class="add">+	stack exec --profile -- gitja -q +RTS -p -po${PROF} -pj
+</span><span class="add">+	speedscope ${PROF}.prof
+</span><span class="add">+
+</span><span class="add">+_prof_build:
+</span><span class="add">+	stack build --profile --ghc-options=&quot;-${PROF}&quot;
+</span><span class="add">+	rm -fr output
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,3 +4,4 @@
+<span class="def"> test/result
+</span><span class="def"> dist-newstyle
+</span><span class="def"> *.prof
+</span><span class="add">+*.svg
+</span></pre>
+</div></div>
+  </body>
+</html>

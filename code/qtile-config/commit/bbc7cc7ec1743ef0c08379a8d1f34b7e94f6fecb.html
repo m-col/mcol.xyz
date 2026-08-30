@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - make widgets and float rules nicer for wephyr development</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/bbc7cc7ec1743ef0c08379a8d1f34b7e94f6fecb.html">bbc7cc7ec1743ef0c08379a8d1f34b7e94f6fecb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/8bccc8cc554de5438e267575150e92977e73d4ca.html">8bccc8cc554de5438e267575150e92977e73d4ca</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-16 21:43:54 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-16 21:43:54 +0100
+
+make widgets and float rules nicer for wephyr development
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -189,6 +189,8 @@
+<span class="def">     float_rules=[
+</span><span class="def">         Match(title=&apos;wlroots - X11-1&apos;),
+</span><span class="def">         Match(title=&apos;wlroots - X11-2&apos;),
+</span><span class="add">+        Match(title=&apos;wlroots - WL-1&apos;),
+</span><span class="add">+        Match(title=&apos;wlroots - WL-2&apos;),
+</span><span class="def">         Match(title=&apos;Open File&apos;),
+</span><span class="def">         Match(wm_class=&apos;Arandr&apos;),
+</span><span class="def">         Match(wm_class=&apos;confirm&apos;),
+</span>@@ -237,15 +239,22 @@
+<span class="def">     &apos;fontsize&apos;: 12,
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-mpd2 = widget.Mpd2(
+</span><span class="sub">-    no_connection=&apos;&apos;,
+</span><span class="sub">-    status_format=&apos;{artist} - {title}&apos;,
+</span><span class="sub">-    status_format_stopped=&apos;&apos;,
+</span><span class="sub">-    foreground=colours[12],
+</span><span class="sub">-    idle_format=&apos;&apos;,
+</span><span class="sub">-    font=&apos;TamzenForPowerline Bold&apos;,
+</span><span class="sub">-    update_interval=10,
+</span><span class="sub">-)
+</span><span class="add">+if IS_XEPHYR:
+</span><span class="add">+    mpd2 = widget.TextBox(
+</span><span class="add">+        &apos;mpd here&apos;,
+</span><span class="add">+        foreground=colours[12],
+</span><span class="add">+        font=&apos;TamzenForPowerline Bold&apos;,
+</span><span class="add">+    )
+</span><span class="add">+else:
+</span><span class="add">+    mpd2 = widget.Mpd2(
+</span><span class="add">+        no_connection=&apos;&apos;,
+</span><span class="add">+        status_format=&apos;{artist} - {title}&apos;,
+</span><span class="add">+        status_format_stopped=&apos;&apos;,
+</span><span class="add">+        foreground=colours[12],
+</span><span class="add">+        idle_format=&apos;&apos;,
+</span><span class="add">+        font=&apos;TamzenForPowerline Bold&apos;,
+</span><span class="add">+        update_interval=10,
+</span><span class="add">+    )
+</span><span class="def"> 
+</span><span class="def"> cpugraph = widget.CPUGraph(
+</span><span class="def">     graph_color=colours[12],
+</span>@@ -255,7 +264,7 @@
+<span class="def">     margin_y=4,
+</span><span class="def">     samples=50,
+</span><span class="def">     line_width=4,
+</span><span class="sub">-    width=200,
+</span><span class="add">+    width=50 if IS_XEPHYR else 200,
+</span><span class="def">     type=&apos;box&apos;,
+</span><span class="def">     frequency=1,
+</span><span class="def"> )
+</span></pre>
+</div></div>
+  </body>
+</html>

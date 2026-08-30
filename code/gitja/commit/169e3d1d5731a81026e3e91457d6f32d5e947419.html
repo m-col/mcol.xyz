@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Tiny tidy</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/169e3d1d5731a81026e3e91457d6f32d5e947419.html">169e3d1d5731a81026e3e91457d6f32d5e947419</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/abdb0b1edc398a543a9e458c3119e8f2277611e2.html">abdb0b1edc398a543a9e458c3119e8f2277611e2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-18 18:37:00 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-18 18:37:00 +0100
+
+Tiny tidy
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,7 @@
+<span class="def"> ) where
+</span><span class="def"> 
+</span><span class="def"> import Control.Monad.IO.Class (liftIO)
+</span><span class="add">+import Data.Foldable (foldMap)
+</span><span class="def"> import Data.Tagged
+</span><span class="def"> import Git
+</span><span class="def"> import Git.Libgit2 (lgFactory)
+</span>@@ -17,7 +18,10 @@
+<span class="def"> repositories, reading from them and writing out their web pages.
+</span><span class="def"> -}
+</span><span class="def"> run :: Config -&gt; [Template] -&gt; IO ()
+</span><span class="sub">-run config templates = mconcat . fmap processRepo . repoPaths $ config
+</span><span class="add">+run config templates = foldMap processRepo . repoPaths $ config
+</span><span class="add">+
+</span><span class="add">+----------------------------------------------------------------------------------------
+</span><span class="add">+-- Private
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="def"> This receives a file path to a single repository and tries to process it. If the
+</span></pre>
+</div></div>
+  </body>
+</html>

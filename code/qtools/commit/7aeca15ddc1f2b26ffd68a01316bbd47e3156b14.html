@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - don&apos;t color_pixel(); add underscores to names</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/7aeca15ddc1f2b26ffd68a01316bbd47e3156b14.html">7aeca15ddc1f2b26ffd68a01316bbd47e3156b14</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/d9cd3d4acfd85a19d9651ae3db827d93e46aad89.html">d9cd3d4acfd85a19d9651ae3db827d93e46aad89</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-09-04 22:04:04 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-09-04 22:04:04 +0100
+
+don&apos;t color_pixel(); add underscores to names
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -82,10 +82,10 @@
+<span class="def">         (&apos;border_width&apos;, 4, &apos;Line width of drawn borders.&apos;),
+</span><span class="def">         (&apos;corner_radius&apos;, None, &apos;Corner radius for round corners, or None.&apos;),
+</span><span class="def">         (&apos;font&apos;, &apos;sans&apos;, &apos;Font used in notifications.&apos;),
+</span><span class="sub">-        (&apos;fontsize&apos;, 14, &apos;Size of font.&apos;),
+</span><span class="add">+        (&apos;font_size&apos;, 14, &apos;Size of font.&apos;),
+</span><span class="def">         (&apos;fontshadow&apos;, None, &apos;Color for text shadows, or None for no shadows.&apos;),
+</span><span class="def">         (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+</span><span class="sub">-        (&apos;horizonal_padding&apos;, None, &apos;Padding at sides of text.&apos;),
+</span><span class="add">+        (&apos;horizontal_padding&apos;, None, &apos;Padding at sides of text.&apos;),
+</span><span class="def">         (&apos;vertical_padding&apos;, None, &apos;Padding at top and bottom of text.&apos;),
+</span><span class="def">         (&apos;line_spacing&apos;, 4, &apos;Space between lines.&apos;),
+</span><span class="def">         (
+</span>@@ -147,11 +147,9 @@
+<span class="def">         self.qtile = qtile
+</span><span class="def"> 
+</span><span class="def">         if self.horizontal_padding is None:
+</span><span class="sub">-            self.horizontal_padding = self.fontsize / 2
+</span><span class="add">+            self.horizontal_padding = self.font_size / 2
+</span><span class="def">         if self.vertical_padding is None:
+</span><span class="sub">-            self.vertical_padding = self.fontsize / 2
+</span><span class="sub">-        if self.border_width:
+</span><span class="sub">-            self.border = [self.qtile.color_pixel(c) for c in self.border]
+</span><span class="add">+            self.vertical_padding = self.font_size / 2
+</span><span class="def"> 
+</span><span class="def">         popup_config = {}
+</span><span class="def">         for opt in Popup.defaults:
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Set window hint to &quot;desktop&quot;</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/6c7550044287d2acbcef9ecbc7782d2974bb7497.html">6c7550044287d2acbcef9ecbc7782d2974bb7497</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/f0bc8878f4f48085733b2daef1d2c5c24163983b.html">f0bc8878f4f48085733b2daef1d2c5c24163983b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-25 18:05:31 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-25 18:05:31 +0100
+
+Set window hint to &quot;desktop&quot;
+</pre><div class="diff">
+  <p>
+    <b>xanadu.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,6 +20,7 @@
+<span class="def">   default-language:    Haskell2010
+</span><span class="def">   build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+</span><span class="def">                      , directory
+</span><span class="add">+                     , gi-gdk
+</span><span class="def">                      , gi-gdkpixbuf
+</span><span class="def">                      , gi-gio
+</span><span class="def">                      , gi-gtk
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,7 @@
+<span class="def"> import qualified Icons
+</span><span class="def"> 
+</span><span class="def"> import Data.GI.Base
+</span><span class="add">+import qualified GI.Gdk.Enums as Enums
+</span><span class="def"> import qualified GI.Gio as Gio
+</span><span class="def"> import qualified GI.Gtk as Gtk
+</span><span class="def"> 
+</span>@@ -25,6 +26,7 @@
+<span class="def">         , #title := &quot;xanadu&quot;
+</span><span class="def">         , #resizable := False
+</span><span class="def">         ]
+</span><span class="add">+    #setTypeHint win Enums.WindowTypeHintDesktop
+</span><span class="def">     iconView &lt;- Icons.initIcons win
+</span><span class="def">     #add win iconView
+</span><span class="def">     #showAll win
+</span></pre>
+</div></div>
+  </body>
+</html>

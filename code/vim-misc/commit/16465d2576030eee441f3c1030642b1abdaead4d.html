@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add riv</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/16465d2576030eee441f3c1030642b1abdaead4d.html">16465d2576030eee441f3c1030642b1abdaead4d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/ee9286eb1145b6cadccd75f31aad86bc3e34a3d4.html">ee9286eb1145b6cadccd75f31aad86bc3e34a3d4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-02-15 18:43:37 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-02-15 18:43:37 +0000
+
+add riv
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,7 +22,7 @@
+<span class="def"> 
+</span><span class="def"> if stridx(hostname(), &quot;book&quot;) != -1
+</span><span class="def">     Plugin &apos;vimwiki/vimwiki&apos;		    &quot; vimwiki
+</span><span class="sub">-    &quot;Plugin &apos;gu-fan/riv.vim&apos;
+</span><span class="add">+    Plugin &apos;gu-fan/riv.vim&apos;
+</span><span class="def">     Plugin &apos;m-col/vimlab&apos;		    &quot; vimlab
+</span><span class="def">     &quot;Plugin &apos;lervag/vimtex&apos;		    &quot; vimtex
+</span><span class="def">     Plugin &apos;airblade/vim-gitgutter&apos;	    &quot; gitgutter
+</span>@@ -120,6 +120,9 @@
+<span class="def">     &quot;endfunction
+</span><span class="def"> 
+</span><span class="def">     let g:gitgutter_enabled = 0
+</span><span class="add">+
+</span><span class="add">+    &quot;riv
+</span><span class="add">+    let g:riv_projects = [{ &apos;path&apos;: &apos;~/wiki&apos;, }]
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> &quot; Intelligently navigate tmux panes and Vim splits using the same keys.
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/rst.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,7 @@
+<span class="def"> &quot;setlocal spell spelllang=en_gb
+</span><span class="def"> nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="sub">-nnoremap &lt;localleader&gt;t= mt0yypv$r=
+</span><span class="sub">-nnoremap &lt;localleader&gt;t- mt0yypv$r-
+</span><span class="sub">-nnoremap &lt;localleader&gt;t&apos; mt0yypv$r&apos;
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;C-e&gt;t :RivTableCreate&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;C-e&gt;l :RivCreateLink&lt;CR&gt;
+</span><span class="add">+&quot;&lt;C-e&gt;s[1,2,3] will make current line a heading
+</span></pre>
+</div></div>
+  </body>
+</html>

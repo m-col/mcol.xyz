@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / a full day test-driving ubuntu touch on the pinephone</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2020/08/a-full-day-test-driving-ubuntu-touch-on-the-pinephone.html>a full day test-driving ubuntu touch on the pinephone</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>My desk has had the Braveheart Edition of the <a class="reference external" href="https://wiki.pine64.org/index.php/PinePhone">Pinephone</a> progressively gathering dust,
+only seeing attention with a monthly flash of <a class="reference external" href="https://ubuntu-touch.io">Ubuntu Touch</a> and a quick play around to check out the current
+state. This week I reached the tipping point where UT finally had decent
+performance and I was feeling particularly annoyed at my crappy android LG
+phone, so yesterday I installed all the apps I might need with the intent of
+spending my Sunday using only the pinephone. This is my experience from that
+day.</p>
+<div class="section" id="section-1">
+<h2>11:00</h2>
+<p><em>100% charge</em></p>
+<p>Bluetooth won't turn off so hopefully that won't be too much of a power drain.
+I need to leave wifi on - as i do with my &quot;current&quot; phone - but I only ever
+turn 4G on when I need it (which is not often). Camera isn't working on UT yet.</p>
+<p>Sending and receiving Signal messages works great with <a class="reference external" href="https://axolotl.chat/">Axolotl</a>, but it doesn't seem to read contact information from
+the Contacts app, so at the minute I'm just seeing phone numbers and hoping I
+don't message the wrong person. It also doesn't support push notifications or
+phone calls <span class="fas fa-sad-tear"></span>.</p>
+</div>
+<div class="section" id="section-2">
+<h2>12:00</h2>
+<p><em>94% charge</em></p>
+<p>I have spent maybe 10 minutes with the screen on doing some light messaging
+with Axolotl, sent a few texts, and checked Slack <span class="fas fa-grimace"></span> using a web
+app created by <a class="reference external" href="https://zubozrout.cz">Martin Kozub</a>. If the battery indicator
+is reliable then it should be able to last the day unless I start blasting
+<a class="reference external" href="https://asiwyfa.bandcamp.com/album/heirs-2">tunes</a>.</p>
+</div>
+<div class="section" id="section-3">
+<h2>13:00</h2>
+<p><em>93% charge</em></p>
+<p>OK I'm starting to get a bit suspicious about the battery indicator.</p>
+</div>
+<div class="section" id="section-4">
+<h2>14:30</h2>
+<p><em>75% charge</em></p>
+<p>This is probably the first time I've taken my pinephone outside, and I am at
+the top of Arthur's Seat (Edinburgh). What I <em>wanted</em> to do was use this
+opportunity to use location tracking with the GPS to find myself on the map,
+take a screenshot of that working, and include that here. Instead, I just spent
+20 minutes trying to get <a class="reference external" href="https://github.com/costales/unav">uNav</a> and <a class="reference external" href="https://github.com/rinigus/pure-maps">Pure
+Maps</a> to find my location but neither
+could do it. Also, neither asked me for permission to access GPS data so I
+don't think they got very far in that endeavor.</p>
+<p>So, no screenshot of a nice successful GPS usage, and of course no photos from
+the camera, so instead have this nice photo taken by my girlfriend of Dunsapie
+Loch at the bottom of Arthur's Seat:</p>
+<img alt="Dunsapie Loch in Edinburgh" src="/static/dunsapie_loch.jpg" style="width: 80%;" />
+<p>Oh, and, while I was bumbling around trying to get either of these apps to do
+the right thing, UT locked me out of the phone and refused to present a
+keyboard for pin entry, so I had to do a hard reset.</p>
+</div>
+<div class="section" id="section-5">
+<h2>16:00</h2>
+<p><em>50% charge</em></p>
+<p>Considering how much I was faffing around trying to get the map to work, which
+used plenty of data over 4G with the screen on maximum brightness, I am pretty
+happy with a half-full battery after 5 hours.</p>
+</div>
+<div class="section" id="back-at-home">
+<h2>Back at home</h2>
+<p>Toward the lower end of the battery's capacity draining seemed to speed up,
+even when idle:</p>
+<ul class="simple">
+<li>18:00: 40% charge</li>
+<li>18:15: 33% charge</li>
+<li>18:30: 20% charge</li>
+</ul>
+<p>Then I sat browsing reddit for 30 minutes or so using <a class="reference external" href="https://github.com/accumulator/Quickddit">Quickddit</a>, finally getting a 'Low Battery'
+notification at 7pm with 9% battery. This prompted me to stop wasting my time
+on reddit and put the phone down. When I checked it again 10 minutes later it
+was dead.</p>
+</div>
+<div class="section" id="closing-thoughts">
+<h2>Closing Thoughts</h2>
+<p>All in all, I got a decent bit of use out it, and I definitely used it more
+than I would normally use my phone. In total it lasted around 8 hours.
+Considering what it has been like in the past, this is a pretty big improvement
+and definitely makes me more excited for how things can be. Of course, some
+pinephone-specific things need to be worked out, such as the camera and GPS -
+though these may be specific to Ubuntu Touch as I think others working on other
+OSes have got the camera working.</p>
+<p>The app ecosystem for UT has also grown considerably in the past few months,
+and I'm amazed that I can send and receive Signal messages. I couldn't get any
+of the WhatsApp clients from the Open Store to work but clearly that must be a
+sign.</p>
+<p>Although there are a number of big annoyances, UT on the pinephone has (for me)
+reached the point where I would happily use it over android, so I think for the
+time being I will keep trying to use it daily. I will, however, shift a bit of
+focus onto <a class="reference external" href="https://mobian-project.org">Mobian</a> and maybe give that a whirl.</p>
+</div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2020-08-09T00:00:00+00:00">2020-08-09</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

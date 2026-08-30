@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - explicitly wl_list_remove listeners upon shutdown</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/dc144fd7dcf226b4b4787de17bbd204e900468b4.html">dc144fd7dcf226b4b4787de17bbd204e900468b4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/a0b35fa7439866036107957b947a19e2613ced95.html">a0b35fa7439866036107957b947a19e2613ced95</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 11:09:35 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 11:09:35 +0000
+
+explicitly wl_list_remove listeners upon shutdown
+</pre><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -51,6 +51,18 @@
+<span class="def"> static void shutdown() {
+</span><span class="def">     free(wimp.config_directory);
+</span><span class="def">     free(wimp.config_file);
+</span><span class="add">+    wl_list_remove(&amp;wimp.new_output_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.new_xdg_surface_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.decoration_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.layer_shell_surface_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.cursor_motion_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.cursor_motion_absolute_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.cursor_button_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.cursor_axis_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.cursor_frame_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.new_input_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.request_cursor_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;wimp.request_set_selection_listener.link);
+</span><span class="def"> 
+</span><span class="def">     struct binding *kb, *tkb;
+</span><span class="def">     wl_list_for_each_safe(kb, tkb, &amp;wimp.mouse_bindings, link) {
+</span>@@ -73,6 +85,12 @@
+<span class="def">     wl_list_for_each_safe(desk, tdesk, &amp;wimp.desks, link) {
+</span><span class="def"> 	wl_list_for_each_safe(view, tview, &amp;desk-&gt;views, link) {
+</span><span class="def"> 	    wl_list_remove(&amp;view-&gt;link);
+</span><span class="add">+	    wl_list_remove(&amp;view-&gt;map_listener.link);
+</span><span class="add">+	    wl_list_remove(&amp;view-&gt;unmap_listener.link);
+</span><span class="add">+	    wl_list_remove(&amp;view-&gt;destroy_listener.link);
+</span><span class="add">+	    wl_list_remove(&amp;view-&gt;request_move_listener.link);
+</span><span class="add">+	    wl_list_remove(&amp;view-&gt;request_resize_listener.link);
+</span><span class="add">+	    wl_list_remove(&amp;view-&gt;request_fullscreen_listener.link);
+</span><span class="def"> 	    free(view);
+</span><span class="def"> 	};
+</span><span class="def"> 	wl_list_remove(&amp;desk-&gt;link);
+</span>@@ -86,16 +104,22 @@
+<span class="def"> 	for (int i = 0; i &lt; 4; i++ ) {
+</span><span class="def"> 	    wl_list_for_each_safe(lview, tlview, &amp;output-&gt;layer_views[i], link) {
+</span><span class="def"> 		wl_list_remove(&amp;lview-&gt;link);
+</span><span class="add">+		wl_list_remove(&amp;lview-&gt;map_listener.link);
+</span><span class="add">+		wl_list_remove(&amp;lview-&gt;unmap_listener.link);
+</span><span class="add">+		wl_list_remove(&amp;lview-&gt;destroy_listener.link);
+</span><span class="def"> 		free(lview);
+</span><span class="def"> 	    };
+</span><span class="def"> 	}
+</span><span class="def"> 	wl_list_remove(&amp;output-&gt;link);
+</span><span class="add">+	wl_list_remove(&amp;output-&gt;frame_listener.link);
+</span><span class="def"> 	free(output);
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="def">     struct keyboard *keyboard, *tkeyboard;
+</span><span class="def">     wl_list_for_each_safe(keyboard, tkeyboard, &amp;wimp.keyboards, link) {
+</span><span class="def"> 	wl_list_remove(&amp;keyboard-&gt;link);
+</span><span class="add">+	wl_list_remove(&amp;keyboard-&gt;modifier_listener.link);
+</span><span class="add">+	wl_list_remove(&amp;keyboard-&gt;key_listener.link);
+</span><span class="def"> 	free(keyboard);
+</span><span class="def">     };
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

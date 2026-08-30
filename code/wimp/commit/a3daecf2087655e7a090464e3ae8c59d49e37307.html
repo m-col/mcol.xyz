@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Send responses from wimp to wimptool</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/a3daecf2087655e7a090464e3ae8c59d49e37307.html">a3daecf2087655e7a090464e3ae8c59d49e37307</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/a342482973b79b927b11731bef82c3bebc624d6b.html">a342482973b79b927b11731bef82c3bebc624d6b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-21 23:50:51 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-21 23:50:51 +0000
+
+Send responses from wimp to wimptool
+</pre><div class="diff">
+  <p>
+    <b>src/wimptool.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,12 +2,13 @@
+<span class="def"> #include &lt;stdlib.h&gt; 
+</span><span class="def"> #include &lt;sys/socket.h&gt;
+</span><span class="def"> #include &lt;sys/un.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #define SOCKET_PATH &quot;/tmp/wimpy-sock-%s&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void usage() {
+</span><span class="sub">-    printf(&quot;Usage: wimptool &lt;command&gt; &lt;arguments&gt;\n&quot;);
+</span><span class="add">+    fprintf(stdout, &quot;Usage: wimptool &lt;command&gt; &lt;arguments&gt;\n&quot;);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -19,13 +20,13 @@
+<span class="def"> 
+</span><span class="def">     char *display = getenv(&quot;WAYLAND_DISPLAY&quot;);
+</span><span class="def">     if (!display) {
+</span><span class="sub">-	printf(&quot;WAYLAND_DISPLAY not set.\n&quot;);
+</span><span class="add">+	fprintf(stderr, &quot;WAYLAND_DISPLAY not set.\n&quot;);
+</span><span class="def"> 	return EXIT_FAILURE;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     int sock;
+</span><span class="def">     if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+</span><span class="sub">-	printf(&quot;Failed to create socket.\n&quot;);
+</span><span class="add">+	fprintf(stderr, &quot;Failed to create socket.\n&quot;);
+</span><span class="def"> 	return EXIT_FAILURE;
+</span><span class="def">     }
+</span><span class="def"> 
+</span>@@ -34,7 +35,7 @@
+<span class="def">     addr.sun_family = AF_UNIX;
+</span><span class="def"> 
+</span><span class="def">     if (connect(sock, (struct sockaddr *)&amp;addr, sizeof(addr)) == -1) {
+</span><span class="sub">-	printf(&quot;Failed to connect to wimp.\n&quot;);
+</span><span class="add">+	fprintf(stderr, &quot;Failed to connect to wimp.\n&quot;);
+</span><span class="def"> 	return EXIT_FAILURE;
+</span><span class="def">     }
+</span><span class="def"> 
+</span>@@ -45,9 +46,21 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     if (send(sock, buffer, strlen(buffer), 0) == -1) {
+</span><span class="sub">-	printf(&quot;Failed to send message to wimp.\n&quot;);
+</span><span class="add">+	fprintf(stderr, &quot;Failed to send message to wimp.\n&quot;);
+</span><span class="def"> 	return EXIT_FAILURE;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    char response[BUFSIZ] = {0};
+</span><span class="add">+    ssize_t len = recv(sock, response, sizeof(response) - 1, 0);
+</span><span class="add">+    if (len &lt; 0) {
+</span><span class="add">+	fprintf(stderr, &quot;Error receiving a response.\n&quot;);
+</span><span class="add">+	return EXIT_FAILURE;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (len &gt; 0) {
+</span><span class="add">+	response[len] = &apos;\0&apos;;
+</span><span class="add">+	fprintf(stdout, &quot;wimp: %s\n&quot;, response);
+</span><span class="add">+    }
+</span><span class="add">+    close(sock);
+</span><span class="def">     return EXIT_SUCCESS;
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,7 +16,8 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static int dispatch(int sock, unsigned int mask, void *data) {
+</span><span class="sub">-    char buffer[1024];
+</span><span class="add">+    char message[1024];
+</span><span class="add">+    char response[1024] = {0};
+</span><span class="def"> 
+</span><span class="def">     if (mask &amp; WL_EVENT_READABLE) {
+</span><span class="def"> 	int fd = accept(sock, NULL, NULL);
+</span>@@ -24,10 +25,11 @@
+<span class="def"> 	    wlr_log(WLR_ERROR, &quot;Failed to accept connection from client.&quot;);
+</span><span class="def"> 	    return 0;
+</span><span class="def"> 	}
+</span><span class="sub">-	ssize_t len = recv(fd, buffer, sizeof(buffer) - 1, 0);
+</span><span class="sub">-	if (len &gt; 0) {
+</span><span class="sub">-	    buffer[len] = &apos;\0&apos;;
+</span><span class="sub">-	    handle_message(buffer);
+</span><span class="add">+	ssize_t len = recv(fd, message, sizeof(message) - 1, 0);
+</span><span class="add">+	message[len] = &apos;\0&apos;;
+</span><span class="add">+	handle_message(message, response);
+</span><span class="add">+	if (response[0]) {
+</span><span class="add">+	    send(fd, response, strlen(response), 0);
+</span><span class="def"> 	}
+</span><span class="def"> 	close(fd);
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,7 +5,7 @@
+<span class="def"> 
+</span><span class="def"> bool wlr_box_from_str(char* str, struct wlr_box *box);
+</span><span class="def"> void assign_colour(char *hex, float dest[4]);
+</span><span class="sub">-void handle_message(char *buffer);
+</span><span class="add">+void handle_message(char *buffer, char *response);
+</span><span class="def"> void schedule_startup();
+</span><span class="def"> void set_up_defaults();
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -478,11 +478,8 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void handle_message(char *message) {
+</span><span class="sub">-    char *s;
+</span><span class="sub">-    if (!(s = strtok(message, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="add">+void handle_message(char *message, char *response) {
+</span><span class="add">+    char *s = strtok(message, &quot; \t\n\r&quot;);
+</span><span class="def"> 
+</span><span class="def">     // desks &lt;int&gt;
+</span><span class="def">     if (!strcasecmp(s, &quot;desks&quot;)) {
+</span>@@ -614,7 +611,7 @@
+<span class="def">     // other non-empty, non-commented lines
+</span><span class="def">     else {
+</span><span class="def"> 	if(!handle_do_action(s)) {
+</span><span class="sub">-	    wlr_log(WLR_ERROR, &quot;Unknown command &apos;%s&apos;.&quot;, s);
+</span><span class="add">+	    sprintf(response, &quot;Unknown command &apos;%s&apos;.&quot;, s);
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span>@@ -675,7 +672,7 @@
+<span class="def"> 	&quot;bind Ctrl Escape shutdown&quot;,
+</span><span class="def">     };
+</span><span class="def">     for (size_t i = 0; i &lt; sizeof(defaults) / sizeof(defaults[0]); i++) {
+</span><span class="sub">-	handle_message(defaults[i]);
+</span><span class="add">+	handle_message(defaults[i], NULL);
+</span><span class="def">     }
+</span><span class="def">     setup_vt_switching();
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

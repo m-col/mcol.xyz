@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gimp but for windows: a wayland compositor</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <table id="log">
+    <thead>
+      <tr>
+        <td><b>Date</b></td>
+        <td><b>Commit message</b></td>
+        <td><b>Author</b></td>
+      </tr>
+    </thead>
+
+    <tbody>
+            <tr><td>2021-04-23 00:46</td><td><a href="commit/5dc4d9c277bc4ba146ac395fb79a858d1a8a7e2a.html">Use DRM_FORMAT for texture pixel format</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-07 16:13</td><td><a href="commit/e2c2b84258cb437359d23be220f41160e5eba435.html">remove old and unnecessary assign_action function</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-07 16:09</td><td><a href="commit/bc59846e4a2d90bbb3dfb39153967966e2e7642b.html">Use handlers for both client and bound actions</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-07 11:05</td><td><a href="commit/136ce650d2a24c163a7bd3f41fded1e2e1fcbc03.html">move command interface parsing to parse.{c,h}</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-06 19:32</td><td><a href="commit/b885455b2bf3142bbcece998ed581abd00d92e2a.html">expose next_desk, prev_desk to client interface</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 22:22</td><td><a href="commit/77f6e7ef3bd908d4bfa22eb9bbe68fcde6e5fe12.html">expose some more actions to cli interface</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 19:31</td><td><a href="commit/ac4924acc98af2c9be02975cbb269a3ac7d7fec4.html">wimp.conf -&gt; startup</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 19:30</td><td><a href="commit/6cfd652362a213169a3e2b1dcc7fb54c58b882d9.html">add bind_marks option</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 18:17</td><td><a href="commit/40faefb75809ef4560385c3fcdc1c48b8e0751d9.html">implement disable_vt_switching</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 15:31</td><td><a href="commit/03fdc1ae6f41ea9e1d04100498d22c5fdc98705b.html">mention wimptool in the readme</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 15:27</td><td><a href="commit/6f9aaafc2d92b2db45398ba8cc19000921172d6b.html">scale snapped views by zoom</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 15:23</td><td><a href="commit/bd483b7e9267edcbb8ce0f73d5717d4aed82cc13.html">feed absolute cursor movements (with X backend) into relative movement code</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 15:08</td><td><a href="commit/2a74e038048162fbc53dcb6990fb62be1e8330d8.html">don&apos;t move grabbed_view if cursor was blocked by layout constraints</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 00:54</td><td><a href="commit/40d6ef029cfd2bfb3251139ae8efdb745d6ee4bc.html">allow 8-digit colours</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 00:38</td><td><a href="commit/426823cb6a389d22cf13d8320007b70f41d661d9.html">add snap_box config option</a></td><td>mcol</td></tr>
+            <tr><td>2021-03-01 00:30</td><td><a href="commit/3bb55e389df3dc851fc83eb5ac0b0fd40bf6a876.html">paint snap box indicator while dragging window</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-28 23:07</td><td><a href="commit/155e74f270827dca54ba79af1cc86c1d0093db90.html">snap to side of output when ending window drag</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-24 23:13</td><td><a href="commit/c5ea1629089656f52c1e635c9d5b05820343d00d.html">print error message when bind command fails</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-24 23:05</td><td><a href="commit/43f91dbc14ea3aca770855084a249abe5d0327c7.html">lower case most of default config</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-24 22:55</td><td><a href="commit/95d1885459fb41d4932d305a9dc55eab42ef008b.html">print message if unknown client command given</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-24 22:31</td><td><a href="commit/2d3e36f7388e0a9907994b441e7382ce8721994a.html">split client interface commands into set, bind and actions</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-21 23:50</td><td><a href="commit/a3daecf2087655e7a090464e3ae8c59d49e37307.html">Send responses from wimp to wimptool</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-21 22:15</td><td><a href="commit/a342482973b79b927b11731bef82c3bebc624d6b.html">move border-drawing to dedicated function + don&apos;t crash when view is small</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-21 21:34</td><td><a href="commit/a9235752ae540d0f96073c83b8a690f5c9e58f34.html">remove socket when starting up</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-21 21:30</td><td><a href="commit/5bee7ec4312ac7afbcfd55469500d2e93456a7ae.html">leave new view size damage to view_process_resize</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-21 20:15</td><td><a href="commit/914243bac21a2211434a90686e6de4d1ffbf0936.html">hook process_cursor_resize into view_apply_geometry</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-21 20:15</td><td><a href="commit/ffeec229ef0799a4f057362686d2b5f13b3268f0.html">correctly scale damage box when moving view</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-21 18:00</td><td><a href="commit/457598231eb963ea573aae7171957beb97e09ac2.html">add cardboard to readme, pretty sure i read most of that project</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-18 20:48</td><td><a href="commit/507c5bd988a9e0f8f246373c6c23ed67804679e4.html">add to_region action</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-15 01:34</td><td><a href="commit/a8d0f418fed1d9b87eec9260797c9218c1fc1d6b.html">Convert config-reading logic into client-message parsing</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-15 00:05</td><td><a href="commit/633817107890cb3ad744e06cd3d687d7b5dc5e40.html">add server-side IPC handler</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-14 19:53</td><td><a href="commit/edef67e308b9c5d968c60c80458f65900d0ec5a0.html">add skeleton for wimptool client interface</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-14 18:15</td><td><a href="commit/b94c9a32a76ed858193b4a2b2109dd9b33141de4.html">DESKWM -&gt; WIMP in headers</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-14 12:01</td><td><a href="commit/f046336561e63bb1a6863fc3a751f20c0bac54ac.html">error if str_handler gets no arguments for config option</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-13 22:07</td><td><a href="commit/accf2e5e294ac47b5dfc3fc515fb2d3e25706397.html">Draw borders as hollow box</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-13 15:20</td><td><a href="commit/e0f847b4502a2b5c1a7dd393abefb971ec1f1442.html">set minimum window dimensions and do not go over when resizing</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-13 14:34</td><td><a href="commit/bf5d6ef2c18fb19462ba87adafcf85fd3eec3ade.html">Don&apos;t unfocus when focussing to non-interactive layer surface</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-13 14:18</td><td><a href="commit/626d7e0695f4a3c7fba7c7861a5a2178e9e63552.html">centre cursor position when resetting zoom</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-13 12:10</td><td><a href="commit/881484955c2a528e79832f6360c6ab1658c1327f.html">Rendering corner areas and drag on them to resize windows</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 23:45</td><td><a href="commit/bd719e46da3325a43e514432438dbd781e2194c1.html">add general corner colours even without mods, to bind to actions</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 20:59</td><td><a href="commit/d4ee960e9e832376b1e1879cb291c315a1b5b2ac.html">return view from under_pointer() if the pointer is within its border</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 19:23</td><td><a href="commit/eb08b684c2cfd937320634b69825a3b90be23983.html">Add `desk X corner resize` option, colouring view corners when mod held</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 14:34</td><td><a href="commit/4b5efe4c5719e333a433296fc23a163a02e23773.html">scale borders when zooming</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 11:55</td><td><a href="commit/5bcebdde3eba4212adb37c60460140ee95913f51.html">simplify on_request_cursor</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 11:19</td><td><a href="commit/eeb4b2b196490adab77073c5356ff625ef85dca4.html">damage outputs when (re)setting wallpaper</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 11:16</td><td><a href="commit/50ef40356ebebeccc23ac407b583e9a8766c3207.html">add damage_mark_indicator</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 10:49</td><td><a href="commit/9247a25c04f3c39825ddc807bb7eb6570f5b5655.html">pan_to_view: only damage when panning required</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 10:46</td><td><a href="commit/764d9cf329b641a2da4924235ac2d719ba8b3b35.html">damage only necessary boxes when moving window</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 10:33</td><td><a href="commit/178ff3e9466340dbbba8b9585f29f7eb8ae77294.html">use view_apply_geometry for maximize</a></td><td>mcol</td></tr>
+            <tr><td>2021-02-12 10:30</td><td><a href="commit/441c054ff901a87601202c74e06bfce15b6f17a6.html">add view_apply_geometry function to clean up some repeated code use</a></td><td>mcol</td></tr>
+          </tbody>
+  </table>
+</div>
+  </body>
+</html>

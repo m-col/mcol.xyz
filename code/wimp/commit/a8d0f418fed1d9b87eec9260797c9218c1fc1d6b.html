@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Convert config-reading logic into client-message parsing</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/a8d0f418fed1d9b87eec9260797c9218c1fc1d6b.html">a8d0f418fed1d9b87eec9260797c9218c1fc1d6b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/633817107890cb3ad744e06cd3d687d7b5dc5e40.html">633817107890cb3ad744e06cd3d687d7b5dc5e40</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-15 01:34:43 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-15 01:34:43 +0000
+
+Convert config-reading logic into client-message parsing
+
+Configuration is now done via client interface `wimptool` over socket
+IPC. All mention of config files is and the example script has been
+converted. Currently all IPC messages go directly into configuration
+processing, but future work will also funnel message parsing into
+actions that require remote data (e.g. select viewport using slurp), and
+any subscriptions (e.g. programs that want to listen to state changes).
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +1,5 @@
+<span class="add">+#!/usr/bin/env bash
+</span><span class="add">+#
+</span><span class="def"> #
+</span><span class="def"> # ██      ██  ██  ████████    ██████
+</span><span class="def"> # ██  ██  ██      ██  ██  ██  ██    ██
+</span>@@ -7,106 +9,106 @@
+<span class="def"> #             ██              ██
+</span><span class="def"> #             ██
+</span><span class="def"> # 
+</span><span class="sub">-# All possible options are described here. Lines that start with &apos;#&apos; are
+</span><span class="sub">-# ignored. Options that are commented out contain their default values.
+</span><span class="add">+# Example startup script.
+</span><span class="add">+#
+</span><span class="add">+# All possible options are described here.
+</span><span class="add">+# Options that are commented out contain their default values.
+</span><span class="add">+# The executable &apos;wimptool&apos; configures wimp by sending messages to it.
+</span><span class="def"> #
+</span><span class="sub">-# Config is read from the first found of:
+</span><span class="sub">-#   -c command line argument
+</span><span class="sub">-#   $XDG_CONFIG_HOME/.config/wimp/config
+</span><span class="sub">-#   $HOME/.config/wimp/config
+</span><span class="sub">-
+</span><span class="sub">-# This will be executed after setting up the compositor.
+</span><span class="sub">-#auto_start ${XDG_CONFIG_HOME:-$HOME}/.config/wimp/autostart
+</span><span class="sub">-
+</span><span class="sub">-#desks 2
+</span><span class="sub">-#desk 1 background #31475c
+</span><span class="sub">-#desk 1 borders normal #3e3e73
+</span><span class="sub">-#desk 1 corners normal #31315c
+</span><span class="sub">-#desk 1 borders focus #47315c
+</span><span class="sub">-#desk 1 corners focus #7e5992
+</span><span class="sub">-#desk 1 borders width 6
+</span><span class="sub">-#desk 2 background #3e3e73
+</span><span class="sub">-#desk 2 borders normal #31475c
+</span><span class="sub">-#desk 1 corners normal #3e5973
+</span><span class="sub">-#desk 2 borders focus #47315c
+</span><span class="sub">-#desk 1 corners focus #7e5992
+</span><span class="sub">-#desk 2 borders width 6
+</span><span class="sub">-desk 1 background ~/path/to/tiling-image.png
+</span><span class="add">+# The first to be found of these paths is run as a startup script:
+</span><span class="add">+#   $XDG_CONFIG_HOME/.config/wimp/startup
+</span><span class="add">+#   $HOME/.config/wimp/startup
+</span><span class="add">+#
+</span><span class="add">+
+</span><span class="add">+#wimptool desks 2
+</span><span class="add">+#wimptool desk 1 background #31475c
+</span><span class="add">+#wimptool desk 1 borders normal #3e3e73
+</span><span class="add">+#wimptool desk 1 corners normal #31315c
+</span><span class="add">+#wimptool desk 1 borders focus #47315c
+</span><span class="add">+#wimptool desk 1 corners focus #7e5992
+</span><span class="add">+#wimptool desk 1 borders width 6
+</span><span class="add">+#wimptool desk 2 background #3e3e73
+</span><span class="add">+#wimptool desk 2 borders normal #31475c
+</span><span class="add">+#wimptool desk 1 corners normal #3e5973
+</span><span class="add">+#wimptool desk 2 borders focus #47315c
+</span><span class="add">+#wimptool desk 1 corners focus #7e5992
+</span><span class="add">+#wimptool desk 2 borders width 6
+</span><span class="add">+wimptool desk 1 background ~/path/to/tiling-image.png
+</span><span class="def"> 
+</span><span class="def"> # Magnification bounds
+</span><span class="sub">-#zoom_min 0.2
+</span><span class="sub">-#zoom_max 5
+</span><span class="add">+#wimptool zoom_min 0.2
+</span><span class="add">+#wimptool zoom_max 5
+</span><span class="def"> 
+</span><span class="def"> # Set the colour for the mark setter/getter indicator
+</span><span class="sub">-#mark_indicator #000000
+</span><span class="add">+#wimptool mark_indicator #000000
+</span><span class="def"> 
+</span><span class="def"> # Whether to allow VT switching: on or off.
+</span><span class="sub">-#vt_switching on
+</span><span class="add">+#wimptool vt_switching on
+</span><span class="def"> 
+</span><span class="def"> # natural or reverse scrolling
+</span><span class="sub">-#scroll_direction natural
+</span><span class="add">+#wimptool scroll_direction natural
+</span><span class="def"> 
+</span><span class="def"> # Focus when moving the pointer over a window
+</span><span class="sub">-#auto_focus on
+</span><span class="add">+#wimptool auto_focus on
+</span><span class="def"> 
+</span><span class="def"> ## Key bindings
+</span><span class="def"> 
+</span><span class="def"> # Can be one of: Shift, Caps, Ctrl, Alt, Mod2, Mod3, Logo, Mod5
+</span><span class="sub">-#set_modifier Logo
+</span><span class="add">+#wimptool set_modifier Logo
+</span><span class="def"> 
+</span><span class="def"> # additional modifiers, key, action
+</span><span class="sub">-bind	Ctrl	Escape		shutdown
+</span><span class="sub">-bind	Ctrl	r		reload_config
+</span><span class="add">+wimptool bind	Ctrl	Escape		shutdown
+</span><span class="add">+wimptool bind	Ctrl	r		reload_config
+</span><span class="def"> 
+</span><span class="def"> # These actions act on windows
+</span><span class="sub">-bind	Ctrl	q		close_window
+</span><span class="sub">-bind		j		focus down
+</span><span class="sub">-bind		k		focus up
+</span><span class="sub">-bind		h		focus left
+</span><span class="sub">-bind		l		focus right
+</span><span class="sub">-bind		f		toggle_fullscreen
+</span><span class="sub">-bind	Shift	m		maximize
+</span><span class="sub">-bind	Shift	1		send_to_desk 1
+</span><span class="sub">-bind	Shift	2		send_to_desk 2
+</span><span class="add">+wimptool bind	Ctrl	q		close_window
+</span><span class="add">+wimptool bind		j		focus down
+</span><span class="add">+wimptool bind		k		focus up
+</span><span class="add">+wimptool bind		h		focus left
+</span><span class="add">+wimptool bind		l		focus right
+</span><span class="add">+wimptool bind		f		toggle_fullscreen
+</span><span class="add">+wimptool bind	Shift	m		maximize
+</span><span class="add">+wimptool bind	Shift	1		send_to_desk 1
+</span><span class="add">+wimptool bind	Shift	2		send_to_desk 2
+</span><span class="def"> 
+</span><span class="def"> # These give the focussed window half of the screen
+</span><span class="sub">-bind	Shift	j		halfimize down
+</span><span class="sub">-bind	Shift	k		halfimize up
+</span><span class="sub">-bind	Shift	h		halfimize left
+</span><span class="sub">-bind	Shift	l		halfimize right
+</span><span class="add">+wimptool bind	Shift	j		halfimize down
+</span><span class="add">+wimptool bind	Shift	k		halfimize up
+</span><span class="add">+wimptool bind	Shift	h		halfimize left
+</span><span class="add">+wimptool bind	Shift	l		halfimize right
+</span><span class="def"> 
+</span><span class="def"> # And these act on desks
+</span><span class="sub">-bind		Tab		next_desk
+</span><span class="sub">-bind		ISO_Left_Tab	prev_desk
+</span><span class="sub">-bind		i		zoom 15
+</span><span class="sub">-bind		o		zoom -15
+</span><span class="sub">-bind		r		reset_zoom
+</span><span class="add">+wimptool bind		Tab		next_desk
+</span><span class="add">+wimptool bind		ISO_Left_Tab	prev_desk
+</span><span class="add">+wimptool bind		i		zoom 15
+</span><span class="add">+wimptool bind		o		zoom -15
+</span><span class="add">+wimptool bind		r		reset_zoom
+</span><span class="def"> 
+</span><span class="def"> # These pan the desk using the given percentage changes in x and y
+</span><span class="sub">-bind		s		pan_desk 0 40
+</span><span class="sub">-bind		w		pan_desk 0 -40
+</span><span class="sub">-bind		a		pan_desk -40 0
+</span><span class="sub">-bind		d		pan_desk 40 0
+</span><span class="add">+wimptool bind		s		pan_desk 0 40
+</span><span class="add">+wimptool bind		w		pan_desk 0 -40
+</span><span class="add">+wimptool bind		a		pan_desk -40 0
+</span><span class="add">+wimptool bind		d		pan_desk 40 0
+</span><span class="def"> 
+</span><span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="sub">-bind		Return		exec gnome-terminal
+</span><span class="add">+wimptool bind		Return		exec gnome-terminal
+</span><span class="def"> 
+</span><span class="def"> # We can execute windows as scratchpads with a fixed geometry like this, where
+</span><span class="def"> # the geometry is specified as &lt;width&gt;x&lt;height&gt;+&lt;x&gt;+&lt;y&gt;
+</span><span class="sub">-bind	Ctrl	e		scratchpad 1000x800+20+20 footclient mutt
+</span><span class="add">+wimptool bind	Ctrl	e		scratchpad 1000x800+20+20 footclient mutt
+</span><span class="def"> # A percentage of the used output can also be requested:
+</span><span class="sub">-bind	Ctrl	t		scratchpad 50%+50%+0+0 footclient tmux
+</span><span class="add">+wimptool bind	Ctrl	t		scratchpad 50%+50%+0+0 footclient tmux
+</span><span class="def"> 
+</span><span class="def"> # These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="def"> # pressed, waits for the next key press and uses that as the &apos;mark&apos;, e.g.
+</span><span class="def"> # hitting &apos;mod + m&apos; then &apos;a&apos; will save the current position, then hitting &apos;mod
+</span><span class="def"> # + `&apos; then &apos;a&apos; later will move to that marked position. These can be cancelled
+</span><span class="def"> # with the escape key.
+</span><span class="sub">-bind		m		set_mark
+</span><span class="sub">-bind		grave		go_to_mark
+</span><span class="add">+wimptool bind		m		set_mark
+</span><span class="add">+wimptool bind		grave		go_to_mark
+</span><span class="def"> 
+</span><span class="def"> # Possible mouse bindings: motion, scroll, pinch, drag{1,2,3} (+ additional modifiers)
+</span><span class="sub">-bind		scroll		pan_desk
+</span><span class="sub">-bind		pinch		zoom
+</span><span class="sub">-bind	Shift	scroll		zoom
+</span><span class="sub">-bind		drag1		move_window
+</span><span class="add">+wimptool bind		scroll		pan_desk
+</span><span class="add">+wimptool bind		pinch		zoom
+</span><span class="add">+wimptool bind	Shift	scroll		zoom
+</span><span class="add">+wimptool bind		drag1		move_window
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/wimptool.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -41,6 +41,7 @@
+<span class="def">     char buffer[BUFSIZ] = {0};
+</span><span class="def">     for (int i = 1; i &lt; argc; i++) {
+</span><span class="def"> 	strcat(buffer, argv[i]);
+</span><span class="add">+	strcat(buffer, &quot; &quot;);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     if (send(sock, buffer, strlen(buffer), 0) == -1) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -40,10 +40,6 @@
+<span class="def">     struct wlr_backend *backend;
+</span><span class="def">     struct wlr_renderer *renderer;
+</span><span class="def"> 
+</span><span class="sub">-    char *config_directory;
+</span><span class="sub">-    char *config_file;
+</span><span class="sub">-    char *auto_start;
+</span><span class="sub">-
+</span><span class="def">     struct wlr_output_layout *output_layout;
+</span><span class="def">     struct wl_listener output_layout_change_listener;
+</span><span class="def">     struct wl_list outputs;
+</span>@@ -111,7 +107,6 @@
+<span class="def">     struct wlr_box grab_geobox;
+</span><span class="def">     uint32_t resize_edges;
+</span><span class="def">     double zoom_min, zoom_max;
+</span><span class="sub">-    bool vt_switching;
+</span><span class="def">     bool auto_focus;
+</span><span class="def"> 
+</span><span class="def">     struct wl_list scratchpads;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -37,6 +37,9 @@
+<span class="def">     .mark_indicator.box.y = 0,
+</span><span class="def">     .scratchpad_waiting = false,
+</span><span class="def">     .auto_focus = true,
+</span><span class="add">+    .reverse_scrolling = false,
+</span><span class="add">+    .zoom_min = 0.2,
+</span><span class="add">+    .zoom_max = 5,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -50,8 +53,6 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static void shutdown() {
+</span><span class="sub">-    free(wimp.config_directory);
+</span><span class="sub">-    free(wimp.config_file);
+</span><span class="def">     wl_list_remove(&amp;wimp.new_output_listener.link);
+</span><span class="def">     wl_list_remove(&amp;wimp.new_xdg_surface_listener.link);
+</span><span class="def">     wl_list_remove(&amp;wimp.decoration_listener.link);
+</span>@@ -120,7 +121,6 @@
+<span class="def"> {
+</span><span class="def">     int opt;
+</span><span class="def">     int log_level = WLR_ERROR;
+</span><span class="sub">-    wimp.config_file = NULL;
+</span><span class="def"> 
+</span><span class="def">     while ((opt = getopt(argc, argv, &quot;hc:di&quot;)) != -1) {
+</span><span class="def">         switch (opt) {
+</span>@@ -128,9 +128,6 @@
+<span class="def"> 		printf(usage);
+</span><span class="def"> 		return EXIT_SUCCESS;
+</span><span class="def"> 		break;
+</span><span class="sub">-	    case &apos;c&apos;:
+</span><span class="sub">-		wimp.config_file = strdup(optarg);
+</span><span class="sub">-		break;
+</span><span class="def"> 	    case &apos;d&apos;:
+</span><span class="def"> 		log_level = WLR_DEBUG;
+</span><span class="def"> 		break;
+</span>@@ -163,14 +160,13 @@
+<span class="def">     wl_list_init(&amp;wimp.scratchpads);
+</span><span class="def"> 
+</span><span class="def">     // configure
+</span><span class="sub">-    locate_config();
+</span><span class="sub">-    load_config();
+</span><span class="def">     set_up_inputs();
+</span><span class="def">     set_up_outputs();
+</span><span class="def">     set_up_shell();
+</span><span class="def">     set_up_cursor();
+</span><span class="def">     set_up_decorations();
+</span><span class="def">     set_up_layer_shell();
+</span><span class="add">+    set_up_defaults();
+</span><span class="def"> 
+</span><span class="def">     // start
+</span><span class="def">     if (!start_ipc(socket) || !wlr_backend_start(wimp.backend)) {
+</span>@@ -178,7 +174,7 @@
+<span class="def"> 	return EXIT_FAILURE;
+</span><span class="def">     }
+</span><span class="def">     setenv(&quot;WAYLAND_DISPLAY&quot;, socket, true);
+</span><span class="sub">-    schedule_auto_start();
+</span><span class="add">+    schedule_startup();
+</span><span class="def">     centre_cursor();
+</span><span class="def">     wlr_log(WLR_INFO, &quot;Starting with WAYLAND_DISPLAY=%s.&quot;, socket);
+</span><span class="def">     wl_display_run(wimp.display);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -27,7 +27,7 @@
+<span class="def"> 	ssize_t len = recv(fd, buffer, sizeof(buffer) - 1, 0);
+</span><span class="def"> 	if (len &gt; 0) {
+</span><span class="def"> 	    buffer[len] = &apos;\0&apos;;
+</span><span class="sub">-	    parse_message(buffer, len);
+</span><span class="add">+	    parse_message(buffer);
+</span><span class="def"> 	}
+</span><span class="def"> 	close(fd);
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,9 +4,8 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> void assign_colour(char *hex, float dest[4]);
+</span><span class="sub">-void schedule_auto_start();
+</span><span class="sub">-void parse_message(char *buffer, ssize_t len);
+</span><span class="sub">-void load_config();
+</span><span class="sub">-void locate_config();
+</span><span class="add">+void parse_message(char *buffer);
+</span><span class="add">+void schedule_startup();
+</span><span class="add">+void set_up_defaults();
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,33 +16,8 @@
+<span class="def"> 
+</span><span class="def"> #define is_number(s) (strspn(s, &quot;0123456789.-&quot;) == strlen(s))
+</span><span class="def"> #define is_number_perc(s) (strspn(s, &quot;0123456789.-%&quot;) == strlen(s))
+</span><span class="sub">-#define CONFIG_HOME &quot;$HOME/.config/wimp/&quot;
+</span><span class="sub">-#define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/wimp/&quot;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static const char *DEFAULT_CONFIG =  &quot;\n\
+</span><span class="sub">-desks 2\n\
+</span><span class="sub">-desk 2 background #3e3e73\n\
+</span><span class="sub">-desk 2 borders normal #31475c\n\
+</span><span class="sub">-desk 2 corners normal #3e5973\n\
+</span><span class="sub">-zoom_min 0.2\n\
+</span><span class="sub">-zoom_max 5\n\
+</span><span class="sub">-mark_indicator #47315c\n\
+</span><span class="sub">-vt_switching on\n\
+</span><span class="sub">-scroll_direction natural\n\
+</span><span class="sub">-set_modifier Logo\n\
+</span><span class="sub">-bind Ctrl Escape shutdown\n\
+</span><span class="sub">-&quot;;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static char *expand(char *path) {
+</span><span class="sub">-    wordexp_t p;
+</span><span class="sub">-    wordexp(path, &amp;p, WRDE_NOCMD | WRDE_UNDEF);
+</span><span class="sub">-    free(path);
+</span><span class="sub">-    char *new = strdup(p.we_wordv[0]);
+</span><span class="sub">-    wordfree(&amp;p);
+</span><span class="sub">-    return new;
+</span><span class="sub">-}
+</span><span class="add">+#define CONFIG_HOME &quot;$HOME/.config/wimp/startup&quot;
+</span><span class="add">+#define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/wimp/startup&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> struct value_map {
+</span>@@ -94,16 +69,16 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool dir_handler(struct binding *kb, char *data, int line) {
+</span><span class="add">+static bool dir_handler(struct binding *kb, char *data) {
+</span><span class="def">     kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="sub">-    *(enum direction *)(kb-&gt;data) = get(dirs, data);
+</span><span class="add">+    *(enum direction *)(kb-&gt;data) = get(dirs, strtok(data, &quot; \t\n\r&quot;));
+</span><span class="def">     return true;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool str_handler(struct binding *kb, char *data, int line) {
+</span><span class="add">+static bool str_handler(struct binding *kb, char *data) {
+</span><span class="def">     if (!data) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;Config line %i: requires arguments.&quot;, line);
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Command requires arguments.&quot;);
+</span><span class="def"> 	return false;
+</span><span class="def">     }
+</span><span class="def">     if (is_number(data)) {
+</span>@@ -117,7 +92,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool motion_handler(struct binding *kb, char *data, int line) {
+</span><span class="add">+static bool motion_handler(struct binding *kb, char *data) {
+</span><span class="def">     char *s;
+</span><span class="def">     if (!data) {
+</span><span class="def"> 	goto err;
+</span>@@ -145,7 +120,7 @@
+<span class="def">     return true;
+</span><span class="def"> 
+</span><span class="def"> err:
+</span><span class="sub">-    wlr_log(WLR_ERROR, &quot;Config line %i malformed/incomplete.&quot;, line);
+</span><span class="add">+    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="def">     return false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -207,7 +182,7 @@
+<span class="def"> static int scratchpad_id = 0;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool scratchpad_handler(struct binding *kb, char *data, int line) {
+</span><span class="add">+static bool scratchpad_handler(struct binding *kb, char *data) {
+</span><span class="def">     char *geo, *command;
+</span><span class="def">     struct wlr_box box;
+</span><span class="def">     if (!data) {
+</span>@@ -237,7 +212,7 @@
+<span class="def">     return true;
+</span><span class="def"> 
+</span><span class="def"> err:
+</span><span class="sub">-    wlr_log(WLR_ERROR, &quot;Config line %i malformed/incomplete.&quot;, line);
+</span><span class="add">+    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="def">     return false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -245,7 +220,7 @@
+<span class="def"> static struct {
+</span><span class="def">     const char *name;
+</span><span class="def">     const action action;
+</span><span class="sub">-    bool (*data_handler)(struct binding *kb, char *data, int line);
+</span><span class="add">+    bool (*data_handler)(struct binding *kb, char *data);
+</span><span class="def"> } action_map[] = {
+</span><span class="def">     { &quot;shutdown&quot;, &amp;shutdown, NULL },
+</span><span class="def">     { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span>@@ -262,7 +237,6 @@
+<span class="def">     { &quot;toggle_fullscreen&quot;, &amp;toggle_fullscreen, NULL },
+</span><span class="def">     { &quot;halfimize&quot;, &amp;halfimize, &amp;dir_handler },
+</span><span class="def">     { &quot;maximize&quot;, &amp;maximize, NULL },
+</span><span class="sub">-    { &quot;reload_config&quot;, &amp;reload_config, NULL },
+</span><span class="def">     { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="def">     { &quot;scratchpad&quot;, &amp;toggle_scratchpad, &amp;scratchpad_handler },
+</span><span class="def"> };
+</span>@@ -286,7 +260,7 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool assign_action(const char *name, char *data, struct binding *kb, int line) {
+</span><span class="add">+static bool assign_action(const char *name, char *data, struct binding *kb) {
+</span><span class="def">     kb-&gt;action = NULL;
+</span><span class="def">     kb-&gt;data = NULL;
+</span><span class="def">     size_t i;
+</span>@@ -314,7 +288,7 @@
+<span class="def"> 		if (strcmp(action_map[i].name, name) == 0) {
+</span><span class="def"> 		    kb-&gt;action = action_map[i].action;
+</span><span class="def"> 		    if (action_map[i].data_handler != NULL) {
+</span><span class="sub">-			if (!action_map[i].data_handler(kb, data, line)){
+</span><span class="add">+			if (!action_map[i].data_handler(kb, data)){
+</span><span class="def"> 			    return false;
+</span><span class="def"> 			}
+</span><span class="def"> 		    }
+</span>@@ -335,7 +309,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void add_binding(char *data, const int line) {
+</span><span class="add">+static void add_binding(char *data) {
+</span><span class="def">     struct binding *kb = calloc(1, sizeof(struct binding));
+</span><span class="def">     enum wlr_keyboard_modifier mod;
+</span><span class="def">     char *s = strtok(data, &quot; \t\n\r&quot;);
+</span>@@ -360,7 +334,7 @@
+<span class="def">     if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="def"> 	kb-&gt;key = get(mouse_keys, s);
+</span><span class="def"> 	if (kb-&gt;key == 0) {
+</span><span class="sub">-	    wlr_log(WLR_ERROR, &quot;Config line %i: No such key &apos;%s&apos;.&quot;, line, s);
+</span><span class="add">+	    wlr_log(WLR_ERROR, &quot;No such key &apos;%s&apos;.&quot;, s);
+</span><span class="def"> 	    free(kb);
+</span><span class="def"> 	    return;
+</span><span class="def"> 	}
+</span>@@ -370,10 +344,10 @@
+<span class="def">     // action
+</span><span class="def">     s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def">     if (!s) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;Config line %i: malformed option.&quot;, line);
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Command malformed/incompleted.&quot;);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="sub">-    if (!assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb, line)) {
+</span><span class="add">+    if (!assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb)) {
+</span><span class="def"> 	free(kb);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span>@@ -436,6 +410,7 @@
+<span class="def"> 	wallpaper-&gt;height, cairo_image_surface_get_data(canvas)
+</span><span class="def">     );
+</span><span class="def">     desk-&gt;wallpaper = wallpaper;
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def">     cairo_destroy(cr);
+</span><span class="def">     cairo_surface_destroy(image);
+</span><span class="def">     cairo_surface_destroy(canvas);
+</span>@@ -457,11 +432,12 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void setup_vt_switching() {
+</span><span class="sub">-    if (!wimp.vt_switching) {
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="add">+static void disable_vt_switching() {
+</span><span class="add">+    // TODO
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="add">+static void setup_vt_switching() {
+</span><span class="def">     uint32_t func_keys[] = {
+</span><span class="def"> 	XKB_KEY_F1,
+</span><span class="def"> 	XKB_KEY_F2,
+</span>@@ -484,253 +460,202 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-struct source {
+</span><span class="sub">-    struct wl_event_source *wl_event_source;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static int _auto_start(void *data) {
+</span><span class="sub">-    struct source *source = data;
+</span><span class="sub">-    wl_event_source_remove(source-&gt;wl_event_source);
+</span><span class="sub">-    free(source);
+</span><span class="sub">-
+</span><span class="sub">-    char *script = wimp.auto_start;
+</span><span class="sub">-    if (fork() == 0) {
+</span><span class="sub">-	if (execl(script, script, (void *)NULL) == -1) {
+</span><span class="sub">-	    exit(EXIT_FAILURE);
+</span><span class="sub">-	}
+</span><span class="sub">-    } else {
+</span><span class="sub">-	wlr_log(WLR_DEBUG, &quot;Running autostart script: %s&quot;, script);
+</span><span class="sub">-    }
+</span><span class="sub">-    free(wimp.auto_start);
+</span><span class="sub">-    return 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void schedule_auto_start() {
+</span><span class="sub">-    if (wimp.auto_start) {
+</span><span class="sub">-	wimp.auto_start = expand(wimp.auto_start);
+</span><span class="sub">-    } else {
+</span><span class="sub">-	wimp.auto_start = strndup(
+</span><span class="sub">-	    wimp.config_directory, strlen(wimp.config_directory) + strlen(&quot;autostart&quot;)
+</span><span class="sub">-	);
+</span><span class="sub">-	strcat(wimp.auto_start, &quot;autostart&quot;);
+</span><span class="add">+void parse_message(char *message) {
+</span><span class="add">+    char *s;
+</span><span class="add">+    if (!(s = strtok(message, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	return;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    if (is_executable(wimp.auto_start)) {
+</span><span class="sub">-	struct wl_event_loop *event_loop = wl_display_get_event_loop(wimp.display);
+</span><span class="sub">-	struct source *source = calloc(1, sizeof(struct source));
+</span><span class="sub">-	source-&gt;wl_event_source = wl_event_loop_add_timer(event_loop, _auto_start, source);
+</span><span class="sub">-	wl_event_source_timer_update(source-&gt;wl_event_source, 1);
+</span><span class="add">+    // desks &lt;int&gt;
+</span><span class="add">+    if (!strcasecmp(s, &quot;desks&quot;)) {
+</span><span class="add">+	if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="add">+	    configure_desks(strtod(s, NULL));
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void parse_message(char *buffer, ssize_t len) {
+</span><span class="sub">-    printf(&quot;msg: %s\n&quot;, buffer);
+</span><span class="sub">-}
+</span><span class="def"> 
+</span><span class="add">+    // desk ...
+</span><span class="add">+    else if (!strcasecmp(s, &quot;desk&quot;)) {
+</span><span class="add">+	if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="add">+	    int index = strtod(s, NULL) - 1;
+</span><span class="add">+	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+	    struct desk *desk;
+</span><span class="add">+	    bool found = false;
+</span><span class="add">+	    wl_list_for_each(desk, &amp;wimp.desks, link) {
+</span><span class="add">+		if (desk-&gt;index == index) {
+</span><span class="add">+		    found = true;
+</span><span class="add">+		    break;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	    if (!found) {
+</span><span class="add">+		return;
+</span><span class="add">+	    }
+</span><span class="def"> 
+</span><span class="sub">-static void parse_config(FILE *stream) {
+</span><span class="sub">-    char *s;
+</span><span class="sub">-    char linebuf[1024];
+</span><span class="sub">-    int line = 0;
+</span><span class="sub">-    int index;
+</span><span class="sub">-
+</span><span class="sub">-    while (fgets(linebuf, sizeof(linebuf), stream)) {
+</span><span class="sub">-	line++;
+</span><span class="sub">-	if (!(s = strtok(linebuf, &quot; \t\n\r&quot;)) || s[0] == &apos;#&apos;) {
+</span><span class="sub">-	    continue;
+</span><span class="sub">-	}
+</span><span class="sub">-
+</span><span class="sub">-	// desks &lt;int&gt;
+</span><span class="sub">-	if (!strcasecmp(s, &quot;desks&quot;)) {
+</span><span class="sub">-	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="sub">-		configure_desks(strtod(s, NULL));
+</span><span class="add">+	    // desk &lt;index&gt; background #rrggbb
+</span><span class="add">+	    // desk &lt;index&gt; background ~/path/to/image.png
+</span><span class="add">+	    if (!strcasecmp(s, &quot;background&quot;)) {
+</span><span class="add">+		if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+		    set_wallpaper(desk, s);
+</span><span class="add">+		}
+</span><span class="def"> 	    }
+</span><span class="sub">-	}
+</span><span class="def"> 
+</span><span class="sub">-	// desk ...
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;desk&quot;)) {
+</span><span class="sub">-	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="sub">-		index = strtod(s, NULL) - 1;
+</span><span class="add">+	    // desk &lt;index&gt; borders [focus|normal] &lt;#rrggbb&gt;
+</span><span class="add">+	    // desk &lt;index&gt; borders width &lt;int&gt;
+</span><span class="add">+	    else if (!strcasecmp(s, &quot;borders&quot;)) {
+</span><span class="def"> 		s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-		struct desk *desk;
+</span><span class="sub">-		bool found = false;
+</span><span class="sub">-		wl_list_for_each(desk, &amp;wimp.desks, link) {
+</span><span class="sub">-		    if (desk-&gt;index == index) {
+</span><span class="sub">-			found = true;
+</span><span class="sub">-			break;
+</span><span class="sub">-		    }
+</span><span class="add">+		if (!strcasecmp(s, &quot;normal&quot;)) {
+</span><span class="add">+		    assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_normal);
+</span><span class="def"> 		}
+</span><span class="sub">-		if (!found) {
+</span><span class="sub">-		    continue;
+</span><span class="add">+		else if (!strcasecmp(s, &quot;focus&quot;)) {
+</span><span class="add">+		    assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_focus);
+</span><span class="def"> 		}
+</span><span class="sub">-
+</span><span class="sub">-		// desk &lt;index&gt; background #rrggbb
+</span><span class="sub">-		// desk &lt;index&gt; background ~/path/to/image.png
+</span><span class="sub">-		if (!strcasecmp(s, &quot;background&quot;)) {
+</span><span class="sub">-		    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-			set_wallpaper(desk, s);
+</span><span class="add">+		else if (!strcasecmp(s, &quot;width&quot;)) {
+</span><span class="add">+		    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="add">+			desk-&gt;border_width = strtod(s, NULL);
+</span><span class="def"> 		    }
+</span><span class="def"> 		}
+</span><span class="add">+	    }
+</span><span class="def"> 
+</span><span class="sub">-		// desk &lt;index&gt; borders [focus|normal] &lt;#rrggbb&gt;
+</span><span class="sub">-		// desk &lt;index&gt; borders width &lt;int&gt;
+</span><span class="sub">-		else if (!strcasecmp(s, &quot;borders&quot;)) {
+</span><span class="sub">-		    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-		    if (!strcasecmp(s, &quot;normal&quot;)) {
+</span><span class="sub">-			assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_normal);
+</span><span class="sub">-		    }
+</span><span class="sub">-		    else if (!strcasecmp(s, &quot;focus&quot;)) {
+</span><span class="sub">-			assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_focus);
+</span><span class="sub">-		    }
+</span><span class="sub">-		    else if (!strcasecmp(s, &quot;width&quot;)) {
+</span><span class="sub">-			if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="sub">-			    desk-&gt;border_width = strtod(s, NULL);
+</span><span class="sub">-			}
+</span><span class="sub">-		    }
+</span><span class="add">+	    // desk &lt;index&gt; corners [focus|normal] &lt;#rrggbb&gt;
+</span><span class="add">+	    else if (!strcasecmp(s, &quot;corners&quot;)) {
+</span><span class="add">+		s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+		if (!strcasecmp(s, &quot;normal&quot;)) {
+</span><span class="add">+		    assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;corner_normal);
+</span><span class="def"> 		}
+</span><span class="sub">-
+</span><span class="sub">-		// desk &lt;index&gt; corners [focus|normal] &lt;#rrggbb&gt;
+</span><span class="sub">-		else if (!strcasecmp(s, &quot;corners&quot;)) {
+</span><span class="sub">-		    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-		    if (!strcasecmp(s, &quot;normal&quot;)) {
+</span><span class="sub">-			assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;corner_normal);
+</span><span class="sub">-		    }
+</span><span class="sub">-		    else if (!strcasecmp(s, &quot;focus&quot;)) {
+</span><span class="sub">-			assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;corner_focus);
+</span><span class="sub">-		    }
+</span><span class="add">+		else if (!strcasecmp(s, &quot;focus&quot;)) {
+</span><span class="add">+		    assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;corner_focus);
+</span><span class="def"> 		}
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	// zoom_min &lt;float&gt;
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;zoom_min&quot;)) {
+</span><span class="sub">-	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="sub">-		wimp.zoom_min = strtod(s, NULL);
+</span><span class="sub">-	    }
+</span><span class="sub">-	}
+</span><span class="sub">-
+</span><span class="sub">-	// zoom_max &lt;float&gt;
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;zoom_max&quot;)) {
+</span><span class="sub">-	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="sub">-		wimp.zoom_max = strtod(s, NULL);
+</span><span class="sub">-	    }
+</span><span class="sub">-	}
+</span><span class="sub">-
+</span><span class="sub">-	// mark_indicator #rrggbb
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;mark_indicator&quot;)) {
+</span><span class="sub">-	    assign_colour(strtok(NULL, &quot; \t\n\r&quot;), wimp.mark_indicator.colour);
+</span><span class="sub">-	    wimp.mark_indicator.box.x = 0;
+</span><span class="sub">-	    wimp.mark_indicator.box.y = 0;
+</span><span class="add">+    // zoom_min &lt;float&gt;
+</span><span class="add">+    else if (!strcasecmp(s, &quot;zoom_min&quot;)) {
+</span><span class="add">+	if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="add">+	    wimp.zoom_min = strtod(s, NULL);
+</span><span class="def"> 	}
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	// vt_switching [off|on]
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;vt_switching&quot;)) {
+</span><span class="sub">-	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-	    if (!strcasecmp(s, &quot;off&quot;))
+</span><span class="sub">-		wimp.vt_switching = false;
+</span><span class="sub">-	    else if (!strcasecmp(s, &quot;on&quot;))
+</span><span class="sub">-		wimp.vt_switching = true;
+</span><span class="add">+    // zoom_max &lt;float&gt;
+</span><span class="add">+    else if (!strcasecmp(s, &quot;zoom_max&quot;)) {
+</span><span class="add">+	if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="add">+	    wimp.zoom_max = strtod(s, NULL);
+</span><span class="def"> 	}
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	// scroll_direciton [natural|reverse]
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;scroll_direction&quot;)) {
+</span><span class="sub">-	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-	    if (!strcasecmp(s, &quot;natural&quot;))
+</span><span class="sub">-		wimp.reverse_scrolling = false;
+</span><span class="sub">-	    else if (!strcasecmp(s, &quot;reverse&quot;))
+</span><span class="sub">-		wimp.reverse_scrolling = true;
+</span><span class="sub">-	}
+</span><span class="add">+    // mark_indicator #rrggbb
+</span><span class="add">+    else if (!strcasecmp(s, &quot;mark_indicator&quot;)) {
+</span><span class="add">+	assign_colour(strtok(NULL, &quot; \t\n\r&quot;), wimp.mark_indicator.colour);
+</span><span class="add">+	wimp.mark_indicator.box.x = 0;
+</span><span class="add">+	wimp.mark_indicator.box.y = 0;
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	// e.g.: set_modifier logo
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;set_modifier&quot;)) {
+</span><span class="sub">-	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-		enum wlr_keyboard_modifier mod = get(mods, s);
+</span><span class="sub">-		if (mod)
+</span><span class="sub">-		    wimp.mod = mod;
+</span><span class="sub">-		else
+</span><span class="sub">-		    wlr_log(WLR_ERROR, &quot;Config line %i: invalid modifier name &apos;%s&apos;.&quot;, line, s);
+</span><span class="sub">-	    }
+</span><span class="sub">-	}
+</span><span class="add">+    // vt_switching [off|on]
+</span><span class="add">+    else if (!strcasecmp(s, &quot;vt_switching&quot;)) {
+</span><span class="add">+	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+	if (!strcasecmp(s, &quot;off&quot;))
+</span><span class="add">+	    disable_vt_switching();
+</span><span class="add">+	else if (!strcasecmp(s, &quot;on&quot;))
+</span><span class="add">+	    setup_vt_switching();
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	// bind [&lt;modifiers&gt;] &lt;key&gt; &lt;action&gt;
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;bind&quot;)) {
+</span><span class="sub">-	    add_binding(strtok(NULL, &quot;&quot;), line);
+</span><span class="add">+    // scroll_direciton [natural|reverse]
+</span><span class="add">+    else if (!strcasecmp(s, &quot;scroll_direction&quot;)) {
+</span><span class="add">+	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+	if (!strcasecmp(s, &quot;natural&quot;))
+</span><span class="add">+	    wimp.reverse_scrolling = false;
+</span><span class="add">+	else if (!strcasecmp(s, &quot;reverse&quot;))
+</span><span class="add">+	    wimp.reverse_scrolling = true;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // e.g.: set_modifier logo
+</span><span class="add">+    else if (!strcasecmp(s, &quot;set_modifier&quot;)) {
+</span><span class="add">+	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	    enum wlr_keyboard_modifier mod = get(mods, s);
+</span><span class="add">+	    if (mod)
+</span><span class="add">+		wimp.mod = mod;
+</span><span class="add">+	    else
+</span><span class="add">+		wlr_log(WLR_ERROR, &quot;Invalid modifier name &apos;%s&apos;.&quot;, s);
+</span><span class="def"> 	}
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	// auto_start ~/script/to/execute.sh
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;auto_start&quot;)) {
+</span><span class="sub">-	    wimp.auto_start = strdup(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="sub">-	}
+</span><span class="add">+    // bind [&lt;modifiers&gt;] &lt;key&gt; &lt;action&gt;
+</span><span class="add">+    else if (!strcasecmp(s, &quot;bind&quot;)) {
+</span><span class="add">+	add_binding(strtok(NULL, &quot;&quot;));
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	// auto_focus [on|off]
+</span><span class="sub">-	else if (!strcasecmp(s, &quot;auto_focus&quot;)) {
+</span><span class="sub">-	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-	    if (!strcasecmp(s, &quot;off&quot;)) {
+</span><span class="sub">-		wimp.auto_focus = false;
+</span><span class="sub">-	    } else if (!strcasecmp(s, &quot;on&quot;)) {
+</span><span class="sub">-		wimp.auto_focus = true;
+</span><span class="sub">-	    }
+</span><span class="add">+    // auto_focus [on|off]
+</span><span class="add">+    else if (!strcasecmp(s, &quot;auto_focus&quot;)) {
+</span><span class="add">+	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+	if (!strcasecmp(s, &quot;off&quot;)) {
+</span><span class="add">+	    wimp.auto_focus = false;
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;on&quot;)) {
+</span><span class="add">+	    wimp.auto_focus = true;
+</span><span class="def"> 	}
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	// other non-empty, non-commented lines
+</span><span class="sub">-	else {
+</span><span class="sub">-	    wlr_log(WLR_ERROR, &quot;Config line %i: unknown option &apos;%s&apos;.&quot;, line, s);
+</span><span class="sub">-	}
+</span><span class="add">+    // other non-empty, non-commented lines
+</span><span class="add">+    else {
+</span><span class="add">+        wlr_log(WLR_ERROR, &quot;Unknown command &apos;%s&apos;.&quot;, s);
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void load_config() {
+</span><span class="sub">-    FILE *stream;
+</span><span class="sub">-
+</span><span class="sub">-    // remove existing keybindings
+</span><span class="sub">-    struct binding *kb, *tmp;
+</span><span class="sub">-    wl_list_for_each_safe(kb, tmp, &amp;wimp.mouse_bindings, link) {
+</span><span class="sub">-	free_binding(kb);
+</span><span class="sub">-    }
+</span><span class="sub">-    wl_list_for_each_safe(kb, tmp, &amp;wimp.key_bindings, link) {
+</span><span class="sub">-	free_binding(kb);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    drop_scratchpads();
+</span><span class="add">+struct startup_data {
+</span><span class="add">+    struct wl_event_source *wl_event_source;
+</span><span class="add">+    char *script;
+</span><span class="add">+};
+</span><span class="def"> 
+</span><span class="sub">-    // load defaults
+</span><span class="sub">-    char *buffer = NULL;
+</span><span class="sub">-    size_t size = 0;
+</span><span class="sub">-    stream = open_memstream(&amp;buffer, &amp;size);
+</span><span class="sub">-    fprintf(stream, DEFAULT_CONFIG);
+</span><span class="sub">-    rewind(stream);
+</span><span class="sub">-    parse_config(stream);
+</span><span class="sub">-    free(buffer);
+</span><span class="sub">-    fclose(stream);
+</span><span class="def"> 
+</span><span class="sub">-    // load configuration file
+</span><span class="sub">-    if (is_readable(wimp.config_file)) {
+</span><span class="sub">-	stream = fopen(wimp.config_file, &quot;r&quot;);
+</span><span class="sub">-	parse_config(stream);
+</span><span class="sub">-	fclose(stream);
+</span><span class="add">+static int _startup(void *vdata) {
+</span><span class="add">+    struct startup_data *data = vdata;
+</span><span class="add">+    wl_event_source_remove(data-&gt;wl_event_source);
+</span><span class="add">+    if (fork() == 0) {
+</span><span class="add">+	if (execl(data-&gt;script, data-&gt;script, (void *)NULL) == -1) {
+</span><span class="add">+	    exit(EXIT_FAILURE);
+</span><span class="add">+	}
+</span><span class="def">     } else {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;%s not accessible. Using defaults.&quot;, wimp.config_file);
+</span><span class="add">+	wlr_log(WLR_DEBUG, &quot;Running startup script: %s&quot;, data-&gt;script);
+</span><span class="def">     }
+</span><span class="sub">-
+</span><span class="sub">-    setup_vt_switching();
+</span><span class="add">+    free(data-&gt;script);
+</span><span class="add">+    free(data);
+</span><span class="add">+    return 0;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void locate_config() {
+</span><span class="add">+void schedule_startup() {
+</span><span class="def">     char *xdg_config = getenv(&quot;XDG_CONFIG_HOME&quot;);
+</span><span class="def">     char *config_dir = (xdg_config &amp;&amp; *xdg_config) ? CONFIG_HOME_XDG : CONFIG_HOME;
+</span><span class="sub">-    wimp.config_directory = strdup(config_dir);
+</span><span class="sub">-    wimp.config_directory = expand(wimp.config_directory);
+</span><span class="sub">-    config_dir = wimp.config_directory;
+</span><span class="add">+    struct startup_data *data = calloc(1, sizeof(struct startup_data));
+</span><span class="add">+    wordexp_t p;
+</span><span class="add">+    wordexp(config_dir, &amp;p, WRDE_NOCMD | WRDE_UNDEF);
+</span><span class="add">+    data-&gt;script = strdup(p.we_wordv[0]);
+</span><span class="add">+    wordfree(&amp;p);
+</span><span class="def"> 
+</span><span class="sub">-    if (wimp.config_file == NULL) {
+</span><span class="sub">-	wimp.config_file = strndup(config_dir, strlen(config_dir) + strlen(&quot;config&quot;));
+</span><span class="sub">-	strcat(wimp.config_file, &quot;config&quot;);
+</span><span class="add">+    if (is_executable(data-&gt;script)) {
+</span><span class="add">+	struct wl_event_loop *event_loop = wl_display_get_event_loop(wimp.display);
+</span><span class="add">+	data-&gt;wl_event_source = wl_event_loop_add_timer(event_loop, _startup, data);
+</span><span class="add">+	wl_event_source_timer_update(data-&gt;wl_event_source, 1);
+</span><span class="def">     } else {
+</span><span class="sub">-	wimp.config_file = expand(wimp.config_file);
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Cannot run startup script: %s&quot;, data-&gt;script);
+</span><span class="add">+	free(data-&gt;script);
+</span><span class="add">+	free(data);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_up_defaults(){
+</span><span class="add">+    char defaults[][64] = {
+</span><span class="add">+	&quot;desks 2&quot;,
+</span><span class="add">+	&quot;desk 2 background #3e3e73&quot;,
+</span><span class="add">+	&quot;desk 2 borders normal #31475c&quot;,
+</span><span class="add">+	&quot;desk 2 corners normal #3e5973&quot;,
+</span><span class="add">+	&quot;mark_indicator #47315c&quot;,
+</span><span class="add">+	&quot;set_modifier Logo&quot;,
+</span><span class="add">+	&quot;bind Ctrl Escape shutdown&quot;,
+</span><span class="def">     };
+</span><span class="add">+    for (size_t i = 0; i &lt; sizeof(defaults) / sizeof(defaults[0]); i++) {
+</span><span class="add">+	parse_message(defaults[i]);
+</span><span class="add">+    }
+</span><span class="add">+    setup_vt_switching();
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,7 +24,6 @@
+<span class="def"> void toggle_fullscreen(void *data);
+</span><span class="def"> void halfimize(void *data);
+</span><span class="def"> void maximize(void *data);
+</span><span class="sub">-void reload_config(void *data);
+</span><span class="def"> void send_to_desk(void *data);
+</span><span class="def"> void toggle_scratchpad(void *data);
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -414,12 +414,6 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void reload_config(void *data) {
+</span><span class="sub">-    load_config();
+</span><span class="sub">-    damage_all_outputs(); // in case wallpaper has changed
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void send_to_desk(void *data) {
+</span><span class="def">     struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="def">     int index = *(double*)data - 1;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - amixer Notifier: allow use of Master channel exclusively for muting</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/e63caf9573872fb0691bfdbea9c680bdd922b40b.html">e63caf9573872fb0691bfdbea9c680bdd922b40b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/4405950bcca9a4c38b890580861d1a9bb0ffee4b.html">4405950bcca9a4c38b890580861d1a9bb0ffee4b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-02-17 18:36:01 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-02-17 18:36:01 +0000
+
+amixer Notifier: allow use of Master channel exclusively for muting
+</pre><div class="diff">
+  <p>
+    <b>qtools/amixer/amixer.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,51 +21,81 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> class Volume(Notifier):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This Notifier can be used to control ALSA mixer volume and muting, sending
+</span><span class="add">+    notifications when operations are performed.
+</span><span class="add">+
+</span><span class="add">+    The &apos;mixer&apos; option should be set to the name of the ALSA mixer you use to control
+</span><span class="add">+    the volume. By default this will also be used for mute/unmute operations.
+</span><span class="add">+    Alternatively, if you use the Master mixer for muting instead of the mixer used for
+</span><span class="add">+    volume control, set &apos;mute_master&apos; to true.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="def">     defaults = [
+</span><span class="def">         (&apos;summary&apos;, &apos;Volume&apos;, &apos;Notification summary.&apos;),
+</span><span class="def">         (&apos;mixer&apos;, &apos;Master&apos;, &apos;ALSA mixer to control.&apos;),
+</span><span class="def">         (&apos;interval&apos;, 5, &apos;Percentage interval to change volume by.&apos;),
+</span><span class="add">+        (&apos;mute_master&apos;, False, &apos;Use the Master mixer for mute operations&apos;),
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def">     def __init__(self, **config):
+</span><span class="def">         Notifier.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Volume.defaults)
+</span><span class="add">+        if self.mute_master and self.mixer == &apos;Master&apos;:
+</span><span class="add">+            self.mute_master = False
+</span><span class="def"> 
+</span><span class="def">     def increase(self, qtile=None):
+</span><span class="sub">-        volume = self._run(f&apos;{self.interval}%+&apos;)
+</span><span class="add">+        stdout = self._run([&apos;set&apos;, self.mixer, f&apos;{self.interval}%+&apos;])
+</span><span class="add">+        volume = self._get_volume(stdout)
+</span><span class="def">         self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="def">     def decrease(self, qtile=None):
+</span><span class="sub">-        volume = self._run(f&apos;{self.interval}%-&apos;)
+</span><span class="add">+        stdout = self._run([&apos;set&apos;, self.mixer, f&apos;{self.interval}%-&apos;])
+</span><span class="add">+        volume = self._get_volume(stdout)
+</span><span class="def">         self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="def">     def toggle(self, qtile=None):
+</span><span class="sub">-        volume = self._run(&apos;toggle&apos;)
+</span><span class="sub">-        self.show(self.interval * round(volume / self.interval))
+</span><span class="add">+        stdout = self._run([&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;toggle&apos;])
+</span><span class="add">+        if self._get_mute(stdout):
+</span><span class="add">+            self.show(&apos;Muted&apos;)
+</span><span class="add">+        else:
+</span><span class="add">+            if self.mute_master:
+</span><span class="add">+                stdout = self._run([&apos;get&apos;, self.mixer])
+</span><span class="add">+            volume = self._get_volume(stdout)
+</span><span class="add">+            self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="def">     def mute(self, qtile=None):
+</span><span class="sub">-        self._run(&apos;mute&apos;)
+</span><span class="add">+        self._run([&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;mute&apos;])
+</span><span class="def">         self.show(&apos;Muted&apos;)
+</span><span class="def"> 
+</span><span class="def">     def unmute(self, qtile=None):
+</span><span class="sub">-        volume = self._run(&apos;unmute&apos;)
+</span><span class="sub">-        self.show(volume)
+</span><span class="add">+        stdout = self._run(
+</span><span class="add">+            [&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;unmute&apos;]
+</span><span class="add">+        )
+</span><span class="add">+        volume = self._get_volume(self._run([&apos;get&apos;, self.mixer]))
+</span><span class="add">+        self.show(self.interval * round(volume / self.interval))
+</span><span class="add">+
+</span><span class="add">+    def _get_mute(self, stdout):
+</span><span class="add">+        if len(stdout) == 5:
+</span><span class="add">+            if stdout[4].decode().split()[5][1:-1] == &apos;on&apos;:
+</span><span class="add">+                return False
+</span><span class="add">+            else:
+</span><span class="add">+                return True
+</span><span class="add">+        logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="def"> 
+</span><span class="sub">-    def _run(self, setting):
+</span><span class="add">+    def _get_volume(self, stdout):
+</span><span class="add">+        if len(stdout) == 5:
+</span><span class="add">+            return int(stdout[4].decode().split()[3][1:-2])
+</span><span class="add">+        if len(stdout) == 7:
+</span><span class="add">+            return int(stdout[5].decode().split()[4][1:-2])
+</span><span class="add">+        logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="add">+
+</span><span class="add">+    def _run(self, args):
+</span><span class="add">+        cmd = [&apos;amixer&apos;]
+</span><span class="add">+        cmd.extend(args)
+</span><span class="def">         try:
+</span><span class="sub">-            output = subprocess.run(
+</span><span class="sub">-                [&apos;amixer&apos;, &apos;set&apos;, self.mixer, setting],
+</span><span class="sub">-                stdout=subprocess.PIPE,
+</span><span class="sub">-            )
+</span><span class="add">+            output = subprocess.run(cmd, stdout=subprocess.PIPE)
+</span><span class="def">             stdout = output.stdout.splitlines()
+</span><span class="def">         except subprocess.CalledProcessError as err:
+</span><span class="def">             logger.error(err.output.decode())
+</span><span class="def">             return
+</span><span class="sub">-
+</span><span class="sub">-        if len(stdout) == 5:
+</span><span class="sub">-            volume = int(stdout[4].decode().split()[3][1:-2])
+</span><span class="sub">-        elif len(stdout) == 7:
+</span><span class="sub">-            volume = int(stdout[5].decode().split()[4][1:-2])
+</span><span class="sub">-        else:
+</span><span class="sub">-            logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="sub">-        return volume
+</span><span class="add">+        return stdout
+</span></pre>
+</div></div>
+  </body>
+</html>

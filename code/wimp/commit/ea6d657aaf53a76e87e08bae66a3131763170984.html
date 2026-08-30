@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add close_current_window and bind to mod+S+q</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/ea6d657aaf53a76e87e08bae66a3131763170984.html">ea6d657aaf53a76e87e08bae66a3131763170984</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/37a22d4982455ac7ce7237d38269ba5e986a8fe6.html">37a22d4982455ac7ce7237d38269ba5e986a8fe6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-11 16:14:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-11 16:14:06 +0000
+
+add close_current_window and bind to mod+S+q
+</pre><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+void close_current_window(struct server *server);
+</span><span class="def"> void unmap_view(struct view *view);
+</span><span class="def"> void map_view(struct view *view);
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,17 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void close_current_window(struct server *server) {
+</span><span class="add">+    struct wlr_surface *surface = server-&gt;seat-&gt;keyboard_state.focused_surface;
+</span><span class="add">+    if (surface) {
+</span><span class="add">+	struct wlr_xdg_surface *xdg_surface = surface-&gt;role_data;
+</span><span class="add">+	if (xdg_surface-&gt;role == WLR_XDG_SURFACE_ROLE_TOPLEVEL &amp;&amp; xdg_surface-&gt;toplevel) {
+</span><span class="add">+	    xdg_toplevel_send_close(xdg_surface-&gt;toplevel-&gt;resource);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void unmap_view(struct view *view) {
+</span><span class="def">     wl_signal_emit(&amp;view-&gt;surface-&gt;events.unmap, view);
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -229,6 +229,10 @@
+<span class="def"> 	next_desk(server);
+</span><span class="def"> 	break;
+</span><span class="def"> 
+</span><span class="add">+    case XKB_KEY_Q:
+</span><span class="add">+	close_current_window(server);
+</span><span class="add">+	break;
+</span><span class="add">+
+</span><span class="def">     case XKB_KEY_r:
+</span><span class="def"> 	reset_pan(server-&gt;current_desk);
+</span><span class="def"> 	break;
+</span></pre>
+</div></div>
+  </body>
+</html>

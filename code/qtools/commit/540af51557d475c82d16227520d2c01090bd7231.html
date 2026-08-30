@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add pop-up window drawer for libqtile.notify.notifier service</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/540af51557d475c82d16227520d2c01090bd7231.html">540af51557d475c82d16227520d2c01090bd7231</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/242bfa110d27e68108e091cd79692391860e7cf1.html">242bfa110d27e68108e091cd79692391860e7cf1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-22 22:25:37 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-22 22:25:37 +0000
+
+add pop-up window drawer for libqtile.notify.notifier service
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,265 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile plugin that acts as a notification server and draws notification windows.
+</span><span class="add">+
+</span><span class="add">+Example usage:
+</span><span class="add">+
+</span><span class="add">+    import qtools.notification
+</span><span class="add">+    notifier = qtools.notification.Server()
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;M-&lt;grave&gt;&apos;:    notifier.lazy_prev,
+</span><span class="add">+        &apos;M-S-&lt;grave&gt;&apos;:  notifier.lazy_next,
+</span><span class="add">+        &apos;C-&lt;space&gt;&apos;:    notifier.lazy_close,
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+from xcffib.xproto import StackMode
+</span><span class="add">+
+</span><span class="add">+from libqtile import configurable, pangocffi, window
+</span><span class="add">+from libqtile.command import lazy
+</span><span class="add">+from libqtile.notify import notifier
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from libqtile.drawer import Drawer
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+ALIGNMENTS = {
+</span><span class="add">+    &apos;left&apos;: pangocffi.pango.PANGO_ALIGN_LEFT,
+</span><span class="add">+    &apos;center&apos;: pangocffi.pango.PANGO_ALIGN_CENTER,
+</span><span class="add">+    &apos;right&apos;: pangocffi.pango.PANGO_ALIGN_RIGHT,
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Popup:
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    These represent a single pop-up window. These are (re)cycled, so if we have a
+</span><span class="add">+    maximum of two windows visible at once, we keep two of these and re-draw and present
+</span><span class="add">+    them.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    def __init__(self, win, drawer, layout):
+</span><span class="add">+        self.win = win
+</span><span class="add">+        self.drawer = drawer
+</span><span class="add">+        self.layout = layout
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Server(configurable.Configurable):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Foreground and background colours can be specified either as tuples/lists of 3
+</span><span class="add">+    strings, corresponding to low, normal and critical urgencies, or just a single
+</span><span class="add">+    string which will then be used for all urgencies. The timeout and border options can
+</span><span class="add">+    be set in the same way.
+</span><span class="add">+
+</span><span class="add">+    TODO:
+</span><span class="add">+        - overflow
+</span><span class="add">+        - spacing between lines
+</span><span class="add">+        - replace_id
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;x&apos;, 96, &apos;X position of notifications.&apos;),
+</span><span class="add">+        (&apos;y&apos;, 96, &apos;Y position of notifications.&apos;),
+</span><span class="add">+        (&apos;width&apos;, 256, &apos;Width of notifications.&apos;),
+</span><span class="add">+        (&apos;height&apos;, 64, &apos;Height of notifications.&apos;),
+</span><span class="add">+        (&apos;opacity&apos;, 1.0, &apos;Opacity of notifications.&apos;),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;foreground&apos;,
+</span><span class="add">+            (&apos;#ffffff&apos;, &apos;#ffffff&apos;, &apos;#ffffff&apos;),
+</span><span class="add">+            &apos;Foreground colour of notifications, in ascending order of urgency.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;background&apos;,
+</span><span class="add">+            (&apos;#111111&apos;, &apos;#111111&apos;, &apos;#111111&apos;),
+</span><span class="add">+            &apos;Background colour of notifications, in ascending order of urgency.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;border&apos;,
+</span><span class="add">+            (&apos;#111111&apos;, &apos;#111111&apos;, &apos;#111111&apos;),
+</span><span class="add">+            &apos;Border colours in ascending order of urgency. Or None for none.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (&apos;border_width&apos;, 4, &apos;Line width of drawn borders.&apos;),
+</span><span class="add">+        (&apos;corner_radius&apos;, None, &apos;Corner radius for round corners, or None.&apos;),
+</span><span class="add">+        (&apos;font&apos;, &apos;sans&apos;, &apos;Font used in notifications.&apos;),
+</span><span class="add">+        (&apos;fontsize&apos;, 14, &apos;Size of font.&apos;),
+</span><span class="add">+        (&apos;fontshadow&apos;, None, &apos;Color for text shadows, or None for no shadows.&apos;),
+</span><span class="add">+        (&apos;padding&apos;, None, &apos;Padding at sides of text.&apos;),
+</span><span class="add">+        (&apos;format&apos;, &apos;{summary}\n{body}&apos;, &apos;Text format.&apos;),
+</span><span class="add">+        (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;timeout&apos;,
+</span><span class="add">+            (5000, 5000, 0),
+</span><span class="add">+            &apos;Millisecond timeout duration, in ascending order of urgency.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;overflow&apos;,
+</span><span class="add">+            &apos;trim&apos;,
+</span><span class="add">+            &apos;How to deal with too much text: extend_x, extend_y or trim.&apos;,
+</span><span class="add">+        ),
+</span><span class="add">+        (&apos;max_windows&apos;, 2, &apos;Maximum number of windows to show at once.&apos;),
+</span><span class="add">+        (&apos;gap&apos;, 18, &apos;Vertical gap between popup windows.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        configurable.Configurable.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Server.defaults)
+</span><span class="add">+        self.qtile = None
+</span><span class="add">+        self._hidden = []
+</span><span class="add">+        self._shown = []
+</span><span class="add">+        self._queue = []
+</span><span class="add">+
+</span><span class="add">+        self._make_attr_list(&apos;foreground&apos;)
+</span><span class="add">+        self._make_attr_list(&apos;background&apos;)
+</span><span class="add">+        self._make_attr_list(&apos;timeout&apos;)
+</span><span class="add">+        self._make_attr_list(&apos;border&apos;)
+</span><span class="add">+
+</span><span class="add">+    def __getattr__(self, name):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Using this, we can get e.g. Server.lazy_close which is the equivalent of
+</span><span class="add">+        lazy.function(Server.close) but more convenient for setting keybindings.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if name.startswith(&apos;lazy_&apos;):
+</span><span class="add">+            return lazy.function(getattr(self, name[5:]))
+</span><span class="add">+        return configurable.Configurable.__getattr__(self, name)
+</span><span class="add">+
+</span><span class="add">+    def _make_attr_list(self, attr):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Turns &apos;#000000&apos; into (&apos;#000000&apos;, &apos;#000000&apos;, &apos;#000000&apos;)
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        value = getattr(self, attr)
+</span><span class="add">+        if not isinstance(value, (tuple, list)):
+</span><span class="add">+            setattr(self, attr, (value,) * 3)
+</span><span class="add">+
+</span><span class="add">+    def configure(self, qtile):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        This method needs to be called to set up the Server with the Qtile manager and
+</span><span class="add">+        reorganise some configuration options.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        self.qtile = qtile
+</span><span class="add">+
+</span><span class="add">+        if self.padding is None:
+</span><span class="add">+            self.padding = self.fontsize / 2
+</span><span class="add">+        if self.border_width:
+</span><span class="add">+            self.border = [self.qtile.color_pixel(c) for c in self.border]
+</span><span class="add">+        for win in range(self.max_windows):
+</span><span class="add">+            self._hidden.append(self._create_window(win))
+</span><span class="add">+
+</span><span class="add">+        notifier.register(self._notify)
+</span><span class="add">+
+</span><span class="add">+    def _create_window(self, win):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        win = window.Internal.create(
+</span><span class="add">+            self.qtile,
+</span><span class="add">+            self.x,
+</span><span class="add">+            self.y + (self.height + self.gap) * win,
+</span><span class="add">+            self.width, self.height,
+</span><span class="add">+            self.opacity,
+</span><span class="add">+        )
+</span><span class="add">+        drawer = Drawer(
+</span><span class="add">+            self.qtile, win.window.wid, self.width, self.height,
+</span><span class="add">+        )
+</span><span class="add">+        layout = drawer.textlayout(
+</span><span class="add">+            text=&apos;&apos;,
+</span><span class="add">+            colour=self.foreground[1],
+</span><span class="add">+            font_family=self.font,
+</span><span class="add">+            font_size=self.fontsize,
+</span><span class="add">+            font_shadow=self.fontshadow,
+</span><span class="add">+            wrap=True if self.overflow == &apos;extend_y&apos; else False,
+</span><span class="add">+            markup=True,
+</span><span class="add">+        )
+</span><span class="add">+        layout.layout.set_alignment(ALIGNMENTS[self.text_alignment])
+</span><span class="add">+        #drawer.clear(self.background[1])  # is this necessary?
+</span><span class="add">+
+</span><span class="add">+        if self.border_width:
+</span><span class="add">+            win.window.configure(borderwidth=self.border_width)
+</span><span class="add">+        if self.corner_radius:
+</span><span class="add">+            win.window.round_corners(
+</span><span class="add">+                self.width, self.height, self.corner_radius, self.border_width,
+</span><span class="add">+            )
+</span><span class="add">+
+</span><span class="add">+        popup = Popup(win, drawer, layout)
+</span><span class="add">+        win.handle_Expose = self._handle_Expose
+</span><span class="add">+        win.handle_KeyPress = self._handle_KeyPress
+</span><span class="add">+        win.handle_ButtonPress = self._get_popup_ButtonPress(popup)
+</span><span class="add">+        self.qtile.windows_map[win.window.wid] = win
+</span><span class="add">+        return popup
+</span><span class="add">+
+</span><span class="add">+    def _handle_Expose(self, e):
+</span><span class="add">+        pass
+</span><span class="add">+
+</span><span class="add">+    def _handle_KeyPress(self, event):
+</span><span class="add">+        pass
+</span><span class="add">+
+</span><span class="add">+    def _get_popup_ButtonPress(self, popup):
+</span><span class="add">+        def _inner(event):
+</span><span class="add">+            if event.detail == 1:
+</span><span class="add">+                self._close(popup)
+</span><span class="add">+        return _inner
+</span><span class="add">+
+</span><span class="add">+    def _notify(self, notif):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        This method is registered with the NotificationManager to handle notifications
+</span><span class="add">+        received via dbus. They will either be drawn now or queued to be drawn soon.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if self._hidden:
+</span><span class="add">+            self._send(notif, self._hidden.pop(0))
+</span><span class="add">+        else:
+</span><span class="add">+            self._queue.append(notif)
+</span><span class="add">+
+</span><span class="add">+    def _send(self, notif, popup):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Draw the desired notification using the specified Popup instance.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        summary = None
+</span><span class="add">+        body = None
+</span><span class="add">+        if notif.summary:
+</span><span class="add">+            summary = pangocffi.markup_escape_text(notif.summary)
+</span><span class="add">+        if notif.body:
+</span><span class="add">+            body = pangocffi.markup_escape_text(notif.body)
+</span><span class="add">+        text = self.format.format(summary=summary, body=body)
+</span><span class="add">+        urgency = notif.hints.get(&apos;urgency&apos;, 1)
+</span><span class="add">+
+</span><span class="add">+        popup.drawer.clear(self.background[urgency])
+</span><span class="add">+        popup.layout.colour = self.foreground[urgency]
+</span><span class="add">+        popup.layout.text = text
+</span><span class="add">+        popup.layout.draw(
+</span><span class="add">+            self.padding, (popup.win.height - popup.layout.height) / 2,
+</span><span class="add">+        )
+</span><span class="add">+        if self.border_width:
+</span><span class="add">+            popup.win.window.set_attribute(borderpixel=self.border[urgency])
+</span><span class="add">+        popup.win.unhide()
+</span><span class="add">+        popup.drawer.draw()
+</span><span class="add">+        popup.win.window.configure(stackmode=StackMode.Above)
+</span><span class="add">+
+</span><span class="add">+        if notif.timeout is None or notif.timeout &lt; 0:
+</span><span class="add">+            timeout = self.timeout[urgency]
+</span><span class="add">+        else:
+</span><span class="add">+            timeout = notif.timeout
+</span><span class="add">+        if timeout &gt; 0:
+</span><span class="add">+            self.qtile.call_later(timeout / 1000, self._close, popup)
+</span><span class="add">+        self._shown.append(popup)
+</span><span class="add">+
+</span><span class="add">+    def _close(self, popup):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Close the specified Popup instance.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if popup in self._shown:
+</span><span class="add">+            self._shown.remove(popup)
+</span><span class="add">+            if self._queue:
+</span><span class="add">+                self._send(self._queue.pop(0), popup)
+</span><span class="add">+            else:
+</span><span class="add">+                popup.win.hide()
+</span><span class="add">+                self._hidden.append(popup)
+</span><span class="add">+
+</span><span class="add">+    def close(self, qtile=None):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        This method can be bound to keys to close the oldest of any visible notification
+</span><span class="add">+        windows.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if self._shown:
+</span><span class="add">+            self._close(self._shown[0])
+</span><span class="add">+
+</span><span class="add">+    #def prev(self, qtile=None):
+</span><span class="add">+    #    self._notify(notifier.notifications[self._current_id])
+</span><span class="add">+
+</span><span class="add">+    #def next(self, qtile=None):
+</span><span class="add">+    #    self._notify(notifier.notifications[self._current_id])
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/notification/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+from .notification import Server
+</span><span class="add">+__all__ = (&apos;Server&apos;,)
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Update file template to format file contents properly</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/1d1f251113c47f743ea4276c531887b2c9ad00f8.html">1d1f251113c47f743ea4276c531887b2c9ad00f8</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/8bfa24dc75f64b8e01ed719ac0db7d9ee2e40952.html">8bfa24dc75f64b8e01ed719ac0db7d9ee2e40952</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-06 00:44:23 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-06 00:44:23 +0100
+
+Update file template to format file contents properly
+</pre><div class="diff">
+  <p>
+    <b>templates/file.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,29 +4,32 @@
+<span class="def">     &lt;meta charset=&quot;utf-8&quot;&gt;
+</span><span class="def">     &lt;meta http-equiv=&quot;x-ua-compatible&quot; content=&quot;ie=edge&quot;&gt;
+</span><span class="def">     &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+</span><span class="sub">-    &lt;title&gt;{{ name }} -- {{ file.path }}&lt;/title&gt;
+</span><span class="sub">-    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{- host }}/style.css&quot; /&gt;
+</span><span class="add">+    &lt;title&gt;{{ name }} -- {{ file }}&lt;/title&gt;
+</span><span class="add">+    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ host }}/style.css&quot; /&gt;
+</span><span class="def">   &lt;/head&gt;
+</span><span class="def"> 
+</span><span class="def">   &lt;body&gt;
+</span><span class="sub">-    &lt;p&gt;{{- name }}&lt;/p&gt;
+</span><span class="add">+    &lt;p&gt;&lt;a href=&quot;{{ host }}&quot;&gt;{{ host }} -- gitserve&lt;/a&gt;&lt;/p&gt;
+</span><span class="add">+    &lt;hr&gt;
+</span><span class="add">+    &lt;p&gt;&lt;a href=&quot;{{ host }}/{{ name }}&quot;&gt;{{ name }}&lt;/a&gt;&lt;/p&gt;
+</span><span class="add">+    &lt;p&gt;{{ description }}&lt;/p&gt;
+</span><span class="add">+    &lt;hr&gt;
+</span><span class="add">+    &lt;p&gt;{{ file.mode }} &lt;b&gt;{{ file.path }}&lt;/b&gt;&lt;/p&gt;
+</span><span class="def">     &lt;hr&gt;
+</span><span class="def"> 
+</span><span class="def"> {% if file.is_directory %}
+</span><span class="sub">-    &lt;p&gt;Directory &lt;b&gt;{{ file.path }}&lt;/b&gt;&lt;/p&gt;
+</span><span class="sub">-    &lt;hr&gt;
+</span><span class="sub">-      &lt;ul&gt;
+</span><span class="add">+    &lt;table&gt;
+</span><span class="def"> {% for item in file.contents %}
+</span><span class="sub">-        &lt;li&gt;&lt;a href=&quot;{{ host }}/{{ name }}/file/{{ file }}.{{ item }}.html&quot;&gt;{{ item }}&lt;/a&gt;&lt;/li&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;a href=&quot;{{ host }}/{{ name }}/file/{{ file }}.{{ item }}.html&quot;&gt;{{ item }}&lt;/a&gt;&lt;/tr&gt;
+</span><span class="def"> {% endfor %}
+</span><span class="sub">-      &lt;/ul&gt;
+</span><span class="add">+    &lt;/table&gt;
+</span><span class="def"> 
+</span><span class="def"> {% else %}
+</span><span class="sub">-
+</span><span class="sub">-    &lt;p&gt;File &lt;b&gt;{{ file.path }}&lt;/b&gt;&lt;/p&gt;
+</span><span class="sub">-    &lt;hr&gt;
+</span><span class="sub">-{{ file.contents }}
+</span><span class="sub">-
+</span><span class="add">+&lt;pre&gt;
+</span><span class="add">+{% for line in split(file.contents, &apos;\n&apos;) %}
+</span><span class="add">+&lt;a href=&quot;#l{{ loop.index }}&quot; id=&quot;l{{ loop.index }}&quot;&gt;{{ printf(&quot;%7v&quot;, loop.index) }}&lt;/a&gt; {{ line }}
+</span><span class="add">+{% endfor %}
+</span><span class="add">+&lt;/pre&gt;
+</span><span class="def"> {% endif %}
+</span><span class="def"> 
+</span><span class="def">     &lt;hr&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

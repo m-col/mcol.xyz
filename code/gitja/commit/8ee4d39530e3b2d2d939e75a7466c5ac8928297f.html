@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - remove redundant combinator</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/8ee4d39530e3b2d2d939e75a7466c5ac8928297f.html">8ee4d39530e3b2d2d939e75a7466c5ac8928297f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/b264de6146955f6b4f9831bfc363afb61c35d72c.html">b264de6146955f6b4f9831bfc363afb61c35d72c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-24 18:00:42 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-24 18:00:42 +0000
+
+remove redundant combinator
+</pre><div class="diff">
+  <p>
+    <b>src/Templates.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -167,8 +167,4 @@
+<span class="def"> This function gets the output HTML data and is responsible for saving it to file.
+</span><span class="def"> -}
+</span><span class="def"> writeTo :: FilePath -&gt; Html -&gt; IO ()
+</span><span class="sub">-writeTo = flip $ goldfinch appendFile (unpack . htmlSource)
+</span><span class="sub">-
+</span><span class="sub">--- G combinator - goldfinch.
+</span><span class="sub">-goldfinch :: (b -&gt; c -&gt; d) -&gt; (a -&gt; c) -&gt; a -&gt; b -&gt; d
+</span><span class="sub">-goldfinch f g x y = f y (g x)
+</span><span class="add">+writeTo path = appendFile path . unpack . htmlSource
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - drop onion link</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/95f21ca1a397a236a0c37f240e2e1a6b873f5e06.html">95f21ca1a397a236a0c37f240e2e1a6b873f5e06</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/435edd3df59f88ad71ebe31b7d3068338bf9d3f2.html">435edd3df59f88ad71ebe31b7d3068338bf9d3f2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-03-05 02:20:24 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-03-05 02:22:04 +0000
+
+drop onion link
+</pre><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,7 +44,7 @@
+<span class="def">     (&quot;mastodon&quot;, &quot;https://fosstodon.org/@mcol&quot;, &quot;hit me up to chat!&quot;),
+</span><span class="def">     (&quot;email&quot;, &quot;mailto:mcol@posteo.net&quot;, &quot;or here, if you want&quot;),
+</span><span class="def">     (&quot;github&quot;, &quot;https://github.com/m-col&quot;, &quot;this i use when i must&quot;),
+</span><span class="sub">-    (&quot;blog onion&quot;, ONION, &quot;feeling edgy and/or paranoid?&quot;),
+</span><span class="add">+    #(&quot;blog onion&quot;, ONION, &quot;feeling edgy and/or paranoid?&quot;),
+</span><span class="def">     (&quot;blog RSS feed&quot;, &quot;/rss.xml&quot;, &quot;follow me if you&apos;d like&quot;),
+</span><span class="def"> )
+</span><span class="def"> 
+</span>@@ -65,7 +65,7 @@
+<span class="def"> out on &lt;a href=&quot;https://fosstodon.org/@mcol&quot;&gt;mastodon&lt;/a&gt; or by &lt;a
+</span><span class="def"> href=&quot;mailto:mcol@posteo.net&quot;&gt;email&lt;/a&gt; ʕ•ᴥ•ʔ&quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="sub">-SCREENSHOTS = reversed([escape(i) for i in os.listdir(&quot;content/screenshots&quot;)])
+</span><span class="add">+SCREENSHOTS = reversed(escape(i) for i in os.listdir(&quot;content/screenshots&quot;))
+</span><span class="def"> 
+</span><span class="def"> # minify-fontawesome
+</span><span class="def"> PLUGINS.append(&quot;pelican-minify-fontawesome&quot;)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,7 +12,6 @@
+<span class="def"> SSH_PORT=22
+</span><span class="def"> SSH_USER=mcol
+</span><span class="def"> SSH_TARGET_DIR=/home/mcol/mcol.xyz
+</span><span class="sub">-SSH_TARGET_DIR_ONION=/home/mcol/mcol.onion
+</span><span class="def"> 
+</span><span class="def"> FTP_USER=mcol@mcol.xyz
+</span><span class="def"> FTP_HOST=mcol.xyz
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - XF86Switch_VT_X no longer required for vt switching when using alt</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/d592e880797c7010d79ff2f15323576fe021b2de.html">d592e880797c7010d79ff2f15323576fe021b2de</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/9c6f2f518ca09c7e1fc060e59cd502daf02aa4b1.html">9c6f2f518ca09c7e1fc060e59cd502daf02aa4b1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 18:00:50 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 18:00:51 +0000
+
+XF86Switch_VT_X no longer required for vt switching when using alt
+
+Closes #18
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -355,9 +355,6 @@
+<span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    /* If the configured mod key is alt then we have to bind the VT key combos
+</span><span class="sub">-     * otherwise they interfere with the alt. With other mods we don&apos;t get this
+</span><span class="sub">-     * key combo so we have to bind the function keys manually. */
+</span><span class="def">     uint32_t func_keys[] = {
+</span><span class="def"> 	XKB_KEY_F1,
+</span><span class="def"> 	XKB_KEY_F2,
+</span>@@ -366,28 +363,12 @@
+<span class="def"> 	XKB_KEY_F5,
+</span><span class="def"> 	XKB_KEY_F6,
+</span><span class="def">     };
+</span><span class="sub">-    uint32_t switch_keys[] = {
+</span><span class="sub">-	XKB_KEY_XF86Switch_VT_1,
+</span><span class="sub">-	XKB_KEY_XF86Switch_VT_2,
+</span><span class="sub">-	XKB_KEY_XF86Switch_VT_3,
+</span><span class="sub">-	XKB_KEY_XF86Switch_VT_4,
+</span><span class="sub">-	XKB_KEY_XF86Switch_VT_5,
+</span><span class="sub">-	XKB_KEY_XF86Switch_VT_6
+</span><span class="sub">-    };
+</span><span class="sub">-    uint32_t *keys;
+</span><span class="sub">-    if (wimp.mod == WLR_MODIFIER_ALT) {
+</span><span class="sub">-	keys = switch_keys;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	keys = func_keys;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="def">     struct binding *kb;
+</span><span class="def"> 
+</span><span class="def">     for (unsigned i = 0; i &lt; 6; i++) {
+</span><span class="def"> 	kb = calloc(1, sizeof(struct binding));
+</span><span class="def"> 	kb-&gt;mods = WLR_MODIFIER_CTRL;
+</span><span class="sub">-	kb-&gt;key = *keys;
+</span><span class="sub">-	keys++;
+</span><span class="add">+	kb-&gt;key = func_keys[i];
+</span><span class="def"> 	kb-&gt;action = &amp;change_vt;
+</span><span class="def"> 	kb-&gt;data = calloc(1, sizeof(unsigned));
+</span><span class="def"> 	*(unsigned *)(kb-&gt;data) = i + 1;
+</span></pre>
+</div></div>
+  </body>
+</html>

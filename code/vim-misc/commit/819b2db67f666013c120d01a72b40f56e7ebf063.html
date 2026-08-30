@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - bump submodule commits</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/819b2db67f666013c120d01a72b40f56e7ebf063.html">819b2db67f666013c120d01a72b40f56e7ebf063</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/ca589e9e443781fde2808393bf3d4a7b491646c6.html">ca589e9e443781fde2808393bf3d4a7b491646c6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2024-10-14 23:56:07 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2024-10-14 23:56:07 +0100
+
+bump submodule commits
+</pre><div class="diff">
+  <p>
+    <b>start/supermaven-nvim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-Subproject commit c7ab94a6bcde96c79ff51afd6a1494606bb6f10b
+</span><span class="add">+Subproject commit 07d20fce48a5629686aefb0a7cd4b25e33947d50
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -65,9 +65,9 @@
+<span class="def"> if &amp;term =~ &apos;^screen&apos; &amp;&amp; !has(&apos;nvim&apos;) | exe &quot;set t_ts=\e]2; t_fs=\7&quot; | endif
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-if exists(&quot;$WAYLAND_DISPLAY&quot;)
+</span><span class="sub">-    set ttym=sgr
+</span><span class="sub">-endif
+</span><span class="add">+&quot; if exists(&quot;$WAYLAND_DISPLAY&quot;)
+</span><span class="add">+&quot;     set ttym=sgr
+</span><span class="add">+&quot; endif
+</span><span class="def"> 
+</span><span class="def"> let g:indentLine_defaultGroup = &apos;LineNr&apos;
+</span><span class="def"> let g:indentLine_char_list = [&apos;|&apos;, &apos;¦&apos;, &apos;┆&apos;, &apos;┊&apos;]
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/lualine.nvim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-Subproject commit 0a5a66803c7407767b799067986b4dc3036e1983
+</span><span class="add">+Subproject commit b431d228b7bbcdaea818bdc3e25b8cdbe861f056
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ctrlp.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-Subproject commit 7c972cb19c8544c681ca345c64ec39e04f4651cc
+</span><span class="add">+Subproject commit 31be4c36b713a9637c7b530ee52127000a05ea39
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/catppuccin</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-Subproject commit 31fcfb02c47952d5c75aec893b93b2878abe5fbb
+</span><span class="add">+Subproject commit 7be452ee067978cdc8b2c5f3411f0c71ffa612b9
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ale</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-Subproject commit c88bddfa83dbb96c2f57426794ed98a0e181ea7e
+</span><span class="add">+Subproject commit 2e5f135836a700dcc6b787f10097ebdeb8e22abb
+</span></pre>
+</div></div>
+  </body>
+</html>

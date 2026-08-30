@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add xdg-output protocol</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/aeb3bc8dcd5f789cc5d0b0283f509e9b5bd4f81b.html">aeb3bc8dcd5f789cc5d0b0283f509e9b5bd4f81b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/ac5054212d609bc045aa87a5f498cbb4421acca7.html">ac5054212d609bc045aa87a5f498cbb4421acca7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-26 12:18:51 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-26 12:18:51 +0000
+
+add xdg-output protocol
+</pre><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_layer_shell_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_matrix.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_xdg_output_v1.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span>@@ -216,4 +217,6 @@
+<span class="def">     wl_list_init(&amp;wimp.outputs);
+</span><span class="def">     wimp.new_output_listener.notify = on_new_output;
+</span><span class="def">     wl_signal_add(&amp;wimp.backend-&gt;events.new_output, &amp;wimp.new_output_listener);
+</span><span class="add">+
+</span><span class="add">+    wlr_xdg_output_manager_v1_create(wimp.display, wimp.output_layout);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

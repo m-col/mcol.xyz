@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - qtools/rofi_searx/searx.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- qtools/rofi_searx/searx.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &quot;&quot;&quot;
+<a href="#l2" class="line" id="l2">      2</a> Qtile plugin to use rofi to execute a process using the URL for a randomised searx
+<a href="#l3" class="line" id="l3">      3</a> instance.
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> Example usage:
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a>     import qtools.rofi_searx
+<a href="#l8" class="line" id="l8">      8</a>     searx = qtools.rofi_searx.Searx()
+<a href="#l9" class="line" id="l9">      9</a>     keys.extend([EzKey(k, v) for k, v in {
+<a href="#l10" class="line" id="l10">     10</a>         &apos;M-s&apos;:   searx.lazy_search,
+<a href="#l11" class="line" id="l11">     11</a>         &apos;M-C-s&apos;: searx.lazy_remove_last_used,
+<a href="#l12" class="line" id="l12">     12</a>     }.items()])
+<a href="#l13" class="line" id="l13">     13</a> 
+<a href="#l14" class="line" id="l14">     14</a> &quot;&quot;&quot;
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a> import random
+<a href="#l18" class="line" id="l18">     18</a> import shlex
+<a href="#l19" class="line" id="l19">     19</a> import subprocess
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a> from qtools import Notifier
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> class Searx(Notifier):
+<a href="#l25" class="line" id="l25">     25</a>     &quot;&quot;&quot;
+<a href="#l26" class="line" id="l26">     26</a>     This plugin opens a rofi prompt to get a search query from the user, then randomly
+<a href="#l27" class="line" id="l27">     27</a>     selects a searx instance from a provided list and opens a browser to carry out the
+<a href="#l28" class="line" id="l28">     28</a>     web search.
+<a href="#l29" class="line" id="l29">     29</a> 
+<a href="#l30" class="line" id="l30">     30</a>     Searx instances can be provided directly as a list, or alternatively an
+<a href="#l31" class="line" id="l31">     31</a>     instances_file path can be provided to load the list of searx instances from a file
+<a href="#l32" class="line" id="l32">     32</a>     containing line-separated full URLs to searx instances.
+<a href="#l33" class="line" id="l33">     33</a> 
+<a href="#l34" class="line" id="l34">     34</a>     Searx.remove_last_used can be used to remove the previously used searx instance from
+<a href="#l35" class="line" id="l35">     35</a>     the instance list. If an instance_file was provided, the last instance will simply
+<a href="#l36" class="line" id="l36">     36</a>     be commented out in the file and ignored, but not removed. New instances can be
+<a href="#l37" class="line" id="l37">     37</a>     added by adding to the file, and either restarting Qtile or binding
+<a href="#l38" class="line" id="l38">     38</a>     Searx.lazy_load_instances to a key.
+<a href="#l39" class="line" id="l39">     39</a>     &quot;&quot;&quot;
+<a href="#l40" class="line" id="l40">     40</a>     defaults = [
+<a href="#l41" class="line" id="l41">     41</a>         (&apos;summary&apos;, &apos;Searx&apos;, &apos;Notification summary.&apos;),
+<a href="#l42" class="line" id="l42">     42</a>         (&apos;instances&apos;, [&apos;https://searx.me&apos;], &apos;List of searx instance base URLs.&apos;),
+<a href="#l43" class="line" id="l43">     43</a>         (&apos;instances_file&apos;, None, &apos;File containing list of searx instances. If specified&apos;
+<a href="#l44" class="line" id="l44">     44</a>                                  &apos; instances passed directly are ignored.&apos;),
+<a href="#l45" class="line" id="l45">     45</a>         (&apos;prompt&apos;, &apos;Search the web&apos;, &apos;Prompt displayed by rofi.&apos;),
+<a href="#l46" class="line" id="l46">     46</a>         (&apos;theme&apos;, None, &apos;rofi theme to use.&apos;),
+<a href="#l47" class="line" id="l47">     47</a>         (&apos;launcher&apos;, &apos;tor-browser --allow-remote {url}&apos;, &apos;Command used to open web &apos;
+<a href="#l48" class="line" id="l48">     48</a>                                                          &apos;browser. Requires {url} to &apos;
+<a href="#l49" class="line" id="l49">     49</a>                                                          &apos;place the search url.&apos;),
+<a href="#l50" class="line" id="l50">     50</a>         (&apos;notify_on_remove&apos;, True, &apos;Whether to make a notification when removing a &apos;
+<a href="#l51" class="line" id="l51">     51</a>                                    &apos;searx instance.&apos;),
+<a href="#l52" class="line" id="l52">     52</a>     ]
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a>     def __init__(self, **config):
+<a href="#l55" class="line" id="l55">     55</a>         Notifier.__init__(self, **config)
+<a href="#l56" class="line" id="l56">     56</a>         self.add_defaults(Searx.defaults)
+<a href="#l57" class="line" id="l57">     57</a>         self.last_used = None
+<a href="#l58" class="line" id="l58">     58</a> 
+<a href="#l59" class="line" id="l59">     59</a>         self.command = [&apos;rofi&apos;, &apos;-dmenu&apos;, &apos;-l&apos;, &apos;0&apos;]
+<a href="#l60" class="line" id="l60">     60</a>         if self.prompt:
+<a href="#l61" class="line" id="l61">     61</a>             self.command.extend([&apos;-p&apos;, self.prompt])
+<a href="#l62" class="line" id="l62">     62</a>         if self.theme:
+<a href="#l63" class="line" id="l63">     63</a>             self.command.extend([&apos;-theme&apos;, self.theme])
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a>         if self.instances_file:
+<a href="#l66" class="line" id="l66">     66</a>             self.load_instances()
+<a href="#l67" class="line" id="l67">     67</a> 
+<a href="#l68" class="line" id="l68">     68</a>     def search(self, qtile=None):
+<a href="#l69" class="line" id="l69">     69</a>         output = subprocess.run(
+<a href="#l70" class="line" id="l70">     70</a>             self.command, stdout=subprocess.PIPE, universal_newlines=True, check=False
+<a href="#l71" class="line" id="l71">     71</a>         )
+<a href="#l72" class="line" id="l72">     72</a>         if output.stdout and not output.returncode:
+<a href="#l73" class="line" id="l73">     73</a>             if self.instances_file:
+<a href="#l74" class="line" id="l74">     74</a>                 instance = random.choice(
+<a href="#l75" class="line" id="l75">     75</a>                     [i for i in self.instances if not i.startswith(&apos;#&apos;)]
+<a href="#l76" class="line" id="l76">     76</a>                 )
+<a href="#l77" class="line" id="l77">     77</a>             else:
+<a href="#l78" class="line" id="l78">     78</a>                 instance = random.choice(self.instances)
+<a href="#l79" class="line" id="l79">     79</a> 
+<a href="#l80" class="line" id="l80">     80</a>             query = output.stdout.strip()
+<a href="#l81" class="line" id="l81">     81</a>             url = f&quot;&apos;{instance}/?q={query}&amp;categories=general&amp;language=en-US&apos;&quot;
+<a href="#l82" class="line" id="l82">     82</a>             command = self.launcher.format(url=url)
+<a href="#l83" class="line" id="l83">     83</a>             subprocess.Popen(shlex.split(command))
+<a href="#l84" class="line" id="l84">     84</a>             self.last_used = instance
+<a href="#l85" class="line" id="l85">     85</a> 
+<a href="#l86" class="line" id="l86">     86</a>     def remove_last_used(self, qtile=None):
+<a href="#l87" class="line" id="l87">     87</a>         if self.last_used:
+<a href="#l88" class="line" id="l88">     88</a>             self.instances.remove(self.last_used)
+<a href="#l89" class="line" id="l89">     89</a>             if self.instances_file:
+<a href="#l90" class="line" id="l90">     90</a>                 self.instances.append(f&apos;#{self.last_used}&apos;)
+<a href="#l91" class="line" id="l91">     91</a>                 self.save_instances()
+<a href="#l92" class="line" id="l92">     92</a>             if self.notify_on_remove:
+<a href="#l93" class="line" id="l93">     93</a>                 self.show(f&apos;Removed: {self.last_used}&apos;)
+<a href="#l94" class="line" id="l94">     94</a>             self.last_used = None
+<a href="#l95" class="line" id="l95">     95</a> 
+<a href="#l96" class="line" id="l96">     96</a>     def load_instances(self, qtile=None):
+<a href="#l97" class="line" id="l97">     97</a>         with open(self.instances_file, &apos;r&apos;) as f:
+<a href="#l98" class="line" id="l98">     98</a>             self.instances = f.read().split()
+<a href="#l99" class="line" id="l99">     99</a> 
+<a href="#l100" class="line" id="l100">    100</a>     def save_instances(self):
+<a href="#l101" class="line" id="l101">    101</a>         with open(self.instances_file, &apos;w&apos;) as f:
+<a href="#l102" class="line" id="l102">    102</a>             f.write(&apos;\n&apos;.join(self.instances))
+<a href="#l103" class="line" id="l103">    103</a> 
+</pre>
+  </div>
+  </body>
+</html>

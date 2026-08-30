@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - move spot/spotify to group 4</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/a748058605dce847cfab5c90b1186a9877388128.html">a748058605dce847cfab5c90b1186a9877388128</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/536995bb80668021e806c1faba78779ce97712ef.html">536995bb80668021e806c1faba78779ce97712ef</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-09-21 04:14:37 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-09-21 04:14:37 +0100
+
+move spot/spotify to group 4
+</pre><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -30,8 +30,8 @@
+<span class="def"> groups: list[Group] = [
+</span><span class="def">     Group(&quot;1&quot;, label=&quot;html&quot;, matches=[Match(wm_class=&quot;firefox&quot;)]),
+</span><span class="def">     Group(&quot;2&quot;, label=&quot;mail&quot;, matches=[Match(wm_class=&quot;geary&quot;), Match(title=&quot;Geary&quot;)]),
+</span><span class="sub">-    Group(&quot;3&quot;, label=&quot;tune&quot;, matches=[Match(title=&quot;spotify&quot;)]),
+</span><span class="sub">-    Group(&quot;4&quot;, label=&quot;term&quot;),
+</span><span class="add">+    Group(&quot;3&quot;, label=&quot;term&quot;),
+</span><span class="add">+    Group(&quot;4&quot;, label=&quot;tune&quot;, matches=[Match(title=&quot;spotify&quot;)]),
+</span><span class="def">     Group(&quot;q&quot;, label=&quot;term&quot;),
+</span><span class="def">     Group(&quot;w&quot;, label=&quot;term&quot;),
+</span><span class="def">     Group(&quot;e&quot;, label=&quot;term&quot;),
+</span></pre>
+</div></div>
+  </body>
+</html>

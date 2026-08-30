@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Fix hyperlinks from directory to contents pages</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/8bfa24dc75f64b8e01ed719ac0db7d9ee2e40952.html">8bfa24dc75f64b8e01ed719ac0db7d9ee2e40952</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/ebe8be8e6ccb83a5d9beff950217d802e304d682.html">ebe8be8e6ccb83a5d9beff950217d802e304d682</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-05 23:49:51 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-05 23:49:51 +0100
+
+Fix hyperlinks from directory to contents pages
+</pre><div class="diff">
+  <p>
+    <b>templates/file.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,7 @@
+<span class="def">     &lt;hr&gt;
+</span><span class="def">       &lt;ul&gt;
+</span><span class="def"> {% for item in file.contents %}
+</span><span class="sub">-        &lt;li&gt;&lt;a href=&quot;{{- host }}/{{ item }}&quot;&gt;{{ item }}&lt;/a&gt;&lt;/li&gt;
+</span><span class="add">+        &lt;li&gt;&lt;a href=&quot;{{ host }}/{{ name }}/file/{{ file }}.{{ item }}.html&quot;&gt;{{ item }}&lt;/a&gt;&lt;/li&gt;
+</span><span class="def"> {% endfor %}
+</span><span class="def">       &lt;/ul&gt;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Types.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,6 +7,7 @@
+<span class="def"> 
+</span><span class="def"> module Types where
+</span><span class="def"> 
+</span><span class="add">+import Data.ByteString.UTF8 (toString)
+</span><span class="def"> import Data.Default (def)
+</span><span class="def"> import Data.Tagged (untag)
+</span><span class="def"> import Data.Text (pack, Text, strip)
+</span>@@ -94,7 +95,7 @@
+<span class="def"> instance ToGVal m TreeFile where
+</span><span class="def">     toGVal :: TreeFile -&gt; GVal m
+</span><span class="def">     toGVal treefile = def
+</span><span class="sub">-        { asHtml = html . pack . show . treeFilePath $ treefile
+</span><span class="add">+        { asHtml = html . pack . toString . treeFilePath $ treefile
+</span><span class="def">         , asText = pack . show . treeFilePath $ treefile
+</span><span class="def">         , asLookup = Just . treeAsLookup $ treefile
+</span><span class="def">         }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitserve.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -31,3 +31,4 @@
+<span class="def">                      , text
+</span><span class="def">                      , transformers
+</span><span class="def">                      , unordered-containers
+</span><span class="add">+                     , utf8-string
+</span></pre>
+</div></div>
+  </body>
+</html>

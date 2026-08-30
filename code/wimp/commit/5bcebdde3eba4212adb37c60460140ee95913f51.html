@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - simplify on_request_cursor</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/5bcebdde3eba4212adb37c60460140ee95913f51.html">5bcebdde3eba4212adb37c60460140ee95913f51</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/eeb4b2b196490adab77073c5356ff625ef85dca4.html">eeb4b2b196490adab77073c5356ff625ef85dca4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-12 11:55:37 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-12 11:55:37 +0000
+
+simplify on_request_cursor
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,10 +24,7 @@
+<span class="def"> 
+</span><span class="def"> static void on_request_cursor(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_seat_pointer_request_set_cursor_event *event = data;
+</span><span class="sub">-    struct wlr_seat_client *focused_client =
+</span><span class="sub">-	wimp.seat-&gt;pointer_state.focused_client;
+</span><span class="sub">-
+</span><span class="sub">-    if (focused_client == event-&gt;seat_client) {
+</span><span class="add">+    if (wimp.seat-&gt;pointer_state.focused_client == event-&gt;seat_client) {
+</span><span class="def"> 	wlr_cursor_set_surface(
+</span><span class="def"> 	    wimp.cursor, event-&gt;surface, event-&gt;hotspot_x, event-&gt;hotspot_y
+</span><span class="def"> 	);
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add indentline</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/245846a81c91588aac106aa985d2097daa6d89ee.html">245846a81c91588aac106aa985d2097daa6d89ee</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/88fefdd9c897f1c9d5d03a0dd01ee8b598000c0c.html">88fefdd9c897f1c9d5d03a0dd01ee8b598000c0c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-28 14:21:48 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-28 14:21:48 +0100
+
+add indentline
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -33,6 +33,7 @@
+<span class="def"> Plugin &apos;https://mcol.xyz/code/vim-misc&apos;	    &quot; my vimrc and misc functions 
+</span><span class="def"> Plugin &apos;https://mcol.xyz/code/tide&apos;	    &quot; tmux ide 
+</span><span class="def"> &quot;Plugin &apos;airblade/vim-gitgutter&apos;		    &quot; gitgutter
+</span><span class="add">+Plugin &apos;Yggdroot/indentLine&apos;                &quot;Show indentation lines
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span><span class="def"> filetype plugin indent on		    &quot; required
+</span>@@ -111,6 +112,7 @@
+<span class="def">     let g:vimtex_view_general_viewer = &apos;qpdfview&apos;
+</span><span class="def">     let g:vimtex_view_general_options = &apos;--unique @pdf\#src:@tex:@line:@col&apos;
+</span><span class="def">     let g:vimtex_view_qpdfview_hook_callback = &apos;ViewerCallback&apos;
+</span><span class="add">+    let g:vimtex_compiler_latexmk = {&apos;build_dir&apos; : &apos;.latex_build&apos;}
+</span><span class="def">     function! ViewerCallback() dict
+</span><span class="def">         VimtexView
+</span><span class="def">     endfunction
+</span>@@ -135,4 +137,9 @@
+<span class="def">     set ttym=sgr
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="add">+&quot;let g:indentLine_defaultGroup = &apos;PmenuSel&apos;
+</span><span class="add">+&quot;let g:indentLine_char_list = [&apos;|&apos;, &apos;¦&apos;, &apos;┆&apos;, &apos;┊&apos;]
+</span><span class="add">+let g:vim_json_concel = 0
+</span><span class="add">+let g:markdown_syntax_conceal = 0
+</span><span class="add">+
+</span><span class="def"> runtime macros/emoji-ab.vim
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Add config reloading changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/7c35908d5611a23d0e86855b5e5752317b187d83.html">7c35908d5611a23d0e86855b5e5752317b187d83</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/d03e0ce806ea1722c824b502adea9ae53ff04619.html">d03e0ce806ea1722c824b502adea9ae53ff04619</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-25 23:43:23 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-25 23:43:23 +0100
+
+Add config reloading changes
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,8 +6,10 @@
+<span class="def"> from __future__ import annotations
+</span><span class="def"> 
+</span><span class="def"> import asyncio
+</span><span class="add">+import importlib
+</span><span class="def"> import os
+</span><span class="def"> import subprocess
+</span><span class="add">+import sys
+</span><span class="def"> from typing import TYPE_CHECKING
+</span><span class="def"> 
+</span><span class="def"> from libqtile import bar, hook, layout, qtile, widget
+</span>@@ -16,8 +18,16 @@
+<span class="def"> from libqtile.widget.backlight import ChangeDirection
+</span><span class="def"> from libqtile.widget.battery import Battery, BatteryState
+</span><span class="def"> 
+</span><span class="add">+def reload(module):
+</span><span class="add">+    if module in sys.modules:
+</span><span class="add">+        importlib.reload(sys.modules[module])
+</span><span class="add">+
+</span><span class="add">+reload(&quot;traverse&quot;)
+</span><span class="def"> import traverse
+</span><span class="add">+
+</span><span class="add">+reload(&quot;groups&quot;)
+</span><span class="def"> from groups import groups, keys_group
+</span><span class="add">+reload(&quot;scratchpad&quot;)
+</span><span class="def"> from scratchpad import keys_scratchpad, scratchpad
+</span><span class="def"> 
+</span><span class="def"> if TYPE_CHECKING:
+</span>@@ -29,6 +39,7 @@
+<span class="def"> IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+</span><span class="def"> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span><span class="def"> 
+</span><span class="add">+reload(qtile.core.name)
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="def">     from wayland import keys_backend, term, wayland_libinput_config  # noqa: F401
+</span><span class="def"> else:
+</span>@@ -111,7 +122,8 @@
+<span class="def">     ([mod, alt],        &apos;k&apos;,        lazy.layout.grow_up(),              &quot;Grow up&quot;),
+</span><span class="def">     ([mod, alt],        &apos;h&apos;,        lazy.layout.grow_left(),            &quot;Grow left&quot;),
+</span><span class="def">     ([mod, alt],        &apos;l&apos;,        lazy.layout.grow_right(),           &quot;Grow right&quot;),
+</span><span class="sub">-    ([mod, &apos;shift&apos;],    &apos;r&apos;,        lazy.restart(),                     &quot;Restart Qtile&quot;),
+</span><span class="add">+    ([mod, &apos;shift&apos;],    &apos;r&apos;,        lazy.reload_config(),               &quot;Reload the config&quot;),
+</span><span class="add">+    ([mod, &apos;control&apos;],  &apos;r&apos;,        lazy.restart(),                     &quot;Restart Qtile&quot;),
+</span><span class="def">     ([mod],             &apos;Tab&apos;,      lazy.next_layout(),                 &quot;Next layout&quot;),
+</span><span class="def">     ([mod, &apos;control&apos;],  &apos;h&apos;,        lazy.window.toggle_minimize(),      &quot;Minimise window&quot;),
+</span><span class="def">     ([mod],             &apos;s&apos;,        lazy.window.static(),               &quot;Make window static&quot;),
+</span></pre>
+</div></div>
+  </body>
+</html>

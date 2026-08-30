@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - move debug mode into runtime flag</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/42111d36b71a149d03b8e5babe3a30c9a8118a43.html">42111d36b71a149d03b8e5babe3a30c9a8118a43</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/90671c6b44281f7b83110c3c419ccee9ae0dffa9.html">90671c6b44281f7b83110c3c419ccee9ae0dffa9</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-23 19:01:12 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-23 19:01:12 +0100
+
+move debug mode into runtime flag
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -36,6 +36,7 @@
+<span class="def"> xcb_screen_t	    *screen;
+</span><span class="def"> xcb_window_t	     wid;
+</span><span class="def"> 
+</span><span class="add">+int debug = 0;
+</span><span class="def"> int randr_base = 0;
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -121,14 +122,14 @@
+<span class="def"> 	conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_INPUT, wid, 0, 0, pixmap2
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="sub">-#ifdef DEBUG
+</span><span class="sub">-    xcb_shape_mask(
+</span><span class="sub">-	conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, wid, 0, 0, pixmap
+</span><span class="sub">-    );
+</span><span class="sub">-    xcb_shape_mask(
+</span><span class="sub">-	conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_BOUNDING, wid, 0, 0, pixmap2
+</span><span class="sub">-    );
+</span><span class="sub">-#endif
+</span><span class="add">+    if (debug) {
+</span><span class="add">+	xcb_shape_mask(
+</span><span class="add">+	    conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, wid, 0, 0, pixmap
+</span><span class="add">+	);
+</span><span class="add">+	xcb_shape_mask(
+</span><span class="add">+	    conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_BOUNDING, wid, 0, 0, pixmap2
+</span><span class="add">+	);
+</span><span class="add">+    };
+</span><span class="def"> 
+</span><span class="def">     xcb_free_pixmap(conn, pixmap);
+</span><span class="def">     xcb_free_pixmap(conn, pixmap2);
+</span>@@ -139,8 +140,19 @@
+<span class="def"> 
+</span><span class="def"> void setup_window()
+</span><span class="def"> {
+</span><span class="sub">-    wid = xcb_generate_id(conn);
+</span><span class="add">+    int class = XCB_WINDOW_CLASS_INPUT_ONLY;
+</span><span class="add">+    uint32_t value_mask = XCB_CW_EVENT_MASK;
+</span><span class="add">+    uint32_t value_list[1] = {XCB_EVENT_MASK_ENTER_WINDOW};
+</span><span class="add">+    uint32_t value_list_debug[2] = {screen-&gt;white_pixel, XCB_EVENT_MASK_ENTER_WINDOW};
+</span><span class="add">+    uint32_t *values = value_list;
+</span><span class="add">+
+</span><span class="add">+    if (debug) {
+</span><span class="add">+	class = XCB_WINDOW_CLASS_INPUT_OUTPUT;
+</span><span class="add">+	value_mask |= XCB_CW_BACK_PIXEL;
+</span><span class="add">+	values = value_list_debug;
+</span><span class="add">+    };
+</span><span class="def"> 
+</span><span class="add">+    wid = xcb_generate_id(conn);
+</span><span class="def">     xcb_create_window(
+</span><span class="def"> 	conn,
+</span><span class="def"> 	XCB_COPY_FROM_PARENT,
+</span>@@ -151,17 +163,10 @@
+<span class="def"> 	screen-&gt;width_in_pixels,
+</span><span class="def"> 	screen-&gt;height_in_pixels,
+</span><span class="def"> 	0,
+</span><span class="sub">-#ifdef DEBUG
+</span><span class="sub">-	XCB_WINDOW_CLASS_INPUT_OUTPUT,
+</span><span class="sub">-	XCB_COPY_FROM_PARENT,
+</span><span class="sub">-	XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK,
+</span><span class="sub">-	(uint32_t []){screen-&gt;white_pixel, XCB_EVENT_MASK_ENTER_WINDOW}
+</span><span class="sub">-#else
+</span><span class="sub">-	XCB_WINDOW_CLASS_INPUT_ONLY,
+</span><span class="add">+	class,
+</span><span class="def"> 	XCB_COPY_FROM_PARENT,
+</span><span class="sub">-	XCB_CW_EVENT_MASK,
+</span><span class="sub">-	(uint32_t []){XCB_EVENT_MASK_ENTER_WINDOW}
+</span><span class="sub">-#endif
+</span><span class="add">+	value_mask,
+</span><span class="add">+	values
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     set_window_type();
+</span>@@ -197,39 +202,37 @@
+<span class="def"> 	switch (event-&gt;response_type) {
+</span><span class="def"> 
+</span><span class="def"> 	    case XCB_ENTER_NOTIFY:
+</span><span class="sub">-	    entry = (xcb_enter_notify_event_t *)event;
+</span><span class="sub">-	    if (entry-&gt;event_x == 0) {
+</span><span class="sub">-		x = far_x;
+</span><span class="sub">-		y = entry-&gt;event_y;
+</span><span class="sub">-	    } else if (entry-&gt;event_y == 0){
+</span><span class="sub">-		x = entry-&gt;event_x;
+</span><span class="sub">-		y = far_y;
+</span><span class="sub">-	    } else if (entry-&gt;event_x == far_x){
+</span><span class="sub">-		x = 0;
+</span><span class="sub">-		y = entry-&gt;event_y;
+</span><span class="sub">-	    } else if (entry-&gt;event_y == far_y){
+</span><span class="sub">-		x = entry-&gt;event_x;
+</span><span class="sub">-		y = 0;
+</span><span class="sub">-	    };
+</span><span class="sub">-	    xcb_warp_pointer(conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y);
+</span><span class="sub">-#ifdef DEBUG
+</span><span class="sub">-	    printf(&quot;Entry: %d, %d\n&quot;, entry-&gt;event_x, entry-&gt;event_y);
+</span><span class="sub">-	    printf(&quot;Warp: (%d, %d) to (%d, %d)\n&quot;, entry-&gt;event_x, entry-&gt;event_y, x, y);
+</span><span class="sub">-#endif
+</span><span class="sub">-	    break;
+</span><span class="add">+		entry = (xcb_enter_notify_event_t *)event;
+</span><span class="add">+		if (entry-&gt;event_x == 0) {
+</span><span class="add">+		    x = far_x;
+</span><span class="add">+		    y = entry-&gt;event_y;
+</span><span class="add">+		} else if (entry-&gt;event_y == 0){
+</span><span class="add">+		    x = entry-&gt;event_x;
+</span><span class="add">+		    y = far_y;
+</span><span class="add">+		} else if (entry-&gt;event_x == far_x){
+</span><span class="add">+		    x = 0;
+</span><span class="add">+		    y = entry-&gt;event_y;
+</span><span class="add">+		} else if (entry-&gt;event_y == far_y){
+</span><span class="add">+		    x = entry-&gt;event_x;
+</span><span class="add">+		    y = 0;
+</span><span class="add">+		};
+</span><span class="add">+		xcb_warp_pointer(conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y);
+</span><span class="add">+		if (debug) {
+</span><span class="add">+		    printf(&quot;Entry: %d, %d\n&quot;, entry-&gt;event_x, entry-&gt;event_y);
+</span><span class="add">+		    printf(&quot;Warp: (%d, %d) to (%d, %d)\n&quot;, entry-&gt;event_x, entry-&gt;event_y, x, y);
+</span><span class="add">+		};
+</span><span class="add">+		break;
+</span><span class="def"> 
+</span><span class="def"> 	    default:
+</span><span class="sub">-	    if (event-&gt;response_type == randr_base + XCB_RANDR_SCREEN_CHANGE_NOTIFY) {
+</span><span class="sub">-		change = (xcb_randr_screen_change_notify_event_t *)event;
+</span><span class="sub">-		set_window_shape(change-&gt;width, change-&gt;height);
+</span><span class="sub">-		far_x = change-&gt;width - 1;
+</span><span class="sub">-		far_y = change-&gt;height - 1;
+</span><span class="sub">-#ifdef DEBUG
+</span><span class="sub">-		printf(&quot;Screen changed.\n&quot;);
+</span><span class="sub">-#endif
+</span><span class="sub">-	    } else {
+</span><span class="sub">-		printf(&quot;Unknown event: %d\n&quot;, event-&gt;response_type);
+</span><span class="sub">-	    };
+</span><span class="add">+		if (event-&gt;response_type == randr_base + XCB_RANDR_SCREEN_CHANGE_NOTIFY) {
+</span><span class="add">+		    change = (xcb_randr_screen_change_notify_event_t *)event;
+</span><span class="add">+		    set_window_shape(change-&gt;width, change-&gt;height);
+</span><span class="add">+		    far_x = change-&gt;width - 1;
+</span><span class="add">+		    far_y = change-&gt;height - 1;
+</span><span class="add">+		    if (debug) printf(&quot;Screen changed.\n&quot;);
+</span><span class="add">+		} else {
+</span><span class="add">+		    printf(&quot;Unknown event: %d\n&quot;, event-&gt;response_type);
+</span><span class="add">+		};
+</span><span class="def"> 
+</span><span class="def"> 	}
+</span><span class="def"> 	xcb_flush(conn);
+</span>@@ -250,10 +253,11 @@
+<span class="def"> void print_help()
+</span><span class="def"> {
+</span><span class="def">     printf(
+</span><span class="sub">-	PROGNAME &quot; [-h|-f]\n&quot;
+</span><span class="add">+	PROGNAME &quot; [-h|-f|-d]\n&quot;
+</span><span class="def"> 	&quot;\n&quot;
+</span><span class="def"> 	&quot;    -h    print help\n&quot;
+</span><span class="def"> 	&quot;    -f    fork\n&quot;
+</span><span class="add">+	&quot;    -d    print debug information\n&quot;
+</span><span class="def">     );
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -264,7 +268,7 @@
+<span class="def">     int to_fork = 0;
+</span><span class="def">     int pid;
+</span><span class="def"> 
+</span><span class="sub">-    while ((opt = getopt(argc, argv, &quot;hf&quot;)) != -1) {
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;hfd&quot;)) != -1) {
+</span><span class="def">         switch (opt) {
+</span><span class="def"> 	    case &apos;h&apos;:
+</span><span class="def"> 		print_help();
+</span>@@ -272,6 +276,9 @@
+<span class="def"> 	    case &apos;f&apos;:
+</span><span class="def"> 		to_fork = 1;
+</span><span class="def"> 		break;
+</span><span class="add">+	    case &apos;d&apos;:
+</span><span class="add">+		debug = 1;
+</span><span class="add">+		break;
+</span><span class="def">         }
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,9 +6,6 @@
+<span class="def"> 
+</span><span class="def"> all: clean $(OUT)
+</span><span class="def"> 
+</span><span class="sub">-debug: CFLAGS += -g -DDEBUG
+</span><span class="sub">-debug: all
+</span><span class="sub">-
+</span><span class="def"> clean:
+</span><span class="def"> 	$(RM) $(OUT) $(OBJ)
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

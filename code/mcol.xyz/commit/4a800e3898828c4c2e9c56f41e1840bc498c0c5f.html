@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - add ARTICLE_FEEDBACK variable to append block to articles</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/4a800e3898828c4c2e9c56f41e1840bc498c0c5f.html">4a800e3898828c4c2e9c56f41e1840bc498c0c5f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/774add95b109b7b5ab0240eb971fdf40690041f0.html">774add95b109b7b5ab0240eb971fdf40690041f0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-04 12:46:52 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-04 12:46:52 +0100
+
+add ARTICLE_FEEDBACK variable to append block to articles
+</pre><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -60,6 +60,9 @@
+<span class="def"> HOME2 = &quot;Welcome&quot;
+</span><span class="def"> EXTRAHEAD = &quot;&lt;link rel=stylesheet href=/theme/css/fa.css /&gt;&quot;
+</span><span class="def"> EXTRATAIL = &quot;&lt;script data-goatcounter=https://goat.mcol.xyz/count async src=//goat.mcol.xyz/count.js&gt;&lt;/script&gt;&quot;
+</span><span class="add">+ARTICLE_FEEDBACK = &quot;&quot;&quot;If you have any thoughts, comments, criticisms, feel free to reach
+</span><span class="add">+out on &lt;a href=&quot;https://fosstodon.org/@mcol&quot;&gt;mastodon&lt;/a&gt; or by &lt;a
+</span><span class="add">+href=&quot;mailto:mcol@posteo.net&quot;&gt;email&lt;/a&gt; ʕ•ᴥ•ʔ&quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> import html
+</span><span class="def"> SCREENSHOTS = os.listdir(&apos;content/screenshots&apos;)
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / Qtile: A Wayland Compositor</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2021/08/qtile-a-wayland-compositor.html>Qtile: A Wayland Compositor</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>What is this? Qtile? A Wayland compositor? Wut? You're reading right my dudes,
+now it is one. Since way before I joined the core Qtile dev team over a year
+ago there has been a vague drift in the codebase moving the X11-specific code
+into a <code>backend</code> module with the aim of abstracting away the interface
+the WM makes with the X server. The idea was that other backends could be
+implemented and use the same higher-level management of windows, screens,
+groups (virtual desktops), the status bar, etc. Over the past few months I've
+been working on the first non-X11 backend: a Wayland compositor.</p>
+<p>This backend -- which was part of the latest release a few weeks ago (0.18.0)
+-- uses the Python CFFI wrapper around <a class="reference external" href="https://github.com/swaywm/wlroots">wlroots</a> created by flacjacket, <a class="reference external" href="https://github.com/flacjacket/pywlroots">pywlroots</a>.  This in turn uses <a class="reference external" href="https://github.com/flacjacket/pywayland">pywayland</a> also written by Sean. Through
+pywlroots, Qtile gets access to the amazing work put in by the wlroots guys to
+make constructing a compositor straight forward and hassle-free.</p>
+<p>With the latest releases of the three projects above, launching Qtile as a
+Wayland compositor is as simple as running the following from a TTY:</p>
+<div class="highlight"><pre><span></span><span class="n">qtile</span> <span class="n">start</span> <span class="o">--</span><span class="n">backend</span> <span class="n">wayland</span>
+</pre></div>
+<p>With it fired up, the first thing to notice is.... nothing!</p>
+<img alt="My Qtile desktop under the Wayland backend" src="/static/qtile_backend_wayland.png" />
+<p></p>
+<img alt="My Qtile desktop under the X11 backend" src="/static/qtile_backend_x11.png" />
+<p>So what are we looking at here? These two screenshots are my desktop running
+using the Wayland backend (top) and the X11 backend (bottom). Ignoring the
+difference in terminal (foot and xterm), everything else is the same. The same
+bar (Qtile's own bar), the same window borders, and (you'll have to take my
+word for it), the same keybinding and mouse behaviour.</p>
+<p>But why? Other than the totally valid reason of &quot;it's awesome&quot;, I was getting
+sick of the visual glitches and imperfection that inevitably come with X, and
+this backend gives us pixel-perfect rendering <a class="footnote-reference" href="#footnote-1" id="footnote-reference-1">[1]</a>. And testing them out one
+after the other it is certainly noticable. We also get nice things like easier
+to control clients (on the dev side <em>and</em> user side), <a class="reference external" href="https://github.com/qtile/qtile/issues/2404">fewer buggy or slightly
+misunderstood interfaces</a>, but I
+don't need to supplement the many articles online about why Wayland is A Good
+Thing.</p>
+<p>Writing the backend was a great opportunity to refactor some of the code and
+really isolate and modularise the X11-specific parts as these are not used when
+ran for Wayland. It also helped shape the base classes required to create
+further backends. Based on their signatures, one can implement custom backends
+to handle whatever input-output setup one wants, be it a web-based compositor
+like <a class="reference external" href="https://github.com/udevbe/greenfield">Greenfield</a> or a VR desktop
+environment à la <a class="reference external" href="https://arcan-fe.com/2018/03/29/safespaces-an-open-source-vr-desktop/">Safespaces</a>.</p>
+<div class="section" id="i-ve-got-it-running-what-now">
+<h2>I've got it running. What now?</h2>
+<p>The first thing some people will notice when running a Wayland Qtile for the
+first time is that suddenly half of their programs no longer work. Many popular
+programs run on X only and alternatives need to be found. This can be as simple
+as replacing dmenu with <a class="reference external" href="https://github.com/Cloudef/bemenu">bemenu</a>. Some
+fine people have collected links to alternatives for popular programs, so if
+this is what you want then check out <a class="reference external" href="https://arewewaylandyet.com/">Are We Wayland Yet?</a> and natpen on GitHub's <a class="reference external" href="https://github.com/natpen/awesome-wayland">Awesome Wayland</a> page.</p>
+<p>Some programs, such as Firefox or GTK and Qt-based programs, require
+environmental variables to be set for them to use their Wayland backend. For
+more info check out this page on the <a class="reference external" href="https://github.com/swaywm/sway/wiki/Running-programs-natively-under-wayland">Sway wiki</a>.</p>
+<p>Many other compositors, such as Sway, support compatibility with X-only windows
+via the XWayland tool. This essentially serves as an X server that lets the
+compositor handle the pixel buffers of all the X clients so it can embed them
+within the Wayland desktop environment as regular windows. People who might
+want to use this in Qtile are unfortunately out of luck, as XWayland support is
+not implemented, and I am in favour of deferring its implementation
+indefinitely as it would introduce much more complexity to the code for what is
+ultimately a temporary workaround.</p>
+</div>
+<div class="section" id="input-configuration">
+<h2>Input configuration</h2>
+<p>The X server reads config files from <code>/etc/X11/xorg.conf.d</code> to use when
+configuring input devices managed via libinput. With many things, this becomes
+the responsibility of the Wayland compositor. Currently there is no common
+interface or configuration that can be shared between compositors, meaning each
+compositor has to manually deal with libinput configuration itself. I <em>have</em>
+implemented this in <a class="reference external" href="https://github.com/qtile/qtile/pull/2548">this</a> pull
+request, but I agree with the consensus that this feels wrong to have within
+Qtile. Sway does something similar; configuring libinput devices itself (with
+identical config options to X or that Qtile PR).</p>
+<p>It's a bad situation, but currently using the commit from that PR <a class="footnote-reference" href="#footnote-2" id="footnote-reference-2">[2]</a> is the
+only alternative to getting used to your input devices' default settings. My
+fingers and toes are crossed that a plug-and-play implementation comes onto the
+Wayland scene with a config that all compositors could use.</p>
+</div>
+<div class="section" id="but-but-my-dear-drop-shadows">
+<h2>But but... my dear drop shadows!</h2>
+<p>In Wayland Qtile <em>is</em> the compositor so there can be no standalone compositing
+manager like under X. If you use <a class="reference external" href="https://github.com/yshui/picom">picom</a> then
+you need not worry about screen tearing at all, and transparency works native
+and out-of-the-box. Window drop shadows, however, are something that would need
+manual implementation within Qtile. In part I am hoping that somebody comes
+along and decides to hack away at a plugin for Qtile that will do this, because
+I do think drop shadows are out of the scope of Qtile proper. Alternatively if
+the wlroots people decide it's worth making this a trivial job for compositors
+then that would be even better. Either way, shadows are currently not possible.</p>
+</div>
+<div class="section" id="a-note-about-the-systray">
+<h2>A note about the Systray</h2>
+<p>The crusty old Systray interface from X11 uses a very X-specific window
+embedding protocol and as a result can't be supported outside of X (and even
+with XWayland, it would only provide a systray interface for the X clients).</p>
+<p>Instead, the desktop-agnostic <a class="reference external" href="https://freedesktop.org/wiki/Specifications/StatusNotifierItem/">Status Notifier Item</a> dbus
+interface provides a protocol through which clients can specify icons and
+context menus for sticking in a system tray. This has roots in KDE's move to
+Wayland and has been adopted by many other Wayland servers as well as many
+client applications. Currently elParaguayo is <a class="reference external" href="https://github.com/qtile/qtile/pull/2601">working on a widget</a> that will provide this systray
+implementation, though this is a work in progress.</p>
+</div>
+<div class="section" id="a-couple-remaining-odd-jobs">
+<h2>A couple remaining odd jobs</h2>
+<p>There are still some TODOs that need working on to make everybody happy:</p>
+<blockquote>
+<ul class="simple">
+<li>Drag-and-drop</li>
+<li>The configure-ack-configure dance with clients to get atomic layout changes and window resizes</li>
+<li>Proper DPI and output scaling support</li>
+<li>Lock-screen management - <a class="reference external" href="https://github.com/swaywm/wlroots/issues/2706">ongoing discussion</a> within wlroots is still
+deciding on how this should work in Wayland</li>
+</ul>
+</blockquote>
+<hr class="docutils" />
+<table class="docutils footnote" frame="void" id="footnote-1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-1">[1]</a></td><td>To be precise, it provides the <em>potential</em> for pixel-perfect rendering.
+This requires a back-and-forth sync between the server and clients when
+geometry is going to change, but this is not yet fully implemented in Qtile
+so when you resize a bunch of windows at the same time (e.g. moving a split
+in a tiled layout) they all move at the same time, but don't resize at the
+same time.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="footnote-2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-2">[2]</a></td><td>Really I should extract the logic from that PR and put it into a
+standalone Python file that people can import into their configs and use
+that way. At least, until a better solution appears.</td></tr>
+</tbody>
+</table>
+</div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2021-08-03T00:00:00+00:00">2021-08-03</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

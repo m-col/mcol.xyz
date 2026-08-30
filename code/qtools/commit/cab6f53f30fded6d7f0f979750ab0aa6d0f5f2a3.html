@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - allow for drawing images on popup windows</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/cab6f53f30fded6d7f0f979750ab0aa6d0f5f2a3.html">cab6f53f30fded6d7f0f979750ab0aa6d0f5f2a3</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/1b3a7dc85db0c7cad7044da968b26f1e10e97950.html">1b3a7dc85db0c7cad7044da968b26f1e10e97950</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-26 21:54:26 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-26 21:54:26 +0000
+
+allow for drawing images on popup windows
+</pre><div class="diff">
+  <p>
+    <b>qtools/__init__.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -94,6 +94,7 @@
+<span class="def">         (&apos;horizontal_padding&apos;, None, &apos;Padding at sides of text.&apos;),
+</span><span class="def">         (&apos;vertical_padding&apos;, None, &apos;Padding at top and bottom of text.&apos;),
+</span><span class="def">         (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+</span><span class="add">+        (&apos;wrap&apos;, True, &apos;Whether to wrap text.&apos;),
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def">     def __init__(self, qtile, x=50, y=50, width=256, height=64, **config):
+</span>@@ -114,7 +115,7 @@
+<span class="def">             font_family=self.font,
+</span><span class="def">             font_size=self.fontsize,
+</span><span class="def">             font_shadow=self.fontshadow,
+</span><span class="sub">-            wrap=True,
+</span><span class="add">+            wrap=self.wrap,
+</span><span class="def">             markup=True,
+</span><span class="def">         )
+</span><span class="def">         self.layout.layout.set_alignment(ALIGNMENTS[self.text_alignment])
+</span>@@ -133,8 +134,6 @@
+<span class="def"> 
+</span><span class="def">         self.x = self.win.x
+</span><span class="def">         self.y = self.win.y
+</span><span class="sub">-        self.width = self.win.width
+</span><span class="sub">-        self.height = self.win.height
+</span><span class="def">         if not self.border_width:
+</span><span class="def">             self.border = None
+</span><span class="def"> 
+</span>@@ -149,6 +148,24 @@
+<span class="def">             self.hide()
+</span><span class="def"> 
+</span><span class="def">     @property
+</span><span class="add">+    def width(self):
+</span><span class="add">+        return self.win.width
+</span><span class="add">+
+</span><span class="add">+    @width.setter
+</span><span class="add">+    def width(self, value):
+</span><span class="add">+        self.win.width = value
+</span><span class="add">+        self.drawer.width = value
+</span><span class="add">+
+</span><span class="add">+    @property
+</span><span class="add">+    def height(self):
+</span><span class="add">+        return self.win.height
+</span><span class="add">+
+</span><span class="add">+    @height.setter
+</span><span class="add">+    def height(self, value):
+</span><span class="add">+        self.win.height = value
+</span><span class="add">+        self.drawer.height = value
+</span><span class="add">+
+</span><span class="add">+    @property
+</span><span class="def">     def text(self):
+</span><span class="def">         return self.layout.text
+</span><span class="def"> 
+</span>@@ -191,6 +208,14 @@
+<span class="def">         self.win.unhide()
+</span><span class="def">         self.win.window.configure(stackmode=StackMode.Above)
+</span><span class="def"> 
+</span><span class="add">+    def draw_image(self, image, x, y):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Paint an image onto the window at point x, y. The image should be a surface e.g.
+</span><span class="add">+        loaded from libqtile.images.Img.load_path.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        self.drawer.ctx.set_source_surface(image, x, y)
+</span><span class="add">+        self.drawer.ctx.paint()
+</span><span class="add">+
+</span><span class="def">     def hide(self):
+</span><span class="def">         self.win.hide()
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

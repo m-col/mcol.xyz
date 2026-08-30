@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - add makefile to copy hooks into /usr/lib</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/12d0d18f070cbf4b2042eded10c7e82d19d91fff.html">12d0d18f070cbf4b2042eded10c7e82d19d91fff</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/cf2e4f5bf42520863cc61534f69a4389c85c5ffb.html">cf2e4f5bf42520863cc61534f69a4389c85c5ffb</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-12 21:37:22 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-12 21:37:22 +0100
+
+add makefile to copy hooks into /usr/lib
+</pre><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,19 @@
+<span class="add">+PREFIX    ?= /usr/lib/initcpio
+</span><span class="add">+
+</span><span class="add">+help:
+</span><span class="add">+	@echo &quot;make install:		install files&quot;
+</span><span class="add">+	@echo &quot;make uninstall:		uninstall files&quot;
+</span><span class="add">+
+</span><span class="add">+install:
+</span><span class="add">+	@mkdir -p &quot;$(PREFIX)/hooks&quot;
+</span><span class="add">+	@mkdir -p &quot;$(PREFIX)/install&quot;
+</span><span class="add">+	@cp -f &quot;hooks/welcome&quot; &quot;$(PREFIX)/hooks/&quot;
+</span><span class="add">+	@cp -f &quot;install/welcome&quot; &quot;$(PREFIX)/install/&quot;
+</span><span class="add">+	@echo &quot;Make sure to rebuild the initramfs to include these hooks&quot;
+</span><span class="add">+
+</span><span class="add">+uninstall:
+</span><span class="add">+	@rm -f &quot;$(PREFIX)/hooks/welcome&quot;
+</span><span class="add">+	@rm -f &quot;$(PREFIX)/install/welcome&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+.PHONY: help install uninstall
+</span></pre>
+</div></div>
+  </body>
+</html>

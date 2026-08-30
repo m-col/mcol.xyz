@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Configure wob in config</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/6ce4aca3e2c7cc8ef7a0f3656561baa586946020.html">6ce4aca3e2c7cc8ef7a0f3656561baa586946020</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/e6276760bbd4342846bc5ef929430d2f34f57b31.html">e6276760bbd4342846bc5ef929430d2f34f57b31</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-15 23:13:32 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-15 23:13:32 +0100
+
+Configure wob in config
+</pre><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,12 @@
+<span class="def"> 
+</span><span class="def"> FIFO=/tmp/wob-$WAYLAND_DISPLAY
+</span><span class="def"> test -e $FIFO || mkfifo $FIFO
+</span><span class="sub">-tail -f $FIFO | wob -a left -a right -a bottom &amp;
+</span><span class="add">+
+</span><span class="add">+tail -f $FIFO | wob -a bottom \
+</span><span class="add">+    -M ${WOB_MARGIN:-0} -H ${WOB_HEIGHT:-32} -W ${WOB_WIDTH:-400} \
+</span><span class="add">+    -o ${WOB_OFFSET:-0} -b ${WOB_BORDER:-0} -p ${WOB_PADDING:-0} \
+</span><span class="add">+    --background-color ${WOB_BACKGROUND:-#ff000000} \
+</span><span class="add">+    --bar-color ${WOB_BAR:-#00ffffff} &amp;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Things after this are only run on a TTY
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -180,8 +180,9 @@
+<span class="def"> ## Layouts
+</span><span class="def"> border_focus = [colours[13], colours[5]]
+</span><span class="def"> #border_focus = colours[13]
+</span><span class="sub">-border_normal = colours[8]
+</span><span class="sub">-border_width = 4
+</span><span class="add">+border_normal = background
+</span><span class="add">+#border_normal = colours[8]
+</span><span class="add">+border_width = 6
+</span><span class="def"> 
+</span><span class="def"> #import qtools.borders
+</span><span class="def"> #qtools.borders.enable(&apos;cde&apos;)
+</span>@@ -556,14 +557,19 @@
+<span class="def">     @hook.subscribe.startup_once
+</span><span class="def">     async def _():
+</span><span class="def">         env = os.environ.copy()
+</span><span class="sub">-        env[&quot;WOB_DEFAULT_HEIGHT&quot;] = str(32)
+</span><span class="sub">-        env[&quot;WOB_DEFAULT_MARGIN&quot;] = str(0)
+</span><span class="add">+        env[&quot;WOB_HEIGHT&quot;] = &quot;32&quot;
+</span><span class="add">+        env[&quot;WOB_WIDTH&quot;] = &quot;1920&quot;
+</span><span class="add">+        env[&quot;WOB_MARGIN&quot;] = &quot;0&quot;
+</span><span class="add">+        env[&quot;WOB_OFFSET&quot;] = &quot;0&quot;
+</span><span class="add">+        env[&quot;WOB_BORDER&quot;] = &quot;0&quot;
+</span><span class="add">+        env[&quot;WOB_PADDING&quot;] = &quot;0&quot;
+</span><span class="add">+        env[&quot;WOB_BACKGROUND&quot;] = &quot;#00000000&quot;
+</span><span class="add">+        env[&quot;WOB_BAR&quot;] = &quot;#ff&quot; + foreground[1:]
+</span><span class="def">         subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True, env=env)
+</span><span class="def"> 
+</span><span class="def">     if xephyr:
+</span><span class="sub">-        @hook.subscribe.startup_once
+</span><span class="sub">-        async def _():
+</span><span class="sub">-            qtile.cmd_reconfigure_screens()
+</span><span class="add">+        # To adapt to whatever window size it was given
+</span><span class="add">+        hook.subscribe.startup_once(qtile.cmd_reconfigure_screens)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> ## General settings
+</span></pre>
+</div></div>
+  </body>
+</html>

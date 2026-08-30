@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Remove logging from wayland new_client hook</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/0c3406ca5b983a5eb574e467dd33a6ad6c945362.html">0c3406ca5b983a5eb574e467dd33a6ad6c945362</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/9cb4493cbb758c69c81c8f8403d3ca0dac54a461.html">9cb4493cbb758c69c81c8f8403d3ca0dac54a461</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-13 01:19:05 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-13 01:19:05 +0100
+
+Remove logging from wayland new_client hook
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -53,11 +53,6 @@
+<span class="def">         state = window.surface.toplevel._ptr.current
+</span><span class="def">         if 0 &lt; state.max_width &lt; 1920:
+</span><span class="def">             window.floating = True
+</span><span class="sub">-        else:
+</span><span class="sub">-            # Just incase I find something new I want to auto-float
+</span><span class="sub">-            logger.warning(
+</span><span class="sub">-                (window.name, window.get_wm_class(), (state.min_width, state.max_width))
+</span><span class="sub">-            )
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> @hook.subscribe.startup_once
+</span></pre>
+</div></div>
+  </body>
+</html>

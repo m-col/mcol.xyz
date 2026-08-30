@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - add stagit post</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/31385e72121df93ce55d8d6efa04f39f1213d0aa.html">31385e72121df93ce55d8d6efa04f39f1213d0aa</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/4a800e3898828c4c2e9c56f41e1840bc498c0c5f.html">4a800e3898828c4c2e9c56f41e1840bc498c0c5f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-05 00:05:46 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-05 00:05:46 +0100
+
+add stagit post
+</pre><div class="diff">
+  <p>
+    <b>content/posts/foss/bye_cgit_hello_stagit.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,105 @@
+<span class="add">+bye cgit, hello stagit
+</span><span class="add">+======================
+</span><span class="add">+
+</span><span class="add">+:date: 2020-10-04
+</span><span class="add">+:summary: Not long ago I migrated my code hosting from a gitea instance to
+</span><span class="add">+          cgit, but now that&apos;s been replaced by stagit
+</span><span class="add">+
+</span><span class="add">+It was only around 2 months ago when I `replaced my gitea instance`_ with cgit_,
+</span><span class="add">+but now I&apos;ve replaced it with an even simpler alternative: stagit_.
+</span><span class="add">+
+</span><span class="add">+cgit, as per the name, is an application that uses `Common Gateway Interface`_
+</span><span class="add">+(CGI) to serve dynamically generated web pages displaying information about the
+</span><span class="add">+remote git repositories on your server. The CGI approach lets cgit check for
+</span><span class="add">+updates to repositories when pages are requested in order to update these pages
+</span><span class="add">+and its cache.
+</span><span class="add">+
+</span><span class="add">+stagit, on the other hand, is a command that generates static HTML pages from a
+</span><span class="add">+repository just once when called. This reduces load on the server, as the pages
+</span><span class="add">+can then be served directly without any dynamic page generation. The author has
+</span><span class="add">+a blog post with some more information here_.
+</span><span class="add">+
+</span><span class="add">+As the scope of stagit is limited to generation of HTML pages, any requests on
+</span><span class="add">+the server from git commands -- i.e. fetching or pushing -- must be handled by
+</span><span class="add">+something else if they are to be supported. For this I am using
+</span><span class="add">+git-http-backend_, to which nginx forwards requests that contain specific query
+</span><span class="add">+strings.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+git hooks and regeneration
+</span><span class="add">+--------------------------
+</span><span class="add">+
+</span><span class="add">+But how to update the pages? As stagit is a simple command invoked just to
+</span><span class="add">+create new pages, it needs to called when git repositories are updated. For
+</span><span class="add">+this, we can write a simple post-receive hook and link it into each of our
+</span><span class="add">+repositories. Something like this, where our repos are in :code:`/var/git` and
+</span><span class="add">+the output HTML files are saved into :code:`/var/www/code`:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: sh
+</span><span class="add">+
+</span><span class="add">+    # /var/git/&lt;repo&gt;/hooks/post-receive.d/update-stagit
+</span><span class="add">+    REPO=$(pwd)
+</span><span class="add">+    REPONAME=$(basename $REPO)
+</span><span class="add">+    cd /var/www/code/$REPONAME || cd /var/www/code/${REPONAME//.git} || exit 1
+</span><span class="add">+    stagit $REPO
+</span><span class="add">+    stagit-index /var/git/* &gt; /var/www/code/index.html
+</span><span class="add">+
+</span><span class="add">+This will be executed at the end of every :code:`git push` that updates the
+</span><span class="add">+repository, regenerating both the index page and the pages that pertain to the
+</span><span class="add">+that repository.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+ordering the index page
+</span><span class="add">+-----------------------
+</span><span class="add">+
+</span><span class="add">+You&apos;ll notice in the above snippet that there is a dedicated command for
+</span><span class="add">+generating the index page, :code:`stagit-index`. The order of the repos on the
+</span><span class="add">+index page is determined by the order of the arguments passed to this. To order
+</span><span class="add">+these by most recent commit, I made a quick Python wrapper:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: python
+</span><span class="add">+
+</span><span class="add">+    # stagit-index.py
+</span><span class="add">+    import git
+</span><span class="add">+    import subprocess
+</span><span class="add">+    from pathlib import Path
+</span><span class="add">+
+</span><span class="add">+    REPOS = []
+</span><span class="add">+    COMMAND = [&quot;/usr/local/bin/stagit-index&quot;]
+</span><span class="add">+
+</span><span class="add">+    for path in Path(&quot;/var/git&quot;).glob(&apos;**/objects&apos;):
+</span><span class="add">+        REPOS.append(
+</span><span class="add">+            (git.Repo(path.parent).head.commit.committed_date, path.parent)
+</span><span class="add">+        )
+</span><span class="add">+
+</span><span class="add">+    COMMAND.extend([x for _, x in sorted(REPOS, key=lambda i: i[0], reverse=True)])
+</span><span class="add">+    subprocess.call(COMMAND)
+</span><span class="add">+
+</span><span class="add">+Then all I need to do is run this little script and the index page will display
+</span><span class="add">+the repositories with the most recent updates first.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+hacking the source
+</span><span class="add">+------------------
+</span><span class="add">+
+</span><span class="add">+As the source code is neat and simple, it&apos;s very easy to make changes to
+</span><span class="add">+customise the behaviour. For example, I wanted every page to use the same
+</span><span class="add">+global stylesheet, rather than using a hard-coded path beside the given page. I
+</span><span class="add">+also removed the &quot;Owner&quot; column from the index page. Changes such as these --
+</span><span class="add">+essentially modifying the HTML template used -- are unfortunately impossible
+</span><span class="add">+with cgit, although some larger forges such as gitea do have full HTML template
+</span><span class="add">+systems.
+</span><span class="add">+
+</span><span class="add">+Indeed, reading the source code it is clear that it would not be too difficult
+</span><span class="add">+to create a similar program that does exactly what you want. Though, if a
+</span><span class="add">+similar program took advantage of an HTML templating engine, then hacks such as
+</span><span class="add">+these may no longer be necessary. That would be more flexible... but where&apos;s
+</span><span class="add">+the fun in that?
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+.. _replaced my gitea instance: {filename}/posts/foss/bye_gitea_hello_cgit.rst
+</span><span class="add">+.. _cgit: https://git.zx2c4.com/cgit
+</span><span class="add">+.. _stagit: https://git.codemadness.org/stagit
+</span><span class="add">+.. _Common Gateway Interface: https://en.wikipedia.org/wiki/Common_Gateway_Interface
+</span><span class="add">+.. _here: https://codemadness.org/stagit.html
+</span><span class="add">+.. _git-http-backend: https://git-scm.com/docs/git-http-backend
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / extend ranger file manager with git bindings</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2019/06/extend-ranger-file-manager-with-git-bindings.html>extend ranger file manager with git bindings</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>This is a small but incredibly useful adjustment to the default configuration
+that ships with <a class="reference external" href="https://github.com/ranger/ranger">ranger</a>.</p>
+<p>If you have never used ranger, it is a fast terminal file manager with a boat
+load of useful features out of the box. You can likely get it from your
+distro's repos.</p>
+<p>One of the features it is missing, however, is functional git bindings that you
+can use to manipulate your local git repositories.</p>
+<p>On the upside, ranger is highly customisable, so these features can simply be
+added into the config at <code>$HOME/.config/ranger/rc.conf:</code></p>
+<div class="highlight"><pre><span></span>map bs shell git -c color.status=always status | less -r
+map bp shell git push | less -r
+map bl shell git pull | less -r
+map bd shell git diff --color=always %s | less -r
+map bD shell git diff --color=always | less -r
+map ba shell git add %s
+map bA shell git add -f %s
+map bu shell git restore --cached %s
+map br shell git restore %s
+map bm console shell git commit -m &#39;
+map bc console shell git checkout%space
+</pre></div>
+<p>The second column is our keyboard bindings. By default the 'b' prefix is
+unused, so we can stick all git-related commands to this prefix. The third
+column we either have <code>shell,</code> which executes the following text, or
+<code>console,</code> which types out the following text on ranger's command line.</p>
+<p>The first 5 lines pipe output into <code>less</code>. If we didn't do this then
+ranger would steal the screen again and we wouldn't see the output from the
+command. The <code>-r</code> option preserves any colour in the output from the git
+command when presented in less. <code>git status</code> is a bit of a weird one; I
+found that it needed the <code>-c color.status=always</code> to output color codes,
+but this seemed to be inconsistent across git versions.</p>
+<p>Some commands contain <code>%s</code>; in these lines the current file is
+substituted, allowing us to interactively move around our repository
+git-diffing or git-adding individual files as we need. Super useful!</p>
+<p>The final two lines pre-fill ranger's command line so you can the continue your
+commit or checkout command before executing it.</p>
+<p>Of course, these are just the bare minimum for integrating git bindings into
+ranger. Depending on your git workflow requirements you can extend or customise
+these so you can glide around and play with your repos with ease.</p>
+<p>For example we can add a quick shortcut to check out tig for a closer look at
+the commit history:</p>
+<div class="highlight"><pre><span></span><span class="nb">map</span> <span class="n">bt</span> <span class="n">shell</span> <span class="n">tig</span>
+</pre></div>
+<p>Let me know if you use similar bindings or extend these and have found some
+cool tricks!</p>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2019-06-02T00:00:00+00:00">2019-06-02</time>
+in <a href="/category/foss.html">foss</a>
+/ <span class=mod>Modified <time datetime="2020-08-02T00:00:00+00:00">2020-08-02</time><span>
+</p>
+</footer>
+
+		
+	</body>
+</html>

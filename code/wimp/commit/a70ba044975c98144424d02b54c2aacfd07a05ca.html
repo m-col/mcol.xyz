@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Arrange layer shell layers (taking code from sway)</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/a70ba044975c98144424d02b54c2aacfd07a05ca.html">a70ba044975c98144424d02b54c2aacfd07a05ca</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/5b791861a1d4f5560401207f9dd44edd598f99b9.html">5b791861a1d4f5560401207f9dd44edd598f99b9</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 19:28:43 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 19:28:43 +0000
+
+Arrange layer shell layers (taking code from sway)
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -134,6 +134,7 @@
+<span class="def">     struct wl_listener unmap_listener;
+</span><span class="def">     struct wl_listener destroy_listener;
+</span><span class="def">     struct output *output;
+</span><span class="add">+    struct wlr_box geo;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> struct keyboard {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -87,17 +87,6 @@
+<span class="def">     wlr_renderer_begin(renderer, width, height);
+</span><span class="def">     wlr_renderer_clear(renderer, desk-&gt;background);
+</span><span class="def"> 
+</span><span class="sub">-    struct render_data rdata = {
+</span><span class="sub">-	.output = output-&gt;wlr_output,
+</span><span class="sub">-	.renderer = renderer,
+</span><span class="sub">-	.bordered = NULL,
+</span><span class="sub">-	.when = &amp;now,
+</span><span class="sub">-	.zoom = zoom,
+</span><span class="sub">-	.is_focussed = false,
+</span><span class="sub">-	.x = 0,
+</span><span class="sub">-	.y = 0,
+</span><span class="sub">-    };
+</span><span class="sub">-
+</span><span class="def">     double ox, oy;
+</span><span class="def">     struct wlr_output_layout_output *ol;
+</span><span class="def">     wl_list_for_each(ol, &amp;wimp.output_layout-&gt;outputs, link) {
+</span>@@ -123,6 +112,17 @@
+<span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    struct render_data rdata = {
+</span><span class="add">+	.output = output-&gt;wlr_output,
+</span><span class="add">+	.renderer = renderer,
+</span><span class="add">+	.bordered = NULL,
+</span><span class="add">+	.when = &amp;now,
+</span><span class="add">+	.zoom = 1,
+</span><span class="add">+	.is_focussed = false,
+</span><span class="add">+	.x = 0,
+</span><span class="add">+	.y = 0,
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="def">     // paint background and bottom layers
+</span><span class="def">     struct layer_view *lview;
+</span><span class="def">     wl_list_for_each(lview, &amp;output-&gt;layer_views[ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND], link) {
+</span>@@ -136,6 +136,8 @@
+<span class="def"> 	);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    rdata.zoom = zoom;
+</span><span class="add">+
+</span><span class="def">     // paint clients
+</span><span class="def">     struct view *view;
+</span><span class="def">     struct view *focussed = wl_container_of(wimp.current_desk-&gt;views.next, focussed, link);
+</span>@@ -157,16 +159,19 @@
+<span class="def"> 
+</span><span class="def">     rdata.bordered = NULL;
+</span><span class="def">     rdata.is_focussed = false;
+</span><span class="sub">-    rdata.x = 0;
+</span><span class="sub">-    rdata.y = 0;
+</span><span class="add">+    rdata.zoom = 1;
+</span><span class="def"> 
+</span><span class="def">     // paint top and overlay layers
+</span><span class="def">     wl_list_for_each(lview, &amp;output-&gt;layer_views[ZWLR_LAYER_SHELL_V1_LAYER_TOP], link) {
+</span><span class="add">+	rdata.x = lview-&gt;geo.x;
+</span><span class="add">+	rdata.y = lview-&gt;geo.y;
+</span><span class="def"> 	wlr_surface_for_each_surface(
+</span><span class="def"> 	    lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="def"> 	);
+</span><span class="def">     }
+</span><span class="def">     wl_list_for_each(lview, &amp;output-&gt;layer_views[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY], link) {
+</span><span class="add">+	rdata.x = lview-&gt;geo.x;
+</span><span class="add">+	rdata.y = lview-&gt;geo.y;
+</span><span class="def"> 	wlr_surface_for_each_surface(
+</span><span class="def"> 	    lview-&gt;surface-&gt;surface, render_surface, &amp;rdata
+</span><span class="def"> 	);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/layer_shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,8 +7,10 @@
+<span class="def">     struct layer_view *lview;
+</span><span class="def">     struct wlr_layer_surface_v1 *surface;
+</span><span class="def">     struct wlr_layer_surface_v1_state *state;
+</span><span class="add">+    int width, height;
+</span><span class="add">+    wlr_output_effective_resolution(output-&gt;wlr_output, &amp;width, &amp;height);
+</span><span class="def"> 
+</span><span class="sub">-    for (int i = 0; i&lt;4; i++) {
+</span><span class="add">+    for (int i = 0; i &lt; 4; i++) {
+</span><span class="def"> 	if (wl_list_empty(&amp;output-&gt;layer_views[i])) {
+</span><span class="def"> 	    continue;
+</span><span class="def"> 	}
+</span>@@ -16,7 +18,61 @@
+<span class="def"> 	wl_list_for_each(lview, &amp;output-&gt;layer_views[i], link) {
+</span><span class="def"> 	    surface = lview-&gt;surface;
+</span><span class="def"> 	    state = &amp;surface-&gt;current;
+</span><span class="sub">-	    wlr_layer_surface_v1_configure(surface, state-&gt;desired_width, state-&gt;desired_height);
+</span><span class="add">+	    struct wlr_box box = {
+</span><span class="add">+		.width = state-&gt;desired_width,
+</span><span class="add">+		.height = state-&gt;desired_height
+</span><span class="add">+	    };
+</span><span class="add">+	    // Horizontal axis
+</span><span class="add">+	    const uint32_t both_horiz = ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT
+</span><span class="add">+		| ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT;
+</span><span class="add">+	    if ((state-&gt;anchor &amp; both_horiz) &amp;&amp; box.width == 0) {
+</span><span class="add">+		box.x = state-&gt;margin.left;
+</span><span class="add">+		box.width = width - state-&gt;margin.left - state-&gt;margin.right;
+</span><span class="add">+	    } else if ((state-&gt;anchor &amp; ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT)) {
+</span><span class="add">+		box.x = state-&gt;margin.left;
+</span><span class="add">+	    } else if ((state-&gt;anchor &amp; ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT)) {
+</span><span class="add">+		box.x = width - box.width - state-&gt;margin.right;
+</span><span class="add">+	    } else {
+</span><span class="add">+		box.x = width / 2 - box.width / 2;
+</span><span class="add">+	    }
+</span><span class="add">+	    // Vertical axis
+</span><span class="add">+	    const uint32_t both_vert = ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP
+</span><span class="add">+		    | ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM;
+</span><span class="add">+	    if ((state-&gt;anchor &amp; both_vert) &amp;&amp; box.height == 0) {
+</span><span class="add">+		box.y = state-&gt;margin.top;
+</span><span class="add">+		box.height = height - state-&gt;margin.top - state-&gt;margin.bottom;
+</span><span class="add">+	    } else if ((state-&gt;anchor &amp; ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP)) {
+</span><span class="add">+		box.y = state-&gt;margin.top;
+</span><span class="add">+	    } else if ((state-&gt;anchor &amp; ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM)) {
+</span><span class="add">+		box.y = height - box.height - state-&gt;margin.bottom;
+</span><span class="add">+	    } else {
+</span><span class="add">+		box.y = height / 2 - box.height / 2;
+</span><span class="add">+	    }
+</span><span class="add">+	    if (box.width &lt; 0 || box.height &lt; 0) {
+</span><span class="add">+		wlr_layer_surface_v1_close(surface);
+</span><span class="add">+		continue;
+</span><span class="add">+	    }
+</span><span class="add">+	    lview-&gt;geo = box;
+</span><span class="add">+	    wlr_layer_surface_v1_configure(surface, box.width, box.height);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // Find topmost keyboard interactive layer, if such a layer exists
+</span><span class="add">+    uint32_t layers_above_shell[] = {
+</span><span class="add">+	ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY,
+</span><span class="add">+	ZWLR_LAYER_SHELL_V1_LAYER_TOP,
+</span><span class="add">+    };
+</span><span class="add">+    size_t nlayers = sizeof(layers_above_shell) / sizeof(layers_above_shell[0]);
+</span><span class="add">+    struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(wimp.seat);
+</span><span class="add">+    for (size_t i = 0; i &lt; nlayers; ++i) {
+</span><span class="add">+	wl_list_for_each_reverse(lview, &amp;output-&gt;layer_views[layers_above_shell[i]], link) {
+</span><span class="add">+	    if (lview-&gt;surface-&gt;current.keyboard_interactive &amp;&amp; lview-&gt;surface-&gt;mapped) {
+</span><span class="add">+		wlr_seat_keyboard_notify_enter(
+</span><span class="add">+		    wimp.seat, lview-&gt;surface-&gt;surface, keyboard-&gt;keycodes,
+</span><span class="add">+		    keyboard-&gt;num_keycodes, &amp;keyboard-&gt;modifiers
+</span><span class="add">+		);
+</span><span class="add">+		return;
+</span><span class="add">+	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span>@@ -73,7 +129,12 @@
+<span class="def">     lview-&gt;output = output;
+</span><span class="def">     wl_list_insert(&amp;output-&gt;layer_views[surface-&gt;client_pending.layer], &amp;lview-&gt;link);
+</span><span class="def"> 
+</span><span class="add">+    // Temporarily set the layer&apos;s current state to client_pending
+</span><span class="add">+    // So that we can easily arrange it
+</span><span class="add">+    struct wlr_layer_surface_v1_state old_state = surface-&gt;current;
+</span><span class="add">+    surface-&gt;current = surface-&gt;client_pending;
+</span><span class="def">     layer(lview-&gt;output);
+</span><span class="add">+    surface-&gt;current = old_state;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

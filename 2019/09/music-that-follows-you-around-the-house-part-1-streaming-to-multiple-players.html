@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / music that follows you around the house: part 1. streaming to multiple players</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2019/09/music-that-follows-you-around-the-house-part-1-streaming-to-multiple-players.html>music that follows you around the house: part 1. streaming to multiple players</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>Often when I come across an amazing new record I'll play it on repeat all day,
+every day for a week or two. My laptop's speakers are pretty decent, but
+unfortunately they don't levitate nearby as I move around my home. Though that
+is a problem I don't intend to solve, I figure the next best thing is have one
+device stream music all around my home, but have it playing only in the room
+that I am in.</p>
+<p>This post is the first step on the way to set up this system. The aim for the
+final setup is to have three parts:</p>
+<ul class="simple">
+<li>A central music server that has local access to my music library.</li>
+<li>Playback clients that, when somebody is in the room, play the music through connected speakers.</li>
+<li>Control clients that use the <a class="reference external" href="https://www.musicpd.org/doc/html/protocol.html">MPD protocol</a> to control playback from
+any other device on the network (i.e. PCs and phones).</li>
+</ul>
+<p>I opted to use Raspberry Pis for the server and playback clients, for ease of
+use and low energy consumption. By the end, playback clients will (hopefully)
+be able to fully disconnect their speakers from the power when they are not
+playing.</p>
+<div class="section" id="the-music-server">
+<h2>the music server</h2>
+<p>Starting with a pi that we can access over SSH, we need to give it access to
+our music library (remember to stick the storage disk into <code>/etc/fstab</code>
+with auto-mounting) and install mpd:</p>
+<div class="highlight"><pre><span></span>apt-get<span class="w"> </span>install<span class="w"> </span>mpd
+</pre></div>
+<p>Next, we need to configure mpd to stream its music throughout the local
+network. There are a number of ways to do this, each with their pros and cons.
+The most straightforward method is to use mpd's built-in httpd server.</p>
+<p>To enable this, we need to add the following settings to <code>/etc/mpd.conf</code>
+(or alternatively <code>$HOME/.config/mpd/mpd.conf</code>):</p>
+<div class="highlight"><pre><span></span>music_directory<span class="w"> </span><span class="s2">&quot;/path/to/music&quot;</span>
+db_file<span class="w">         </span><span class="s2">&quot;/path/to/database&quot;</span>
+log_file<span class="w">        </span><span class="s2">&quot;syslog&quot;</span>
+state_file<span class="w">      </span><span class="s2">&quot;/path/to/state_file&quot;</span>
+
+audio_output<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">type</span><span class="w">        </span><span class="s2">&quot;httpd&quot;</span>
+<span class="w">    </span>name<span class="w">        </span><span class="s2">&quot;Raspberry Pi Music Server&quot;</span>
+<span class="w">    </span>encoder<span class="w">     </span><span class="s2">&quot;flac&quot;</span>
+<span class="w">    </span>format<span class="w">      </span><span class="s2">&quot;44100:16:1&quot;</span>
+<span class="w">    </span>always_on<span class="w">   </span><span class="s2">&quot;yes&quot;</span><span class="w">       </span><span class="c1"># Stay connected to clients when music stops</span>
+<span class="w">    </span>tags<span class="w">        </span><span class="s2">&quot;yes&quot;</span><span class="w">       </span><span class="c1"># Also stream tags</span>
+<span class="w">    </span>port<span class="w">        </span><span class="s2">&quot;8000&quot;</span>
+<span class="w">    </span>max_clients<span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="w">         </span><span class="c1"># Allow unlimited clients</span>
+<span class="o">}</span>
+
+bind_to_address<span class="w"> </span><span class="s2">&quot;any&quot;</span><span class="w">   </span><span class="c1"># allow remote access</span>
+port<span class="w">            </span><span class="s2">&quot;6600&quot;</span>
+restore_paused<span class="w">  </span><span class="s2">&quot;yes&quot;</span>
+auto_update<span class="w">     </span><span class="s2">&quot;yes&quot;</span>
+user<span class="w">            </span><span class="s2">&quot;pi&quot;</span><span class="w">    </span><span class="c1"># run as user rather than root</span>
+</pre></div>
+<p>This configuration makes mpd output audio via http on port 8000. Playback
+clients can then listen in on this stream and play it on connected speakers.</p>
+<p>On port 6600 we have the usual mpd protocol communication with the server,
+which we can use to control music playback.</p>
+<p>I've used <code>encoder &quot;flac&quot;</code> for lossless streaming, though other options
+can be used (<a class="reference external" href="https://www.musicpd.org/doc/html/plugins.html#encoder-plugins">described here</a>).</p>
+<p>mpd is packaged with a systemd service that works well to manage its process
+and logging. By using <code>user &quot;pi&quot;</code> above we can take advantage of the
+preconfigured sandboxing settings in this service by enabling it as is, before
+the process is transferred to a non-root user. Enable it with:</p>
+<div class="highlight"><pre><span></span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>mpd.service
+</pre></div>
+<p>If we didn't use <code>/etc/mpd.conf</code> and instead wanted to use a different
+config file, we must change this line in <code>/etc/default/mpd</code> to add the
+config's path:</p>
+<div class="highlight"><pre><span></span><span class="nv">MPDCONF</span><span class="o">=</span>/etc/mpd.conf
+</pre></div>
+<p>Now on to the clients.</p>
+</div>
+<div class="section" id="playback-clients">
+<h2>playback clients</h2>
+<p>mpd also works great for playing back http streams, so my playback clients are
+also all Raspberry Pis with the mpd service enabled.</p>
+<p>However, on these guys we need to configure the mpd config differently:</p>
+<div class="highlight"><pre><span></span>bind_to_address<span class="w"> </span><span class="s2">&quot;127.0.0.1&quot;</span>
+log_file<span class="w">        </span><span class="s2">&quot;syslog&quot;</span>
+state_file<span class="w">      </span><span class="s2">&quot;/path/to/state_file&quot;</span>
+
+audio_output<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">type</span><span class="w">        </span><span class="s2">&quot;alsa&quot;</span>
+<span class="w">    </span>device<span class="w">      </span><span class="s2">&quot;hw:0,0&quot;</span>
+<span class="w">    </span>name<span class="w">        </span><span class="s2">&quot;speaker&quot;</span>
+<span class="o">}</span>
+
+restore_paused<span class="w">  </span><span class="s2">&quot;no&quot;</span>
+auto_update<span class="w">     </span><span class="s2">&quot;no&quot;</span>
+</pre></div>
+<p>We don't need remote access to mpd on these clients, as they just relay
+whatever is being played from the main server. As we aren't managing a library
+with this mpd instance we don't need to specify any paths for the music
+directory or database. For this same reason we don't need to enable
+auto_update. We also don't want to restore mpd into a paused state, because we
+want to use only the main server to control playback.</p>
+<p>With this audio_output configuration, music is output through the headphone
+jack using alsa and out to speakers.</p>
+<p>To make these clients listen to the http stream coming from the main server,
+simply add its URL to the client's playlist and enable repeat. We can do this
+using mpc:</p>
+<div class="highlight"><pre><span></span>apt-get<span class="w"> </span>install<span class="w"> </span>mpc
+mpc<span class="w"> </span>repeat<span class="w"> </span><span class="m">1</span>
+mpc<span class="w"> </span>add<span class="w"> </span>http://&lt;server<span class="w"> </span>ip<span class="w"> </span>address&gt;:8000
+</pre></div>
+<p>Now they'll stay connected to the http stream, playing it non-stop, so pausing
+the main server's mpd pauses playback by all clients.</p>
+</div>
+<div class="section" id="control-clients">
+<h2>control clients</h2>
+<p>These clients are other devices we have on the network that we want to use to
+control playback, such as phones or laptops. To do this, we communicate with
+the main server using the MPD protocol to tell it what to do. Changes to
+playback are propagated to the playback clients that are listening in on the
+http stream.</p>
+<p>To control the music, we simply need an mpd client pointed at the music serving
+pi. My favourite client is ncmpcpp, which can be installed from most distro
+package managers onto your PC. Using these arguments we can control the server:</p>
+<div class="highlight"><pre><span></span>ncmpcpp<span class="w"> </span>--host<span class="w"> </span>&lt;server<span class="w"> </span>ip<span class="w"> </span>address&gt;<span class="w"> </span>--port<span class="w"> </span><span class="m">6600</span>
+</pre></div>
+<p>I have not yet tested out many mpd clients so I will save that for a later
+post. ncmpcpp is great for controlling the music from my PC, but if guests
+wanted to control the music then a web interface served up from the main
+raspberry pi might be a more convenient way for them to control it.</p>
+<p>With the playback clients listening to the http stream, when we start playback
+from the main server and if we haven't had any bad luck then we should be
+hearing the music play!</p>
+<p>If you don't hear anything playing from the pi's speakers, try with this line
+added to <code>/boot/config.txt</code>:</p>
+<div class="highlight"><pre><span></span><span class="nv">dtparam</span><span class="o">=</span><span class="nv">audio</span><span class="o">=</span>on
+</pre></div>
+</div>
+<div class="section" id="next-steps">
+<h2>next steps</h2>
+<ul class="simple">
+<li>Fade in/out volume as somebody walks in/out of each room.</li>
+<li>Explore different mpd client options.</li>
+<li>Address possible future issues with synchronisation of multiple players. If
+this becomes an issue, I may look into alternatives to the httpd output, such
+as the <a class="reference external" href="https://en.wikipedia.org/wiki/Real-time_Transport_Protocol">real-time transport protocol</a> via PulseAudio
+or VLC, or the more purpose-built server <a class="reference external" href="https://github.com/badaix/snapcast">snapcast</a>.</li>
+</ul>
+<p>In any case, the steps in this post alone are enough to set up a sweet remote
+controlled speaker system!</p>
+</div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2019-09-21T00:00:00+00:00">2019-09-21</time>
+in <a href="/category/raspberrypi.html">raspberrypi</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

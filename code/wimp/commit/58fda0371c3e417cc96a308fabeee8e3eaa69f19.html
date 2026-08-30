@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Rename project to WIMP</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/58fda0371c3e417cc96a308fabeee8e3eaa69f19.html">58fda0371c3e417cc96a308fabeee8e3eaa69f19</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/d380f3285d4d326d2f691f4fabcf0fb326b09f7e.html">d380f3285d4d326d2f691f4fabcf0fb326b09f7e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 16:46:46 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 16:46:46 +0000
+
+Rename project to WIMP
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,103 @@
+<span class="add">+#
+</span><span class="add">+# ██      ██  ██  ████████    ██████
+</span><span class="add">+# ██  ██  ██      ██  ██  ██  ██    ██
+</span><span class="add">+# ██  ██  ██  ██  ██  ██  ██  ██    ██
+</span><span class="add">+# ██  ██  ██  ██  ██  ██  ██  ██████
+</span><span class="add">+#   ████████  ██  ██      ██  ██
+</span><span class="add">+#             ██              ██
+</span><span class="add">+#             ██
+</span><span class="add">+# 
+</span><span class="add">+# example wimp configuration file
+</span><span class="add">+#
+</span><span class="add">+# All possible options are described here. Lines that start with &apos;#&apos; are
+</span><span class="add">+# ignored. Options that are commented out contain their default values.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+## General settings
+</span><span class="add">+
+</span><span class="add">+# These specify the min and max magnification bounds when zooming.
+</span><span class="add">+#zoom_min 0.5
+</span><span class="add">+#zoom_max 3
+</span><span class="add">+
+</span><span class="add">+# Set the colour for the mark setter/getter indicator
+</span><span class="add">+#mark_indicator #000000
+</span><span class="add">+
+</span><span class="add">+# Whether to allow VT switching: on or off.
+</span><span class="add">+#vt_switching on
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+## Bindings
+</span><span class="add">+
+</span><span class="add">+# Set the modifier key used for bindings
+</span><span class="add">+# Can be one of: Shift, Caps, Ctrl, Alt, Mod2, Mod3, Logo, Mod5
+</span><span class="add">+#set_modifier Logo
+</span><span class="add">+
+</span><span class="add">+# Define key bindings
+</span><span class="add">+# additional modifiers, key, action(, data)
+</span><span class="add">+bind	Ctrl	Escape		shutdown
+</span><span class="add">+bind	Ctrl	r		reload_config
+</span><span class="add">+
+</span><span class="add">+# These actions act on windows
+</span><span class="add">+bind	Ctrl	q		close_window
+</span><span class="add">+bind		j		focus down
+</span><span class="add">+bind		k		focus up
+</span><span class="add">+bind		h		focus left
+</span><span class="add">+bind		l		focus right
+</span><span class="add">+bind		f		toggle_fullscreen
+</span><span class="add">+
+</span><span class="add">+# These give the focussed window half of the screen
+</span><span class="add">+bind	Shift	J		halfimize down
+</span><span class="add">+bind	Shift	K		halfimize up
+</span><span class="add">+bind	Shift	H		halfimize left
+</span><span class="add">+bind	Shift	L		halfimize right
+</span><span class="add">+
+</span><span class="add">+# And these act on desks
+</span><span class="add">+bind		Tab		next_desk
+</span><span class="add">+bind		ISO_Left_Tab	prev_desk
+</span><span class="add">+bind		i		zoom 15
+</span><span class="add">+bind		o		zoom -15
+</span><span class="add">+bind		r		reset_zoom
+</span><span class="add">+
+</span><span class="add">+# These pan the desk using the given percentage changes in x and y
+</span><span class="add">+bind		s		pan_desk 0 40
+</span><span class="add">+bind		w		pan_desk 0 -40
+</span><span class="add">+bind		a		pan_desk -40 0
+</span><span class="add">+bind		d		pan_desk 40 0
+</span><span class="add">+
+</span><span class="add">+# The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="add">+bind		Return		exec gnome-terminal
+</span><span class="add">+
+</span><span class="add">+# These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="add">+# pressed, waits for the next key press and uses that as the &apos;mark&apos;, e.g.
+</span><span class="add">+# hitting &apos;mod + m&apos; then &apos;a&apos; will save the current position, then hitting &apos;mod
+</span><span class="add">+# + `&apos; then &apos;a&apos; later will move to that marked position. These can be cancelled
+</span><span class="add">+# with the escape key.
+</span><span class="add">+bind		m		set_mark
+</span><span class="add">+bind		grave		go_to_mark
+</span><span class="add">+
+</span><span class="add">+# Possible mouse bindings: motion, scroll (+ additional modifiers)
+</span><span class="add">+bind		scroll		pan_desk_mouse
+</span><span class="add">+bind	Shift	scroll		zoom_mouse
+</span><span class="add">+
+</span><span class="add">+# Scroll direction. Can be one of: natural, reverse
+</span><span class="add">+#scroll_direction natural
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+## Configure desks
+</span><span class="add">+
+</span><span class="add">+# Commands until a further desk is added pertain to desk 1.
+</span><span class="add">+
+</span><span class="add">+# This can be a path to a png image, or a colour in the form #rrggbb.
+</span><span class="add">+background ~/pattern.png
+</span><span class="add">+
+</span><span class="add">+# window border colors
+</span><span class="add">+borders focus #998dd1
+</span><span class="add">+borders normal #3e3e73
+</span><span class="add">+borders width 4
+</span><span class="add">+
+</span><span class="add">+# This adds another desk. Following commands will apply to this desk.
+</span><span class="add">+add_desk
+</span><span class="add">+background #3e3e73
+</span><span class="add">+borders normal #1f1c32
+</span><span class="add">+borders focus #406794
+</span><span class="add">+borders width 5
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,6 +15,8 @@
+<span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#define THIS &quot;wimp&quot;
+</span><span class="add">+
+</span><span class="def"> enum cursor_mode {
+</span><span class="def">     CURSOR_PASSTHROUGH,
+</span><span class="def">     CURSOR_MOD,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,7 +23,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static const char usage[] =
+</span><span class="sub">-    &quot;usage: deskwm [options...]\n&quot;
+</span><span class="add">+    &quot;usage: &quot; THIS &quot; [options...]\n&quot;
+</span><span class="def">     &quot;    -h         show this help message\n&quot;
+</span><span class="def">     &quot;    -c &lt;file&gt;  specify config file\n&quot;
+</span><span class="def">     &quot;    -d         set logging to debug mode\n&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,6 +12,8 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> #define is_number(s) (strspn(s, &quot;0123456789.-&quot;) == strlen(s))
+</span><span class="add">+#define CONFIG_HOME &quot;$HOME/.config/&quot; THIS &quot;.conf&quot;
+</span><span class="add">+#define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/.config/&quot; THIS &quot;.conf&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static const char *DEFAULT_CONFIG =  &quot;\n\
+</span>@@ -436,8 +438,7 @@
+<span class="def"> 
+</span><span class="def">     if (server-&gt;config_file == NULL) {
+</span><span class="def"> 	xdg_config = getenv(&quot;XDG_CONFIG_HOME&quot;);
+</span><span class="sub">-	config = (xdg_config &amp;&amp; *xdg_config) ?
+</span><span class="sub">-	    &quot;$XDG_CONFIG_HOME/.config/deskwm.conf&quot; : &quot;$HOME/.config/deskwm.conf&quot;;
+</span><span class="add">+	config = (xdg_config &amp;&amp; *xdg_config) ? CONFIG_HOME_XDG : CONFIG_HOME;
+</span><span class="def"> 	server-&gt;config_file = strdup(config);
+</span><span class="def">     };
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,17 +1,14 @@
+<span class="sub">-   █           █                 
+</span><span class="sub">-   █           █                 
+</span><span class="sub">-████ ████ ████ █  █ █   █ █████  
+</span><span class="sub">-█  █ █  █ █    █  █ █   █ █ █ █  
+</span><span class="sub">-█  █ ████ ████ ███  █ █ █ █ █ █  
+</span><span class="sub">-█  █ █       █ █  █ █ █ █ █   █  
+</span><span class="sub">-████ ████ ████ █  █ █████ █   █  
+</span><span class="def"> 
+</span><span class="add">+ ██      ██  ██  ████████    ██████
+</span><span class="add">+ ██  ██  ██      ██  ██  ██  ██    ██
+</span><span class="add">+ ██  ██  ██  ██  ██  ██  ██  ██    ██
+</span><span class="add">+ ██  ██  ██  ██  ██  ██  ██  ██████
+</span><span class="add">+   ████████  ██  ██      ██  ██
+</span><span class="add">+             ██              ██
+</span><span class="add">+             ██
+</span><span class="def"> 
+</span><span class="sub">-A Wayland compositor that takes the desktop metaphor quite literally.
+</span><span class="def"> 
+</span><span class="sub">-WORK IN PROGRESS.
+</span><span class="sub">-
+</span><span class="sub">-This project is still new, and will not be useful.
+</span><span class="add">+A WIP Wayland compositor that takes the desktop metaphor quite literally.
+</span><span class="def"> 
+</span><span class="def"> To do list:
+</span><span class="def">  - make configuration much nicer and remove all the strcmps
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,103 +0,0 @@
+<span class="sub">-#
+</span><span class="sub">-#    █           █                 
+</span><span class="sub">-#    █           █                 
+</span><span class="sub">-# ████ ████ ████ █  █ █   █ █████  
+</span><span class="sub">-# █  █ █  █ █    █  █ █   █ █ █ █  
+</span><span class="sub">-# █  █ ████ ████ ███  █ █ █ █ █ █  
+</span><span class="sub">-# █  █ █       █ █  █ █ █ █ █   █  
+</span><span class="sub">-# ████ ████ ████ █  █ █████ █   █  
+</span><span class="sub">-#
+</span><span class="sub">-# example deskwm configuration file
+</span><span class="sub">-#
+</span><span class="sub">-# All possible options are described here. Lines that start with &apos;#&apos; are
+</span><span class="sub">-# ignored. Options that are commented out contain their default values.
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-## General settings
+</span><span class="sub">-
+</span><span class="sub">-# These specify the min and max magnification bounds when zooming.
+</span><span class="sub">-#zoom_min 0.5
+</span><span class="sub">-#zoom_max 3
+</span><span class="sub">-
+</span><span class="sub">-# Set the colour for the mark setter/getter indicator
+</span><span class="sub">-#mark_indicator #000000
+</span><span class="sub">-
+</span><span class="sub">-# Whether to allow VT switching: on or off.
+</span><span class="sub">-#vt_switching on
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-## Bindings
+</span><span class="sub">-
+</span><span class="sub">-# Set the modifier key used for bindings
+</span><span class="sub">-# Can be one of: Shift, Caps, Ctrl, Alt, Mod2, Mod3, Logo, Mod5
+</span><span class="sub">-#set_modifier Logo
+</span><span class="sub">-
+</span><span class="sub">-# Define key bindings
+</span><span class="sub">-# additional modifiers, key, action(, data)
+</span><span class="sub">-bind	Ctrl	Escape		shutdown
+</span><span class="sub">-bind	Ctrl	r		reload_config
+</span><span class="sub">-
+</span><span class="sub">-# These actions act on windows
+</span><span class="sub">-bind	Ctrl	q		close_window
+</span><span class="sub">-bind		j		focus down
+</span><span class="sub">-bind		k		focus up
+</span><span class="sub">-bind		h		focus left
+</span><span class="sub">-bind		l		focus right
+</span><span class="sub">-bind		f		toggle_fullscreen
+</span><span class="sub">-
+</span><span class="sub">-# These give the focussed window half of the screen
+</span><span class="sub">-bind	Shift	J		halfimize down
+</span><span class="sub">-bind	Shift	K		halfimize up
+</span><span class="sub">-bind	Shift	H		halfimize left
+</span><span class="sub">-bind	Shift	L		halfimize right
+</span><span class="sub">-
+</span><span class="sub">-# And these act on desks
+</span><span class="sub">-bind		Tab		next_desk
+</span><span class="sub">-bind		ISO_Left_Tab	prev_desk
+</span><span class="sub">-bind		i		zoom 15
+</span><span class="sub">-bind		o		zoom -15
+</span><span class="sub">-bind		r		reset_zoom
+</span><span class="sub">-
+</span><span class="sub">-# These pan the desk using the given percentage changes in x and y
+</span><span class="sub">-bind		s		pan_desk 0 40
+</span><span class="sub">-bind		w		pan_desk 0 -40
+</span><span class="sub">-bind		a		pan_desk -40 0
+</span><span class="sub">-bind		d		pan_desk 40 0
+</span><span class="sub">-
+</span><span class="sub">-# The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="sub">-bind		Return		exec gnome-terminal
+</span><span class="sub">-
+</span><span class="sub">-# These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="sub">-# pressed, waits for the following key press and uses that as the &apos;mark&apos;, e.g.
+</span><span class="sub">-# hitting &apos;mod + m&apos; then &apos;a&apos; will save the current position, then hitting
+</span><span class="sub">-# &apos;mod + `&apos; then &apos;a&apos; later will move to that marked position. These can be
+</span><span class="sub">-# cancelled with the escape key.
+</span><span class="sub">-bind		m		set_mark
+</span><span class="sub">-bind		grave		go_to_mark
+</span><span class="sub">-
+</span><span class="sub">-# Possible mouse bindings: motion, scroll (+ additional modifiers)
+</span><span class="sub">-bind		scroll		pan_desk_mouse
+</span><span class="sub">-bind	Shift	scroll		zoom_mouse
+</span><span class="sub">-
+</span><span class="sub">-# Scroll direction. Can be one of: natural, reverse
+</span><span class="sub">-#scroll_direction natural
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-## Configure desks
+</span><span class="sub">-
+</span><span class="sub">-# Commands until a further desk is added pertain to desk 1.
+</span><span class="sub">-
+</span><span class="sub">-# This can be a path to a png image, or a colour in the form #rrggbb.
+</span><span class="sub">-background ~/pattern.png
+</span><span class="sub">-
+</span><span class="sub">-# window border colors
+</span><span class="sub">-borders focus #998dd1
+</span><span class="sub">-borders normal #3e3e73
+</span><span class="sub">-borders width 4
+</span><span class="sub">-
+</span><span class="sub">-# This adds another desk. Following commands will apply to this desk.
+</span><span class="sub">-add_desk
+</span><span class="sub">-background #3e3e73
+</span><span class="sub">-borders normal #1f1c32
+</span><span class="sub">-borders focus #406794
+</span><span class="sub">-borders width 5
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,4 @@
+<span class="sub">-OUT	= deskwm
+</span><span class="add">+OUT	= wimp
+</span><span class="def"> SOURCES	= $(wildcard src/*.c)
+</span><span class="def"> OBJECTS	= $(SOURCES:.c=.o)
+</span><span class="def"> CFLAGS  += -g -I. -DWLR_USE_UNSTABLE -Wall -Wextra -pedantic -Wno-unused-parameter
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,4 @@
+<span class="sub">-deskwm
+</span><span class="add">+wimp
+</span><span class="def"> src/*.o
+</span><span class="def"> *-protocol.c
+</span><span class="def"> *-protocol.h
+</span></pre>
+</div></div>
+  </body>
+</html>

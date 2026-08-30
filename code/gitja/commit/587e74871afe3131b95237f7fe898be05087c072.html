@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - add back hashmap variables to lookup function</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/587e74871afe3131b95237f7fe898be05087c072.html">587e74871afe3131b95237f7fe898be05087c072</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/17f1d65b5b2e62dc74beb645c9afaaab9ea65650.html">17f1d65b5b2e62dc74beb645c9afaaab9ea65650</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-05-29 16:10:07 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-05-29 16:10:07 +0100
+
+add back hashmap variables to lookup function
+
+This returns back to the very original functionality
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -40,7 +40,7 @@
+<span class="def"> import Path.IO (doesFileExist, ensureDir)
+</span><span class="def"> import qualified System.Directory as D
+</span><span class="def"> import qualified System.FilePath as FP
+</span><span class="sub">-import Text.Ginger.GVal (GVal, toGVal)
+</span><span class="add">+import Text.Ginger.GVal (GVal, ToGVal, toGVal)
+</span><span class="def"> 
+</span><span class="def"> import Env (Env (..))
+</span><span class="def"> import Templates (Template (..), generate)
+</span>@@ -127,9 +127,7 @@
+<span class="def">                 -- Collect variables available to the ginger templates --
+</span><span class="def">                 commits &lt;- getCommits gitHead
+</span><span class="def">                 tree &lt;- getTree gitHead
+</span><span class="sub">-                tags &lt;- getRefs &quot;refs/tags/&quot;
+</span><span class="sub">-                branches &lt;- getRefs &quot;refs/heads/&quot;
+</span><span class="sub">-                let _scope = package env repos name (repositoryDescription repo) commits tree tags branches
+</span><span class="add">+                let scope = package env repos name (repositoryDescription repo) commits tree
+</span><span class="def"> 
+</span><span class="def">                 -- Create the destination folders --
+</span><span class="def">                 commitDir &lt;- liftIO . parseRelDir $ &quot;commit&quot;
+</span>@@ -143,6 +141,7 @@
+<span class="def"> 
+</span><span class="def">                     -- This annotation blocks the first use of gen from making t concrete
+</span><span class="def">                     gen ::
+</span><span class="add">+                        ToGVal RunRepo t =&gt;
+</span><span class="def">                         (ReaderT LgRepo IO (GVal RunRepo) -&gt; IO (GVal RunRepo)) -&gt;
+</span><span class="def">                         Template -&gt;
+</span><span class="def">                         T.Text -&gt;
+</span>@@ -150,9 +149,9 @@
+<span class="def">                         (t -&gt; FilePath) -&gt;
+</span><span class="def">                         t -&gt;
+</span><span class="def">                         IO ()
+</span><span class="sub">-                    gen = genTarget quiet force
+</span><span class="add">+                    gen = genTarget scope quiet force
+</span><span class="def"> 
+</span><span class="sub">-                withRunInIO \runInIO -&gt; mapM_ (genRepo runInIO output) (envRepoTemplates env)
+</span><span class="add">+                withRunInIO \runInIO -&gt; mapM_ (genRepo scope runInIO output) (envRepoTemplates env)
+</span><span class="def"> 
+</span><span class="def">                 whenJust (envCommitTemplate env) \commitT -&gt;
+</span><span class="def">                     withRunInIO \runInIO -&gt; do
+</span>@@ -173,8 +172,8 @@
+<span class="def"> {-
+</span><span class="def"> The role of the function above is to gather information about a git repository and
+</span><span class="def"> package it all together in such a way that various parts can be accessed and used by
+</span><span class="sub">-Ginger templates. `package` takes these pieces of information and places it all into a
+</span><span class="sub">-hashmap which Ginger can use to look up variables.
+</span><span class="add">+Ginger templates. `package` takes any pre-loaded information and places it into a
+</span><span class="add">+hashmap for Ginger. Other non pre-loaded variables are looked up on the upon request.
+</span><span class="def"> -}
+</span><span class="def"> package ::
+</span><span class="def">     Env -&gt;
+</span>@@ -183,10 +182,8 @@
+<span class="def">     T.Text -&gt;
+</span><span class="def">     [Commit] -&gt;
+</span><span class="def">     [TreeFile] -&gt;
+</span><span class="sub">-    [Ref] -&gt;
+</span><span class="sub">-    [Ref] -&gt;
+</span><span class="def">     HashMap.HashMap T.Text (GVal RunRepo)
+</span><span class="sub">-package env repos name description commits tree tags branches =
+</span><span class="add">+package env repos name description commits tree =
+</span><span class="def">     HashMap.fromList
+</span><span class="def">         [ (&quot;host&quot;, toGVal . envHost $ env)
+</span><span class="def">         , (&quot;repositories&quot;, toGVal repos)
+</span>@@ -195,8 +192,6 @@
+<span class="def">         , (&quot;commits&quot;, toGVal commits)
+</span><span class="def">         , (&quot;tree&quot;, toGVal . filter (notElem FP.pathSeparator . T.unpack . treeFilePath) $ tree)
+</span><span class="def">         , (&quot;tree_recursive&quot;, toGVal tree)
+</span><span class="sub">-        , (&quot;tags&quot;, toGVal tags)
+</span><span class="sub">-        , (&quot;branches&quot;, toGVal branches)
+</span><span class="def">         , (&quot;readme&quot;, toGVal . findFile &quot;readme&quot; $ tree)
+</span><span class="def">         , (&quot;license&quot;, toGVal . findFile &quot;license&quot; $ tree)
+</span><span class="def">         ]
+</span>@@ -367,13 +362,14 @@
+<span class="def">     dropName Nothing _ = Nothing
+</span><span class="def"> 
+</span><span class="def"> genRepo ::
+</span><span class="add">+    HashMap.HashMap T.Text (GVal RunRepo) -&gt;
+</span><span class="def">     (ReaderT LgRepo IO (GVal RunRepo) -&gt; IO (GVal RunRepo)) -&gt;
+</span><span class="def">     Path Abs Dir -&gt;
+</span><span class="def">     Template -&gt;
+</span><span class="def">     IO ()
+</span><span class="sub">-genRepo runInIO output template =
+</span><span class="add">+genRepo scope runInIO output template =
+</span><span class="def">     let output&apos; = toFilePath (output &lt;/&gt; templatePath template)
+</span><span class="sub">-     in TL.writeFile output&apos; =&lt;&lt; generate (cbRepoLookup runInIO) template
+</span><span class="add">+     in TL.writeFile output&apos; =&lt;&lt; generate (cbRepoLookup scope runInIO) template
+</span><span class="def"> 
+</span><span class="def"> ----------------------------------------------------------------------------------------
+</span><span class="def"> -- Targets -----------------------------------------------------------------------------
+</span>@@ -392,6 +388,8 @@
+<span class="def"> fileHref = T.unpack . treePathToHref
+</span><span class="def"> 
+</span><span class="def"> genTarget ::
+</span><span class="add">+    ToGVal RunRepo t =&gt;
+</span><span class="add">+    HashMap.HashMap T.Text (GVal RunRepo) -&gt;
+</span><span class="def">     Bool -&gt;
+</span><span class="def">     Bool -&gt;
+</span><span class="def">     (ReaderT LgRepo IO (GVal RunRepo) -&gt; IO (GVal RunRepo)) -&gt;
+</span>@@ -401,19 +399,22 @@
+<span class="def">     (t -&gt; FilePath) -&gt;
+</span><span class="def">     t -&gt;
+</span><span class="def">     IO ()
+</span><span class="sub">-genTarget quiet force runInIO template category output href target = do
+</span><span class="add">+genTarget scope quiet force runInIO template category output href target = do
+</span><span class="def">     output&apos; &lt;- fmap (output &lt;/&gt;) . parseRelFile . href $ target
+</span><span class="def">     exists &lt;- doesFileExist output&apos;
+</span><span class="def">     when (force || not exists) $ do
+</span><span class="def">         let output&apos;&apos; = toFilePath output&apos;
+</span><span class="add">+            scope&apos; = HashMap.insert category (toGVal target) scope
+</span><span class="def">         unless quiet . putStrLn $ &quot;Writing &quot; &lt;&gt; output&apos;&apos;
+</span><span class="sub">-        TL.writeFile output&apos;&apos; =&lt;&lt; generate (cbRepoLookup runInIO) template
+</span><span class="add">+        TL.writeFile output&apos;&apos; =&lt;&lt; generate (cbRepoLookup scope&apos; runInIO) template
+</span><span class="def"> 
+</span><span class="def"> -- This loads data from the git repository
+</span><span class="def"> cbRepoLookup ::
+</span><span class="add">+    HashMap.HashMap T.Text (GVal RunRepo) -&gt;
+</span><span class="def">     (ReaderT LgRepo IO (GVal RunRepo) -&gt; IO (GVal RunRepo)) -&gt;
+</span><span class="def">     T.Text -&gt;
+</span><span class="def">     RunRepo (GVal RunRepo)
+</span><span class="sub">-cbRepoLookup runInIO key = liftIO . runInIO $ case key of
+</span><span class="add">+cbRepoLookup scope runInIO key = liftIO . runInIO $ case key of
+</span><span class="def">     &quot;tags&quot; -&gt; toGVal &lt;$&gt; getRefs &quot;refs/tags/&quot;
+</span><span class="sub">-    key&apos; -&gt; return . toGVal $ key&apos;
+</span><span class="add">+    &quot;branches&quot; -&gt; toGVal &lt;$&gt; getRefs &quot;refs/heads/&quot;
+</span><span class="add">+    key&apos; -&gt; return . toGVal . HashMap.lookup key&apos; $ scope
+</span></pre>
+</div></div>
+  </body>
+</html>

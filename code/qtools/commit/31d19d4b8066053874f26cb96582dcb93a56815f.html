@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Notification server will draw provided icons</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/31d19d4b8066053874f26cb96582dcb93a56815f.html">31d19d4b8066053874f26cb96582dcb93a56815f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/cab6f53f30fded6d7f0f979750ab0aa6d0f5f2a3.html">cab6f53f30fded6d7f0f979750ab0aa6d0f5f2a3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-26 21:57:55 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-26 21:57:55 +0000
+
+Notification server will draw provided icons
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,7 +14,7 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-from libqtile import configurable, pangocffi, window
+</span><span class="add">+from libqtile import configurable, images, pangocffi, window
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.notify import notifier
+</span><span class="def"> from libqtile.drawer import Drawer
+</span>@@ -79,6 +79,7 @@
+<span class="def">         (&apos;max_windows&apos;, 2, &apos;Maximum number of windows to show at once.&apos;),
+</span><span class="def">         (&apos;gap&apos;, 12, &apos;Vertical gap between popup windows.&apos;),
+</span><span class="def">         (&apos;sticky_history&apos;, True, &apos;Disable timeout when browsing history.&apos;),
+</span><span class="add">+        (&apos;icon_size&apos;, 36, &apos;Pixel size of any icons.&apos;),
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def">     def __init__(self, **config):
+</span>@@ -93,6 +94,7 @@
+<span class="def">         self._current_id = 0
+</span><span class="def">         self._notif_id = None
+</span><span class="def">         self._paused = False
+</span><span class="add">+        self._icons = {}
+</span><span class="def"> 
+</span><span class="def">         self._make_attr_list(&apos;foreground&apos;)
+</span><span class="def">         self._make_attr_list(&apos;background&apos;)
+</span>@@ -191,9 +193,20 @@
+<span class="def">         if popup not in self._shown:
+</span><span class="def">             self._shown.append(popup)
+</span><span class="def">         popup.x, popup.y = self._positions[len(self._shown) - 1]
+</span><span class="add">+        icon = self._load_icon(notif)
+</span><span class="add">+
+</span><span class="def">         popup.background = self.background[urgency]
+</span><span class="def">         popup.foreground = self.foreground[urgency]
+</span><span class="def">         popup.clear()
+</span><span class="add">+
+</span><span class="add">+        if icon:
+</span><span class="add">+            popup.draw_image(
+</span><span class="add">+                icon[0],
+</span><span class="add">+                self.horizontal_padding,
+</span><span class="add">+                1 + (self.height - icon[1]) / 2,
+</span><span class="add">+            )
+</span><span class="add">+            popup.horizontal_padding += self.icon_size + self.horizontal_padding / 2
+</span><span class="add">+
+</span><span class="def">         for num, line in enumerate(text.split(&apos;\n&apos;)):
+</span><span class="def">             popup.text = line
+</span><span class="def">             y = self.vertical_padding + num * (popup.layout.height + self.line_spacing)
+</span>@@ -204,6 +217,8 @@
+<span class="def">         popup.unhide()
+</span><span class="def">         popup.draw_window()
+</span><span class="def">         popup.replaces_id = notif.replaces_id
+</span><span class="add">+        if icon:
+</span><span class="add">+            popup.horizontal_padding = self.horizontal_padding
+</span><span class="def"> 
+</span><span class="def">         if timeout is None:
+</span><span class="def">             if notif.timeout is None or notif.timeout &lt; 0:
+</span>@@ -252,6 +267,23 @@
+<span class="def">             shown.x, shown.y = self._positions[index]
+</span><span class="def">             shown.place()
+</span><span class="def"> 
+</span><span class="add">+    def _load_icon(self, notif):
+</span><span class="add">+        if notif.app_icon:
+</span><span class="add">+            if notif.app_icon in self._icons:
+</span><span class="add">+                return self._icons.get(notif.app_icon)
+</span><span class="add">+            else:
+</span><span class="add">+                img = images.Img.from_path(notif.app_icon)
+</span><span class="add">+                if img.width &gt; img.height:
+</span><span class="add">+                    img.resize(width=self.icon_size)
+</span><span class="add">+                else:
+</span><span class="add">+                    img.resize(height=self.icon_size)
+</span><span class="add">+                self._icons[notif.app_icon] = _decode_image(
+</span><span class="add">+                    img.bytes_img, img.width, img.height
+</span><span class="add">+                )
+</span><span class="add">+                return self._icons[notif.app_icon]
+</span><span class="add">+        else:
+</span><span class="add">+            return None
+</span><span class="add">+
+</span><span class="def">     def close(self, qtile=None):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         Close the oldest of all visible popup windows.
+</span>@@ -316,3 +348,12 @@
+<span class="def">             self._paused = True
+</span><span class="def">             while self._shown:
+</span><span class="def">                 self._close(self._shown[0])
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def _decode_image(bytes_img, width, height):
+</span><span class="add">+    try:
+</span><span class="add">+        surface, _ = images._decode_to_image_surface(bytes_img, width, height)
+</span><span class="add">+        return surface, surface.get_height()
+</span><span class="add">+    except Exception as e:
+</span><span class="add">+        logger.exception(f&apos;Could not load notification icon&apos;)
+</span><span class="add">+        return None
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add email address to readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/72368620f29d913fb5c655ee53e874ed6fd9a1e5.html">72368620f29d913fb5c655ee53e874ed6fd9a1e5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/991f20cc403d29863b530613972cae55cf85f235.html">991f20cc403d29863b530613972cae55cf85f235</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-04 19:33:02 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-04 19:33:02 +0100
+
+add email address to readme
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,49 +1,13 @@
+<span class="def"> qtools
+</span><span class="def"> ======
+</span><span class="def"> 
+</span><span class="sub">-This is a small collection of plugins I wrote for Qtile_.
+</span><span class="def"> 
+</span><span class="sub">-Aims:
+</span><span class="sub">-    - Simplifying Qtile configuration.
+</span><span class="sub">-    - Only loading those that are used.
+</span><span class="sub">-    - Ability to easily create responsive key-bindings with notifications.
+</span><span class="sub">-    - Avoiding extra dependencies.
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-Bases
+</span><span class="sub">------
+</span><span class="sub">-
+</span><span class="sub">-Notifiers
+</span><span class="sub">-`````````
+</span><span class="sub">-
+</span><span class="sub">-:code:`Notifier`-based plugins expose methods that trigger notifications, with
+</span><span class="sub">-the purpose of being bound to keys.
+</span><span class="sub">-
+</span><span class="sub">-An example usage:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: python
+</span><span class="sub">-
+</span><span class="sub">-    import qtools.mpc
+</span><span class="sub">-    mpc = qtools.mpc.Client()
+</span><span class="sub">-    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="sub">-        &apos;&lt;XF86AudioPlay&gt;&apos;:  mpc.lazy_toggle,
+</span><span class="sub">-        &apos;&lt;XF86AudioNext&gt;&apos;:  mpc.lazy_next,
+</span><span class="sub">-        &apos;&lt;XF86AudioPrev&gt;&apos;:  mpc.lazy_previous,
+</span><span class="sub">-    }.items()])
+</span><span class="sub">-
+</span><span class="sub">-:code:`Notifier`&apos;s methods are exposed with the &apos;lazy\_&apos; prefix for binding to
+</span><span class="sub">-keys.
+</span><span class="add">+This is a small collection of plugins I wrote for Qtile_. I primarily use this
+</span><span class="add">+as a playground for things that might get merged.
+</span><span class="def"> 
+</span><span class="sub">-:code:`qtools.mpc.Client` is a subclass of :code:`Notifier`, which is found at
+</span><span class="sub">-:code:`qtools.Notifier` in :code:`qtools/__init__.py`.
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-Popups
+</span><span class="sub">-``````
+</span><span class="sub">-
+</span><span class="sub">-The :code:`Popup` class can be used to create and control popup windows, such
+</span><span class="sub">-as tooltips or notifications. For an example see the :code:`notification`
+</span><span class="sub">-plugin.
+</span><span class="add">+Aims:
+</span><span class="add">+    - To extend Qtile configuration.
+</span><span class="add">+    - To keep configuration simple and tidy.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> Plugin list
+</span>@@ -52,15 +16,12 @@
+<span class="def"> ==============  ===============================================================
+</span><span class="def"> Module          Description
+</span><span class="def"> ==============  ===============================================================
+</span><span class="sub">-amixer          Notifier that controls an ALSA device&apos;s volume
+</span><span class="sub">-
+</span><span class="sub">-backlight       Notifier that controls backlight level
+</span><span class="sub">-
+</span><span class="def"> notification    A fully functional notification server
+</span><span class="def"> 
+</span><span class="sub">-mpc             Notifier that controls MPD
+</span><span class="sub">-
+</span><span class="def"> xresources      Load X resources into Qtile config
+</span><span class="def"> ==============  ===============================================================
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="add">+Email me @ mcol@posteo.net for questions/contributions.
+</span><span class="add">+
+</span><span class="def"> .. _Qtile: https://github.com/qtile/qtile
+</span></pre>
+</div></div>
+  </body>
+</html>

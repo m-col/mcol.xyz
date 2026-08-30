@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - fixed some autosuggest settings</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/4bf4202de30754e83a1c2c75d4b4a942153f867b.html">4bf4202de30754e83a1c2c75d4b4a942153f867b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/78a714261bfb02f6ad85d4ef7f31cb5a6dda0e78.html">78a714261bfb02f6ad85d4ef7f31cb5a6dda0e78</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 01:12:30 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 01:12:30 +0000
+
+fixed some autosuggest settings
+</pre><div class="diff">
+  <p>
+    <b>zsh-autosuggestions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,15 +2,9 @@
+<span class="def"> # https://github.com/zsh-users/zsh-autosuggestions #
+</span><span class="def"> # -------------------------------------------------#
+</span><span class="def"> 
+</span><span class="sub">-if [[ -e $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh ]]
+</span><span class="sub">-then
+</span><span class="sub">-    source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
+</span><span class="sub">-else
+</span><span class="sub">-    return
+</span><span class="sub">-fi
+</span><span class="add">+[[ ! -e $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &amp;&amp; return
+</span><span class="add">+source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
+</span><span class="def"> 
+</span><span class="sub">-# Color to use when highlighting suggestion
+</span><span class="sub">-# Uses format of `region_highlight`
+</span><span class="def"> # More info: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Widgets
+</span><span class="def"> ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=&apos;fg=8&apos;
+</span><span class="def"> 
+</span>@@ -37,9 +31,7 @@
+<span class="def"> 
+</span><span class="def"> # Widgets that accept the entire suggestion
+</span><span class="def"> ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(
+</span><span class="sub">-	forward-char
+</span><span class="def"> 	end-of-line
+</span><span class="sub">-	vi-forward-char
+</span><span class="def"> 	vi-end-of-line
+</span><span class="def"> 	vi-add-eol
+</span><span class="def"> )
+</span>@@ -50,8 +42,8 @@
+<span class="def"> 
+</span><span class="def"> # Widgets that accept the suggestion as far as the cursor moves
+</span><span class="def"> ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
+</span><span class="add">+	vi-forward-char
+</span><span class="def"> 	forward-word
+</span><span class="sub">-	emacs-forward-word
+</span><span class="def"> 	vi-forward-word
+</span><span class="def"> 	vi-forward-word-end
+</span><span class="def"> 	vi-forward-blank-word
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Neaten getCommits function</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/699060934c98e6e0429e268bb44cef1011243914.html">699060934c98e6e0429e268bb44cef1011243914</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/52f6feacb51a7bb434a128425cc05377cbd0d4f5.html">52f6feacb51a7bb434a128425cc05377cbd0d4f5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-24 00:08:26 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-24 00:08:26 +0100
+
+Neaten getCommits function
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,12 +6,13 @@
+<span class="def"> ) where
+</span><span class="def"> 
+</span><span class="def"> import Conduit (runConduit, (.|), sinkList)
+</span><span class="add">+import Control.Monad ((&lt;=&lt;))
+</span><span class="def"> import Control.Monad.IO.Class (liftIO)
+</span><span class="def"> import Control.Monad.Trans.Reader (ReaderT)
+</span><span class="def"> import Data.Either (fromRight)
+</span><span class="def"> import Data.Tagged
+</span><span class="def"> import Data.Text (pack, Text)
+</span><span class="sub">-import Data.Maybe (catMaybes)
+</span><span class="add">+import Data.Maybe (mapMaybe)
+</span><span class="def"> import Git
+</span><span class="def"> import Git.Libgit2 (lgFactory, LgRepo)
+</span><span class="def"> import System.Directory (createDirectoryIfMissing)
+</span>@@ -70,9 +71,9 @@
+<span class="def">     outPath = directory &lt;/&gt; name
+</span><span class="def"> 
+</span><span class="def"> getCommits :: CommitOid LgRepo -&gt; ReaderT LgRepo IO [Commit LgRepo]
+</span><span class="sub">-getCommits commitID = do
+</span><span class="sub">-    oids &lt;- runConduit $ sourceObjects Nothing commitID False .| sinkList
+</span><span class="sub">-    sequence . catMaybes $ loadCommit &lt;$&gt; oids
+</span><span class="add">+getCommits commitID =
+</span><span class="add">+    sequence . mapMaybe loadCommit &lt;=&lt;
+</span><span class="add">+    runConduit $ sourceObjects Nothing commitID False .| sinkList
+</span><span class="def"> 
+</span><span class="def"> loadCommit :: ObjectOid LgRepo -&gt; Maybe (ReaderT LgRepo IO (Commit LgRepo))
+</span><span class="def"> loadCommit (CommitObjOid oid) = Just $ lookupCommit oid
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - scratchpad.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- scratchpad.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &quot;&quot;&quot;
+<a href="#l2" class="line" id="l2">      2</a> Scratchpad and DropDowns
+<a href="#l3" class="line" id="l3">      3</a> ========================
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> The scratchpads are the same with either backend, but the terminal used differs. I
+<a href="#l6" class="line" id="l6">      6</a> prefer these terminals over something like alacritty, which would be an easier
+<a href="#l7" class="line" id="l7">      7</a> alternative to configure because it works under both Wayland and X.
+<a href="#l8" class="line" id="l8">      8</a> &quot;&quot;&quot;
+<a href="#l9" class="line" id="l9">      9</a> 
+<a href="#l10" class="line" id="l10">     10</a> import os
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> from libqtile import qtile
+<a href="#l13" class="line" id="l13">     13</a> from libqtile.config import DropDown, ScratchPad
+<a href="#l14" class="line" id="l14">     14</a> from libqtile.lazy import lazy
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> HOME: str = os.path.expanduser(&quot;~&quot;)
+<a href="#l17" class="line" id="l17">     17</a> IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+<a href="#l18" class="line" id="l18">     18</a> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+<a href="#l19" class="line" id="l19">     19</a> mod = &quot;mod1&quot; if IS_XEPHYR else &quot;mod4&quot;
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a> 
+<a href="#l22" class="line" id="l22">     22</a> if IS_WAYLAND:
+<a href="#l23" class="line" id="l23">     23</a>     term = &quot;foot &quot;
+<a href="#l24" class="line" id="l24">     24</a> else:
+<a href="#l25" class="line" id="l25">     25</a>     term = &quot;xterm -e &quot;
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> 
+<a href="#l28" class="line" id="l28">     28</a> conf = {
+<a href="#l29" class="line" id="l29">     29</a>     &quot;warp_pointer&quot;: False,
+<a href="#l30" class="line" id="l30">     30</a>     &quot;on_focus_lost_hide&quot;: False,
+<a href="#l31" class="line" id="l31">     31</a>     &quot;opacity&quot;: 1,
+<a href="#l32" class="line" id="l32">     32</a> }
+<a href="#l33" class="line" id="l33">     33</a> 
+<a href="#l34" class="line" id="l34">     34</a> GHCI = &quot;ghci&quot;
+<a href="#l35" class="line" id="l35">     35</a> # GHCI = &quot;ghci-9.2.2&quot;
+<a href="#l36" class="line" id="l36">     36</a> 
+<a href="#l37" class="line" id="l37">     37</a> dropdowns = [
+<a href="#l38" class="line" id="l38">     38</a>     DropDown(&quot;tmux&quot;, term + &quot;tmux&quot;, height=0.4, **conf),
+<a href="#l39" class="line" id="l39">     39</a>     DropDown(
+<a href="#l40" class="line" id="l40">     40</a>         &quot;ncmpcpp&quot;, term + &quot;ncmpcpp&quot;, x=0.12, y=0.2, width=0.56, height=0.7, **conf
+<a href="#l41" class="line" id="l41">     41</a>     ),
+<a href="#l42" class="line" id="l42">     42</a>     DropDown(&quot;python&quot;, term + &quot;python&quot;, x=0.05, y=0.1, width=0.2, height=0.3, **conf),
+<a href="#l43" class="line" id="l43">     43</a>     DropDown(GHCI, term + GHCI, y=0.6, height=0.4, **conf),
+<a href="#l44" class="line" id="l44">     44</a> ]
+<a href="#l45" class="line" id="l45">     45</a> 
+<a href="#l46" class="line" id="l46">     46</a> 
+<a href="#l47" class="line" id="l47">     47</a> # Keybindings to open each DropDown
+<a href="#l48" class="line" id="l48">     48</a> keys_scratchpad = [
+<a href="#l49" class="line" id="l49">     49</a>     (
+<a href="#l50" class="line" id="l50">     50</a>         [mod, &quot;shift&quot;],
+<a href="#l51" class="line" id="l51">     51</a>         &quot;Return&quot;,
+<a href="#l52" class="line" id="l52">     52</a>         lazy.group[&quot;scratchpad&quot;].dropdown_toggle(&quot;tmux&quot;),
+<a href="#l53" class="line" id="l53">     53</a>         &quot;Toggle tmux scratchpad&quot;,
+<a href="#l54" class="line" id="l54">     54</a>     ),
+<a href="#l55" class="line" id="l55">     55</a>     (
+<a href="#l56" class="line" id="l56">     56</a>         [mod, &quot;control&quot;],
+<a href="#l57" class="line" id="l57">     57</a>         &quot;m&quot;,
+<a href="#l58" class="line" id="l58">     58</a>         lazy.group[&quot;scratchpad&quot;].dropdown_toggle(&quot;ncmpcpp&quot;),
+<a href="#l59" class="line" id="l59">     59</a>         &quot;Toggle ncmpcpp scratchpad&quot;,
+<a href="#l60" class="line" id="l60">     60</a>     ),
+<a href="#l61" class="line" id="l61">     61</a>     (
+<a href="#l62" class="line" id="l62">     62</a>         [mod],
+<a href="#l63" class="line" id="l63">     63</a>         &quot;c&quot;,
+<a href="#l64" class="line" id="l64">     64</a>         lazy.group[&quot;scratchpad&quot;].dropdown_toggle(&quot;python&quot;),
+<a href="#l65" class="line" id="l65">     65</a>         &quot;Toggle python scratchpad&quot;,
+<a href="#l66" class="line" id="l66">     66</a>     ),
+<a href="#l67" class="line" id="l67">     67</a>     (
+<a href="#l68" class="line" id="l68">     68</a>         [mod],
+<a href="#l69" class="line" id="l69">     69</a>         &quot;g&quot;,
+<a href="#l70" class="line" id="l70">     70</a>         lazy.group[&quot;scratchpad&quot;].dropdown_toggle(GHCI),
+<a href="#l71" class="line" id="l71">     71</a>         &quot;Toggle GHCI scratchpad&quot;,
+<a href="#l72" class="line" id="l72">     72</a>     ),
+<a href="#l73" class="line" id="l73">     73</a> ]
+<a href="#l74" class="line" id="l74">     74</a> 
+<a href="#l75" class="line" id="l75">     75</a> scratchpad = ScratchPad(&quot;scratchpad&quot;, dropdowns)
+<a href="#l76" class="line" id="l76">     76</a> 
+</pre>
+  </div>
+  </body>
+</html>

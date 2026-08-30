@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Drop repeated code for focussing in direction</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/778af7f2d707ed8aa2590a49809e637205c380f7.html">778af7f2d707ed8aa2590a49809e637205c380f7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/1b75f41f0bfd53ea1da26cae49cea94920ab5e26.html">1b75f41f0bfd53ea1da26cae49cea94920ab5e26</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-22 11:31:12 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-22 11:31:12 +0000
+
+Drop repeated code for focussing in direction
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -142,11 +142,11 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> enum direction {
+</span><span class="sub">-    NONE,
+</span><span class="sub">-    UP,
+</span><span class="sub">-    RIGHT,
+</span><span class="sub">-    DOWN,
+</span><span class="sub">-    LEFT,
+</span><span class="add">+    NONE = 0,
+</span><span class="add">+    UP = 1 &lt;&lt; 0,
+</span><span class="add">+    RIGHT = 1 &lt;&lt; 1,
+</span><span class="add">+    DOWN = 1 &lt;&lt; 2,
+</span><span class="add">+    LEFT = 1 &lt;&lt; 3,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,66 +44,37 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void focus_in_direction(struct server *server, void *data) {
+</span><span class="add">+    if (wl_list_empty(&amp;server-&gt;current_desk-&gt;views))
+</span><span class="add">+	return;
+</span><span class="add">+
+</span><span class="def">     struct view *current = wl_container_of(server-&gt;current_desk-&gt;views.next, current, link);
+</span><span class="def">     enum direction dir = *(enum direction*)data;
+</span><span class="def"> 
+</span><span class="add">+    struct view *next = NULL;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    double vx, vy, vdist, dist;
+</span><span class="def">     double x = current-&gt;x + current-&gt;surface-&gt;geometry.width / 2;
+</span><span class="def">     double y = current-&gt;y + current-&gt;surface-&gt;geometry.height / 2;
+</span><span class="def">     double c = y - x;  // y = x + c    / slope
+</span><span class="def">     double n = y + x;  // y = n - x    \ slope
+</span><span class="sub">-
+</span><span class="sub">-    struct view *next = NULL;
+</span><span class="sub">-    struct view *view;
+</span><span class="sub">-    double vx, vy, vdist, dist;
+</span><span class="sub">-
+</span><span class="sub">-    switch (dir) {
+</span><span class="sub">-	case RIGHT:
+</span><span class="sub">-	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="sub">-		vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="sub">-		vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="sub">-		vdist = DIST(x - vx, y - vy);
+</span><span class="sub">-		if (vy - vx &lt; c &amp;&amp; vy + vx &gt; n &amp;&amp; (!next || vdist &lt; dist)) {
+</span><span class="sub">-		    next = view;
+</span><span class="sub">-		    dist = vdist;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	    break;
+</span><span class="sub">-	case LEFT:
+</span><span class="sub">-	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="sub">-		vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="sub">-		vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="sub">-		vdist = DIST(x - vx, y - vy);
+</span><span class="sub">-		if (vy - vx &gt; c &amp;&amp; vy + vx &lt; n &amp;&amp; (!next || vdist &lt; dist)) {
+</span><span class="sub">-		    next = view;
+</span><span class="sub">-		    dist = vdist;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	    break;
+</span><span class="sub">-	case DOWN:
+</span><span class="sub">-	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="sub">-		vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="sub">-		vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="sub">-		vdist = DIST(x - vx, y - vy);
+</span><span class="sub">-		if (vy - vx &gt; c &amp;&amp; vy + vx &gt; n &amp;&amp; (!next || vdist &lt; dist)) {
+</span><span class="sub">-		    next = view;
+</span><span class="sub">-		    dist = vdist;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	    break;
+</span><span class="sub">-	case UP:
+</span><span class="sub">-	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="sub">-		vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="sub">-		vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="sub">-		vdist = DIST(x - vx, y - vy);
+</span><span class="sub">-		if (vy - vx &lt; c &amp;&amp; vy + vx &lt; n &amp;&amp; (!next || vdist &lt; dist)) {
+</span><span class="sub">-		    next = view;
+</span><span class="sub">-		    dist = vdist;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	    break;
+</span><span class="sub">-	case NONE:
+</span><span class="sub">-	    return;
+</span><span class="add">+    bool above_c = dir &amp; (DOWN | LEFT);
+</span><span class="add">+    bool above_n = dir &amp; (DOWN | RIGHT);
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="add">+	vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="add">+	vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="add">+	vdist = DIST(x - vx, y - vy);
+</span><span class="add">+	if (
+</span><span class="add">+	    (above_c ^ (vy - vx &lt; c)) &amp;&amp;
+</span><span class="add">+	    (above_n ^ (vy + vx &lt; n)) &amp;&amp;
+</span><span class="add">+	    (!next || vdist &lt; dist) &amp;&amp;
+</span><span class="add">+	    view != current
+</span><span class="add">+	) {
+</span><span class="add">+	    next = view;
+</span><span class="add">+	    dist = vdist;
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="add">+
+</span><span class="def">     if (next)
+</span><span class="def"> 	focus_view(next, next-&gt;surface-&gt;surface);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

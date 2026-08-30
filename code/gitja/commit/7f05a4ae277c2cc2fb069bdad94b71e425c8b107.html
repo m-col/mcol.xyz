@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add to do list to readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/7f05a4ae277c2cc2fb069bdad94b71e425c8b107.html">7f05a4ae277c2cc2fb069bdad94b71e425c8b107</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/d6f62c79a06d0a9a42d3b7eaf929bf7ff78ba4ad.html">d6f62c79a06d0a9a42d3b7eaf929bf7ff78ba4ad</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-25 19:05:18 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-25 19:05:18 +0100
+
+Add to do list to readme
+</pre><div class="diff">
+  <p>
+    <b>README.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,19 +18,6 @@
+<span class="def"> gitserve is called again.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-Outputs
+</span><span class="sub">--------
+</span><span class="sub">-
+</span><span class="sub">-A single index showing basic information about all repositories. Then, per
+</span><span class="sub">-repository:
+</span><span class="sub">-
+</span><span class="sub">-- Rendered markdown/rst readme (+ log in sidebar)
+</span><span class="sub">-- File index + page per file in the tree
+</span><span class="sub">-- Log index + page per commit
+</span><span class="sub">-- Refs + tags index
+</span><span class="sub">-- atom xml for repository
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> Template variables
+</span><span class="def"> ------------------
+</span><span class="def"> 
+</span>@@ -41,3 +28,15 @@
+<span class="def"> - *Index scope*: This exposes information about the whole set of repositories.
+</span><span class="def">   The index template is rendered once in total and uses this scope. This
+</span><span class="def">   template is specified in the ``indexTemplate`` setting.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+To do
+</span><span class="add">+-----
+</span><span class="add">+
+</span><span class="add">+[ ] Generate html file per commit with commit scope
+</span><span class="add">+[ ] Generate html file per tree file with file scope
+</span><span class="add">+[ ] Expose readme url in repo scope for convenient hyperlinking
+</span><span class="add">+[ ] Expose license url in repo scope for convenient hyperlinking
+</span><span class="add">+[ ] Expose repo branches and tags in repo scope
+</span><span class="add">+[ ] Generate RSS?
+</span><span class="add">+[ ] Write guide in readme
+</span></pre>
+</div></div>
+  </body>
+</html>

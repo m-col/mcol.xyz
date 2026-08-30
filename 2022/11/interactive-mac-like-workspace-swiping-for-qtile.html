@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / interactive Mac-like workspace swiping for Qtile</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2022/11/interactive-mac-like-workspace-swiping-for-qtile.html>interactive Mac-like workspace swiping for Qtile</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>I recently added support for the wlroots <code>wlr_pointer_gestures_v1</code>
+protocol to Qtile's Wayland backend, primarily to relay multi-finger touchpad
+events to clients. In unrelated news, I started a new job this week (which I
+love) and they gave me a macbook (which I don't love). Having
+<code>wlr_pointer_gestures_v1</code> in recent memory and enjoying the macbook's
+fancy interactive touchpad gestures, I figured it would be cool to see if such
+gestures can be supported by Qtile.</p>
+<p>The result of this weekend project was this pull request:
+<a class="reference external" href="https://github.com/qtile/qtile/pull/3960">https://github.com/qtile/qtile/pull/3960</a>.</p>
+<p>At the highest level, this was a two-step process:</p>
+<ol class="arabic simple">
+<li>Hook up touchpad events in the backend to configurables logic so that users
+can create arbitrary bindings to gestures. 'Backend' here meaning the
+<code>libqtile.backend.wayland</code> module that encapsulates Qtile's
+Wayland-specific code.</li>
+<li>Create user commands for 'sliding' between groups (what Qtile calls
+workspaces).</li>
+</ol>
+<p>Both parts enable new functionality, but when combined we can recreate the
+interactive touchpad swiping to move between groups.</p>
+<div class="section" id="swipe-bindings">
+<h2>Swipe bindings</h2>
+<p>Users create <code>Drag</code> objects to define mouse drag bindings. As
+<code>Drag</code>s are used for interactive actions such as window moving and
+resizing, they have an initial one-shot command to get/set any initial state,
+and another command executed upon every movement. This is pretty similar to
+what swiping bindings require, so fortunately very little additional code was
+needed outside of the backend for the window manager to handle bindings.</p>
+<p>As for the input handling, most of the heavy lifting is done by the
+<code>wlroots</code> library, specifically its helpers that Qtile uses to set up
+devices and receive input events, including multi-touch touchpad gestures.
+Consequently, Qtile's swipe bindings are limited to the Wayland backend, and
+are not supported under X11.</p>
+<p>For X11, existing standalone tools such as <a class="reference external" href="https://github.com/bulletmark/libinput-gestures">libinput-gestures</a> and <a class="reference external" href="https://github.com/JoseExposito/touchegg">touchegg</a> can
+be used for touchpad gestures. They generally work by listening for gesture
+events on the device and then when an event of interest is made, they run some
+shell command. This unfortunately means that these tools only support one-shot
+commands, and not interactive commands. Perhaps it would be possible to create
+a CFFI wrapper around libinput in Qtile's X backend to support interactive
+gestures, but I suspect this is non-trivial (reach out if you're is interested
+in looking into this!).</p>
+</div>
+<div class="section" id="example-uses">
+<h2>Example uses</h2>
+<p>The new <code>Swipe</code> class is pretty much the same as <code>Drag</code>, except it
+needs a number of fingers rather than a button name. This <code>Drag</code> example
+is lifted from the default config, and below it is the equivalent
+<code>Swipe</code>, which is demonstrated in the video.</p>
+<pre class="code python literal-block">
+<span class="n">mouse</span> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <span class="o">...</span><span class="w">
+
+</span>    <span class="n">Drag</span><span class="p">(</span><span class="w">
+</span>        <span class="p">[</span><span class="n">mod</span><span class="p">],</span><span class="w">
+</span>        <span class="s2">&quot;Button1&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="n">lazy</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">set_position_floating</span><span class="p">(),</span><span class="w">
+</span>        <span class="n">start</span><span class="o">=</span><span class="n">lazy</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">get_position</span><span class="p">(),</span><span class="w">
+</span>    <span class="p">),</span><span class="w">
+</span>    <span class="n">Swipe</span><span class="p">(</span><span class="w">
+</span>        <span class="p">[</span><span class="n">mod</span><span class="p">],</span><span class="w">
+</span>        <span class="mi">3</span><span class="p">,</span>  <span class="c1"># 3-finger gesture</span><span class="w">
+</span>        <span class="n">lazy</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">set_position_floating</span><span class="p">(),</span><span class="w">
+</span>        <span class="n">start</span><span class="o">=</span><span class="n">lazy</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">get_position</span><span class="p">(),</span><span class="w">
+</span>    <span class="p">),</span><span class="w">
+</span><span class="p">]</span>
+</pre>
+<video controls width="100%" class="align-center" src="/static/qtile-drag.webm"></video><p>Taking advantage of <code>LazyCall.when()</code>, e.g.
+<code>lazy.function(zoom).when(focused=Match(wm_class=&quot;firefox&quot;))</code> would let
+you use swipe bindings conditional upon which window is focussed. The X11 tools
+mentioned above often have this feature, but this addition to Qtile is the only
+way to get even one-shot gesture-bound actions working in Wayland.</p>
+</div>
+<div class="section" id="sliding-between-groups">
+<h2>Sliding between groups</h2>
+<p>The next step was to add commands to interactively and smoothly 'slide' between
+one group and the next/previous. Fundamentally this mechanism is uncoupled from
+the gestures mechanism above: if this was added without the ability to have
+swipe bindings, one could expect to slide between groups using a mouse dragging
+action via the existing <code>Drag</code> configurable.</p>
+<p>Indeed, the current (initial) state of the PR does support this, with bindings
+for drags and swipes being very similar:</p>
+<pre class="code python literal-block">
+<span class="n">Drag</span><span class="p">(</span><span class="w">
+</span>    <span class="p">[</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;shift&quot;</span><span class="p">],</span><span class="w">
+</span>    <span class="s2">&quot;Button1&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">lazy</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">slide_to_group</span><span class="p">(),</span><span class="w">
+</span>    <span class="n">start</span><span class="o">=</span><span class="n">lazy</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">start_slide_to_group</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">2.5</span><span class="p">),</span><span class="w">
+</span><span class="p">),</span><span class="w">
+</span><span class="n">Swipe</span><span class="p">(</span><span class="w">
+</span>    <span class="p">[],</span><span class="w">
+</span>    <span class="mi">4</span><span class="p">,</span><span class="w">
+</span>    <span class="n">lazy</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">slide_to_group</span><span class="p">(),</span><span class="w">
+</span>    <span class="n">start</span><span class="o">=</span><span class="n">lazy</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">start_slide_to_group</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">2.5</span><span class="p">),</span><span class="w">
+</span><span class="p">),</span>
+</pre>
+<p>Here is a poor quality video trying to show how it works. Note that at a few
+points I lifted my hands to end the gesture before moving more than half way
+towards one of the adjacent workspaces. When that happens, we return to the
+start. When the gesture ends, whether we're changing to the next/prev workspace
+or returning to the start, there is a smooth animation transitioning the
+compositor towards that point:</p>
+<video controls width="100%" class="align-center" src="/static/qtile-swipe.webm"></video><p>Neat, huh? This was fun to implement.</p>
+</div>
+<div class="section" id="what-s-next">
+<h2>What's next?</h2>
+<p>The possibility for pinch gestures via a new <code>Pinch</code> configurable is low
+hanging fruit, though I'm unsure what commands users might bind to them.
+Enabling/disabling fullscreening the current window maybe?</p>
+<p>For the workspace animations, these could potentially be one-shot,
+non-interactive commands too. This would let users bind to a key press &quot;slide
+smoothly to the next workspace&quot;, which would be a new feature for those who
+don't use trackpads, and indeed some people have already expressed interest in
+this.</p>
+</div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2022-11-07T00:00:00+00:00">2022-11-07</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

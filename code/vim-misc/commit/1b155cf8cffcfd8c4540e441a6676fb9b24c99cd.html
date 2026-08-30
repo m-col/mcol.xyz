@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - remove some old stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/1b155cf8cffcfd8c4540e441a6676fb9b24c99cd.html">1b155cf8cffcfd8c4540e441a6676fb9b24c99cd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/27b8903c869bec0ba55b6e8708dffe52ee33b09b.html">27b8903c869bec0ba55b6e8708dffe52ee33b09b</a>
+<b>Author:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Date:</b> 2025-05-13 17:23:12 +0100
+<b>Committer:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-05-13 17:23:12 +0100
+
+remove some old stuff
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -122,14 +122,9 @@
+<span class="def"> vnoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="def"> vnoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span><span class="def"> 
+</span><span class="sub">-&quot; ALE navigation
+</span><span class="sub">-nmap &lt;silent&gt; &lt;leader&gt;g &lt;Plug&gt;(ale_next_wrap)
+</span><span class="sub">-nmap &lt;silent&gt; &lt;leader&gt;&lt;S-g&gt; &lt;Plug&gt;(ale_previous_wrap)
+</span><span class="sub">-&quot;&quot;nmap &lt;silent&gt; &lt;C-S-f&gt; &lt;Plug&gt;(ale_fix)
+</span><span class="sub">-
+</span><span class="sub">-&quot; ALE find references
+</span><span class="sub">-nmap &lt;silent&gt; &lt;C-i&gt; &lt;Plug&gt;(ale_find_references)
+</span><span class="sub">-
+</span><span class="add">+&quot; ALE
+</span><span class="add">+&quot;nmap &lt;silent&gt; &lt;C-S-f&gt; &lt;Plug&gt;(ale_fix)
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-[&gt; &lt;Plug&gt;(ale_find_references)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-]&gt; &lt;Plug&gt;(ale_go_to_definition)
+</span><span class="def"> 
+</span><span class="def"> &quot; CtrlP (in addition to the default Ctrl-p binding)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/bclose.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -75,13 +75,6 @@
+<span class="def"> command! -bang -complete=buffer -nargs=? Bclose call s:Bclose(&apos;&lt;bang&gt;&apos;, &apos;&lt;args&gt;&apos;)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-if v:servername == &quot;VIMLAB&quot;
+</span><span class="sub">-    nnoremap &lt;buffer&gt; &lt;silent&gt; &lt;BS&gt; &lt;Plug&gt;Kwbd
+</span><span class="sub">-else
+</span><span class="sub">-    autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;empty(bufname(v:val)) &amp;&amp; buflisted(v:val)&apos;)) == 1 &amp;&amp; v:servername != &quot;VIMLAB&quot; | quit | endif
+</span><span class="sub">-endif
+</span><span class="add">+autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;empty(bufname(v:val)) &amp;&amp; buflisted(v:val)&apos;)) == 1 | quit | endif
+</span><span class="def"> 
+</span><span class="def"> nnoremap &lt;silent&gt; &lt;BS&gt; :Bclose&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

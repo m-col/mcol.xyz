@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add AUR_PAGER; chp cherry-pick alias</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/212011d950b57d69483a84e9c21b4409cfbe4abb.html">212011d950b57d69483a84e9c21b4409cfbe4abb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/10ae12f73425cb01c2529e3a3fe55349d858b4c2.html">10ae12f73425cb01c2529e3a3fe55349d858b4c2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-01 19:57:39 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-01 19:57:39 +0000
+
+add AUR_PAGER; chp cherry-pick alias
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -54,6 +54,7 @@
+<span class="def"> 
+</span><span class="def"> export SUDO_EDITOR=vim
+</span><span class="def"> export EDITOR=vim
+</span><span class="add">+export AUR_PAGER=ranger
+</span><span class="def"> 
+</span><span class="def"> # ensure that the prompt is redrawn when the terminal size changes.
+</span><span class="def"> TRAPWINCH () { zle &amp;&amp;  zle -R }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -614,7 +614,7 @@
+<span class="def"> map r3 shell mogrify -rotate 270 %s
+</span><span class="def"> 
+</span><span class="def"> # drag files
+</span><span class="sub">-map &lt;C-d&gt; shell dragon-drag-and-drop -a -x %p
+</span><span class="add">+map &lt;C-d&gt; shell dragon-drag-and-drop -a -x %p &amp;&gt; /dev/null &amp;
+</span><span class="def"> 
+</span><span class="def"> # filter while finding
+</span><span class="def"> map f console scout -ftsea%space
+</span>@@ -635,8 +635,7 @@
+<span class="def"> 
+</span><span class="def"> map gg cd ~/git
+</span><span class="def"> map gC cd ~/git/custom-packages
+</span><span class="sub">-map gA cd ~/.cache/aur
+</span><span class="sub">-map gU cd ~/.cache/aurutils/sync
+</span><span class="add">+map gu cd ~/.cache/aurutils/sync
+</span><span class="def"> 
+</span><span class="def"> map gc cd ~/.config
+</span><span class="def"> map gx cd ~/.config/Xresources.d
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -57,6 +57,7 @@
+<span class="def"> alias ch=&apos;git checkout&apos;
+</span><span class="def"> alias dif=&apos;git diff&apos;
+</span><span class="def"> alias cl=&apos;git clone&apos;
+</span><span class="add">+alias chp=&apos;git cherry-pick&apos;
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

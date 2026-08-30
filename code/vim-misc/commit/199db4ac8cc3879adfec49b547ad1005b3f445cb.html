@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - updated theme file</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/199db4ac8cc3879adfec49b547ad1005b3f445cb.html">199db4ac8cc3879adfec49b547ad1005b3f445cb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/e6a6acb6d1d327cc978a5752bd4f5d7a6b053127.html">e6a6acb6d1d327cc978a5752bd4f5d7a6b053127</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 10:23:21 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 10:23:21 +0000
+
+updated theme file
+</pre><div class="diff">
+  <p>
+    <b>plugin/theme.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -36,6 +36,9 @@
+<span class="def"> &quot; visual mode highlighting
+</span><span class="def"> hi Visual ctermbg=7 ctermfg=0
+</span><span class="def"> 
+</span><span class="add">+&quot; title highlighting needs changing so that text doesn&apos;t go invisible due to cursor line
+</span><span class="add">+hi Title ctermfg=3 ctermbg=0
+</span><span class="add">+
+</span><span class="def"> &quot; matched brackets
+</span><span class="def"> hi MatchParen ctermfg=7 cterm=underline ctermbg=0 
+</span><span class="def"> 
+</span>@@ -59,6 +62,6 @@
+<span class="def">     autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="def"> augroup END
+</span><span class="def"> 
+</span><span class="sub">-&quot; character for line in split
+</span><span class="add">+&quot; character for split barrier
+</span><span class="def"> set fillchars=vert:\ 
+</span><span class="def"> hi VertSplit cterm=bold term=bold ctermbg=12
+</span></pre>
+</div></div>
+  </body>
+</html>

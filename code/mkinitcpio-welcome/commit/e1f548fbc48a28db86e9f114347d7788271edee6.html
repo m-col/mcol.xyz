@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - init commit with working prototype hook</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/e1f548fbc48a28db86e9f114347d7788271edee6.html">e1f548fbc48a28db86e9f114347d7788271edee6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/.html"></a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-29 17:20:04 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-29 17:20:04 +0100
+
+init commit with working prototype hook
+</pre><div class="diff">
+  <p>
+    <b>install/welcome</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,11 @@
+<span class="add">+#!/bin/bash
+</span><span class="add">+
+</span><span class="add">+build() {
+</span><span class="add">+    add_runscript
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+help() {
+</span><span class="add">+    cat &lt;&lt;HELPEOF
+</span><span class="add">+Sets up console appearance before asking for passphrase
+</span><span class="add">+HELPEOF
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>hooks/welcome</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,44 @@
+<span class="add">+#!/usr/bin/ash
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# # # # # # # USER SETTINGS
+</span><span class="add">+
+</span><span class="add">+# These should be a number from 0 to 15
+</span><span class="add">+
+</span><span class="add">+BACKGROUND=0
+</span><span class="add">+WELCOME=5
+</span><span class="add">+INPUTBOX=4
+</span><span class="add">+
+</span><span class="add">+# # # # # # # # # # # # # #
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+run_hook() {
+</span><span class="add">+    bk=&quot;\x1b[48;5;${BACKGROUND}m&quot;
+</span><span class="add">+    we=&quot;\x1b[48;5;${WELCOME}m&quot;
+</span><span class="add">+    in=&quot;\x1b[48;5;${INPUTBOX}m&quot;
+</span><span class="add">+
+</span><span class="add">+    p=&quot;$we  $bk&quot;  		# single pixel
+</span><span class="add">+    s=&quot;$we  &quot;	    		# start pixel row
+</span><span class="add">+    e=&quot;  $bk&quot;	    		# end pixel row
+</span><span class="add">+    non=&quot;\x1b[0m&quot;		# reset all settings
+</span><span class="add">+    fill=&quot;\033[K&quot;   		# fill to end of line
+</span><span class="add">+
+</span><span class="add">+    echo -e &quot;$b14\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                                                  $s$e$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                   $p          $p                   $p$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                   $p          $p                   $p$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                   $p          $p    $s    $e       $p            $s    $e        $s    $e      $s  $e  $s$e      $s    $e$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                   $p    $p    $p  $p        $p     $p          $p        $p    $p        $p    $p    $p    $p  $p        $p$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                   $p    $p    $p  $s        $e     $p          $p              $p        $p    $p    $p    $p  $s        $e$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                   $p    $p    $p  $p               $p          $p              $p        $p    $p    $p    $p  $p$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                   $p  $p  $p  $p  $p               $p          $p        $p    $p        $p    $p    $p    $p  $p$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                   $s$e      $s$e    $s      $e       $s  $e      $s    $e        $s    $e      $p    $p    $p    $s      $e$fill&quot;
+</span><span class="add">+    echo -e &quot;$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                                             $in                                                      $bk$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                                             $in  $bk                                                  $in  $bk$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                                             $in                                                      $bk$fill&quot;
+</span><span class="add">+    echo -e &quot;$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="add">+
+</span><span class="add">+    # move cursor to input box
+</span><span class="add">+    echo -ne &quot;\x1b[32;96H&quot;
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

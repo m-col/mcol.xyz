@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - fix small mistake in dragging</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/d1d22eb074acd47994e76007ba56fb8d525f9b7a.html">d1d22eb074acd47994e76007ba56fb8d525f9b7a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/13c16c0fd4d24757e553feef04ff3590ad583042.html">13c16c0fd4d24757e553feef04ff3590ad583042</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-28 20:23:26 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-28 20:23:26 +0000
+
+fix small mistake in dragging
+</pre><div class="diff">
+  <p>
+    <b>src/keyboard.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,7 +16,7 @@
+<span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="sub">-    bool handled;
+</span><span class="add">+    bool handled = false;
+</span><span class="def">     struct binding *kb;
+</span><span class="def">     if ((modifiers &amp; wimp.mod)) {
+</span><span class="def"> 	modifiers &amp;= ~wimp.mod;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -161,7 +161,6 @@
+<span class="def"> 		}
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="sub">-	wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="def"> 	if (wimp.grabbed_view) {
+</span><span class="def"> 	    wimp.grabbed_view = NULL;
+</span><span class="def"> 	}
+</span></pre>
+</div></div>
+  </body>
+</html>

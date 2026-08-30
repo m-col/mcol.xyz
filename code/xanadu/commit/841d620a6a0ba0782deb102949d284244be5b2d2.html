@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - fix getting desktop directory</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/841d620a6a0ba0782deb102949d284244be5b2d2.html">841d620a6a0ba0782deb102949d284244be5b2d2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/cff6d882d3845f74686db7480c9f7ee61f2e21e2.html">cff6d882d3845f74686db7480c9f7ee61f2e21e2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-01 00:04:12 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-01 00:04:12 +0000
+
+fix getting desktop directory
+</pre><div class="diff">
+  <p>
+    <b>src/Icons.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -43,8 +43,8 @@
+<span class="def"> getRoot = do
+</span><span class="def">     fromEnv &lt;- lookupEnv &quot;XDG_DESKTOP_DIR&quot;
+</span><span class="def">     case fromEnv of
+</span><span class="sub">-        Nothing -&gt; (&lt;/&gt; &quot;/Desktop&quot;) &lt;$&gt; getHomeDirectory
+</span><span class="sub">-        Just &quot;&quot; -&gt; (&lt;/&gt; &quot;/Desktop&quot;) &lt;$&gt; getHomeDirectory
+</span><span class="add">+        Nothing -&gt; (&lt;&gt; &quot;/Desktop&quot;) &lt;$&gt; getHomeDirectory
+</span><span class="add">+        Just &quot;&quot; -&gt; (&lt;&gt; &quot;/Desktop&quot;) &lt;$&gt; getHomeDirectory
+</span><span class="def">         Just path -&gt; return path
+</span><span class="def"> 
+</span><span class="def"> populate :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span></pre>
+</div></div>
+  </body>
+</html>

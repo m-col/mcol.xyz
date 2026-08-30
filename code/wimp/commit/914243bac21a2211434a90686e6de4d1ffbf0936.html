@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - hook process_cursor_resize into view_apply_geometry</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/914243bac21a2211434a90686e6de4d1ffbf0936.html">914243bac21a2211434a90686e6de4d1ffbf0936</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/ffeec229ef0799a4f057362686d2b5f13b3268f0.html">ffeec229ef0799a4f057362686d2b5f13b3268f0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-21 20:15:47 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-21 20:15:47 +0000
+
+hook process_cursor_resize into view_apply_geometry
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -40,30 +40,25 @@
+<span class="def"> 
+</span><span class="def"> static void process_cursor_resize(uint32_t time, double zoom) {
+</span><span class="def">     struct view *view = wimp.grabbed_view;
+</span><span class="sub">-    int x = wimp.grab_geobox.x;
+</span><span class="sub">-    int width = wimp.grab_geobox.width;
+</span><span class="sub">-    int y = wimp.grab_geobox.y;
+</span><span class="sub">-    int height = wimp.grab_geobox.height;
+</span><span class="sub">-
+</span><span class="def">     double cx = (wimp.cursor-&gt;x - wimp.grab_x) / zoom;
+</span><span class="def">     double cy = (wimp.cursor-&gt;y - wimp.grab_y) / zoom;
+</span><span class="add">+    struct wlr_box new;
+</span><span class="add">+    memcpy(&amp;new, &amp;wimp.grab_geobox, sizeof(struct wlr_box));
+</span><span class="def"> 
+</span><span class="def">     if (wimp.resize_edges &amp; WLR_EDGE_TOP) {
+</span><span class="sub">-	height -= cy - y;
+</span><span class="sub">-	y = cy;
+</span><span class="add">+	new.height -= cy - new.y;
+</span><span class="add">+	new.y = cy;
+</span><span class="def">     } else if (wimp.resize_edges &amp; WLR_EDGE_BOTTOM) {
+</span><span class="sub">-        height += cy - y;
+</span><span class="add">+        new.height += cy - new.y;
+</span><span class="def">     }
+</span><span class="def">     if (wimp.resize_edges &amp; WLR_EDGE_LEFT) {
+</span><span class="sub">-        width -= cx - x;
+</span><span class="sub">-	x = cx;
+</span><span class="add">+        new.width -= cx - new.x;
+</span><span class="add">+	new.x = cx;
+</span><span class="def">     } else if (wimp.resize_edges &amp; WLR_EDGE_RIGHT) {
+</span><span class="sub">-        width += cx - x;
+</span><span class="add">+        new.width += cx - new.x;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    view-&gt;x = x;
+</span><span class="sub">-    view-&gt;y = y;
+</span><span class="sub">-    wlr_xdg_toplevel_set_size(view-&gt;surface, width, height);
+</span><span class="add">+    view_apply_geometry(view, &amp;new);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

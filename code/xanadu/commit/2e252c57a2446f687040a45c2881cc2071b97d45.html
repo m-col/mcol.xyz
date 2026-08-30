@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Add xyz.mcol.xanadu as application ID</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/2e252c57a2446f687040a45c2881cc2071b97d45.html">2e252c57a2446f687040a45c2881cc2071b97d45</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/c2232ba07e15af7dced3074f6eeaee25f80a94f8.html">c2232ba07e15af7dced3074f6eeaee25f80a94f8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-22 19:02:17 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-22 19:02:17 +0100
+
+Add xyz.mcol.xanadu as application ID
+</pre><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -11,7 +11,7 @@
+<span class="def"> main :: IO ()
+</span><span class="def"> main = do
+</span><span class="def">     app &lt;- new Gtk.Application
+</span><span class="sub">-      [ #applicationId := &quot;xanadu&quot;
+</span><span class="add">+      [ #applicationId := &quot;xyz.mcol.xanadu&quot;
+</span><span class="def">       , #flags := [ Gio.ApplicationFlagsFlagsNone ]
+</span><span class="def">       ]
+</span><span class="def">     on app #activate $ activateApp app
+</span></pre>
+</div></div>
+  </body>
+</html>

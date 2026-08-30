@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - Set window shape as 1px inside border of screen</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/752261d295cb5681f474549e4bd197864f975669.html">752261d295cb5681f474549e4bd197864f975669</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/e55f495331271a372ae1b603d2a94966a995f828.html">e55f495331271a372ae1b603d2a94966a995f828</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-18 18:41:28 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-18 18:41:28 +0100
+
+Set window shape as 1px inside border of screen
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,35 +2,13 @@
+<span class="def"> #include &lt;stdio.h&gt;
+</span><span class="def"> #include &lt;string.h&gt;
+</span><span class="def"> #include &lt;xcb/xcb.h&gt;
+</span><span class="add">+#include &lt;xcb/shape.h&gt;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> xcb_connection_t    *conn;
+</span><span class="def"> xcb_screen_t	    *screen;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void clip_window(xcb_window_t wid)
+</span><span class="sub">-{
+</span><span class="sub">-    uint32_t mask;
+</span><span class="sub">-    xcb_gcontext_t  gc;
+</span><span class="sub">-
+</span><span class="sub">-    mask = XCB_GC_CLIP_ORIGIN_X | XCB_GC_CLIP_ORIGIN_Y;// | XCB_GC_CLIP_MASK
+</span><span class="sub">-
+</span><span class="sub">-    const uint32_t values[] = {
+</span><span class="sub">-	1,
+</span><span class="sub">-	1,
+</span><span class="sub">-    };
+</span><span class="sub">-
+</span><span class="sub">-    gc = xcb_generate_id(conn);
+</span><span class="sub">-    xcb_create_gc(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	gc,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	mask,
+</span><span class="sub">-	values
+</span><span class="sub">-    );
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void set_window_type(xcb_window_t wid) {
+</span><span class="def">     xcb_intern_atom_cookie_t cookie1, cookie2;
+</span><span class="def">     xcb_intern_atom_reply_t *reply1, *reply2;
+</span>@@ -55,12 +33,67 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void set_window_shape(xcb_window_t wid)
+</span><span class="add">+{
+</span><span class="add">+    xcb_gcontext_t gc = xcb_generate_id(conn);
+</span><span class="add">+    xcb_pixmap_t pixmap = xcb_generate_id(conn);
+</span><span class="add">+
+</span><span class="add">+    xcb_create_pixmap(
+</span><span class="add">+	conn,
+</span><span class="add">+	1,
+</span><span class="add">+	pixmap,
+</span><span class="add">+	wid,
+</span><span class="add">+	screen-&gt;width_in_pixels,
+</span><span class="add">+	screen-&gt;height_in_pixels
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    const uint32_t values[] = {
+</span><span class="add">+	screen-&gt;white_pixel,
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    xcb_create_gc(
+</span><span class="add">+	conn,
+</span><span class="add">+	gc,
+</span><span class="add">+	pixmap,
+</span><span class="add">+	XCB_GC_FOREGROUND,
+</span><span class="add">+	values
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    xcb_rectangle_t rect = {
+</span><span class="add">+	1,
+</span><span class="add">+	1,
+</span><span class="add">+	screen-&gt;width_in_pixels - 2,
+</span><span class="add">+	screen-&gt;height_in_pixels - 2
+</span><span class="add">+    };
+</span><span class="add">+    xcb_poly_fill_rectangle(
+</span><span class="add">+	conn,
+</span><span class="add">+	pixmap,
+</span><span class="add">+	gc,
+</span><span class="add">+	1,
+</span><span class="add">+	&amp;rect
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    xcb_shape_mask(
+</span><span class="add">+	conn,
+</span><span class="add">+	XCB_SHAPE_SO_SUBTRACT,
+</span><span class="add">+        XCB_SHAPE_SK_INPUT,
+</span><span class="add">+	wid,
+</span><span class="add">+	0,
+</span><span class="add">+        0,
+</span><span class="add">+	pixmap
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    xcb_free_gc(conn, gc);
+</span><span class="add">+    xcb_free_pixmap(conn, pixmap);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> xcb_window_t setup_window()
+</span><span class="def"> {
+</span><span class="def">     xcb_window_t wid = xcb_generate_id(conn);
+</span><span class="def"> 
+</span><span class="sub">-    uint32_t mask_val = 0;
+</span><span class="sub">-    mask_val |= XCB_EVENT_MASK_ENTER_WINDOW;
+</span><span class="add">+    uint32_t values = 0;
+</span><span class="add">+    values |= XCB_EVENT_MASK_ENTER_WINDOW;
+</span><span class="def"> 
+</span><span class="def">     xcb_create_window(
+</span><span class="def"> 	conn,
+</span>@@ -69,17 +102,17 @@
+<span class="def"> 	screen-&gt;root,
+</span><span class="def"> 	0,
+</span><span class="def"> 	0,
+</span><span class="sub">-	1, // screen-&gt;width_in_pixels
+</span><span class="add">+	screen-&gt;width_in_pixels,
+</span><span class="def"> 	screen-&gt;height_in_pixels,
+</span><span class="def"> 	0,
+</span><span class="def"> 	XCB_WINDOW_CLASS_INPUT_ONLY,
+</span><span class="def"> 	XCB_COPY_FROM_PARENT,
+</span><span class="def"> 	XCB_CW_EVENT_MASK,
+</span><span class="sub">-	&amp;mask_val
+</span><span class="add">+	&amp;values
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     set_window_type(wid);
+</span><span class="sub">-    clip_window(wid);
+</span><span class="add">+    set_window_shape(wid);
+</span><span class="def"> 
+</span><span class="def">     uint32_t above = XCB_STACK_MODE_ABOVE;
+</span><span class="def">     xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, &amp;above);
+</span>@@ -111,10 +144,6 @@
+<span class="def"> 	    case XCB_ENTER_NOTIFY:
+</span><span class="def"> 	    printf(&quot;# enter window\n&quot;);
+</span><span class="def"> 	    break;
+</span><span class="sub">-
+</span><span class="sub">-	    default:
+</span><span class="sub">-	    printf(&quot;# %d\n&quot;, event-&gt;response_type);
+</span><span class="sub">-	    break;
+</span><span class="def"> 	}
+</span><span class="def"> 
+</span><span class="def">     free(event);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,6 @@
+<span class="def"> OUT        = xoop
+</span><span class="def"> SRC 	   = xoop.c
+</span><span class="sub">-CFLAGS 	  += -Wall -Wextra -pedantic -lxcb
+</span><span class="add">+CFLAGS 	  += -Wall -Wextra -pedantic -lxcb -lxcb-shape
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

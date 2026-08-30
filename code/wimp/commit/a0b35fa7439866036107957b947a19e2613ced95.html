@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - factor in zoom when panning desk</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/a0b35fa7439866036107957b947a19e2613ced95.html">a0b35fa7439866036107957b947a19e2613ced95</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/b699769544c82ac50acfcc8395940b09833ac109.html">b699769544c82ac50acfcc8395940b09833ac109</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 10:51:19 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 10:51:19 +0000
+
+factor in zoom when panning desk
+</pre><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -130,8 +130,8 @@
+<span class="def"> void pan_desk(void *data) {
+</span><span class="def">     struct desk *desk = wimp.current_desk;
+</span><span class="def">     struct motion motion = *(struct motion*)data;
+</span><span class="sub">-    double dx = motion.dx;
+</span><span class="sub">-    double dy = motion.dy;
+</span><span class="add">+    double dx = motion.dx / desk-&gt;zoom;
+</span><span class="add">+    double dy = motion.dy / desk-&gt;zoom;
+</span><span class="def">     if (motion.is_percentage) {
+</span><span class="def"> 	struct wlr_box *extents =
+</span><span class="def"> 	    wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span></pre>
+</div></div>
+  </body>
+</html>

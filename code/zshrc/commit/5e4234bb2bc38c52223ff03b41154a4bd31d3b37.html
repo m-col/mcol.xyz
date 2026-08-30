@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - networking aliases from laptop into repo, at trash to ranger shortcuts and fix move-to-trash keybind, move ctrl-A to after vi keybind settings in zshrc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/5e4234bb2bc38c52223ff03b41154a4bd31d3b37.html">5e4234bb2bc38c52223ff03b41154a4bd31d3b37</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/4f198fe2677fbc9596d410694fe0a0797e2171ba.html">4f198fe2677fbc9596d410694fe0a0797e2171ba</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-24 17:15:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-24 17:15:06 +0000
+
+networking aliases from laptop into repo, at trash to ranger shortcuts and fix move-to-trash keybind, move ctrl-A to after vi keybind settings in zshrc
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -33,7 +33,6 @@
+<span class="def"> setopt HIST_REDUCE_BLANKS
+</span><span class="def"> 
+</span><span class="def"> # plugins
+</span><span class="sub">-bindkey &apos;^A&apos; autosuggest-execute
+</span><span class="def"> for plugin ($ZSH/oh-my-zsh/*.zsh $ZSH/*.zsh(N))
+</span><span class="def"> do
+</span><span class="def">     source $plugin
+</span>@@ -53,6 +52,8 @@
+<span class="def"> ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+</span><span class="def"> so $ZSH/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+</span><span class="def"> 
+</span><span class="add">+bindkey &apos;^A&apos; autosuggest-execute
+</span><span class="add">+
+</span><span class="def"> export SUDO_EDITOR=vim
+</span><span class="def"> export EDITOR=vim
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -375,7 +375,7 @@
+<span class="def"> map ya copy mode=add
+</span><span class="def"> map yr copy mode=remove
+</span><span class="def"> map yt copy mode=toggle
+</span><span class="sub">-map DD shell bin &apos;%s&apos;
+</span><span class="add">+map DD shell bin %s
+</span><span class="def"> 
+</span><span class="def"> # Temporary workarounds
+</span><span class="def"> map dgg eval fm.cut(dirarg=dict(to=0), narg=quantifier)
+</span>@@ -649,6 +649,7 @@
+<span class="def"> map gC cd ~/documents/C
+</span><span class="def"> map gD cd ~/Downloads
+</span><span class="def"> map gz cd ~/.zsh
+</span><span class="add">+map gt cd ~/.local/share/Trash/files
+</span><span class="def"> 
+</span><span class="def"> # view git diffs
+</span><span class="def"> map bd shell git diff --color=always %s | less -r
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,11 +17,15 @@
+<span class="def"> alias eduroam=&apos;nmcli con up eduroam&apos;
+</span><span class="def"> alias pinga=&apos;ping archlinux.org&apos;
+</span><span class="def"> alias ip=&quot;ip -c&quot;
+</span><span class="add">+alias ufw=&quot;sudo ufw&quot;
+</span><span class="add">+alias dns=&quot;cat /etc/resolv.conf&quot;
+</span><span class="add">+alias pinga=&apos;ping archlinux.org&apos;
+</span><span class="def"> 
+</span><span class="def"> # launchers
+</span><span class="def"> alias ra=&quot;ranger&quot;
+</span><span class="def"> alias vi=&quot;vim&quot;
+</span><span class="def"> alias tmux=&quot;tmux -u&quot;
+</span><span class="add">+alias ta=&quot;tmux attach&quot;
+</span><span class="def"> 
+</span><span class="def"> # git
+</span><span class="def"> alias gs=&quot;git status&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

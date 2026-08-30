@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - config.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- config.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &quot;&quot;&quot;
+<a href="#l2" class="line" id="l2">      2</a> Qtile main config file
+<a href="#l3" class="line" id="l3">      3</a> ======================
+<a href="#l4" class="line" id="l4">      4</a> &quot;&quot;&quot;
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a> from __future__ import annotations
+<a href="#l7" class="line" id="l7">      7</a> 
+<a href="#l8" class="line" id="l8">      8</a> import importlib
+<a href="#l9" class="line" id="l9">      9</a> import os
+<a href="#l10" class="line" id="l10">     10</a> import re
+<a href="#l11" class="line" id="l11">     11</a> import subprocess
+<a href="#l12" class="line" id="l12">     12</a> import sys
+<a href="#l13" class="line" id="l13">     13</a> from typing import TYPE_CHECKING
+<a href="#l14" class="line" id="l14">     14</a> 
+<a href="#l15" class="line" id="l15">     15</a> from libqtile import bar, hook, layout, qtile, utils, widget
+<a href="#l16" class="line" id="l16">     16</a> from libqtile.backend import base
+<a href="#l17" class="line" id="l17">     17</a> from libqtile.config import Click, Drag, Key, Match, Screen
+<a href="#l18" class="line" id="l18">     18</a> from libqtile.lazy import lazy
+<a href="#l19" class="line" id="l19">     19</a> from libqtile.widget.backlight import ChangeDirection
+<a href="#l20" class="line" id="l20">     20</a> from libqtile.widget.battery import Battery, BatteryState
+<a href="#l21" class="line" id="l21">     21</a> 
+<a href="#l22" class="line" id="l22">     22</a> import qtile_extras.widget as widget_extras
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> assert qtile is not None
+<a href="#l25" class="line" id="l25">     25</a> 
+<a href="#l26" class="line" id="l26">     26</a> if TYPE_CHECKING:
+<a href="#l27" class="line" id="l27">     27</a>     from typing import Any
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a>     from libqtile.core.manager import Qtile
+<a href="#l30" class="line" id="l30">     30</a> 
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> # Config imports
+<a href="#l33" class="line" id="l33">     33</a> def reload(module):
+<a href="#l34" class="line" id="l34">     34</a>     if module in sys.modules:
+<a href="#l35" class="line" id="l35">     35</a>         importlib.reload(sys.modules[module])
+<a href="#l36" class="line" id="l36">     36</a> 
+<a href="#l37" class="line" id="l37">     37</a> 
+<a href="#l38" class="line" id="l38">     38</a> import traverse
+<a href="#l39" class="line" id="l39">     39</a> from toggle_debug import toggle_debug
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a> use_tags = False
+<a href="#l42" class="line" id="l42">     42</a> 
+<a href="#l43" class="line" id="l43">     43</a> if use_tags:
+<a href="#l44" class="line" id="l44">     44</a>     reload(&quot;tags&quot;)
+<a href="#l45" class="line" id="l45">     45</a>     from tags import groups, keys_group
+<a href="#l46" class="line" id="l46">     46</a> else:
+<a href="#l47" class="line" id="l47">     47</a>     reload(&quot;groups&quot;)
+<a href="#l48" class="line" id="l48">     48</a>     from groups import groups, keys_group
+<a href="#l49" class="line" id="l49">     49</a> 
+<a href="#l50" class="line" id="l50">     50</a> reload(&quot;scratchpad&quot;)
+<a href="#l51" class="line" id="l51">     51</a> from scratchpad import keys_scratchpad, scratchpad
+<a href="#l52" class="line" id="l52">     52</a> 
+<a href="#l53" class="line" id="l53">     53</a> reload(&quot;power_menu&quot;)
+<a href="#l54" class="line" id="l54">     54</a> from power_menu import keys_power_menu
+<a href="#l55" class="line" id="l55">     55</a> 
+<a href="#l56" class="line" id="l56">     56</a> IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+<a href="#l57" class="line" id="l57">     57</a> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+<a href="#l58" class="line" id="l58">     58</a> 
+<a href="#l59" class="line" id="l59">     59</a> reload(qtile.core.name)
+<a href="#l60" class="line" id="l60">     60</a> if IS_WAYLAND:
+<a href="#l61" class="line" id="l61">     61</a>     from wayland import keys_backend, term, wl_input_rules, wl_shadows  # noqa: F401
+<a href="#l62" class="line" id="l62">     62</a> else:
+<a href="#l63" class="line" id="l63">     63</a>     from x11 import keys_backend, term, wmname  # noqa: F401
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a> # Colours
+<a href="#l66" class="line" id="l66">     66</a> theme = dict(
+<a href="#l67" class="line" id="l67">     67</a>     foreground=&quot;#CFCCD6&quot;,
+<a href="#l68" class="line" id="l68">     68</a>     background=&quot;#0C1F20&quot;,
+<a href="#l69" class="line" id="l69">     69</a>     color0=&quot;#030405&quot;,
+<a href="#l70" class="line" id="l70">     70</a>     color8=&quot;#1f1c32&quot;,
+<a href="#l71" class="line" id="l71">     71</a>     color1=&quot;#8742a5&quot;,
+<a href="#l72" class="line" id="l72">     72</a>     color9=&quot;#9a5eb3&quot;,
+<a href="#l73" class="line" id="l73">     73</a>     color2=&quot;#406794&quot;,
+<a href="#l74" class="line" id="l74">     74</a>     color10=&quot;#5fd75f&quot;,
+<a href="#l75" class="line" id="l75">     75</a>     color3=&quot;#653c21&quot;,
+<a href="#l76" class="line" id="l76">     76</a>     color11=&quot;#6e9fcd&quot;,
+<a href="#l77" class="line" id="l77">     77</a>     color4=&quot;#8f4ff0&quot;,
+<a href="#l78" class="line" id="l78">     78</a>     color12=&quot;#BBC2E2&quot;,
+<a href="#l79" class="line" id="l79">     79</a>     color5=&quot;#5d479d&quot;,
+<a href="#l80" class="line" id="l80">     80</a>     color13=&quot;#998dd1&quot;,
+<a href="#l81" class="line" id="l81">     81</a>     color6=&quot;#3e3e73&quot;,
+<a href="#l82" class="line" id="l82">     82</a>     color14=&quot;#9a9dcc&quot;,
+<a href="#l83" class="line" id="l83">     83</a>     color7=&quot;#495068&quot;,
+<a href="#l84" class="line" id="l84">     84</a>     color15=&quot;#e1e1e4&quot;,
+<a href="#l85" class="line" id="l85">     85</a> )
+<a href="#l86" class="line" id="l86">     86</a> 
+<a href="#l87" class="line" id="l87">     87</a> colours = [theme[f&quot;color{n}&quot;] for n in range(16)]
+<a href="#l88" class="line" id="l88">     88</a> background = theme[&quot;background&quot;]
+<a href="#l89" class="line" id="l89">     89</a> foreground = theme[&quot;foreground&quot;]
+<a href="#l90" class="line" id="l90">     90</a> colour_focussed = &quot;#6fa3e0&quot;
+<a href="#l91" class="line" id="l91">     91</a> colour_unfocussed = &quot;#0e101c&quot;
+<a href="#l92" class="line" id="l92">     92</a> inner_gaps = 8
+<a href="#l93" class="line" id="l93">     93</a> outer_gaps = 0
+<a href="#l94" class="line" id="l94">     94</a> 
+<a href="#l95" class="line" id="l95">     95</a> # https://coolors.co/1b2021-cfccd6-bbc2e2-b7b5e4-847979
+<a href="#l96" class="line" id="l96">     96</a> 
+<a href="#l97" class="line" id="l97">     97</a> 
+<a href="#l98" class="line" id="l98">     98</a> # Keys
+<a href="#l99" class="line" id="l99">     99</a> 
+<a href="#l100" class="line" id="l100">    100</a> if IS_XEPHYR:
+<a href="#l101" class="line" id="l101">    101</a>     mod = &quot;mod1&quot;
+<a href="#l102" class="line" id="l102">    102</a>     alt = &quot;control&quot;
+<a href="#l103" class="line" id="l103">    103</a> else:
+<a href="#l104" class="line" id="l104">    104</a>     mod = &quot;mod4&quot;
+<a href="#l105" class="line" id="l105">    105</a>     alt = &quot;mod1&quot;
+<a href="#l106" class="line" id="l106">    106</a> 
+<a href="#l107" class="line" id="l107">    107</a> # My keybindings - they are converted at the bottom of this file
+<a href="#l108" class="line" id="l108">    108</a> my_keys: list[tuple[list[str], str, Any, str]] = []
+<a href="#l109" class="line" id="l109">    109</a> my_keys.extend(keys_backend)
+<a href="#l110" class="line" id="l110">    110</a> my_keys.extend(keys_group)
+<a href="#l111" class="line" id="l111">    111</a> my_keys.extend(keys_scratchpad)
+<a href="#l112" class="line" id="l112">    112</a> my_keys.extend(keys_power_menu)
+<a href="#l113" class="line" id="l113">    113</a> 
+<a href="#l114" class="line" id="l114">    114</a> 
+<a href="#l115" class="line" id="l115">    115</a> def float_to_front(qtile: Qtile) -&gt; None:
+<a href="#l116" class="line" id="l116">    116</a>     &quot;&quot;&quot;Bring all floating windows of the group to front&quot;&quot;&quot;
+<a href="#l117" class="line" id="l117">    117</a>     for window in qtile.current_group.windows:
+<a href="#l118" class="line" id="l118">    118</a>         if window.floating:
+<a href="#l119" class="line" id="l119">    119</a>             window.bring_to_front()
+<a href="#l120" class="line" id="l120">    120</a> 
+<a href="#l121" class="line" id="l121">    121</a> 
+<a href="#l122" class="line" id="l122">    122</a> my_keys.extend(
+<a href="#l123" class="line" id="l123">    123</a>     [
+<a href="#l124" class="line" id="l124">    124</a>         # Window management
+<a href="#l125" class="line" id="l125">    125</a>         ([mod, &quot;control&quot;], &quot;q&quot;, lazy.window.kill(), &quot;Close window&quot;),
+<a href="#l126" class="line" id="l126">    126</a>         ([mod], &quot;f&quot;, lazy.window.toggle_fullscreen(), &quot;Toggle fullscreen&quot;),
+<a href="#l127" class="line" id="l127">    127</a>         ([mod, &quot;shift&quot;], &quot;space&quot;, lazy.window.toggle_floating(), &quot;Toggle floating&quot;),
+<a href="#l128" class="line" id="l128">    128</a>         ([mod], &quot;s&quot;, lazy.spawn(&quot;ddg_rofi&quot;), &quot;Search web via rofi&quot;),
+<a href="#l129" class="line" id="l129">    129</a>         ([mod, &quot;shift&quot;], &quot;s&quot;, lazy.window.static(), &quot;Make window static&quot;),
+<a href="#l130" class="line" id="l130">    130</a>         (
+<a href="#l131" class="line" id="l131">    131</a>             [mod],
+<a href="#l132" class="line" id="l132">    132</a>             &quot;space&quot;,
+<a href="#l133" class="line" id="l133">    133</a>             lazy.function(float_to_front),
+<a href="#l134" class="line" id="l134">    134</a>             &quot;Move floating windows to the front&quot;,
+<a href="#l135" class="line" id="l135">    135</a>         ),
+<a href="#l136" class="line" id="l136">    136</a>         ([mod], &quot;j&quot;, lazy.function(traverse.down), &quot;Traverse down&quot;),
+<a href="#l137" class="line" id="l137">    137</a>         ([mod], &quot;k&quot;, lazy.function(traverse.up), &quot;Traverse up&quot;),
+<a href="#l138" class="line" id="l138">    138</a>         ([mod], &quot;h&quot;, lazy.function(traverse.left), &quot;Traverse left&quot;),
+<a href="#l139" class="line" id="l139">    139</a>         ([mod], &quot;l&quot;, lazy.function(traverse.right), &quot;Traverse right&quot;),
+<a href="#l140" class="line" id="l140">    140</a>         ([mod, &quot;shift&quot;], &quot;j&quot;, lazy.layout.shuffle_down(), &quot;Shuffle down&quot;),
+<a href="#l141" class="line" id="l141">    141</a>         ([mod, &quot;shift&quot;], &quot;k&quot;, lazy.layout.shuffle_up(), &quot;Shuffle up&quot;),
+<a href="#l142" class="line" id="l142">    142</a>         ([mod, &quot;shift&quot;], &quot;h&quot;, lazy.layout.shuffle_left(), &quot;Shuffle left&quot;),
+<a href="#l143" class="line" id="l143">    143</a>         ([mod, &quot;shift&quot;], &quot;l&quot;, lazy.layout.shuffle_right(), &quot;Shuffle right&quot;),
+<a href="#l144" class="line" id="l144">    144</a>         ([mod, alt], &quot;j&quot;, lazy.layout.grow_down(), &quot;Grow down&quot;),
+<a href="#l145" class="line" id="l145">    145</a>         ([mod, alt], &quot;k&quot;, lazy.layout.grow_up(), &quot;Grow up&quot;),
+<a href="#l146" class="line" id="l146">    146</a>         ([mod, alt], &quot;h&quot;, lazy.layout.grow_left(), &quot;Grow left&quot;),
+<a href="#l147" class="line" id="l147">    147</a>         ([mod, alt], &quot;l&quot;, lazy.layout.grow_right(), &quot;Grow right&quot;),
+<a href="#l148" class="line" id="l148">    148</a>         ([mod, &quot;control&quot;], &quot;r&quot;, lazy.reload_config(), &quot;Reload the config&quot;),
+<a href="#l149" class="line" id="l149">    149</a>         ([mod, &quot;control&quot;], &quot;Escape&quot;, lazy.shutdown(), &quot;Shutdown Qtile&quot;),
+<a href="#l150" class="line" id="l150">    150</a>         ([mod], &quot;Tab&quot;, lazy.next_layout(), &quot;Next layout&quot;),
+<a href="#l151" class="line" id="l151">    151</a>         ([mod], &quot;b&quot;, lazy.hide_show_bar(&quot;bottom&quot;), &quot;Hide bar&quot;),
+<a href="#l152" class="line" id="l152">    152</a>         ([mod, &quot;control&quot;], &quot;d&quot;, lazy.function(toggle_debug), &quot;Toggle debug logging&quot;),
+<a href="#l153" class="line" id="l153">    153</a>         # Volume control - MyVolume widget is defined further down
+<a href="#l154" class="line" id="l154">    154</a>         ([], &quot;XF86AudioMute&quot;, lazy.widget[&quot;myvolume&quot;].mute(), &quot;Mute audio&quot;),
+<a href="#l155" class="line" id="l155">    155</a>         ([mod], &quot;F10&quot;, lazy.widget[&quot;myvolume&quot;].mute(), &quot;Mute audio&quot;),
+<a href="#l156" class="line" id="l156">    156</a>         (
+<a href="#l157" class="line" id="l157">    157</a>             [],
+<a href="#l158" class="line" id="l158">    158</a>             &quot;XF86AudioRaiseVolume&quot;,
+<a href="#l159" class="line" id="l159">    159</a>             lazy.widget[&quot;myvolume&quot;].increase_vol(),
+<a href="#l160" class="line" id="l160">    160</a>             &quot;Increase volume&quot;,
+<a href="#l161" class="line" id="l161">    161</a>         ),
+<a href="#l162" class="line" id="l162">    162</a>         ([mod], &quot;F12&quot;, lazy.widget[&quot;myvolume&quot;].increase_vol(), &quot;Increase volume&quot;),
+<a href="#l163" class="line" id="l163">    163</a>         (
+<a href="#l164" class="line" id="l164">    164</a>             [],
+<a href="#l165" class="line" id="l165">    165</a>             &quot;XF86AudioLowerVolume&quot;,
+<a href="#l166" class="line" id="l166">    166</a>             lazy.widget[&quot;myvolume&quot;].decrease_vol(),
+<a href="#l167" class="line" id="l167">    167</a>             &quot;Decrease volume&quot;,
+<a href="#l168" class="line" id="l168">    168</a>         ),
+<a href="#l169" class="line" id="l169">    169</a>         ([mod], &quot;F11&quot;, lazy.widget[&quot;myvolume&quot;].decrease_vol(), &quot;Decrease volume&quot;),
+<a href="#l170" class="line" id="l170">    170</a>         # Backlight control
+<a href="#l171" class="line" id="l171">    171</a>         (
+<a href="#l172" class="line" id="l172">    172</a>             [],
+<a href="#l173" class="line" id="l173">    173</a>             &quot;XF86MonBrightnessUp&quot;,
+<a href="#l174" class="line" id="l174">    174</a>             lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.UP, 3),
+<a href="#l175" class="line" id="l175">    175</a>             &quot;Increase backlight&quot;,
+<a href="#l176" class="line" id="l176">    176</a>         ),
+<a href="#l177" class="line" id="l177">    177</a>         (
+<a href="#l178" class="line" id="l178">    178</a>             [],
+<a href="#l179" class="line" id="l179">    179</a>             &quot;XF86MonBrightnessDown&quot;,
+<a href="#l180" class="line" id="l180">    180</a>             lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.DOWN, 3),
+<a href="#l181" class="line" id="l181">    181</a>             &quot;Decrease backlight&quot;,
+<a href="#l182" class="line" id="l182">    182</a>         ),
+<a href="#l183" class="line" id="l183">    183</a>         (
+<a href="#l184" class="line" id="l184">    184</a>             [mod],
+<a href="#l185" class="line" id="l185">    185</a>             &quot;F6&quot;,
+<a href="#l186" class="line" id="l186">    186</a>             lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.UP, 3),
+<a href="#l187" class="line" id="l187">    187</a>             &quot;Increase backlight&quot;,
+<a href="#l188" class="line" id="l188">    188</a>         ),
+<a href="#l189" class="line" id="l189">    189</a>         (
+<a href="#l190" class="line" id="l190">    190</a>             [mod],
+<a href="#l191" class="line" id="l191">    191</a>             &quot;F5&quot;,
+<a href="#l192" class="line" id="l192">    192</a>             lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.DOWN, 3),
+<a href="#l193" class="line" id="l193">    193</a>             &quot;Decrease backlight&quot;,
+<a href="#l194" class="line" id="l194">    194</a>         ),
+<a href="#l195" class="line" id="l195">    195</a>         # Music control
+<a href="#l196" class="line" id="l196">    196</a>         (
+<a href="#l197" class="line" id="l197">    197</a>             [mod],
+<a href="#l198" class="line" id="l198">    198</a>             &quot;bracketright&quot;,
+<a href="#l199" class="line" id="l199">    199</a>             lazy.spawn(&quot;playerctl next&quot;),
+<a href="#l200" class="line" id="l200">    200</a>             &quot;Next song&quot;,
+<a href="#l201" class="line" id="l201">    201</a>         ),
+<a href="#l202" class="line" id="l202">    202</a>         ([], &quot;XF86AudioNext&quot;, lazy.spawn(&quot;playerctl next&quot;), &quot;Next song&quot;),
+<a href="#l203" class="line" id="l203">    203</a>         (
+<a href="#l204" class="line" id="l204">    204</a>             [mod],
+<a href="#l205" class="line" id="l205">    205</a>             &quot;bracketleft&quot;,
+<a href="#l206" class="line" id="l206">    206</a>             lazy.spawn(&quot;playerctl previous&quot;),
+<a href="#l207" class="line" id="l207">    207</a>             &quot;Previous song&quot;,
+<a href="#l208" class="line" id="l208">    208</a>         ),
+<a href="#l209" class="line" id="l209">    209</a>         ([], &quot;XF86AudioPrev&quot;, lazy.spawn(&quot;playerctl previous&quot;), &quot;Previous song&quot;),
+<a href="#l210" class="line" id="l210">    210</a>         ([], &quot;Pause&quot;, lazy.spawn(&quot;playerctl play-pause&quot;), &quot;Play/unpause music&quot;),
+<a href="#l211" class="line" id="l211">    211</a>         ([], &quot;XF86AudioPlay&quot;, lazy.spawn(&quot;playerctl play-pause&quot;), &quot;Play/unpause music&quot;),
+<a href="#l212" class="line" id="l212">    212</a>         # Launchers
+<a href="#l213" class="line" id="l213">    213</a>         (
+<a href="#l214" class="line" id="l214">    214</a>             [mod],
+<a href="#l215" class="line" id="l215">    215</a>             &quot;d&quot;,
+<a href="#l216" class="line" id="l216">    216</a>             lazy.spawn(&quot;rofi -show run -theme ~/.config/rofi/common.rasi&quot;),
+<a href="#l217" class="line" id="l217">    217</a>             &quot;Spawn with rofi&quot;,
+<a href="#l218" class="line" id="l218">    218</a>         ),
+<a href="#l219" class="line" id="l219">    219</a>         ([mod], &quot;Return&quot;, lazy.spawn(term), &quot;Spawn terminal&quot;),
+<a href="#l220" class="line" id="l220">    220</a>         ([mod, &quot;shift&quot;], &quot;f&quot;, lazy.spawn(&quot;firefox&quot;), &quot;Spawn Firefox&quot;),
+<a href="#l221" class="line" id="l221">    221</a>         (
+<a href="#l222" class="line" id="l222">    222</a>             [mod, &quot;control&quot;],
+<a href="#l223" class="line" id="l223">    223</a>             &quot;f&quot;,
+<a href="#l224" class="line" id="l224">    224</a>             lazy.spawn(&quot;cleanfox&quot;),
+<a href="#l225" class="line" id="l225">    225</a>             &quot;Spawn Firefox in clean profile&quot;,
+<a href="#l226" class="line" id="l226">    226</a>         ),
+<a href="#l227" class="line" id="l227">    227</a>         ([], &quot;Print&quot;, lazy.spawn(&quot;screenshot copy&quot;), &quot;Screenshot to clipboard&quot;),
+<a href="#l228" class="line" id="l228">    228</a>         ([&quot;shift&quot;], &quot;Print&quot;, lazy.spawn(&quot;screenshot&quot;), &quot;Screenshot to file&quot;),
+<a href="#l229" class="line" id="l229">    229</a>         ([mod], &quot;p&quot;, lazy.spawn(&quot;get_password_rofi&quot;), &quot;Keepass passwords&quot;),
+<a href="#l230" class="line" id="l230">    230</a>         ([mod], &quot;i&quot;, lazy.spawn(&quot;systemctl suspend -i&quot;), &quot;Suspend system&quot;),
+<a href="#l231" class="line" id="l231">    231</a>         (
+<a href="#l232" class="line" id="l232">    232</a>             [mod, &quot;shift&quot;],
+<a href="#l233" class="line" id="l233">    233</a>             &quot;i&quot;,
+<a href="#l234" class="line" id="l234">    234</a>             lazy.spawn(&quot;gtklock &amp; systemctl suspend -i&quot;, shell=True),
+<a href="#l235" class="line" id="l235">    235</a>             &quot;Suspend and lock&quot;,
+<a href="#l236" class="line" id="l236">    236</a>         ),
+<a href="#l237" class="line" id="l237">    237</a>         (
+<a href="#l238" class="line" id="l238">    238</a>             [&quot;control&quot;],
+<a href="#l239" class="line" id="l239">    239</a>             &quot;space&quot;,
+<a href="#l240" class="line" id="l240">    240</a>             lazy.spawn(&quot;swaync-client -t -sw&quot;),
+<a href="#l241" class="line" id="l241">    241</a>             &quot;Toggle notification panel&quot;,
+<a href="#l242" class="line" id="l242">    242</a>         ),
+<a href="#l243" class="line" id="l243">    243</a>         (
+<a href="#l244" class="line" id="l244">    244</a>             [mod, &quot;control&quot;],
+<a href="#l245" class="line" id="l245">    245</a>             &quot;y&quot;,
+<a href="#l246" class="line" id="l246">    246</a>             lazy.spawn(&quot;yt-first&quot;),
+<a href="#l247" class="line" id="l247">    247</a>             &quot;yt-first script&quot;,
+<a href="#l248" class="line" id="l248">    248</a>         ),
+<a href="#l249" class="line" id="l249">    249</a>     ]
+<a href="#l250" class="line" id="l250">    250</a> )
+<a href="#l251" class="line" id="l251">    251</a> 
+<a href="#l252" class="line" id="l252">    252</a> 
+<a href="#l253" class="line" id="l253">    253</a> # Mouse control
+<a href="#l254" class="line" id="l254">    254</a> mouse = [
+<a href="#l255" class="line" id="l255">    255</a>     Click([mod], &quot;Button2&quot;, lazy.window.kill()),
+<a href="#l256" class="line" id="l256">    256</a> 
+<a href="#l257" class="line" id="l257">    257</a>     # Move with drag or swipe
+<a href="#l258" class="line" id="l258">    258</a>     Drag(
+<a href="#l259" class="line" id="l259">    259</a>         [mod],
+<a href="#l260" class="line" id="l260">    260</a>         &quot;Button1&quot;,
+<a href="#l261" class="line" id="l261">    261</a>         lazy.window.set_position_floating(),
+<a href="#l262" class="line" id="l262">    262</a>         start=lazy.window.get_position(),
+<a href="#l263" class="line" id="l263">    263</a>     ),
+<a href="#l264" class="line" id="l264">    264</a>     #Swipe(
+<a href="#l265" class="line" id="l265">    265</a>     #    [mod],
+<a href="#l266" class="line" id="l266">    266</a>     #    3,
+<a href="#l267" class="line" id="l267">    267</a>     #    lazy.window.set_position_floating(),
+<a href="#l268" class="line" id="l268">    268</a>     #    start=lazy.window.get_position(),
+<a href="#l269" class="line" id="l269">    269</a>     #),
+<a href="#l270" class="line" id="l270">    270</a> 
+<a href="#l271" class="line" id="l271">    271</a>     # Resize with drag or swipe
+<a href="#l272" class="line" id="l272">    272</a>     Drag(
+<a href="#l273" class="line" id="l273">    273</a>         [mod, alt],
+<a href="#l274" class="line" id="l274">    274</a>         &quot;Button1&quot;,
+<a href="#l275" class="line" id="l275">    275</a>         lazy.window.set_size_floating(),
+<a href="#l276" class="line" id="l276">    276</a>         start=lazy.window.get_size(),
+<a href="#l277" class="line" id="l277">    277</a>     ),
+<a href="#l278" class="line" id="l278">    278</a>     #Swipe(
+<a href="#l279" class="line" id="l279">    279</a>     #    [mod, alt],
+<a href="#l280" class="line" id="l280">    280</a>     #    3,
+<a href="#l281" class="line" id="l281">    281</a>     #    lazy.window.set_size_floating(),
+<a href="#l282" class="line" id="l282">    282</a>     #    start=lazy.window.get_size(),
+<a href="#l283" class="line" id="l283">    283</a>     #),
+<a href="#l284" class="line" id="l284">    284</a> 
+<a href="#l285" class="line" id="l285">    285</a>     # Slide between groups
+<a href="#l286" class="line" id="l286">    286</a>     Drag(
+<a href="#l287" class="line" id="l287">    287</a>         [mod, &quot;shift&quot;],
+<a href="#l288" class="line" id="l288">    288</a>         &quot;Button1&quot;,
+<a href="#l289" class="line" id="l289">    289</a>         lazy.screen.group_slide(),
+<a href="#l290" class="line" id="l290">    290</a>         start=lazy.screen.start_group_slide(scale=2.5),
+<a href="#l291" class="line" id="l291">    291</a>     ),
+<a href="#l292" class="line" id="l292">    292</a> ]
+<a href="#l293" class="line" id="l293">    293</a> 
+<a href="#l294" class="line" id="l294">    294</a> if IS_WAYLAND:
+<a href="#l295" class="line" id="l295">    295</a>     try:
+<a href="#l296" class="line" id="l296">    296</a>         from libqtile.config import Swipe
+<a href="#l297" class="line" id="l297">    297</a>     except ImportError:
+<a href="#l298" class="line" id="l298">    298</a>         pass
+<a href="#l299" class="line" id="l299">    299</a>     else:
+<a href="#l300" class="line" id="l300">    300</a> 
+<a href="#l301" class="line" id="l301">    301</a>         def _slide(qtile):
+<a href="#l302" class="line" id="l302">    302</a>             groups = qtile.groups
+<a href="#l303" class="line" id="l303">    303</a>             if len(qtile.screens) &gt; 1:
+<a href="#l304" class="line" id="l304">    304</a>                 if qtile.current_screen.index == 0:
+<a href="#l305" class="line" id="l305">    305</a>                     groups = groups[:4]
+<a href="#l306" class="line" id="l306">    306</a>                 else:
+<a href="#l307" class="line" id="l307">    307</a>                     groups = groups[4:]
+<a href="#l308" class="line" id="l308">    308</a>             return qtile.current_screen.start_group_slide(
+<a href="#l309" class="line" id="l309">    309</a>                 groups=groups, scale=1.6, inertia_threshold=15,
+<a href="#l310" class="line" id="l310">    310</a>             )
+<a href="#l311" class="line" id="l311">    311</a> 
+<a href="#l312" class="line" id="l312">    312</a>         mouse.append(
+<a href="#l313" class="line" id="l313">    313</a>             Swipe(
+<a href="#l314" class="line" id="l314">    314</a>                 [],
+<a href="#l315" class="line" id="l315">    315</a>                 3 if IS_XEPHYR else 4,
+<a href="#l316" class="line" id="l316">    316</a>                 lazy.screen.group_slide(),
+<a href="#l317" class="line" id="l317">    317</a>                 start=lazy.function(_slide),
+<a href="#l318" class="line" id="l318">    318</a>             ),
+<a href="#l319" class="line" id="l319">    319</a>         )
+<a href="#l320" class="line" id="l320">    320</a> 
+<a href="#l321" class="line" id="l321">    321</a> 
+<a href="#l322" class="line" id="l322">    322</a> ## Firefox 3-finger vertical swipe to zoom
+<a href="#l323" class="line" id="l323">    323</a> #def swipe_zoom(qtile, _dx: int, dy: int) -&gt; None:
+<a href="#l324" class="line" id="l324">    324</a> #    if dy % 3:
+<a href="#l325" class="line" id="l325">    325</a> #        # Only send key every 10 steps
+<a href="#l326" class="line" id="l326">    326</a> #        return
+<a href="#l327" class="line" id="l327">    327</a> #    if dy &lt; 0:
+<a href="#l328" class="line" id="l328">    328</a> #        qtile.spawn(&quot;wlrctl keyboard type +&quot;, shell=True)
+<a href="#l329" class="line" id="l329">    329</a> #    else:
+<a href="#l330" class="line" id="l330">    330</a> #        qtile.spawn(&quot;wlrctl keyboard type -&quot;, shell=True)
+<a href="#l331" class="line" id="l331">    331</a> #
+<a href="#l332" class="line" id="l332">    332</a> #
+<a href="#l333" class="line" id="l333">    333</a> #mouse.append(
+<a href="#l334" class="line" id="l334">    334</a> #    Swipe(
+<a href="#l335" class="line" id="l335">    335</a> #        [],
+<a href="#l336" class="line" id="l336">    336</a> #        3,
+<a href="#l337" class="line" id="l337">    337</a> #        lazy.function(swipe_zoom).when(focused=Match(wm_class=&quot;firefox&quot;)),
+<a href="#l338" class="line" id="l338">    338</a> #    )
+<a href="#l339" class="line" id="l339">    339</a> #)
+<a href="#l340" class="line" id="l340">    340</a> 
+<a href="#l341" class="line" id="l341">    341</a> # Layouts
+<a href="#l342" class="line" id="l342">    342</a> border_focus = [colours[5], &quot;323974&quot;]
+<a href="#l343" class="line" id="l343">    343</a> border_normal = &quot;001122&quot;
+<a href="#l344" class="line" id="l344">    344</a> 
+<a href="#l345" class="line" id="l345">    345</a> 
+<a href="#l346" class="line" id="l346">    346</a> class MyColumns(layout.Columns):
+<a href="#l347" class="line" id="l347">    347</a>     &quot;&quot;&quot;
+<a href="#l348" class="line" id="l348">    348</a>     I only override this method so I can make &apos;foot&apos; have wide margins at each side if
+<a href="#l349" class="line" id="l349">    349</a>     it&apos;s the only window open.
+<a href="#l350" class="line" id="l350">    350</a>     &quot;&quot;&quot;
+<a href="#l351" class="line" id="l351">    351</a> 
+<a href="#l352" class="line" id="l352">    352</a>     def configure(self, client, screen_rect):
+<a href="#l353" class="line" id="l353">    353</a>         pos = 0
+<a href="#l354" class="line" id="l354">    354</a>         for col in self.columns:
+<a href="#l355" class="line" id="l355">    355</a>             if client in col:
+<a href="#l356" class="line" id="l356">    356</a>                 break
+<a href="#l357" class="line" id="l357">    357</a>             pos += col.width
+<a href="#l358" class="line" id="l358">    358</a>         else:
+<a href="#l359" class="line" id="l359">    359</a>             client.hide()
+<a href="#l360" class="line" id="l360">    360</a>             return
+<a href="#l361" class="line" id="l361">    361</a>         if client.has_focus:
+<a href="#l362" class="line" id="l362">    362</a>             color = self.border_focus if col.split else self.border_focus_stack
+<a href="#l363" class="line" id="l363">    363</a>         else:
+<a href="#l364" class="line" id="l364">    364</a>             color = self.border_normal if col.split else self.border_normal_stack
+<a href="#l365" class="line" id="l365">    365</a>         border = self.border_width
+<a href="#l366" class="line" id="l366">    366</a>         margin_size = self.margin
+<a href="#l367" class="line" id="l367">    367</a>         if len(self.columns) == 1 and (len(col) == 1 or not col.split):
+<a href="#l368" class="line" id="l368">    368</a>             if not self.border_on_single:
+<a href="#l369" class="line" id="l369">    369</a>                 border = 0
+<a href="#l370" class="line" id="l370">    370</a>             if &quot;foot&quot; in (client.get_wm_class() or []):
+<a href="#l371" class="line" id="l371">    371</a>                 margin_size = [0, 200, 0, 200]
+<a href="#l372" class="line" id="l372">    372</a>         width = int(0.5 + col.width * screen_rect.width * 0.01 / len(self.columns))
+<a href="#l373" class="line" id="l373">    373</a>         x = screen_rect.x + int(
+<a href="#l374" class="line" id="l374">    374</a>             0.5 + pos * screen_rect.width * 0.01 / len(self.columns)
+<a href="#l375" class="line" id="l375">    375</a>         )
+<a href="#l376" class="line" id="l376">    376</a>         if col.split:
+<a href="#l377" class="line" id="l377">    377</a>             pos = 0
+<a href="#l378" class="line" id="l378">    378</a>             for c in col:
+<a href="#l379" class="line" id="l379">    379</a>                 if client == c:
+<a href="#l380" class="line" id="l380">    380</a>                     break
+<a href="#l381" class="line" id="l381">    381</a>                 pos += col.heights[c]
+<a href="#l382" class="line" id="l382">    382</a>             height = int(
+<a href="#l383" class="line" id="l383">    383</a>                 0.5 + col.heights[client] * screen_rect.height * 0.01 / len(col)
+<a href="#l384" class="line" id="l384">    384</a>             )
+<a href="#l385" class="line" id="l385">    385</a>             y = screen_rect.y + int(0.5 + pos * screen_rect.height * 0.01 / len(col))
+<a href="#l386" class="line" id="l386">    386</a>             client.place(
+<a href="#l387" class="line" id="l387">    387</a>                 x,
+<a href="#l388" class="line" id="l388">    388</a>                 y,
+<a href="#l389" class="line" id="l389">    389</a>                 width - 2 * border,
+<a href="#l390" class="line" id="l390">    390</a>                 height - 2 * border,
+<a href="#l391" class="line" id="l391">    391</a>                 border,
+<a href="#l392" class="line" id="l392">    392</a>                 color,
+<a href="#l393" class="line" id="l393">    393</a>                 margin=margin_size,
+<a href="#l394" class="line" id="l394">    394</a>             )
+<a href="#l395" class="line" id="l395">    395</a>             client.unhide()
+<a href="#l396" class="line" id="l396">    396</a>         elif client == col.cw:
+<a href="#l397" class="line" id="l397">    397</a>             client.place(
+<a href="#l398" class="line" id="l398">    398</a>                 x,
+<a href="#l399" class="line" id="l399">    399</a>                 screen_rect.y,
+<a href="#l400" class="line" id="l400">    400</a>                 width - 2 * border,
+<a href="#l401" class="line" id="l401">    401</a>                 screen_rect.height - 2 * border,
+<a href="#l402" class="line" id="l402">    402</a>                 border,
+<a href="#l403" class="line" id="l403">    403</a>                 color,
+<a href="#l404" class="line" id="l404">    404</a>                 margin=margin_size,
+<a href="#l405" class="line" id="l405">    405</a>             )
+<a href="#l406" class="line" id="l406">    406</a>             client.unhide()
+<a href="#l407" class="line" id="l407">    407</a>         else:
+<a href="#l408" class="line" id="l408">    408</a>             client.hide()
+<a href="#l409" class="line" id="l409">    409</a> 
+<a href="#l410" class="line" id="l410">    410</a> 
+<a href="#l411" class="line" id="l411">    411</a> # Weird custom behaviour here but isn&apos;t that what qtile is for?
+<a href="#l412" class="line" id="l412">    412</a> # I want a Columns layout but also sometimes i want &apos;foot&apos; windows to be thinner and
+<a href="#l413" class="line" id="l413">    413</a> # centred in a &apos;central&apos; column, so I define a whole new MyColumns layout that does that
+<a href="#l414" class="line" id="l414">    414</a> # and I just jump between the two when I want that.
+<a href="#l415" class="line" id="l415">    415</a> col_opts = dict(
+<a href="#l416" class="line" id="l416">    416</a>     insert_position=1,
+<a href="#l417" class="line" id="l417">    417</a>     border_width=5,
+<a href="#l418" class="line" id="l418">    418</a>     border_focus=border_focus,
+<a href="#l419" class="line" id="l419">    419</a>     border_normal=&quot;00000000&quot;,
+<a href="#l420" class="line" id="l420">    420</a>     border_on_single=False,
+<a href="#l421" class="line" id="l421">    421</a>     wrap_focus_columns=False,
+<a href="#l422" class="line" id="l422">    422</a>     wrap_focus_rows=False,
+<a href="#l423" class="line" id="l423">    423</a>     margin=0,
+<a href="#l424" class="line" id="l424">    424</a>     # margin_on_single=30,  # 4
+<a href="#l425" class="line" id="l425">    425</a> )
+<a href="#l426" class="line" id="l426">    426</a> 
+<a href="#l427" class="line" id="l427">    427</a> layouts = [
+<a href="#l428" class="line" id="l428">    428</a>     MyColumns(**col_opts),
+<a href="#l429" class="line" id="l429">    429</a>     layout.Columns(**col_opts),
+<a href="#l430" class="line" id="l430">    430</a> ]
+<a href="#l431" class="line" id="l431">    431</a> 
+<a href="#l432" class="line" id="l432">    432</a> floating_layout = layout.Floating(
+<a href="#l433" class="line" id="l433">    433</a>     border_width=3,
+<a href="#l434" class="line" id="l434">    434</a>     border_focus=border_focus,
+<a href="#l435" class="line" id="l435">    435</a>     border_normal=&quot;00000000&quot;,
+<a href="#l436" class="line" id="l436">    436</a>     fullscreen_border_width=0,
+<a href="#l437" class="line" id="l437">    437</a>     float_rules=[
+<a href="#l438" class="line" id="l438">    438</a>         Match(func=base.Window.has_fixed_size),
+<a href="#l439" class="line" id="l439">    439</a>         Match(func=base.Window.has_fixed_ratio),
+<a href="#l440" class="line" id="l440">    440</a>         Match(func=lambda c: bool(c.is_transient_for())),
+<a href="#l441" class="line" id="l441">    441</a>         Match(role=&quot;gimp-file-export&quot;),
+<a href="#l442" class="line" id="l442">    442</a>         Match(title=&quot;Bluetooth Devices&quot;),
+<a href="#l443" class="line" id="l443">    443</a>         Match(title=&quot;File Operation Progress&quot;, wm_class=re.compile(&quot;[Tt]hunar&quot;)),
+<a href="#l444" class="line" id="l444">    444</a>         Match(title=&quot;Firefox — Sharing Indicator&quot;),
+<a href="#l445" class="line" id="l445">    445</a>         Match(title=&quot;KDE Connect Daemon&quot;),
+<a href="#l446" class="line" id="l446">    446</a>         Match(title=&quot;Open File&quot;),
+<a href="#l447" class="line" id="l447">    447</a>         Match(title=&quot;Unlock Database - KeePassXC&quot;),
+<a href="#l448" class="line" id="l448">    448</a>         Match(title=&quot;KeePassXC -  Access Request&quot;),
+<a href="#l449" class="line" id="l449">    449</a>         Match(title=re.compile(&quot;Presenting: .*&quot;), wm_class=&quot;libreoffice-impress&quot;),
+<a href="#l450" class="line" id="l450">    450</a>         Match(wm_class=&quot;Arandr&quot;),
+<a href="#l451" class="line" id="l451">    451</a>         Match(wm_class=&quot;Dragon&quot;),
+<a href="#l452" class="line" id="l452">    452</a>         Match(wm_class=&quot;Dragon-drag-and-drop&quot;),
+<a href="#l453" class="line" id="l453">    453</a>         Match(wm_class=&quot;Pinentry-gtk-2&quot;),
+<a href="#l454" class="line" id="l454">    454</a>         Match(wm_class=&quot;Xephyr&quot;),
+<a href="#l455" class="line" id="l455">    455</a>         Match(wm_class=&quot;confirm&quot;),
+<a href="#l456" class="line" id="l456">    456</a>         Match(wm_class=&quot;dialog&quot;),
+<a href="#l457" class="line" id="l457">    457</a>         Match(wm_class=&quot;download&quot;),
+<a href="#l458" class="line" id="l458">    458</a>         Match(wm_class=&quot;eog&quot;),
+<a href="#l459" class="line" id="l459">    459</a>         Match(wm_class=&quot;error&quot;),
+<a href="#l460" class="line" id="l460">    460</a>         Match(wm_class=&quot;file_progress&quot;),
+<a href="#l461" class="line" id="l461">    461</a>         Match(wm_class=&quot;imv&quot;),
+<a href="#l462" class="line" id="l462">    462</a>         Match(wm_class=&quot;io.github.celluloid_player.Celluloid&quot;),
+<a href="#l463" class="line" id="l463">    463</a>         Match(wm_class=&quot;lxappearance&quot;),
+<a href="#l464" class="line" id="l464">    464</a>         Match(wm_class=&quot;matplotlib&quot;),
+<a href="#l465" class="line" id="l465">    465</a>         #Match(wm_class=&quot;mpv&quot;),
+<a href="#l466" class="line" id="l466">    466</a>         Match(wm_class=&quot;nm-connection-editor&quot;),
+<a href="#l467" class="line" id="l467">    467</a>         Match(wm_class=&quot;notification&quot;),
+<a href="#l468" class="line" id="l468">    468</a>         Match(wm_class=&quot;org.gnome.clocks&quot;),
+<a href="#l469" class="line" id="l469">    469</a>         Match(wm_class=&quot;org.kde.ark&quot;),
+<a href="#l470" class="line" id="l470">    470</a>         Match(wm_class=&quot;pavucontrol&quot;),
+<a href="#l471" class="line" id="l471">    471</a>         Match(wm_class=&quot;qt5ct&quot;),
+<a href="#l472" class="line" id="l472">    472</a>         Match(wm_class=&quot;ssh-askpass&quot;),
+<a href="#l473" class="line" id="l473">    473</a>         Match(wm_class=&quot;thunar&quot;),
+<a href="#l474" class="line" id="l474">    474</a>         Match(wm_class=&quot;toolbar&quot;),
+<a href="#l475" class="line" id="l475">    475</a>         Match(wm_class=&quot;tridactyl&quot;),
+<a href="#l476" class="line" id="l476">    476</a>         Match(wm_class=&quot;wdisplays&quot;),
+<a href="#l477" class="line" id="l477">    477</a>         Match(wm_class=&quot;wlroots&quot;),
+<a href="#l478" class="line" id="l478">    478</a>         Match(wm_class=&quot;zoom&quot;),
+<a href="#l479" class="line" id="l479">    479</a>         Match(wm_type=&quot;dialog&quot;),
+<a href="#l480" class="line" id="l480">    480</a>     ],
+<a href="#l481" class="line" id="l481">    481</a> )
+<a href="#l482" class="line" id="l482">    482</a> 
+<a href="#l483" class="line" id="l483">    483</a> 
+<a href="#l484" class="line" id="l484">    484</a> # Screens and Bars
+<a href="#l485" class="line" id="l485">    485</a> widget_defaults = {
+<a href="#l486" class="line" id="l486">    486</a>     &quot;padding&quot;: 10,
+<a href="#l487" class="line" id="l487">    487</a>     &quot;foreground&quot;: colours[6],
+<a href="#l488" class="line" id="l488">    488</a>     &quot;font&quot;: &quot;Font Awesome 5 Free&quot;,
+<a href="#l489" class="line" id="l489">    489</a>     &quot;fontsize&quot;: 16,
+<a href="#l490" class="line" id="l490">    490</a> }
+<a href="#l491" class="line" id="l491">    491</a> 
+<a href="#l492" class="line" id="l492">    492</a> icon_font_size = 22
+<a href="#l493" class="line" id="l493">    493</a> 
+<a href="#l494" class="line" id="l494">    494</a> groupbox_config = {
+<a href="#l495" class="line" id="l495">    495</a>     &quot;active&quot;: foreground,
+<a href="#l496" class="line" id="l496">    496</a>     &quot;highlight_method&quot;: &quot;block&quot;,
+<a href="#l497" class="line" id="l497">    497</a>     &quot;this_current_screen_border&quot;: colour_focussed,
+<a href="#l498" class="line" id="l498">    498</a>     &quot;other_current_screen_border&quot;: colours[5],
+<a href="#l499" class="line" id="l499">    499</a>     &quot;highlight_color&quot;: [background, colours[5]],
+<a href="#l500" class="line" id="l500">    500</a>     &quot;disable_drag&quot;: True,
+<a href="#l501" class="line" id="l501">    501</a>     &quot;padding&quot;: 4,
+<a href="#l502" class="line" id="l502">    502</a>     &quot;font&quot;: &quot;TamzenForPowerline Bold&quot;,
+<a href="#l503" class="line" id="l503">    503</a>     &quot;fontsize&quot;: 12,
+<a href="#l504" class="line" id="l504">    504</a> }
+<a href="#l505" class="line" id="l505">    505</a> 
+<a href="#l506" class="line" id="l506">    506</a> # mpd2 = widget.Mpd2(
+<a href="#l507" class="line" id="l507">    507</a> #    no_connection=&quot;&quot;,
+<a href="#l508" class="line" id="l508">    508</a> #    status_format=&quot;{artist} - {title}&quot;,
+<a href="#l509" class="line" id="l509">    509</a> #    status_format_stopped=&quot;&quot;,
+<a href="#l510" class="line" id="l510">    510</a> #    foreground=colours[12],
+<a href="#l511" class="line" id="l511">    511</a> #    idle_format=&quot;&quot;,
+<a href="#l512" class="line" id="l512">    512</a> #    font=&quot;TamzenForPowerline Bold&quot;,
+<a href="#l513" class="line" id="l513">    513</a> #    update_interval=10,
+<a href="#l514" class="line" id="l514">    514</a> #    scroll=True,
+<a href="#l515" class="line" id="l515">    515</a> # )
+<a href="#l516" class="line" id="l516">    516</a> 
+<a href="#l517" class="line" id="l517">    517</a> mpd2 = widget.Mpris2(
+<a href="#l518" class="line" id="l518">    518</a>     name=&quot;mpris&quot;,
+<a href="#l519" class="line" id="l519">    519</a>     width=1000,
+<a href="#l520" class="line" id="l520">    520</a>     objname=None,
+<a href="#l521" class="line" id="l521">    521</a>     format=&quot;{xesam:title} - {xesam:artist}&quot;,
+<a href="#l522" class="line" id="l522">    522</a>     font=&quot;TamzenForPowerline Bold&quot;,
+<a href="#l523" class="line" id="l523">    523</a> )
+<a href="#l524" class="line" id="l524">    524</a> 
+<a href="#l525" class="line" id="l525">    525</a> 
+<a href="#l526" class="line" id="l526">    526</a> class MyVolume(widget.Volume):
+<a href="#l527" class="line" id="l527">    527</a>     def _configure(self, qtile, bar):
+<a href="#l528" class="line" id="l528">    528</a>         widget.Volume._configure(self, qtile, bar)
+<a href="#l529" class="line" id="l529">    529</a>         self.volume = self.get_volume()
+<a href="#l530" class="line" id="l530">    530</a>         if self.volume &lt;= 0:
+<a href="#l531" class="line" id="l531">    531</a>             self.text = &quot;&quot;
+<a href="#l532" class="line" id="l532">    532</a>         elif self.volume &lt;= 15:
+<a href="#l533" class="line" id="l533">    533</a>             self.text = &quot;&quot;
+<a href="#l534" class="line" id="l534">    534</a>         elif self.volume &lt; 50:
+<a href="#l535" class="line" id="l535">    535</a>             self.text = &quot;&quot;
+<a href="#l536" class="line" id="l536">    536</a>         else:
+<a href="#l537" class="line" id="l537">    537</a>             self.text = &quot;&quot;
+<a href="#l538" class="line" id="l538">    538</a> 
+<a href="#l539" class="line" id="l539">    539</a>     def _update_drawer(self):
+<a href="#l540" class="line" id="l540">    540</a>         if self.volume &lt;= 0:
+<a href="#l541" class="line" id="l541">    541</a>             self.text = &quot;&quot;
+<a href="#l542" class="line" id="l542">    542</a>         elif self.volume &lt;= 15:
+<a href="#l543" class="line" id="l543">    543</a>             self.text = &quot;&quot;
+<a href="#l544" class="line" id="l544">    544</a>         elif self.volume &lt; 50:
+<a href="#l545" class="line" id="l545">    545</a>             self.text = &quot;&quot;
+<a href="#l546" class="line" id="l546">    546</a>         else:
+<a href="#l547" class="line" id="l547">    547</a>             self.text = &quot;&quot;
+<a href="#l548" class="line" id="l548">    548</a>         self.draw()
+<a href="#l549" class="line" id="l549">    549</a> 
+<a href="#l550" class="line" id="l550">    550</a>     def increase_vol(self):
+<a href="#l551" class="line" id="l551">    551</a>         subprocess.run(&quot;amixer -c PCH set PCM 3%+&quot;.split(), capture_output=True)
+<a href="#l552" class="line" id="l552">    552</a>         self.volume = self.get_volume()
+<a href="#l553" class="line" id="l553">    553</a> 
+<a href="#l554" class="line" id="l554">    554</a>     def decrease_vol(self):
+<a href="#l555" class="line" id="l555">    555</a>         subprocess.run(&quot;amixer -c PCH set PCM 3%-&quot;.split(), capture_output=True)
+<a href="#l556" class="line" id="l556">    556</a>         self.volume = self.get_volume()
+<a href="#l557" class="line" id="l557">    557</a> 
+<a href="#l558" class="line" id="l558">    558</a>     def mute(self):
+<a href="#l559" class="line" id="l559">    559</a>         subprocess.run(&quot;amixer -c PCH set PCM toggle&quot;.split(), capture_output=True)
+<a href="#l560" class="line" id="l560">    560</a>         self.volume = self.get_volume()
+<a href="#l561" class="line" id="l561">    561</a> 
+<a href="#l562" class="line" id="l562">    562</a> 
+<a href="#l563" class="line" id="l563">    563</a> bklight = widget.Backlight(
+<a href="#l564" class="line" id="l564">    564</a>     backlight_name=os.listdir(&quot;/sys/class/backlight&quot;)[-1],
+<a href="#l565" class="line" id="l565">    565</a>     step=1,
+<a href="#l566" class="line" id="l566">    566</a>     update_interval=None,
+<a href="#l567" class="line" id="l567">    567</a>     format=&quot;&quot;,
+<a href="#l568" class="line" id="l568">    568</a>     fontsize=icon_font_size,
+<a href="#l569" class="line" id="l569">    569</a>     change_command=None,
+<a href="#l570" class="line" id="l570">    570</a> )
+<a href="#l571" class="line" id="l571">    571</a> 
+<a href="#l572" class="line" id="l572">    572</a> volume = MyVolume(
+<a href="#l573" class="line" id="l573">    573</a>     fontsize=icon_font_size,
+<a href="#l574" class="line" id="l574">    574</a>     channel=&quot;PCM&quot;,
+<a href="#l575" class="line" id="l575">    575</a>     font=&quot;Font Awesome 5 Free&quot;,
+<a href="#l576" class="line" id="l576">    576</a>     update_interval=60,
+<a href="#l577" class="line" id="l577">    577</a>     cardid=&quot;PCH&quot;,
+<a href="#l578" class="line" id="l578">    578</a>     device=None,
+<a href="#l579" class="line" id="l579">    579</a> )
+<a href="#l580" class="line" id="l580">    580</a> 
+<a href="#l581" class="line" id="l581">    581</a> if IS_WAYLAND:
+<a href="#l582" class="line" id="l582">    582</a>     systray = widget_extras.StatusNotifier(padding=20)
+<a href="#l583" class="line" id="l583">    583</a> else:
+<a href="#l584" class="line" id="l584">    584</a>     systray = widget.Systray(padding=20, icon_size=24)
+<a href="#l585" class="line" id="l585">    585</a> 
+<a href="#l586" class="line" id="l586">    586</a> 
+<a href="#l587" class="line" id="l587">    587</a> class MyBattery(Battery):
+<a href="#l588" class="line" id="l588">    588</a>     &quot;&quot;&quot;
+<a href="#l589" class="line" id="l589">    589</a>     This is basically the Battery widget except it uses some icons, and if you click it
+<a href="#l590" class="line" id="l590">    590</a>     it will show the percentage numerically for 1 second.
+<a href="#l591" class="line" id="l591">    591</a>     &quot;&quot;&quot;
+<a href="#l592" class="line" id="l592">    592</a> 
+<a href="#l593" class="line" id="l593">    593</a>     def build_string(self, status):
+<a href="#l594" class="line" id="l594">    594</a>         if self.layout is not None:
+<a href="#l595" class="line" id="l595">    595</a>             self.layout.colour = self.foreground
+<a href="#l596" class="line" id="l596">    596</a>             if (
+<a href="#l597" class="line" id="l597">    597</a>                 status.state == BatteryState.DISCHARGING
+<a href="#l598" class="line" id="l598">    598</a>                 and status.percent &lt; self.low_percentage
+<a href="#l599" class="line" id="l599">    599</a>             ):
+<a href="#l600" class="line" id="l600">    600</a>                 self.background = self.low_background
+<a href="#l601" class="line" id="l601">    601</a>             else:
+<a href="#l602" class="line" id="l602">    602</a>                 self.background = self.normal_background
+<a href="#l603" class="line" id="l603">    603</a>         if status.state == BatteryState.DISCHARGING:
+<a href="#l604" class="line" id="l604">    604</a>             if status.percent &gt; 0.75:
+<a href="#l605" class="line" id="l605">    605</a>                 char = &quot;&quot;
+<a href="#l606" class="line" id="l606">    606</a>             elif status.percent &gt; 0.45:
+<a href="#l607" class="line" id="l607">    607</a>                 char = &quot;&quot;
+<a href="#l608" class="line" id="l608">    608</a>             elif status.percent &gt; 0.25:
+<a href="#l609" class="line" id="l609">    609</a>                 char = &quot;&quot;
+<a href="#l610" class="line" id="l610">    610</a>             else:
+<a href="#l611" class="line" id="l611">    611</a>                 char = &quot;&quot;
+<a href="#l612" class="line" id="l612">    612</a>         elif status.percent &gt;= 1 or status.state == BatteryState.FULL:
+<a href="#l613" class="line" id="l613">    613</a>             char = &quot;&quot;
+<a href="#l614" class="line" id="l614">    614</a>         elif status.state == BatteryState.EMPTY or (
+<a href="#l615" class="line" id="l615">    615</a>             status.state == BatteryState.UNKNOWN and status.percent == 0
+<a href="#l616" class="line" id="l616">    616</a>         ):
+<a href="#l617" class="line" id="l617">    617</a>             char = &quot;&quot;
+<a href="#l618" class="line" id="l618">    618</a>         else:
+<a href="#l619" class="line" id="l619">    619</a>             char = &quot;&quot;
+<a href="#l620" class="line" id="l620">    620</a>         return self.format.format(char=char, percent=status.percent)
+<a href="#l621" class="line" id="l621">    621</a> 
+<a href="#l622" class="line" id="l622">    622</a>     def restore(self):
+<a href="#l623" class="line" id="l623">    623</a>         self.format = &quot;{char}&quot;
+<a href="#l624" class="line" id="l624">    624</a>         self.font = &quot;Font Awesome 5 Free&quot;
+<a href="#l625" class="line" id="l625">    625</a>         self.timer_setup()
+<a href="#l626" class="line" id="l626">    626</a> 
+<a href="#l627" class="line" id="l627">    627</a>     def button_press(self, x, y, button):
+<a href="#l628" class="line" id="l628">    628</a>         self.format = &quot;{percent:2.0%}&quot;
+<a href="#l629" class="line" id="l629">    629</a>         self.font = &quot;TamzenForPowerline Bold&quot;
+<a href="#l630" class="line" id="l630">    630</a>         self.timer_setup()
+<a href="#l631" class="line" id="l631">    631</a>         self.timeout_add(1, self.restore)
+<a href="#l632" class="line" id="l632">    632</a> 
+<a href="#l633" class="line" id="l633">    633</a> 
+<a href="#l634" class="line" id="l634">    634</a> battery = MyBattery(
+<a href="#l635" class="line" id="l635">    635</a>     format=&quot;{char}&quot;,
+<a href="#l636" class="line" id="l636">    636</a>     low_background=colours[1],
+<a href="#l637" class="line" id="l637">    637</a>     show_short_text=False,
+<a href="#l638" class="line" id="l638">    638</a>     low_percentage=0.12,
+<a href="#l639" class="line" id="l639">    639</a>     notify_below=12,
+<a href="#l640" class="line" id="l640">    640</a>     fontsize=icon_font_size + 10,
+<a href="#l641" class="line" id="l641">    641</a> )
+<a href="#l642" class="line" id="l642">    642</a> 
+<a href="#l643" class="line" id="l643">    643</a> date = widget.Clock(
+<a href="#l644" class="line" id="l644">    644</a>     format=&quot;%e/%m/%g&quot;,
+<a href="#l645" class="line" id="l645">    645</a>     fontsize=16,
+<a href="#l646" class="line" id="l646">    646</a>     font=&quot;TamzenForPowerline Bold&quot;,
+<a href="#l647" class="line" id="l647">    647</a>     update_interval=60,
+<a href="#l648" class="line" id="l648">    648</a>     name=&quot;date&quot;,
+<a href="#l649" class="line" id="l649">    649</a> )
+<a href="#l650" class="line" id="l650">    650</a> 
+<a href="#l651" class="line" id="l651">    651</a> time = widget.Clock(
+<a href="#l652" class="line" id="l652">    652</a>     fontsize=20,
+<a href="#l653" class="line" id="l653">    653</a>     font=&quot;TamzenForPowerline Medium&quot;,
+<a href="#l654" class="line" id="l654">    654</a>     update_interval=60,
+<a href="#l655" class="line" id="l655">    655</a>     name=&quot;time&quot;,
+<a href="#l656" class="line" id="l656">    656</a> )
+<a href="#l657" class="line" id="l657">    657</a> 
+<a href="#l658" class="line" id="l658">    658</a> groupboxes = [
+<a href="#l659" class="line" id="l659">    659</a>     widget.GroupBox(**groupbox_config),
+<a href="#l660" class="line" id="l660">    660</a>     widget.GroupBox(**groupbox_config, visible_groups=[&quot;q&quot;, &quot;w&quot;, &quot;e&quot;, &quot;r&quot;]),
+<a href="#l661" class="line" id="l661">    661</a> ]
+<a href="#l662" class="line" id="l662">    662</a> 
+<a href="#l663" class="line" id="l663">    663</a> 
+<a href="#l664" class="line" id="l664">    664</a> @hook.subscribe.startup
+<a href="#l665" class="line" id="l665">    665</a> def _():
+<a href="#l666" class="line" id="l666">    666</a>     # Set up initial GroupBox visible groups
+<a href="#l667" class="line" id="l667">    667</a>     if len(qtile.screens) &gt; 1:
+<a href="#l668" class="line" id="l668">    668</a>         groupboxes[0].visible_groups = [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;]
+<a href="#l669" class="line" id="l669">    669</a>     else:
+<a href="#l670" class="line" id="l670">    670</a>         groupboxes[0].visible_groups = None
+<a href="#l671" class="line" id="l671">    671</a> 
+<a href="#l672" class="line" id="l672">    672</a> 
+<a href="#l673" class="line" id="l673">    673</a> @hook.subscribe.screens_reconfigured
+<a href="#l674" class="line" id="l674">    674</a> def _():
+<a href="#l675" class="line" id="l675">    675</a>     # Reconfigure GroupBox visible groups
+<a href="#l676" class="line" id="l676">    676</a>     if len(qtile.screens) &gt; 1:
+<a href="#l677" class="line" id="l677">    677</a>         groupboxes[0].visible_groups = [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;]
+<a href="#l678" class="line" id="l678">    678</a>     else:
+<a href="#l679" class="line" id="l679">    679</a>         groupboxes[0].visible_groups = None
+<a href="#l680" class="line" id="l680">    680</a>     if hasattr(groupboxes[0], &quot;bar&quot;):
+<a href="#l681" class="line" id="l681">    681</a>         groupboxes[0].bar.draw()
+<a href="#l682" class="line" id="l682">    682</a> 
+<a href="#l683" class="line" id="l683">    683</a> 
+<a href="#l684" class="line" id="l684">    684</a> #bar_border_width = [0, 3, 0, 3]
+<a href="#l685" class="line" id="l685">    685</a> #bar_border_color = [&quot;000000&quot;, colours[5], &quot;000000&quot;, colours[5]]
+<a href="#l686" class="line" id="l686">    686</a> 
+<a href="#l687" class="line" id="l687">    687</a> screens = [
+<a href="#l688" class="line" id="l688">    688</a>     Screen(
+<a href="#l689" class="line" id="l689">    689</a>         top=bar.Bar(
+<a href="#l690" class="line" id="l690">    690</a>             [
+<a href="#l691" class="line" id="l691">    691</a>                 groupboxes[0],
+<a href="#l692" class="line" id="l692">    692</a>                 widget.Spacer(name=&quot;s1&quot;),
+<a href="#l693" class="line" id="l693">    693</a>                 mpd2,
+<a href="#l694" class="line" id="l694">    694</a>                 widget.Spacer(name=&quot;s2&quot;),
+<a href="#l695" class="line" id="l695">    695</a>                 systray,
+<a href="#l696" class="line" id="l696">    696</a>                 volume,
+<a href="#l697" class="line" id="l697">    697</a>                 bklight,
+<a href="#l698" class="line" id="l698">    698</a>                 battery,
+<a href="#l699" class="line" id="l699">    699</a>                 date,
+<a href="#l700" class="line" id="l700">    700</a>                 time,
+<a href="#l701" class="line" id="l701">    701</a>             ],
+<a href="#l702" class="line" id="l702">    702</a>             28,
+<a href="#l703" class="line" id="l703">    703</a>             background=background,
+<a href="#l704" class="line" id="l704">    704</a>         ),
+<a href="#l705" class="line" id="l705">    705</a>         bottom=bar.Gap(outer_gaps),
+<a href="#l706" class="line" id="l706">    706</a>         left=bar.Gap(outer_gaps),
+<a href="#l707" class="line" id="l707">    707</a>         right=bar.Gap(outer_gaps),
+<a href="#l708" class="line" id="l708">    708</a>         #wallpaper=&quot;~/pictures/Wallpapers/fractal.bmp&quot;,
+<a href="#l709" class="line" id="l709">    709</a>         #wallpaper_mode=&quot;fill&quot;,
+<a href="#l710" class="line" id="l710">    710</a>     ),
+<a href="#l711" class="line" id="l711">    711</a>     Screen(
+<a href="#l712" class="line" id="l712">    712</a>         top=bar.Bar(
+<a href="#l713" class="line" id="l713">    713</a>             [
+<a href="#l714" class="line" id="l714">    714</a>                 groupboxes[1],
+<a href="#l715" class="line" id="l715">    715</a>                 widget.Spacer(name=&quot;s3&quot;),
+<a href="#l716" class="line" id="l716">    716</a>                 mpd2,
+<a href="#l717" class="line" id="l717">    717</a>                 widget.Spacer(name=&quot;s4&quot;),
+<a href="#l718" class="line" id="l718">    718</a>                 volume,
+<a href="#l719" class="line" id="l719">    719</a>                 bklight,
+<a href="#l720" class="line" id="l720">    720</a>                 battery,
+<a href="#l721" class="line" id="l721">    721</a>                 date,
+<a href="#l722" class="line" id="l722">    722</a>                 time,
+<a href="#l723" class="line" id="l723">    723</a>             ],
+<a href="#l724" class="line" id="l724">    724</a>             28,
+<a href="#l725" class="line" id="l725">    725</a>             background=background,
+<a href="#l726" class="line" id="l726">    726</a>         ),
+<a href="#l727" class="line" id="l727">    727</a>         #wallpaper=&quot;~/pictures/Wallpapers/fractal.bmp&quot;,
+<a href="#l728" class="line" id="l728">    728</a>         #wallpaper_mode=&quot;fill&quot;,
+<a href="#l729" class="line" id="l729">    729</a>         bottom=bar.Gap(outer_gaps),
+<a href="#l730" class="line" id="l730">    730</a>         left=bar.Gap(outer_gaps),
+<a href="#l731" class="line" id="l731">    731</a>         right=bar.Gap(outer_gaps),
+<a href="#l732" class="line" id="l732">    732</a>     ),
+<a href="#l733" class="line" id="l733">    733</a> ]
+<a href="#l734" class="line" id="l734">    734</a> 
+<a href="#l735" class="line" id="l735">    735</a> 
+<a href="#l736" class="line" id="l736">    736</a> @hook.subscribe.client_focus
+<a href="#l737" class="line" id="l737">    737</a> def _(_):
+<a href="#l738" class="line" id="l738">    738</a>     # Keep Static windows on top
+<a href="#l739" class="line" id="l739">    739</a>     for window in qtile.windows_map.values():
+<a href="#l740" class="line" id="l740">    740</a>         if isinstance(window, base.Static):
+<a href="#l741" class="line" id="l741">    741</a>             window.bring_to_front()
+<a href="#l742" class="line" id="l742">    742</a> 
+<a href="#l743" class="line" id="l743">    743</a> 
+<a href="#l744" class="line" id="l744">    744</a> reconfigure_screens = True
+<a href="#l745" class="line" id="l745">    745</a> follow_mouse_focus = True
+<a href="#l746" class="line" id="l746">    746</a> bring_front_click = True
+<a href="#l747" class="line" id="l747">    747</a> cursor_warp = False
+<a href="#l748" class="line" id="l748">    748</a> auto_fullscreen = True
+<a href="#l749" class="line" id="l749">    749</a> focus_on_window_activation = &quot;focus&quot;
+<a href="#l750" class="line" id="l750">    750</a> 
+<a href="#l751" class="line" id="l751">    751</a> keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+<a href="#l752" class="line" id="l752">    752</a> groups.append(scratchpad)
+<a href="#l753" class="line" id="l753">    753</a> 
+</pre>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - moved z_data into repo, removing .config dependency. Neatified readme. Backed up old ~/.zshrc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/d9d078ed94f34738cfed89bd108f02efc31b3801.html">d9d078ed94f34738cfed89bd108f02efc31b3801</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/164da2d9115284db04bf8158ff24b32a89dcb111.html">164da2d9115284db04bf8158ff24b32a89dcb111</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-15 11:01:41 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-15 11:01:41 +0000
+
+moved z_data into repo, removing .config dependency. Neatified readme. Backed up old ~/.zshrc
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -29,7 +29,7 @@
+<span class="def"> ZSH_THEME=&quot;ban&quot;
+</span><span class="def"> so $ZSH/themes/$ZSH_THEME.zsh-theme
+</span><span class="def"> 
+</span><span class="sub">-_Z_DATA=$HOME/.config/z
+</span><span class="add">+_Z_DATA=$ZSH/z_data
+</span><span class="def"> so $ZSH/z/z.sh
+</span><span class="def"> 
+</span><span class="def"> ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.md</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,8 @@
+<span class="def"> 
+</span><span class="def">     git clone --recurse-submodules https://github.com/mcolligan/zshrc.git ~/.zsh
+</span><span class="def"> 
+</span><span class="sub">-and run install
+</span><span class="add">+and run install.
+</span><span class="def"> 
+</span><span class="sub">-locale-gen en_US.UTF-8 appears to be required on raspberry pi
+</span><span class="add">+    locale-gen en_US.UTF-8
+</span><span class="add">+
+</span><span class="add">+appears to be required on raspberry pi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>install</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,11 +3,23 @@
+<span class="def"> dir=$(dirname &quot;$(readlink -f &quot;$0&quot;)&quot;)
+</span><span class="def"> 
+</span><span class="def"> # source this zshrc from ~/.zshrc
+</span><span class="sub">-echo &quot;source $dir/zshrc&quot; &gt;&gt; $HOME/.zshrc
+</span><span class="add">+if [[ -f ~/.zshrc ]]
+</span><span class="add">+then
+</span><span class="add">+	backup=~/.zshrc_$(date +%m%d-%H%M%S)
+</span><span class="add">+	mv ~/.zshrc $backup
+</span><span class="add">+	echo &quot;Moved pre-existing ~/.zshrc to $backup&quot;
+</span><span class="add">+fi
+</span><span class="add">+echo &quot;source $dir/zshrc&quot; &gt; $HOME/.zshrc
+</span><span class="add">+echo &quot;Created new ~/.zshrc to source this repo&quot;
+</span><span class="def"> 
+</span><span class="sub">-# we may need a config directory for a plugin
+</span><span class="sub">-[[ ! -d $HOME/.config ]] &amp;&amp; mkdir $HOME/.config
+</span><span class="def"> 
+</span><span class="def"> # if installation didn&apos;t include submodules they need installing
+</span><span class="def"> git --git-dir=$dir/.git submodule init
+</span><span class="def"> git --git-dir=$dir/.git submodule update
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# inform if zsh is not yet installed
+</span><span class="add">+if ! type zsh 2&gt; /dev/null
+</span><span class="add">+then
+</span><span class="add">+	echo &quot;zsh is not installed on this system.&quot;
+</span><span class="add">+fi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+z_data
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - apply zoom factor when moving mouse and dragging windows</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/ea26690302a73e82fe1028842f3e17d00167e682.html">ea26690302a73e82fe1028842f3e17d00167e682</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/5544905926ce50e9832f79bcec805b0d26140031.html">5544905926ce50e9832f79bcec805b0d26140031</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-11 23:24:40 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-11 23:24:40 +0000
+
+apply zoom factor when moving mouse and dragging windows
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -81,8 +81,9 @@
+<span class="def">     server-&gt;cursor_mode = mode;
+</span><span class="def"> 
+</span><span class="def">     if (mode == CURSOR_MOVE) {
+</span><span class="sub">-	server-&gt;grab_x = server-&gt;cursor-&gt;x - view-&gt;x;
+</span><span class="sub">-	server-&gt;grab_y = server-&gt;cursor-&gt;y - view-&gt;y;
+</span><span class="add">+	double zoom = server-&gt;current_desk-&gt;zoom;
+</span><span class="add">+	server-&gt;grab_x = server-&gt;cursor-&gt;x - view-&gt;x * zoom;
+</span><span class="add">+	server-&gt;grab_y = server-&gt;cursor-&gt;y - view-&gt;y * zoom;
+</span><span class="def">     } else {
+</span><span class="def"> 	struct wlr_box geo_box;
+</span><span class="def"> 	wlr_xdg_surface_get_geometry(view-&gt;surface, &amp;geo_box);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,7 +3,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-void process_cursor_move(struct server *server, uint32_t time);
+</span><span class="add">+void process_cursor_move(struct server *server, uint32_t time, double zoom);
+</span><span class="def"> void process_cursor_resize(struct server *server, uint32_t time);
+</span><span class="def"> bool view_at(
+</span><span class="def">     struct view *view, double lx, double ly, struct wlr_surface **surface,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,9 +13,9 @@
+<span class="def"> enum wlr_keyboard_modifier MOD = WLR_MODIFIER_LOGO;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void process_cursor_move(struct server *server, uint32_t time) {
+</span><span class="sub">-    server-&gt;grabbed_view-&gt;x = server-&gt;cursor-&gt;x - server-&gt;grab_x;
+</span><span class="sub">-    server-&gt;grabbed_view-&gt;y = server-&gt;cursor-&gt;y - server-&gt;grab_y;
+</span><span class="add">+void process_cursor_move(struct server *server, uint32_t time, double zoom) {
+</span><span class="add">+    server-&gt;grabbed_view-&gt;x = (server-&gt;cursor-&gt;x - server-&gt;grab_x) / zoom;
+</span><span class="add">+    server-&gt;grabbed_view-&gt;y = (server-&gt;cursor-&gt;y - server-&gt;grab_y) / zoom;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -104,13 +104,16 @@
+<span class="def">     struct wlr_seat *seat;
+</span><span class="def">     struct wlr_surface *surface;
+</span><span class="def">     struct view *view;
+</span><span class="add">+    double zoom = server-&gt;current_desk-&gt;zoom;
+</span><span class="add">+    dx /= zoom;
+</span><span class="add">+    dy /= zoom;
+</span><span class="def"> 
+</span><span class="def">     switch (server-&gt;cursor_mode) {
+</span><span class="def"> 	case CURSOR_PASSTHROUGH:
+</span><span class="def"> 	    seat = server-&gt;seat;
+</span><span class="def"> 	    surface = NULL;
+</span><span class="sub">-	    view = desktop_view_at(server, server-&gt;cursor-&gt;x,
+</span><span class="sub">-		server-&gt;cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy);
+</span><span class="add">+	    view = desktop_view_at(server, server-&gt;cursor-&gt;x / zoom,
+</span><span class="add">+		server-&gt;cursor-&gt;y / zoom, &amp;surface, &amp;sx, &amp;sy);
+</span><span class="def"> 	    if (!view) {
+</span><span class="def"> 		wlr_xcursor_manager_set_cursor_image(
+</span><span class="def"> 		    server-&gt;cursor_manager, &quot;left_ptr&quot;, server-&gt;cursor
+</span>@@ -128,8 +131,6 @@
+<span class="def"> 	    break;
+</span><span class="def"> 
+</span><span class="def"> 	case CURSOR_PAN:
+</span><span class="sub">-	    dx /= server-&gt;current_desk-&gt;zoom;
+</span><span class="sub">-	    dy /= server-&gt;current_desk-&gt;zoom;
+</span><span class="def"> 	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="def"> 		view-&gt;x += dx;
+</span><span class="def"> 		view-&gt;y += dy;
+</span>@@ -139,7 +140,7 @@
+<span class="def"> 	    break;
+</span><span class="def"> 
+</span><span class="def"> 	case CURSOR_MOVE:
+</span><span class="sub">-	    process_cursor_move(server, time);
+</span><span class="add">+	    process_cursor_move(server, time, zoom);
+</span><span class="def"> 	    break;
+</span><span class="def"> 
+</span><span class="def"> 	case CURSOR_RESIZE:
+</span></pre>
+</div></div>
+  </body>
+</html>

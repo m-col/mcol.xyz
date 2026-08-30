@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - move views wl_lists for desks, thereby implementing workspaces</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/ef78040a4e031d7806aa7e791e8750160b6f1e5f.html">ef78040a4e031d7806aa7e791e8750160b6f1e5f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/2bfdee0aec288528ae72c44308bf490ee353f7a3.html">2bfdee0aec288528ae72c44308bf490ee353f7a3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-08 17:47:19 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-08 17:47:19 +0000
+
+move views wl_lists for desks, thereby implementing workspaces
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -28,7 +28,6 @@
+<span class="def"> 
+</span><span class="def">     struct wlr_xdg_shell *shell;
+</span><span class="def">     struct wl_listener new_xdg_surface_listener;
+</span><span class="sub">-    struct wl_list views;
+</span><span class="def">     struct wl_list desks;
+</span><span class="def">     struct desk *current_desk;
+</span><span class="def"> 
+</span>@@ -74,6 +73,7 @@
+<span class="def"> struct desk {
+</span><span class="def">     struct wl_list link;
+</span><span class="def">     struct server *server;
+</span><span class="add">+    struct wl_list views;
+</span><span class="def">     float background[4];
+</span><span class="def">     int x, y;
+</span><span class="def">     int index;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -34,7 +34,7 @@
+<span class="def">     struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat);
+</span><span class="def">     /* Move the view to the front */
+</span><span class="def">     wl_list_remove(&amp;view-&gt;link);
+</span><span class="sub">-    wl_list_insert(&amp;server-&gt;views, &amp;view-&gt;link);
+</span><span class="add">+    wl_list_insert(&amp;server-&gt;current_desk-&gt;views, &amp;view-&gt;link);
+</span><span class="def">     /* Activate the new surface */
+</span><span class="def">     wlr_xdg_toplevel_set_activated(view-&gt;surface, true);
+</span><span class="def">     wlr_seat_keyboard_notify_enter(
+</span>@@ -124,7 +124,7 @@
+<span class="def">     view-&gt;request_resize_listener.notify = on_request_resize;
+</span><span class="def">     wl_signal_add(&amp;toplevel-&gt;events.request_resize, &amp;view-&gt;request_resize_listener);
+</span><span class="def"> 
+</span><span class="sub">-    wl_list_insert(&amp;server-&gt;views, &amp;view-&gt;link);
+</span><span class="add">+    wl_list_insert(&amp;server-&gt;current_desk-&gt;views, &amp;view-&gt;link);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -135,6 +135,7 @@
+<span class="def">     struct desk *desk = calloc(1, sizeof(struct desk));
+</span><span class="def">     wl_list_insert(server-&gt;desks.prev, &amp;desk-&gt;link);
+</span><span class="def">     desk-&gt;server = server;
+</span><span class="add">+    wl_list_init(&amp;desk-&gt;views);
+</span><span class="def">     assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="def">     desk-&gt;index = num_desks;
+</span><span class="def">     num_desks++;
+</span>@@ -170,7 +171,6 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void set_up_shell(struct server *server) {
+</span><span class="sub">-    wl_list_init(&amp;server-&gt;views);
+</span><span class="def">     server-&gt;shell = wlr_xdg_shell_create(server-&gt;display);
+</span><span class="def">     server-&gt;new_xdg_surface_listener.notify = on_new_xdg_surface;
+</span><span class="def">     wl_signal_add(&amp;server-&gt;shell-&gt;events.new_surface, &amp;server-&gt;new_xdg_surface_listener);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -63,7 +63,7 @@
+<span class="def">     wlr_renderer_clear(renderer, output-&gt;server-&gt;current_desk-&gt;background);
+</span><span class="def"> 
+</span><span class="def">     struct view *view;
+</span><span class="sub">-    wl_list_for_each_reverse(view, &amp;output-&gt;server-&gt;views, link) {
+</span><span class="add">+    wl_list_for_each_reverse(view, &amp;output-&gt;server-&gt;current_desk-&gt;views, link) {
+</span><span class="def"> 	struct render_data rdata = {
+</span><span class="def"> 	    .output = output-&gt;wlr_output,
+</span><span class="def"> 	    .view = view,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -87,7 +87,7 @@
+<span class="def">     double *sx, double *sy
+</span><span class="def"> ) {
+</span><span class="def">     struct view *view;
+</span><span class="sub">-    wl_list_for_each(view, &amp;server-&gt;views, link) {
+</span><span class="add">+    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="def"> 	if (view_at(view, lx, ly, surface, sx, sy)) {
+</span><span class="def"> 	    return view;
+</span><span class="def"> 	}
+</span></pre>
+</div></div>
+  </body>
+</html>

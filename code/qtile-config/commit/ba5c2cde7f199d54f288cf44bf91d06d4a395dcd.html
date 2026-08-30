@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - misc updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/ba5c2cde7f199d54f288cf44bf91d06d4a395dcd.html">ba5c2cde7f199d54f288cf44bf91d06d4a395dcd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/cf7eba341a6f5b015530b8aba91ac044045b89d4.html">cf7eba341a6f5b015530b8aba91ac044045b89d4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-17 00:38:43 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-17 00:38:43 +0100
+
+misc updates
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,7 +38,7 @@
+<span class="def"> 
+</span><span class="def"> # Configure libinput devices
+</span><span class="def"> wayland_libinput_config = {
+</span><span class="sub">-    &quot;type:pointer&quot;: InputConfig(drag=True, tap=True)
+</span><span class="add">+    &quot;type:pointer&quot;: InputConfig(drag=True, tap=True, pointer_accel=0.4)
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,17 +16,19 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Things after this are only run on a TTY
+</span><span class="sub">-[[ -n &quot;$QTILE_XEPHYR&quot; ]] &amp;&amp; exit  
+</span><span class="add">+[[ -n &quot;$QTILE_XEPHYR&quot; ]] || exit  
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-run_if_new() { pgrep $1 &amp;&gt; /dev/null || $@ &amp;; }
+</span><span class="add">+run_if_new() { pgrep $1 || $@; }
+</span><span class="def"> 
+</span><span class="sub">-run_if_new mako
+</span><span class="sub">-run_if_new keepassxc
+</span><span class="add">+{
+</span><span class="add">+    run_if_new mako &amp;
+</span><span class="add">+    run_if_new keepassxc &amp;
+</span><span class="def"> 
+</span><span class="sub">-pgrep wlsunset &amp;&amp; pkill -SIGKILL wlsunset
+</span><span class="sub">-wlsunset -t 3100 -T 5700 -l 55.7 -L -3.1 &amp;&gt; /dev/null
+</span><span class="add">+    pgrep wlsunset &amp;&amp; pkill -SIGKILL wlsunset
+</span><span class="add">+    wlsunset -t 3100 -T 5700 -l 55.7 -L -3.1 &amp;
+</span><span class="add">+    kanshi &amp;
+</span><span class="add">+} &amp;&gt; /dev/null
+</span><span class="def"> 
+</span><span class="sub">-sleep 5
+</span><span class="add">+sleep 3
+</span><span class="def"> check_systemd
+</span><span class="sub">-kanshi &amp;&gt; /dev/null &amp;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -106,7 +106,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> @hook.subscribe.screen_change
+</span><span class="sub">-def _():
+</span><span class="add">+def _(_):
+</span><span class="def">     # Set groups to screens
+</span><span class="def">     if len(qtile.screens) &gt; 1:
+</span><span class="def">         if qtile.screens[0].group.name not in &apos;123&apos;:
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -465,7 +465,7 @@
+<span class="def">     Screen(
+</span><span class="def">         bottom=bar.Bar(
+</span><span class="def">             [
+</span><span class="sub">-                groupboxes[1], cpugraph,  # Left
+</span><span class="add">+                groupboxes[1], cpugraph, prompt,  # Left
+</span><span class="def">                 widget.Spacer(),
+</span><span class="def">                 mpd2,  # Centre
+</span><span class="def">                 widget.Spacer(),
+</span></pre>
+</div></div>
+  </body>
+</html>

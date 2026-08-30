@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - move types to dedicated header to avoid recursions. Add initial start code</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/bdfe0151b4dce7d3e12c67c80f51cc3128fb212d.html">bdfe0151b4dce7d3e12c67c80f51cc3128fb212d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/77579c88434333d01e7e0b2b69fa96cc0ec3715c.html">77579c88434333d01e7e0b2b69fa96cc0ec3715c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-05 10:32:58 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-05 10:32:58 +0000
+
+move types to dedicated header to avoid recursions. Add initial start code
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,69 @@
+<span class="add">+#pragma once
+</span><span class="add">+
+</span><span class="add">+#include &lt;stdlib.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="add">+#include &lt;wlr/backend.h&gt;
+</span><span class="add">+#include &lt;wlr/render/wlr_renderer.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_cursor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="add">+#include &lt;wlr/util/log.h&gt;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+enum cursor_mode {
+</span><span class="add">+    CURSOR_PASSTHROUGH,
+</span><span class="add">+    CURSOR_MOVE,
+</span><span class="add">+    CURSOR_RESIZE,
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+struct server {
+</span><span class="add">+    struct wl_display *display;
+</span><span class="add">+    struct wlr_backend *backend;
+</span><span class="add">+    struct wlr_renderer *renderer;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_output_layout *output_layout;
+</span><span class="add">+    struct wl_list outputs;
+</span><span class="add">+    struct wl_listener new_output_listener;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_xdg_shell *shell;
+</span><span class="add">+    struct wl_listener new_xdg_surface_listener;
+</span><span class="add">+    struct wl_list views;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_cursor *cursor;
+</span><span class="add">+    struct wlr_xcursor_manager *cursor_manager;
+</span><span class="add">+    struct wl_listener cursor_motion_listener;
+</span><span class="add">+    struct wl_listener cursor_motion_absolute_listener;
+</span><span class="add">+    struct wl_listener cursor_button_listener;
+</span><span class="add">+    struct wl_listener cursor_axis_listener;
+</span><span class="add">+    struct wl_listener cursor_frame_listener;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_seat *seat;
+</span><span class="add">+    struct wl_listener new_input_listener;
+</span><span class="add">+    struct wl_listener request_cursor_listener;
+</span><span class="add">+    struct wl_listener request_set_selection_listener;
+</span><span class="add">+    struct wl_list keyboards;
+</span><span class="add">+    enum cursor_mode cursor_mode;
+</span><span class="add">+    struct deskwm_view *grabbed_view;
+</span><span class="add">+    double grab_x, grab_y;
+</span><span class="add">+    struct wlr_box grab_geobox;
+</span><span class="add">+    uint32_t resize_edges;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+struct view {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    struct server *server;
+</span><span class="add">+    struct wlr_xdg_surface *surface;
+</span><span class="add">+    struct wl_listener map;
+</span><span class="add">+    struct wl_listener unmap;
+</span><span class="add">+    struct wl_listener destroy;
+</span><span class="add">+    struct wl_listener request_move;
+</span><span class="add">+    struct wl_listener request_resize;
+</span><span class="add">+    bool is_mapped;
+</span><span class="add">+    int x, y;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+struct server create_server();
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,6 @@
+<span class="def"> #pragma once
+</span><span class="def"> 
+</span><span class="sub">-#include &quot;deskwm.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void on_map(struct wl_listener *listener, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#include &quot;deskwm.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void on_map(struct wl_listener *listener, void *data) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +1,7 @@
+<span class="def"> #pragma once
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> 
+</span><span class="sub">-#include &quot;deskwm.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> struct output {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +1,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> 
+</span><span class="sub">-#include &quot;deskwm.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void on_frame(struct wl_listener *listener, void *data) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,15 @@
+<span class="add">+#pragma once
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_cursor_motion(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_cursor_motion_absolute(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_cursor_button(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_cursor_axis(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_cursor_frame(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_new_input(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_request_cursor(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_request_set_selection(struct wl_listener *listener, void *data);
+</span><span class="add">+void set_up_cursor(struct server *server);
+</span><span class="add">+void set_up_keyboard(struct server *server);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,86 @@
+<span class="add">+#include &lt;wlr/types/wlr_cursor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_xcursor_manager.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;input.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_cursor_motion(struct wl_listener *listener, void *data){
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_cursor_motion_absolute(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_cursor_button(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+void on_cursor_axis(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_cursor_frame(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_new_input(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_request_cursor(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_request_set_selection(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_up_cursor(struct server *server) {
+</span><span class="add">+    server-&gt;cursor = wlr_cursor_create();
+</span><span class="add">+    wlr_cursor_attach_output_layout(server-&gt;cursor, server-&gt;output_layout);
+</span><span class="add">+    server-&gt;cursor_manager = wlr_xcursor_manager_create(NULL, 24);
+</span><span class="add">+    wlr_xcursor_manager_load(server-&gt;cursor_manager, 1);
+</span><span class="add">+
+</span><span class="add">+    server-&gt;cursor_motion_listener.notify = on_cursor_motion;
+</span><span class="add">+    wl_signal_add(&amp;server-&gt;cursor-&gt;events.motion, &amp;server-&gt;cursor_motion_listener);
+</span><span class="add">+
+</span><span class="add">+    server-&gt;cursor_motion_absolute_listener.notify = on_cursor_motion_absolute;
+</span><span class="add">+    wl_signal_add(&amp;server-&gt;cursor-&gt;events.motion_absolute,
+</span><span class="add">+	&amp;server-&gt;cursor_motion_absolute_listener);
+</span><span class="add">+
+</span><span class="add">+    server-&gt;cursor_button_listener.notify = on_cursor_button;
+</span><span class="add">+    wl_signal_add(&amp;server-&gt;cursor-&gt;events.button, &amp;server-&gt;cursor_button_listener);
+</span><span class="add">+
+</span><span class="add">+    server-&gt;cursor_axis_listener.notify = on_cursor_axis;
+</span><span class="add">+    wl_signal_add(&amp;server-&gt;cursor-&gt;events.axis, &amp;server-&gt;cursor_axis_listener);
+</span><span class="add">+
+</span><span class="add">+    server-&gt;cursor_frame_listener.notify = on_cursor_frame;
+</span><span class="add">+    wl_signal_add(&amp;server-&gt;cursor-&gt;events.frame, &amp;server-&gt;cursor_frame_listener);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_up_keyboard(struct server *server) {
+</span><span class="add">+    wl_list_init(&amp;server-&gt;keyboards);
+</span><span class="add">+
+</span><span class="add">+    server-&gt;new_input_listener.notify = on_new_input;
+</span><span class="add">+    wl_signal_add(&amp;server-&gt;backend-&gt;events.new_input, &amp;server-&gt;new_input_listener);
+</span><span class="add">+
+</span><span class="add">+    server-&gt;seat = wlr_seat_create(server-&gt;display, &quot;seat0&quot;);
+</span><span class="add">+    server-&gt;request_cursor_listener.notify = on_request_cursor;
+</span><span class="add">+    wl_signal_add(&amp;server-&gt;seat-&gt;events.request_set_cursor,
+</span><span class="add">+	    &amp;server-&gt;request_cursor_listener);
+</span><span class="add">+
+</span><span class="add">+    server-&gt;request_set_selection_listener.notify = on_request_set_selection;
+</span><span class="add">+    wl_signal_add(&amp;server-&gt;seat-&gt;events.request_set_selection,
+</span><span class="add">+		    &amp;server-&gt;request_set_selection_listener);
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,42 +1,6 @@
+<span class="def"> #pragma once
+</span><span class="def"> 
+</span><span class="sub">-#include &lt;stdlib.h&gt;
+</span><span class="sub">-#include &lt;unistd.h&gt;
+</span><span class="sub">-#include &lt;wlr/backend.h&gt;
+</span><span class="sub">-#include &lt;wlr/render/wlr_renderer.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="sub">-#include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="sub">-#include &lt;wlr/util/log.h&gt;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-struct server {
+</span><span class="sub">-    struct wl_display *display;
+</span><span class="sub">-    struct wlr_backend *backend;
+</span><span class="sub">-    struct wlr_renderer *renderer;
+</span><span class="sub">-
+</span><span class="sub">-    struct wlr_output_layout *output_layout;
+</span><span class="sub">-    struct wl_list outputs;
+</span><span class="sub">-    struct wl_listener new_output_listener;
+</span><span class="sub">-
+</span><span class="sub">-    struct wlr_xdg_shell *shell;
+</span><span class="sub">-    struct wl_listener new_xdg_surface_listener;
+</span><span class="sub">-    struct wl_list views;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-struct view {
+</span><span class="sub">-    struct wl_list link;
+</span><span class="sub">-    struct server *server;
+</span><span class="sub">-    struct wlr_xdg_surface *surface;
+</span><span class="sub">-    struct wl_listener map;
+</span><span class="sub">-    struct wl_listener unmap;
+</span><span class="sub">-    struct wl_listener destroy;
+</span><span class="sub">-    struct wl_listener request_move;
+</span><span class="sub">-    struct wl_listener request_resize;
+</span><span class="sub">-    bool is_mapped;
+</span><span class="sub">-    int x, y;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void create_serve();
+</span><span class="add">+struct server create_server();
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,8 +7,10 @@
+<span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;deskwm.h&quot;
+</span><span class="add">+#include &quot;input.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> struct server create_server() {
+</span>@@ -39,12 +41,28 @@
+<span class="def">     // configure
+</span><span class="def">     set_up_outputs(&amp;server);
+</span><span class="def">     set_up_shell(&amp;server);
+</span><span class="add">+    set_up_cursor(&amp;server);
+</span><span class="add">+    set_up_keyboard(&amp;server);
+</span><span class="def"> 
+</span><span class="def">     // start
+</span><span class="add">+    const char *socket = wl_display_add_socket_auto(server.display);
+</span><span class="add">+    if (!socket) {
+</span><span class="add">+	wlr_backend_destroy(server.backend);
+</span><span class="add">+	wl_display_destroy(server.display);
+</span><span class="add">+	return EXIT_FAILURE;
+</span><span class="add">+    }
+</span><span class="add">+    if (!wlr_backend_start(server.backend)) {
+</span><span class="add">+	wlr_backend_destroy(server.backend);
+</span><span class="add">+	wl_display_destroy(server.display);
+</span><span class="add">+	return 1;
+</span><span class="add">+    }
+</span><span class="add">+    setenv(&quot;WAYLAND_DISPLAY&quot;, socket, true);
+</span><span class="add">+    wlr_log(WLR_INFO, &quot;Starting with WAYLAND_DISPLAY=%s&quot;, socket);
+</span><span class="def">     wl_display_run(server.display);
+</span><span class="def"> 
+</span><span class="def">     // stop
+</span><span class="add">+    wl_display_destroy_clients(server.display);
+</span><span class="def">     wlr_backend_destroy(server.backend);
+</span><span class="def">     wl_display_destroy(server.display);
+</span><span class="sub">-    return 0;
+</span><span class="add">+    return EXIT_SUCCESS;
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

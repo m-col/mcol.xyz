@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Reuse the gitja checkout instead of cloning it again</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/ac77ae7d03234edb0fe375b36dcdc8885b01884b.html">ac77ae7d03234edb0fe375b36dcdc8885b01884b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/692bd82eb2423176124599c003ae26239e09024d.html">692bd82eb2423176124599c003ae26239e09024d</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 19:06:41 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 19:06:41 +0000
+
+Reuse the gitja checkout instead of cloning it again
+
+gitja is itself one of the repos listed in config.dhall, so it needs to
+exist as a sibling checkout (../gitja) same as every other listed repo.
+It was being fetched twice - once via actions/checkout to build the gitja
+binary, then again via a fresh git clone in the sibling-repos loop. Move
+the already-checked-out gitja-src into place instead of re-cloning it.
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_012RfZTyHvxLyVp4yaWmNvhN
+</pre><div class="diff">
+  <p>
+    <b>.github/workflows/deploy.yaml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -60,10 +60,15 @@
+<span class="def">       - name: Clone repos listed on /code
+</span><span class="def">         run: |
+</span><span class="def">           repos=$(dhall-to-json --file gitja/config.dhall | jq -r &apos;.repos[]&apos; | sed &apos;s#^\.\./##&apos;)
+</span><span class="add">+          mv gitja-src ../gitja
+</span><span class="def">           cd ..
+</span><span class="def">           for repo in $repos; do
+</span><span class="sub">-            # mcol.xyz is already checked out here as this workflow&apos;s own repo.
+</span><span class="sub">-            [ &quot;$repo&quot; = &quot;mcol.xyz&quot; ] &amp;&amp; continue
+</span><span class="add">+            case &quot;$repo&quot; in
+</span><span class="add">+              # mcol.xyz is already checked out here as this workflow&apos;s own
+</span><span class="add">+              # repo, and gitja was just moved into place above (it was
+</span><span class="add">+              # already checked out to build the gitja binary itself).
+</span><span class="add">+              mcol.xyz | gitja) continue ;;
+</span><span class="add">+            esac
+</span><span class="def">             git clone --depth 100 &quot;https://github.com/m-col/$repo&quot; &quot;$repo&quot;
+</span><span class="def">           done
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

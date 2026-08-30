@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - moved tmux prefix to C-s to allow zsh C-a autocompletion with single press</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/ac1837841591c40f8257af70c23e98c1d2f8cade.html">ac1837841591c40f8257af70c23e98c1d2f8cade</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/081aba8c9577caa728520ea4674c84019b35044f.html">081aba8c9577caa728520ea4674c84019b35044f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-24 18:10:21 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-24 18:10:21 +0000
+
+moved tmux prefix to C-s to allow zsh C-a autocompletion with single press
+</pre><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,8 +2,8 @@
+<span class="def"> 
+</span><span class="def"> # make C-a prefix
+</span><span class="def"> unbind C-b
+</span><span class="sub">-set -g prefix C-a
+</span><span class="sub">-bind C-a send-prefix
+</span><span class="add">+set -g prefix C-s
+</span><span class="add">+bind C-s send-prefix
+</span><span class="def"> 
+</span><span class="def"> # bindings
+</span><span class="def"> bind r source-file ~/.tmux.conf
+</span>@@ -11,6 +11,7 @@
+<span class="def"> bind-key | split-window -hb \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="def"> #bind-key -n C-d kill-pane \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="def"> bind C-l send-keys &apos;C-l&apos;
+</span><span class="add">+bind C-a send-keys &apos;C-a&apos;
+</span><span class="def"> 
+</span><span class="def"> # general settings
+</span><span class="def"> set -g default-terminal &quot;tmux-256color&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - fix terminal-overrides colour for alacritty</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/a0fbf11e0e8f66d8b2592087c677ec46d3ecffcd.html">a0fbf11e0e8f66d8b2592087c677ec46d3ecffcd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/843d0ec8482beb89316b41781a3543331e873913.html">843d0ec8482beb89316b41781a3543331e873913</a>
+<b>Author:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Date:</b> 2025-06-17 13:29:40 +0100
+<b>Committer:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-06-17 13:29:40 +0100
+
+fix terminal-overrides colour for alacritty
+</pre><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,7 +15,8 @@
+<span class="def"> 
+</span><span class="def"> # general settings
+</span><span class="def"> #set -g default-terminal &quot;rxvt-unicode-256color&quot;
+</span><span class="sub">-set -g default-terminal &quot;xterm-256color&quot;
+</span><span class="add">+#set -g default-terminal &quot;xterm-256color&quot;
+</span><span class="add">+set -ag terminal-overrides &quot;,alacritty:RGB&quot;
+</span><span class="def"> set -g mouse on
+</span><span class="def"> set -g history-limit 5000
+</span><span class="def"> set -s escape-time 0
+</span></pre>
+</div></div>
+  </body>
+</html>

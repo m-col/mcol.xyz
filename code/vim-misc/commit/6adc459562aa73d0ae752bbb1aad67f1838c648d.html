@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - remove Q binding</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/6adc459562aa73d0ae752bbb1aad67f1838c648d.html">6adc459562aa73d0ae752bbb1aad67f1838c648d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/245846a81c91588aac106aa985d2097daa6d89ee.html">245846a81c91588aac106aa985d2097daa6d89ee</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-28 14:21:52 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-28 14:21:52 +0100
+
+remove Q binding
+</pre><div class="diff">
+  <p>
+    <b>plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -27,7 +27,6 @@
+<span class="def"> vnoremap &gt; &gt;gv
+</span><span class="def"> 
+</span><span class="def"> &quot; quitting and writing shortcuts
+</span><span class="sub">-nnoremap Q &lt;nop&gt;
+</span><span class="def"> nnoremap QQ :q&lt;CR&gt;
+</span><span class="def"> nnoremap !Q :q!&lt;CR&gt;
+</span><span class="def"> nnoremap QW :wq&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

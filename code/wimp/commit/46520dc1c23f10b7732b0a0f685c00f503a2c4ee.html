@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Update wlroots min version</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/46520dc1c23f10b7732b0a0f685c00f503a2c4ee.html">46520dc1c23f10b7732b0a0f685c00f503a2c4ee</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/6fb82d108a2c22a2b80d4b214a0c70e4a36f128a.html">6fb82d108a2c22a2b80d4b214a0c70e4a36f128a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-08 23:11:09 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-08 23:11:09 +0000
+
+Update wlroots min version
+</pre><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -146,7 +146,7 @@
+<span class="def"> 
+</span><span class="def">     // create
+</span><span class="def">     wimp.display = wl_display_create();
+</span><span class="sub">-    wimp.backend = wlr_backend_autocreate(wimp.display, NULL);
+</span><span class="add">+    wimp.backend = wlr_backend_autocreate(wimp.display);
+</span><span class="def">     wimp.renderer = wlr_backend_get_renderer(wimp.backend);
+</span><span class="def">     wlr_renderer_init_wl_display(wimp.renderer, wimp.display);
+</span><span class="def">     wlr_compositor_create(wimp.display, wimp.renderer);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keyboard.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,6 @@
+<span class="def"> #include &lt;inttypes.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="add">+#include &lt;wayland-server-protocol.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_keyboard.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_virtual_keyboard_v1.h&gt;
+</span>@@ -59,7 +60,7 @@
+<span class="def"> static void on_key(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_event_keyboard_key *event = data;
+</span><span class="def"> 
+</span><span class="sub">-    if (event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="add">+    if (event-&gt;state == WL_KEYBOARD_KEY_STATE_PRESSED) {
+</span><span class="def"> 	const xkb_keysym_t *syms;
+</span><span class="def"> 	xkb_keycode_t keycode = event-&gt;keycode + 8;
+</span><span class="def"> 	struct keyboard *keyboard = wl_container_of(listener, keyboard, key_listener);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,7 +26,7 @@
+<span class="def">     } else if (pid &lt; 0) {
+</span><span class="def"> 	wlr_log(WLR_ERROR, &quot;Failed to fork for exec command.&quot;);
+</span><span class="def">     } else {
+</span><span class="sub">-	wlr_log(WLR_DEBUG, &quot;Executing: %s&quot;, data);
+</span><span class="add">+	wlr_log(WLR_DEBUG, &quot;Executing: %s&quot;, (char *)data);
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,7 +21,7 @@
+<span class="def"> Dependencies:
+</span><span class="def">  - wayland
+</span><span class="def">  - wayland-protocols
+</span><span class="sub">- - wlroots
+</span><span class="add">+ - wlroots (currently git master version)
+</span><span class="def">  - cairo
+</span><span class="def"> 
+</span><span class="def"> .. code-block:: sh
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>protocols/wlr-layer-shell-unstable-v1.xml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -25,7 +25,7 @@
+<span class="def">     THIS SOFTWARE.
+</span><span class="def">   &lt;/copyright&gt;
+</span><span class="def"> 
+</span><span class="sub">-  &lt;interface name=&quot;zwlr_layer_shell_v1&quot; version=&quot;3&quot;&gt;
+</span><span class="add">+  &lt;interface name=&quot;zwlr_layer_shell_v1&quot; version=&quot;4&quot;&gt;
+</span><span class="def">     &lt;description summary=&quot;create surfaces that are layers of the desktop&quot;&gt;
+</span><span class="def">       Clients can use this interface to assign the surface_layer role to
+</span><span class="def">       wl_surfaces. Such surfaces are assigned to a &quot;layer&quot; of the output and
+</span>@@ -47,6 +47,12 @@
+<span class="def">         or manipulate a buffer prior to the first layer_surface.configure call
+</span><span class="def">         must also be treated as errors.
+</span><span class="def"> 
+</span><span class="add">+        After creating a layer_surface object and setting it up, the client
+</span><span class="add">+        must perform an initial commit without any buffer attached.
+</span><span class="add">+        The compositor will reply with a layer_surface.configure event.
+</span><span class="add">+        The client must acknowledge it and is then allowed to attach a buffer
+</span><span class="add">+        to map the surface.
+</span><span class="add">+
+</span><span class="def">         You may pass NULL for output to allow the compositor to decide which
+</span><span class="def">         output to use. Generally this will be the one that the user most
+</span><span class="def">         recently interacted with.
+</span>@@ -94,7 +100,7 @@
+<span class="def">     &lt;/request&gt;
+</span><span class="def">   &lt;/interface&gt;
+</span><span class="def"> 
+</span><span class="sub">-  &lt;interface name=&quot;zwlr_layer_surface_v1&quot; version=&quot;3&quot;&gt;
+</span><span class="add">+  &lt;interface name=&quot;zwlr_layer_surface_v1&quot; version=&quot;4&quot;&gt;
+</span><span class="def">     &lt;description summary=&quot;layer metadata interface&quot;&gt;
+</span><span class="def">       An interface that may be implemented by a wl_surface, for surfaces that
+</span><span class="def">       are designed to be rendered as a layer of a stacked desktop-like
+</span>@@ -103,6 +109,14 @@
+<span class="def">       Layer surface state (layer, size, anchor, exclusive zone,
+</span><span class="def">       margin, interactivity) is double-buffered, and will be applied at the
+</span><span class="def">       time wl_surface.commit of the corresponding wl_surface is called.
+</span><span class="add">+
+</span><span class="add">+      Attaching a null buffer to a layer surface unmaps it.
+</span><span class="add">+
+</span><span class="add">+      Unmapping a layer_surface means that the surface cannot be shown by the
+</span><span class="add">+      compositor until it is explicitly mapped again. The layer_surface
+</span><span class="add">+      returns to the state it had right after layer_shell.get_layer_surface.
+</span><span class="add">+      The client can re-map the surface by performing a commit without any
+</span><span class="add">+      buffer attached, waiting for a configure event and handling it as usual.
+</span><span class="def">     &lt;/description&gt;
+</span><span class="def"> 
+</span><span class="def">     &lt;request name=&quot;set_size&quot;&gt;
+</span>@@ -189,21 +203,85 @@
+<span class="def">       &lt;arg name=&quot;left&quot; type=&quot;int&quot;/&gt;
+</span><span class="def">     &lt;/request&gt;
+</span><span class="def"> 
+</span><span class="add">+    &lt;enum name=&quot;keyboard_interactivity&quot;&gt;
+</span><span class="add">+      &lt;description summary=&quot;types of keyboard interaction possible for a layer shell surface&quot;&gt;
+</span><span class="add">+        Types of keyboard interaction possible for layer shell surfaces. The
+</span><span class="add">+        rationale for this is twofold: (1) some applications are not interested
+</span><span class="add">+        in keyboard events and not allowing them to be focused can improve the
+</span><span class="add">+        desktop experience; (2) some applications will want to take exclusive
+</span><span class="add">+        keyboard focus.
+</span><span class="add">+      &lt;/description&gt;
+</span><span class="add">+
+</span><span class="add">+      &lt;entry name=&quot;none&quot; value=&quot;0&quot;&gt;
+</span><span class="add">+        &lt;description summary=&quot;no keyboard focus is possible&quot;&gt;
+</span><span class="add">+          This value indicates that this surface is not interested in keyboard
+</span><span class="add">+          events and the compositor should never assign it the keyboard focus.
+</span><span class="add">+
+</span><span class="add">+          This is the default value, set for newly created layer shell surfaces.
+</span><span class="add">+
+</span><span class="add">+          This is useful for e.g. desktop widgets that display information or
+</span><span class="add">+          only have interaction with non-keyboard input devices.
+</span><span class="add">+        &lt;/description&gt;
+</span><span class="add">+      &lt;/entry&gt;
+</span><span class="add">+      &lt;entry name=&quot;exclusive&quot; value=&quot;1&quot;&gt;
+</span><span class="add">+        &lt;description summary=&quot;request exclusive keyboard focus&quot;&gt;
+</span><span class="add">+          Request exclusive keyboard focus if this surface is above the shell surface layer.
+</span><span class="add">+
+</span><span class="add">+          For the top and overlay layers, the seat will always give
+</span><span class="add">+          exclusive keyboard focus to the top-most layer which has keyboard
+</span><span class="add">+          interactivity set to exclusive. If this layer contains multiple
+</span><span class="add">+          surfaces with keyboard interactivity set to exclusive, the compositor
+</span><span class="add">+          determines the one receiving keyboard events in an implementation-
+</span><span class="add">+          defined manner. In this case, no guarantee is made when this surface
+</span><span class="add">+          will receive keyboard focus (if ever).
+</span><span class="add">+
+</span><span class="add">+          For the bottom and background layers, the compositor is allowed to use
+</span><span class="add">+          normal focus semantics.
+</span><span class="add">+
+</span><span class="add">+          This setting is mainly intended for applications that need to ensure
+</span><span class="add">+          they receive all keyboard events, such as a lock screen or a password
+</span><span class="add">+          prompt.
+</span><span class="add">+        &lt;/description&gt;
+</span><span class="add">+      &lt;/entry&gt;
+</span><span class="add">+      &lt;entry name=&quot;on_demand&quot; value=&quot;2&quot; since=&quot;4&quot;&gt;
+</span><span class="add">+        &lt;description summary=&quot;request regular keyboard focus semantics&quot;&gt;
+</span><span class="add">+          This requests the compositor to allow this surface to be focused and
+</span><span class="add">+          unfocused by the user in an implementation-defined manner. The user
+</span><span class="add">+          should be able to unfocus this surface even regardless of the layer
+</span><span class="add">+          it is on.
+</span><span class="add">+
+</span><span class="add">+          Typically, the compositor will want to use its normal mechanism to
+</span><span class="add">+          manage keyboard focus between layer shell surfaces with this setting
+</span><span class="add">+          and regular toplevels on the desktop layer (e.g. click to focus).
+</span><span class="add">+          Nevertheless, it is possible for a compositor to require a special
+</span><span class="add">+          interaction to focus or unfocus layer shell surfaces (e.g. requiring
+</span><span class="add">+          a click even if focus follows the mouse normally, or providing a
+</span><span class="add">+          keybinding to switch focus between layers).
+</span><span class="add">+
+</span><span class="add">+          This setting is mainly intended for desktop shell components (e.g.
+</span><span class="add">+          panels) that allow keyboard interaction. Using this option can allow
+</span><span class="add">+          implementing a desktop shell that can be fully usable without the
+</span><span class="add">+          mouse.
+</span><span class="add">+        &lt;/description&gt;
+</span><span class="add">+      &lt;/entry&gt;
+</span><span class="add">+    &lt;/enum&gt;
+</span><span class="add">+
+</span><span class="def">     &lt;request name=&quot;set_keyboard_interactivity&quot;&gt;
+</span><span class="def">       &lt;description summary=&quot;requests keyboard events&quot;&gt;
+</span><span class="sub">-        Set to 1 to request that the seat send keyboard events to this layer
+</span><span class="sub">-        surface. For layers below the shell surface layer, the seat will use
+</span><span class="sub">-        normal focus semantics. For layers above the shell surface layers, the
+</span><span class="sub">-        seat will always give exclusive keyboard focus to the top-most layer
+</span><span class="sub">-        which has keyboard interactivity set to true.
+</span><span class="add">+        Set how keyboard events are delivered to this surface. By default,
+</span><span class="add">+        layer shell surfaces do not receive keyboard events; this request can
+</span><span class="add">+        be used to change this.
+</span><span class="add">+
+</span><span class="add">+        This setting is inherited by child surfaces set by the get_popup
+</span><span class="add">+        request.
+</span><span class="def"> 
+</span><span class="def">         Layer surfaces receive pointer, touch, and tablet events normally. If
+</span><span class="def">         you do not want to receive them, set the input region on your surface
+</span><span class="def">         to an empty region.
+</span><span class="def"> 
+</span><span class="sub">-        Events is double-buffered, see wl_surface.commit.
+</span><span class="add">+        Keyboard interactivity is double-buffered, see wl_surface.commit.
+</span><span class="def">       &lt;/description&gt;
+</span><span class="sub">-      &lt;arg name=&quot;keyboard_interactivity&quot; type=&quot;uint&quot;/&gt;
+</span><span class="add">+      &lt;arg name=&quot;keyboard_interactivity&quot; type=&quot;uint&quot; enum=&quot;keyboard_interactivity&quot;/&gt;
+</span><span class="def">     &lt;/request&gt;
+</span><span class="def"> 
+</span><span class="def">     &lt;request name=&quot;get_popup&quot;&gt;
+</span>@@ -288,6 +366,7 @@
+<span class="def">       &lt;entry name=&quot;invalid_surface_state&quot; value=&quot;0&quot; summary=&quot;provided surface state is invalid&quot;/&gt;
+</span><span class="def">       &lt;entry name=&quot;invalid_size&quot; value=&quot;1&quot; summary=&quot;size is invalid&quot;/&gt;
+</span><span class="def">       &lt;entry name=&quot;invalid_anchor&quot; value=&quot;2&quot; summary=&quot;anchor bitfield is invalid&quot;/&gt;
+</span><span class="add">+      &lt;entry name=&quot;invalid_keyboard_interactivity&quot; value=&quot;3&quot; summary=&quot;keyboard interactivity is invalid&quot;/&gt;
+</span><span class="def">     &lt;/enum&gt;
+</span><span class="def"> 
+</span><span class="def">     &lt;enum name=&quot;anchor&quot; bitfield=&quot;true&quot;&gt;
+</span>@@ -309,3 +388,4 @@
+<span class="def">     &lt;/request&gt;
+</span><span class="def">   &lt;/interface&gt;
+</span><span class="def"> &lt;/protocol&gt;
+</span><span class="add">+
+</span></pre>
+</div></div>
+  </body>
+</html>

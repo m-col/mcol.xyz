@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Properly set up halfimize and check views</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/7fab0e5366b2632932b56ba67ad81a7562666c65.html">7fab0e5366b2632932b56ba67ad81a7562666c65</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/9b9e88abdd73504a97b13e2d7e53b2613d01a6d2.html">9b9e88abdd73504a97b13e2d7e53b2613d01a6d2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-23 22:17:09 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-23 22:17:09 +0000
+
+Properly set up halfimize and check views
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -105,7 +105,7 @@
+<span class="def">     { &quot;set_mark&quot;, &amp;set_mark, NULL },
+</span><span class="def">     { &quot;go_to_mark&quot;, &amp;go_to_mark, NULL },
+</span><span class="def">     { &quot;toggle_fullscreen&quot;, &amp;toggle_fullscreen, NULL },
+</span><span class="sub">-    { &quot;halfimize&quot;, &amp;halfimize, NULL },
+</span><span class="add">+    { &quot;halfimize&quot;, &amp;halfimize, &amp;dir_handler },
+</span><span class="def">     { &quot;reload_config&quot;, &amp;reload_config, NULL },
+</span><span class="def"> };
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -242,10 +242,11 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void halfimize(struct server *server, void *data) {
+</span><span class="sub">-    struct view *view = wl_container_of(server-&gt;current_desk-&gt;views.next, view, link);
+</span><span class="sub">-    if (!view)
+</span><span class="add">+    if (wl_list_empty(&amp;server-&gt;current_desk-&gt;views))
+</span><span class="def"> 	return;
+</span><span class="def"> 
+</span><span class="add">+    struct view *view = wl_container_of(server-&gt;current_desk-&gt;views.next, view, link);
+</span><span class="add">+
+</span><span class="def">     if  (server-&gt;current_desk-&gt;fullscreened == view-&gt;surface)
+</span><span class="def"> 	fullscreen_xdg_surface(view, view-&gt;surface, NULL);
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

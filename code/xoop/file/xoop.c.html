@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - xoop.c</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- xoop.c</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> /*
+<a href="#l2" class="line" id="l2">      2</a> Copyright (c) 2020, Matt Colligan All rights reserved.
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> Permission is hereby granted, free of charge, to any person obtaining a copy
+<a href="#l5" class="line" id="l5">      5</a> of this software and associated documentation files (the &quot;Software&quot;), to deal
+<a href="#l6" class="line" id="l6">      6</a> in the Software without restriction, including without limitation the rights
+<a href="#l7" class="line" id="l7">      7</a> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+<a href="#l8" class="line" id="l8">      8</a> copies of the Software, and to permit persons to whom the Software is
+<a href="#l9" class="line" id="l9">      9</a> furnished to do so, subject to the following conditions:
+<a href="#l10" class="line" id="l10">     10</a> 
+<a href="#l11" class="line" id="l11">     11</a> The above copyright notice and this permission notice shall be included in
+<a href="#l12" class="line" id="l12">     12</a> all copies or substantial portions of the Software.
+<a href="#l13" class="line" id="l13">     13</a> 
+<a href="#l14" class="line" id="l14">     14</a> THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+<a href="#l15" class="line" id="l15">     15</a> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+<a href="#l16" class="line" id="l16">     16</a> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+<a href="#l17" class="line" id="l17">     17</a> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+<a href="#l18" class="line" id="l18">     18</a> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+<a href="#l19" class="line" id="l19">     19</a> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+<a href="#l20" class="line" id="l20">     20</a> SOFTWARE.
+<a href="#l21" class="line" id="l21">     21</a> */
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> #include &lt;signal.h&gt;
+<a href="#l24" class="line" id="l24">     24</a> #include &lt;stdio.h&gt;
+<a href="#l25" class="line" id="l25">     25</a> #include &lt;stdlib.h&gt;
+<a href="#l26" class="line" id="l26">     26</a> #include &lt;unistd.h&gt;
+<a href="#l27" class="line" id="l27">     27</a> #include &lt;xcb/randr.h&gt;
+<a href="#l28" class="line" id="l28">     28</a> #include &lt;xcb/xcb.h&gt;
+<a href="#l29" class="line" id="l29">     29</a> #include &lt;xcb/xcb_event.h&gt;
+<a href="#l30" class="line" id="l30">     30</a> #include &lt;xcb/xfixes.h&gt;
+<a href="#l31" class="line" id="l31">     31</a> #include &lt;xcb/xinput.h&gt;
+<a href="#l32" class="line" id="l32">     32</a> 
+<a href="#l33" class="line" id="l33">     33</a> #define PROGNAME &quot;xoop&quot;
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a> xcb_connection_t	*conn;
+<a href="#l36" class="line" id="l36">     36</a> xcb_screen_t		*screen;
+<a href="#l37" class="line" id="l37">     37</a> xcb_input_device_id_t	deviceid;
+<a href="#l38" class="line" id="l38">     38</a> xcb_xfixes_barrier_t    barriers[4];
+<a href="#l39" class="line" id="l39">     39</a> 
+<a href="#l40" class="line" id="l40">     40</a> enum axis_t { NO_AXIS = 0, X_AXIS = 1 &lt;&lt; 0, Y_AXIS = 1 &lt;&lt; 1, BOTH_AXES = X_AXIS | Y_AXIS };
+<a href="#l41" class="line" id="l41">     41</a> enum axis_t axis = NO_AXIS;
+<a href="#l42" class="line" id="l42">     42</a> 
+<a href="#l43" class="line" id="l43">     43</a> int debug = 0;
+<a href="#l44" class="line" id="l44">     44</a> uint8_t op_randr = 0;
+<a href="#l45" class="line" id="l45">     45</a> uint8_t op_xfixes = 0;
+<a href="#l46" class="line" id="l46">     46</a> uint8_t op_xinput = 0;
+<a href="#l47" class="line" id="l47">     47</a> int16_t width, height;
+<a href="#l48" class="line" id="l48">     48</a> 
+<a href="#l49" class="line" id="l49">     49</a> 
+<a href="#l50" class="line" id="l50">     50</a> void exit_angrily(char msg[])
+<a href="#l51" class="line" id="l51">     51</a> {
+<a href="#l52" class="line" id="l52">     52</a>     fprintf(stderr, &quot;%s&quot;, msg);
+<a href="#l53" class="line" id="l53">     53</a>     xcb_disconnect(conn);
+<a href="#l54" class="line" id="l54">     54</a>     exit(EXIT_FAILURE);
+<a href="#l55" class="line" id="l55">     55</a> }
+<a href="#l56" class="line" id="l56">     56</a> 
+<a href="#l57" class="line" id="l57">     57</a> 
+<a href="#l58" class="line" id="l58">     58</a> void create_barrier(xcb_xfixes_barrier_t *barrier, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
+<a href="#l59" class="line" id="l59">     59</a> {
+<a href="#l60" class="line" id="l60">     60</a>     xcb_generic_error_t *error;
+<a href="#l61" class="line" id="l61">     61</a>     *barrier = xcb_generate_id(conn);
+<a href="#l62" class="line" id="l62">     62</a>     xcb_void_cookie_t cookie = xcb_xfixes_create_pointer_barrier_checked(
+<a href="#l63" class="line" id="l63">     63</a> 	conn, *barrier, screen-&gt;root, x1, y1, x2, y2, 0, 0, NULL
+<a href="#l64" class="line" id="l64">     64</a>     );
+<a href="#l65" class="line" id="l65">     65</a>     if ((error = xcb_request_check(conn, cookie))) {
+<a href="#l66" class="line" id="l66">     66</a> 	free(error);
+<a href="#l67" class="line" id="l67">     67</a> 	exit_angrily(&quot;Could not create barriers.\n&quot;);
+<a href="#l68" class="line" id="l68">     68</a>     }
+<a href="#l69" class="line" id="l69">     69</a>     free(error);
+<a href="#l70" class="line" id="l70">     70</a> }
+<a href="#l71" class="line" id="l71">     71</a> 
+<a href="#l72" class="line" id="l72">     72</a> 
+<a href="#l73" class="line" id="l73">     73</a> void create_barriers()
+<a href="#l74" class="line" id="l74">     74</a> {
+<a href="#l75" class="line" id="l75">     75</a>     uint16_t x1 = 0;
+<a href="#l76" class="line" id="l76">     76</a>     uint16_t y1 = 0;
+<a href="#l77" class="line" id="l77">     77</a>     uint16_t x2 = width;
+<a href="#l78" class="line" id="l78">     78</a>     uint16_t y2 = height;
+<a href="#l79" class="line" id="l79">     79</a> 
+<a href="#l80" class="line" id="l80">     80</a>     if (debug)
+<a href="#l81" class="line" id="l81">     81</a> 	printf(&quot;Creating barriers: %i %i %i %i\n&quot;, x1, y1, x2, y2);
+<a href="#l82" class="line" id="l82">     82</a> 
+<a href="#l83" class="line" id="l83">     83</a>     if (axis &amp; X_AXIS) {
+<a href="#l84" class="line" id="l84">     84</a> 	create_barrier(&amp;barriers[0], x1, y1, x1, y2);
+<a href="#l85" class="line" id="l85">     85</a> 	create_barrier(&amp;barriers[1], x2, y1, x2, y2);
+<a href="#l86" class="line" id="l86">     86</a>     };
+<a href="#l87" class="line" id="l87">     87</a> 
+<a href="#l88" class="line" id="l88">     88</a>     if (axis &amp; Y_AXIS) {
+<a href="#l89" class="line" id="l89">     89</a> 	create_barrier(&amp;barriers[2], x1, y1, x2, y1);
+<a href="#l90" class="line" id="l90">     90</a> 	create_barrier(&amp;barriers[3], x1, y2, x2, y2);
+<a href="#l91" class="line" id="l91">     91</a>     };
+<a href="#l92" class="line" id="l92">     92</a> }
+<a href="#l93" class="line" id="l93">     93</a> 
+<a href="#l94" class="line" id="l94">     94</a> 
+<a href="#l95" class="line" id="l95">     95</a> void delete_barriers()
+<a href="#l96" class="line" id="l96">     96</a> {
+<a href="#l97" class="line" id="l97">     97</a>     for (int i = 0; i &lt; 4; i++) {
+<a href="#l98" class="line" id="l98">     98</a> 	if (debug)
+<a href="#l99" class="line" id="l99">     99</a> 	    printf(&quot;Deleting barrier: %i/4\n&quot;, i + 1);
+<a href="#l100" class="line" id="l100">    100</a> 
+<a href="#l101" class="line" id="l101">    101</a> 	xcb_xfixes_delete_pointer_barrier(conn, barriers[i]);
+<a href="#l102" class="line" id="l102">    102</a>     }
+<a href="#l103" class="line" id="l103">    103</a> }
+<a href="#l104" class="line" id="l104">    104</a> 
+<a href="#l105" class="line" id="l105">    105</a> 
+<a href="#l106" class="line" id="l106">    106</a> void exit_nicely(int sig)
+<a href="#l107" class="line" id="l107">    107</a> {
+<a href="#l108" class="line" id="l108">    108</a>     (void)(sig); // Unused
+<a href="#l109" class="line" id="l109">    109</a>     delete_barriers();
+<a href="#l110" class="line" id="l110">    110</a>     xcb_disconnect(conn);
+<a href="#l111" class="line" id="l111">    111</a>     exit(EXIT_SUCCESS);
+<a href="#l112" class="line" id="l112">    112</a> }
+<a href="#l113" class="line" id="l113">    113</a> 
+<a href="#l114" class="line" id="l114">    114</a> 
+<a href="#l115" class="line" id="l115">    115</a> void check_xfixes()
+<a href="#l116" class="line" id="l116">    116</a> {
+<a href="#l117" class="line" id="l117">    117</a>     xcb_xfixes_query_version(conn, 5, 0);
+<a href="#l118" class="line" id="l118">    118</a>     const xcb_query_extension_reply_t *ext = xcb_get_extension_data(conn, &amp;xcb_xfixes_id);
+<a href="#l119" class="line" id="l119">    119</a>     if (!ext || !ext-&gt;present) {
+<a href="#l120" class="line" id="l120">    120</a>         printf(&quot;XFixes extension not available.\n&quot;);
+<a href="#l121" class="line" id="l121">    121</a> 	exit(EXIT_FAILURE);
+<a href="#l122" class="line" id="l122">    122</a>     }
+<a href="#l123" class="line" id="l123">    123</a>     op_xfixes = ext-&gt;first_event;
+<a href="#l124" class="line" id="l124">    124</a> }
+<a href="#l125" class="line" id="l125">    125</a> 
+<a href="#l126" class="line" id="l126">    126</a> 
+<a href="#l127" class="line" id="l127">    127</a> void check_randr()
+<a href="#l128" class="line" id="l128">    128</a> {
+<a href="#l129" class="line" id="l129">    129</a>     const xcb_query_extension_reply_t *ext = xcb_get_extension_data(conn, &amp;xcb_randr_id);
+<a href="#l130" class="line" id="l130">    130</a>     if (!ext || !ext-&gt;present)
+<a href="#l131" class="line" id="l131">    131</a>         exit_angrily(&quot;Randr extension not available.\n&quot;);
+<a href="#l132" class="line" id="l132">    132</a>     op_randr = ext-&gt;first_event;
+<a href="#l133" class="line" id="l133">    133</a>     xcb_randr_select_input(conn, screen-&gt;root, XCB_RANDR_NOTIFY_MASK_SCREEN_CHANGE);
+<a href="#l134" class="line" id="l134">    134</a> }
+<a href="#l135" class="line" id="l135">    135</a> 
+<a href="#l136" class="line" id="l136">    136</a> 
+<a href="#l137" class="line" id="l137">    137</a> void check_xinput()
+<a href="#l138" class="line" id="l138">    138</a> {
+<a href="#l139" class="line" id="l139">    139</a>     const xcb_query_extension_reply_t *ext = xcb_get_extension_data(conn, &amp;xcb_input_id);
+<a href="#l140" class="line" id="l140">    140</a>     if (!ext || !ext-&gt;present)
+<a href="#l141" class="line" id="l141">    141</a>         exit_angrily(&quot;XInput extension not available.\n&quot;);
+<a href="#l142" class="line" id="l142">    142</a>     struct {
+<a href="#l143" class="line" id="l143">    143</a>         xcb_input_event_mask_t head;
+<a href="#l144" class="line" id="l144">    144</a>         xcb_input_xi_event_mask_t mask;
+<a href="#l145" class="line" id="l145">    145</a>     } mask;
+<a href="#l146" class="line" id="l146">    146</a>     mask.head.deviceid = XCB_INPUT_DEVICE_ALL_MASTER;
+<a href="#l147" class="line" id="l147">    147</a>     mask.head.mask_len = sizeof(mask.mask) / sizeof(uint32_t);
+<a href="#l148" class="line" id="l148">    148</a>     mask.mask = XCB_INPUT_XI_EVENT_MASK_BARRIER_HIT;
+<a href="#l149" class="line" id="l149">    149</a>     xcb_input_xi_select_events(conn, screen-&gt;root, 1, &amp;mask.head);
+<a href="#l150" class="line" id="l150">    150</a> }
+<a href="#l151" class="line" id="l151">    151</a> 
+<a href="#l152" class="line" id="l152">    152</a> 
+<a href="#l153" class="line" id="l153">    153</a> void loop_cursor(xcb_generic_event_t *generic_event)
+<a href="#l154" class="line" id="l154">    154</a> {
+<a href="#l155" class="line" id="l155">    155</a>     xcb_input_barrier_hit_event_t *event = (xcb_input_barrier_hit_event_t *)generic_event;
+<a href="#l156" class="line" id="l156">    156</a>     int16_t x = 0;
+<a href="#l157" class="line" id="l157">    157</a>     int16_t y = 0;
+<a href="#l158" class="line" id="l158">    158</a>     int32_t far_x = width - 1;
+<a href="#l159" class="line" id="l159">    159</a>     int32_t far_y = height - 1;
+<a href="#l160" class="line" id="l160">    160</a>     int32_t ev_x = (int32_t)(event-&gt;root_x / (double)UINT16_MAX);
+<a href="#l161" class="line" id="l161">    161</a>     int32_t ev_y = (int32_t)(event-&gt;root_y / (double)UINT16_MAX);
+<a href="#l162" class="line" id="l162">    162</a> 
+<a href="#l163" class="line" id="l163">    163</a>     if (axis &amp; X_AXIS &amp;&amp; ev_x == 0) {
+<a href="#l164" class="line" id="l164">    164</a>       x = far_x;
+<a href="#l165" class="line" id="l165">    165</a>       y = ev_y;
+<a href="#l166" class="line" id="l166">    166</a>     } else if (axis &amp; Y_AXIS &amp;&amp; ev_y == 0){
+<a href="#l167" class="line" id="l167">    167</a>       x = ev_x;
+<a href="#l168" class="line" id="l168">    168</a>       y = far_y;
+<a href="#l169" class="line" id="l169">    169</a>     } else if (axis &amp; X_AXIS &amp;&amp; ev_x == far_x){
+<a href="#l170" class="line" id="l170">    170</a>       y = ev_y;
+<a href="#l171" class="line" id="l171">    171</a>     } else if (axis &amp; Y_AXIS &amp;&amp; ev_y == far_y){
+<a href="#l172" class="line" id="l172">    172</a>       x = ev_x;
+<a href="#l173" class="line" id="l173">    173</a>     };
+<a href="#l174" class="line" id="l174">    174</a>     xcb_warp_pointer(conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y);
+<a href="#l175" class="line" id="l175">    175</a> 
+<a href="#l176" class="line" id="l176">    176</a>     if (debug)
+<a href="#l177" class="line" id="l177">    177</a> 	printf(&quot;Warp: (%i, %i) to (%i, %i)\n&quot;, ev_x, ev_y, x, y);
+<a href="#l178" class="line" id="l178">    178</a> }
+<a href="#l179" class="line" id="l179">    179</a> 
+<a href="#l180" class="line" id="l180">    180</a> 
+<a href="#l181" class="line" id="l181">    181</a> void reset_screen(xcb_generic_event_t *generic_event)
+<a href="#l182" class="line" id="l182">    182</a> {
+<a href="#l183" class="line" id="l183">    183</a>     xcb_randr_screen_change_notify_event_t *event = (xcb_randr_screen_change_notify_event_t *)generic_event;
+<a href="#l184" class="line" id="l184">    184</a>     width = event-&gt;width;
+<a href="#l185" class="line" id="l185">    185</a>     height = event-&gt;height;
+<a href="#l186" class="line" id="l186">    186</a>     delete_barriers();
+<a href="#l187" class="line" id="l187">    187</a>     create_barriers();
+<a href="#l188" class="line" id="l188">    188</a>     if (debug)
+<a href="#l189" class="line" id="l189">    189</a> 	printf(&quot;Configured screens.\n&quot;);
+<a href="#l190" class="line" id="l190">    190</a> }
+<a href="#l191" class="line" id="l191">    191</a> 
+<a href="#l192" class="line" id="l192">    192</a> 
+<a href="#l193" class="line" id="l193">    193</a> void event_loop()
+<a href="#l194" class="line" id="l194">    194</a> {
+<a href="#l195" class="line" id="l195">    195</a>     xcb_generic_event_t *event;
+<a href="#l196" class="line" id="l196">    196</a>     xcb_flush(conn);
+<a href="#l197" class="line" id="l197">    197</a> 
+<a href="#l198" class="line" id="l198">    198</a>     while((event = xcb_wait_for_event(conn))) {
+<a href="#l199" class="line" id="l199">    199</a> 	if (event-&gt;response_type == XCB_GE_GENERIC) {
+<a href="#l200" class="line" id="l200">    200</a> 	    loop_cursor(event); /* we only receive 1 event from xinput */
+<a href="#l201" class="line" id="l201">    201</a> 	} else if (event-&gt;response_type == op_randr + XCB_RANDR_SCREEN_CHANGE_NOTIFY) {
+<a href="#l202" class="line" id="l202">    202</a> 	    reset_screen(event);
+<a href="#l203" class="line" id="l203">    203</a> 	} else {
+<a href="#l204" class="line" id="l204">    204</a> 	    printf(&quot;Unknown event: %d\n&quot;, event-&gt;response_type);
+<a href="#l205" class="line" id="l205">    205</a> 	};
+<a href="#l206" class="line" id="l206">    206</a> 	xcb_flush(conn);
+<a href="#l207" class="line" id="l207">    207</a> 	free(event);
+<a href="#l208" class="line" id="l208">    208</a>     }
+<a href="#l209" class="line" id="l209">    209</a> }
+<a href="#l210" class="line" id="l210">    210</a> 
+<a href="#l211" class="line" id="l211">    211</a> 
+<a href="#l212" class="line" id="l212">    212</a> void print_help()
+<a href="#l213" class="line" id="l213">    213</a> {
+<a href="#l214" class="line" id="l214">    214</a>     printf(
+<a href="#l215" class="line" id="l215">    215</a> 	PROGNAME &quot; [-h|-f|-d]\n&quot;
+<a href="#l216" class="line" id="l216">    216</a> 	&quot;\n&quot;
+<a href="#l217" class="line" id="l217">    217</a> 	&quot;    -h    print help\n&quot;
+<a href="#l218" class="line" id="l218">    218</a> 	&quot;    -x    xoop only the x axis\n&quot;
+<a href="#l219" class="line" id="l219">    219</a> 	&quot;    -y    xoop only the y axis\n&quot;
+<a href="#l220" class="line" id="l220">    220</a> 	&quot;    -f    fork\n&quot;
+<a href="#l221" class="line" id="l221">    221</a> 	&quot;    -d    print debug information\n&quot;
+<a href="#l222" class="line" id="l222">    222</a>     );
+<a href="#l223" class="line" id="l223">    223</a> }
+<a href="#l224" class="line" id="l224">    224</a> 
+<a href="#l225" class="line" id="l225">    225</a> 
+<a href="#l226" class="line" id="l226">    226</a> int main(int argc, char *argv[])
+<a href="#l227" class="line" id="l227">    227</a> {
+<a href="#l228" class="line" id="l228">    228</a>     int opt;
+<a href="#l229" class="line" id="l229">    229</a>     int to_fork = 0;
+<a href="#l230" class="line" id="l230">    230</a>     int pid;
+<a href="#l231" class="line" id="l231">    231</a> 
+<a href="#l232" class="line" id="l232">    232</a>     while ((opt = getopt(argc, argv, &quot;hfdxy&quot;)) != -1) {
+<a href="#l233" class="line" id="l233">    233</a>         switch (opt) {
+<a href="#l234" class="line" id="l234">    234</a> 	    case &apos;h&apos;:
+<a href="#l235" class="line" id="l235">    235</a> 		print_help();
+<a href="#l236" class="line" id="l236">    236</a> 		exit(EXIT_SUCCESS);
+<a href="#l237" class="line" id="l237">    237</a> 	    case &apos;f&apos;:
+<a href="#l238" class="line" id="l238">    238</a> 		to_fork = 1;
+<a href="#l239" class="line" id="l239">    239</a> 		break;
+<a href="#l240" class="line" id="l240">    240</a> 	    case &apos;d&apos;:
+<a href="#l241" class="line" id="l241">    241</a> 		debug = 1;
+<a href="#l242" class="line" id="l242">    242</a> 		break;
+<a href="#l243" class="line" id="l243">    243</a> 	    case &apos;x&apos;:
+<a href="#l244" class="line" id="l244">    244</a>     axis |= X_AXIS;
+<a href="#l245" class="line" id="l245">    245</a> 		break;
+<a href="#l246" class="line" id="l246">    246</a> 	    case &apos;y&apos;:
+<a href="#l247" class="line" id="l247">    247</a>     axis |= Y_AXIS;
+<a href="#l248" class="line" id="l248">    248</a> 		break;
+<a href="#l249" class="line" id="l249">    249</a>         }
+<a href="#l250" class="line" id="l250">    250</a>     }
+<a href="#l251" class="line" id="l251">    251</a> 
+<a href="#l252" class="line" id="l252">    252</a>     if (axis == NO_AXIS)
+<a href="#l253" class="line" id="l253">    253</a> 	axis = BOTH_AXES;
+<a href="#l254" class="line" id="l254">    254</a> 
+<a href="#l255" class="line" id="l255">    255</a>     conn = xcb_connect(NULL, NULL);
+<a href="#l256" class="line" id="l256">    256</a>     if (xcb_connection_has_error(conn))
+<a href="#l257" class="line" id="l257">    257</a> 	exit(EXIT_FAILURE);
+<a href="#l258" class="line" id="l258">    258</a> 
+<a href="#l259" class="line" id="l259">    259</a>     screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
+<a href="#l260" class="line" id="l260">    260</a>     width = screen-&gt;width_in_pixels;
+<a href="#l261" class="line" id="l261">    261</a>     height = screen-&gt;height_in_pixels;
+<a href="#l262" class="line" id="l262">    262</a>     check_xfixes();
+<a href="#l263" class="line" id="l263">    263</a>     check_randr();
+<a href="#l264" class="line" id="l264">    264</a>     check_xinput();
+<a href="#l265" class="line" id="l265">    265</a>     create_barriers();
+<a href="#l266" class="line" id="l266">    266</a> 
+<a href="#l267" class="line" id="l267">    267</a>     signal(SIGINT, exit_nicely);
+<a href="#l268" class="line" id="l268">    268</a>     signal(SIGTERM, exit_nicely);
+<a href="#l269" class="line" id="l269">    269</a>     signal(SIGHUP, exit_nicely);
+<a href="#l270" class="line" id="l270">    270</a> 
+<a href="#l271" class="line" id="l271">    271</a>     if (to_fork) {
+<a href="#l272" class="line" id="l272">    272</a> 	pid = fork();
+<a href="#l273" class="line" id="l273">    273</a> 	if (pid &gt; 0) {
+<a href="#l274" class="line" id="l274">    274</a> 	    exit(EXIT_SUCCESS);
+<a href="#l275" class="line" id="l275">    275</a> 	} else if (pid &lt; 0) {
+<a href="#l276" class="line" id="l276">    276</a> 	    exit(EXIT_FAILURE);
+<a href="#l277" class="line" id="l277">    277</a> 	}
+<a href="#l278" class="line" id="l278">    278</a>     }
+<a href="#l279" class="line" id="l279">    279</a> 
+<a href="#l280" class="line" id="l280">    280</a>     event_loop();
+<a href="#l281" class="line" id="l281">    281</a> 
+<a href="#l282" class="line" id="l282">    282</a>     exit_nicely(0);
+<a href="#l283" class="line" id="l283">    283</a>     return 0;
+<a href="#l284" class="line" id="l284">    284</a> }
+<a href="#l285" class="line" id="l285">    285</a> 
+</pre>
+  </div>
+  </body>
+</html>

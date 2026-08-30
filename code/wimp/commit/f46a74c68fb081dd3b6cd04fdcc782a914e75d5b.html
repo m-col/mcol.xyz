@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - remove unnecessary lines</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/f46a74c68fb081dd3b6cd04fdcc782a914e75d5b.html">f46a74c68fb081dd3b6cd04fdcc782a914e75d5b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/82f1ffef6d67cd1f5f5cf588e69353e2ed665113.html">82f1ffef6d67cd1f5f5cf588e69353e2ed665113</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-27 22:13:30 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-27 22:13:30 +0000
+
+remove unnecessary lines
+</pre><div class="diff">
+  <p>
+    <b>src/keyboard.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,6 @@
+<span class="def"> 
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="def">     struct binding *kb;
+</span><span class="sub">-    bool handled = false;
+</span><span class="def">     if ((modifiers &amp; wimp.mod)) {
+</span><span class="def"> 	modifiers &amp;= ~wimp.mod;
+</span><span class="def"> 	wl_list_for_each(kb, &amp;wimp.mouse_bindings, link) {
+</span>@@ -31,13 +30,12 @@
+<span class="def"> 			break;
+</span><span class="def"> 		}
+</span><span class="def"> 		wimp.cursor_mode = CURSOR_MOD;
+</span><span class="sub">-		handled = true;
+</span><span class="add">+		return;
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="sub">-    if (!handled) {
+</span><span class="sub">-	wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="sub">-    }
+</span><span class="add">+
+</span><span class="add">+    wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -46,12 +44,12 @@
+<span class="def">     struct wlr_event_keyboard_key *event = data;
+</span><span class="def">     struct wlr_seat *seat = wimp.seat;
+</span><span class="def"> 
+</span><span class="sub">-    /* Translate libinput keycode -&gt; xkbcommon */
+</span><span class="sub">-    uint32_t keycode = event-&gt;keycode + 8;
+</span><span class="sub">-    /* Get a list of keysyms based on the keymap for this keyboard */
+</span><span class="def">     const xkb_keysym_t *syms;
+</span><span class="def">     int nsyms = xkb_state_key_get_syms(
+</span><span class="sub">-	keyboard-&gt;device-&gt;keyboard-&gt;xkb_state, keycode, &amp;syms);
+</span><span class="add">+	keyboard-&gt;device-&gt;keyboard-&gt;xkb_state,
+</span><span class="add">+	event-&gt;keycode + 8,
+</span><span class="add">+	&amp;syms
+</span><span class="add">+    );
+</span><span class="def"> 
+</span><span class="def">     if (event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="def"> 	if (wimp.mark_waiting) {
+</span></pre>
+</div></div>
+  </body>
+</html>

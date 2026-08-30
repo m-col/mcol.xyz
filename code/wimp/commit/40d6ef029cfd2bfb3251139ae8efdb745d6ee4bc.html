@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - allow 8-digit colours</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/40d6ef029cfd2bfb3251139ae8efdb745d6ee4bc.html">40d6ef029cfd2bfb3251139ae8efdb745d6ee4bc</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/426823cb6a389d22cf13d8320007b70f41d661d9.html">426823cb6a389d22cf13d8320007b70f41d661d9</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 00:54:07 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 00:54:07 +0000
+
+allow 8-digit colours
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -39,6 +39,9 @@
+<span class="def"> #wimptool set zoom_min 0.2
+</span><span class="def"> #wimptool set zoom_max 5
+</span><span class="def"> 
+</span><span class="add">+# Set the colour for the snap box indicator shown when dragging
+</span><span class="add">+#wimptool set snap_box \#47315c66
+</span><span class="add">+
+</span><span class="def"> # Set the colour for the mark setter/getter indicator
+</span><span class="def"> #wimptool set mark_indicator #000000
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -69,7 +69,7 @@
+<span class="def"> 	&quot;set desk 2 borders normal #31475c&quot;,
+</span><span class="def"> 	&quot;set desk 2 corners normal #3e5973&quot;,
+</span><span class="def"> 	&quot;set mark_indicator #47315c&quot;,
+</span><span class="sub">-	&quot;set snap_box #47315c&quot;,
+</span><span class="add">+	&quot;set snap_box 47315c66&quot;,
+</span><span class="def"> 	&quot;set mod Logo&quot;,
+</span><span class="def"> 	&quot;set vt_switching on&quot;,
+</span><span class="def"> 	&quot;bind Ctrl Escape terminate&quot;,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,18 +20,29 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void assign_colour(char *hex, float dest[4]) {
+</span><span class="sub">-    if (strlen(hex) != 7 || hex[0] != &apos;#&apos;) {
+</span><span class="sub">-	wlr_log(WLR_INFO, &quot;Invalid colour: %s. Should be in the form #rrggbb.&quot;, hex);
+</span><span class="add">+    if (!hex) {
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="sub">-    hex++;
+</span><span class="add">+    if (hex[0] == &apos;#&apos;) {
+</span><span class="add">+	hex++;
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="def">     char c[2];
+</span><span class="sub">-    for (int i = 0; i &lt; 3; i++) {
+</span><span class="add">+    int copy;
+</span><span class="add">+    if (strlen(hex) == 6) {
+</span><span class="add">+	dest[3] = 1;
+</span><span class="add">+	copy = 3;
+</span><span class="add">+    } else if (strlen(hex) == 8) {
+</span><span class="add">+	copy = 4;
+</span><span class="add">+    } else {
+</span><span class="add">+	wlr_log(WLR_INFO, &quot;Invalid colour: %s. Should be in the form #rrggbb.&quot;, hex);
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    for (int i = 0; i &lt; copy; i++) {
+</span><span class="def"> 	strncpy(c, &amp;hex[i * 2], 2);
+</span><span class="def"> 	dest[i] = (float)strtol(c, NULL, 16) / 255;
+</span><span class="def">     }
+</span><span class="sub">-    dest[3] = 1;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

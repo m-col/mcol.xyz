@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Update log template to trim whitespace and print commit messages</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/67f2596e606f0059150c81cc2a83da015710ad4c.html">67f2596e606f0059150c81cc2a83da015710ad4c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/32b4a293e4b61c388dd3c7112d1ca57482ae4025.html">32b4a293e4b61c388dd3c7112d1ca57482ae4025</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-24 11:10:59 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-24 11:10:59 +0100
+
+Update log template to trim whitespace and print commit messages
+</pre><div class="diff">
+  <p>
+    <b>templates/log.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,13 +5,16 @@
+<span class="def">     &lt;meta http-equiv=&quot;x-ua-compatible&quot; content=&quot;ie=edge&quot;&gt;
+</span><span class="def">     &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+</span><span class="def">     &lt;title&gt;gitserve -- {{ name }}&lt;/title&gt;
+</span><span class="sub">-    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ host }}/style.css&quot; /&gt;
+</span><span class="add">+    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{- host }}/style.css&quot; /&gt;
+</span><span class="def">   &lt;/head&gt;
+</span><span class="def"> 
+</span><span class="def">   &lt;body&gt;
+</span><span class="sub">-    &lt;p&gt;{{ name }}&lt;/p&gt;
+</span><span class="add">+    &lt;p&gt;{{- name }}&lt;/p&gt;
+</span><span class="def">     &lt;hr&gt;
+</span><span class="sub">-    &lt;p&gt;{{ description }}&lt;/p&gt;
+</span><span class="sub">-    &lt;p&gt;git clone {{ host }}/{{ name }}&lt;/p&gt;
+</span><span class="add">+    &lt;p&gt;{{- description }}&lt;/p&gt;
+</span><span class="add">+    &lt;p&gt;git clone {{ host }}/{{- name }}&lt;/p&gt;
+</span><span class="add">+    {% for commit in commits %}
+</span><span class="add">+    &lt;p&gt;{{- commit }}&lt;/p&gt;
+</span><span class="add">+    {% endfor %}
+</span><span class="def">   &lt;/body&gt;
+</span><span class="def"> &lt;/html&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

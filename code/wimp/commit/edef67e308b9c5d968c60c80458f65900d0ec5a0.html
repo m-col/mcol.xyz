@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add skeleton for wimptool client interface</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/edef67e308b9c5d968c60c80458f65900d0ec5a0.html">edef67e308b9c5d968c60c80458f65900d0ec5a0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/b94c9a32a76ed858193b4a2b2109dd9b33141de4.html">b94c9a32a76ed858193b4a2b2109dd9b33141de4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-14 19:53:20 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-14 19:53:20 +0000
+
+add skeleton for wimptool client interface
+</pre><div class="diff">
+  <p>
+    <b>src/wimptool.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,52 @@
+<span class="add">+#include &lt;stdio.h&gt; 
+</span><span class="add">+#include &lt;stdlib.h&gt; 
+</span><span class="add">+#include &lt;sys/socket.h&gt;
+</span><span class="add">+#include &lt;sys/un.h&gt;
+</span><span class="add">+
+</span><span class="add">+#define SOCKET_PATH &quot;/tmp/wimpy-sock-%s&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void usage() {
+</span><span class="add">+    printf(&quot;Usage: wimptool &lt;command&gt; &lt;arguments&gt;\n&quot;);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+int main(int argc, char *argv[]) {
+</span><span class="add">+    if (argc &lt; 2) {
+</span><span class="add">+	usage();
+</span><span class="add">+	return EXIT_FAILURE;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    char *display = getenv(&quot;WAYLAND_DISPLAY&quot;);
+</span><span class="add">+    if (!display) {
+</span><span class="add">+	printf(&quot;WAYLAND_DISPLAY not set.\n&quot;);
+</span><span class="add">+	return EXIT_FAILURE;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    int sock;
+</span><span class="add">+    if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+</span><span class="add">+	printf(&quot;Failed to create socket.\n&quot;);
+</span><span class="add">+	return EXIT_FAILURE;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct sockaddr_un addr;
+</span><span class="add">+    snprintf(addr.sun_path, sizeof(addr.sun_path), SOCKET_PATH, display);
+</span><span class="add">+    addr.sun_family = AF_UNIX;
+</span><span class="add">+
+</span><span class="add">+    if (connect(sock, (struct sockaddr *)&amp;addr, sizeof(addr)) == -1) {
+</span><span class="add">+	printf(&quot;Failed to connect to wimp.\n&quot;);
+</span><span class="add">+	return EXIT_FAILURE;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    char buffer[BUFSIZ] = {0};
+</span><span class="add">+    for (int i = 1; i &lt; argc; i++) {
+</span><span class="add">+	strcat(buffer, argv[i]);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (send(sock, buffer, strlen(buffer), 0) == -1) {
+</span><span class="add">+	printf(&quot;Failed to send message to wimp.\n&quot;);
+</span><span class="add">+	return EXIT_FAILURE;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    return EXIT_SUCCESS;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,4 @@
+<span class="sub">-OUT	= wimp
+</span><span class="sub">-SOURCES	= $(wildcard src/*.c)
+</span><span class="add">+SOURCES	= $(filter-out src/wimptool.c, $(wildcard src/*.c))
+</span><span class="def"> OBJECTS	= $(SOURCES:.c=.o)
+</span><span class="def"> CFLAGS  += -g -I. -DWLR_USE_UNSTABLE -Wall -Wextra -pedantic -Wno-unused-parameter
+</span><span class="def"> LDFLAGS	+= $(shell pkg-config --cflags --libs wlroots) \
+</span>@@ -10,15 +9,20 @@
+<span class="def"> 	    $(shell pkg-config --cflags --libs pixman-1) \
+</span><span class="def"> 	    -lm
+</span><span class="def"> 
+</span><span class="add">+all: wimp wimptool
+</span><span class="add">+
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span><span class="def"> 
+</span><span class="sub">-${OUT}: xdg-shell-protocol wlr-layer-shell-unstable-v1-protocol ${OBJECTS}
+</span><span class="sub">-	@$(CC) -o ${OUT} $(OBJECTS) $(LDFLAGS)
+</span><span class="add">+wimp: xdg-shell-protocol wlr-layer-shell-unstable-v1-protocol ${OBJECTS}
+</span><span class="add">+	@$(CC) -o wimp $(OBJECTS) $(LDFLAGS)
+</span><span class="def"> 
+</span><span class="def"> %.o: %.c %.h
+</span><span class="def"> 	@$(CC) $(CFLAGS) -c -o $@ $&lt; ${LDFLAGS}
+</span><span class="def"> 
+</span><span class="add">+wimptool: src/wimptool.c
+</span><span class="add">+	@$(CC) $(CFLAGS) -o $@ $&lt;
+</span><span class="add">+
+</span><span class="def"> WAYLAND_PROTOCOLS=$(shell pkg-config --variable=pkgdatadir wayland-protocols)
+</span><span class="def"> WAYLAND_SCANNER=$(shell pkg-config --variable=wayland_scanner wayland-scanner)
+</span><span class="def"> 
+</span>@@ -31,14 +35,13 @@
+<span class="def"> 	@$(WAYLAND_SCANNER) private-code protocols/wlr-layer-shell-unstable-v1.xml $@.c
+</span><span class="def"> 
+</span><span class="def"> clean:
+</span><span class="sub">-	rm -f ${OUT} *-protocol.h *-protocol.c ${OBJECTS}
+</span><span class="add">+	rm -f wimp wimptool *-protocol.h *-protocol.c ${OBJECTS}
+</span><span class="def"> 
+</span><span class="def"> install:
+</span><span class="def"> 	mkdir -p &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span><span class="sub">-	cp -pf &quot;$(OUT)&quot; &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span><span class="add">+	cp -pf &quot;wimp&quot; &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span><span class="def"> 
+</span><span class="def"> uninstall:
+</span><span class="sub">-	rm -f &quot;$(DESTDIR)$(BINPREFIX)/$(OUT)&quot;
+</span><span class="add">+	rm -f &quot;$(DESTDIR)$(BINPREFIX)/wimp&quot;
+</span><span class="def"> 
+</span><span class="sub">-.DEFAULT_GOAL=${OUT}
+</span><span class="sub">-.PHONY: clean
+</span><span class="add">+.PHONY: all clean install uninstall
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,5 @@
+<span class="def"> wimp
+</span><span class="add">+wimptool
+</span><span class="def"> src/*.o
+</span><span class="def"> *-protocol.c
+</span><span class="def"> *-protocol.h
+</span></pre>
+</div></div>
+  </body>
+</html>

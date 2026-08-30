@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Replace save_pan and reset_pan with only reset_zoom</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/6bedda13c02a6692a93ad6486e3a6dbc9ad58fc0.html">6bedda13c02a6692a93ad6486e3a6dbc9ad58fc0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/7dc71ce1bf1c6432c80378dc2dd567a35f4d4a8f.html">7dc71ce1bf1c6432c80378dc2dd567a35f4d4a8f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-12-05 18:02:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-12-05 18:02:36 +0000
+
+Replace save_pan and reset_pan with only reset_zoom
+
+save_pan was made redundant by the marking system, but resetting the
+zoom is an important functionality so that was added as a standalone
+action.
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -50,10 +50,8 @@
+<span class="def"> 	kb-&gt;action = &amp;prev_desk;
+</span><span class="def">     else if (strcasecmp(name, &quot;pan_desk&quot;) == 0)
+</span><span class="def"> 	kb-&gt;action = &amp;pan_desk;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;reset_pan&quot;) == 0)
+</span><span class="sub">-	kb-&gt;action = &amp;reset_pan;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;save_pan&quot;) == 0)
+</span><span class="sub">-	kb-&gt;action = &amp;save_pan;
+</span><span class="add">+    else if (strcasecmp(name, &quot;reset_zoom&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;reset_zoom;
+</span><span class="def">     else if (strcasecmp(name, &quot;zoom_in&quot;) == 0) {
+</span><span class="def"> 	kb-&gt;action = &amp;zoom_desk;
+</span><span class="def"> 	kb-&gt;data = calloc(1, sizeof(int));
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,8 +10,7 @@
+<span class="def"> void next_desk(struct server *server, void *data);
+</span><span class="def"> void prev_desk(struct server *server, void *data);
+</span><span class="def"> void pan_desk(struct server *server, void *data);
+</span><span class="sub">-void reset_pan(struct server *server, void *data);
+</span><span class="sub">-void save_pan(struct server *server, void *data);
+</span><span class="add">+void reset_zoom(struct server *server, void *data);
+</span><span class="def"> void zoom_desk(struct server *server, void *data);
+</span><span class="def"> void zoom_desk_mouse(struct server *server, void *data);
+</span><span class="def"> void set_mark(struct server *server, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,7 @@
+<span class="def"> #include &lt;sys/vt.h&gt;
+</span><span class="def"> #include &lt;wlr/backend.h&gt;
+</span><span class="def"> #include &lt;wlr/backend/session.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;action.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span>@@ -74,23 +75,23 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void reset_pan(struct server *server, void *data) {
+</span><span class="add">+void reset_zoom(struct server *server, void *data) {
+</span><span class="def">     struct desk *desk = server-&gt;current_desk;
+</span><span class="add">+    double f = 1 / desk-&gt;zoom;
+</span><span class="add">+    struct wlr_box *extents = wlr_output_layout_get_box(server-&gt;output_layout, NULL);
+</span><span class="add">+    double fx = extents-&gt;width * (f - 1) / 2;
+</span><span class="add">+    double fy = extents-&gt;height * (f - 1) / 2;
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="sub">-	view-&gt;x -= desk-&gt;panned_x;
+</span><span class="sub">-	view-&gt;y -= desk-&gt;panned_y;
+</span><span class="add">+	view-&gt;x -= fx;
+</span><span class="add">+	view-&gt;y -= fy;
+</span><span class="def">     }
+</span><span class="sub">-    desk-&gt;panned_x = desk-&gt;panned_y = 0;
+</span><span class="add">+    desk-&gt;panned_x -= fx;
+</span><span class="add">+    desk-&gt;panned_y -= fy;
+</span><span class="def">     desk-&gt;zoom = 1;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void save_pan(struct server *server, void *data) {
+</span><span class="sub">-    server-&gt;current_desk-&gt;panned_x = server-&gt;current_desk-&gt;panned_y = 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void zoom_desk(struct server *server, void *data) {
+</span><span class="def">     /* dir &gt; 0 ? zoom in : zoom out */
+</span><span class="def">     struct desk *desk = server-&gt;current_desk;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,10 +38,9 @@
+<span class="def"> bind	Ctrl	q		close_current_window
+</span><span class="def"> bind		Tab		next_desk
+</span><span class="def"> bind		ISO_Left_Tab	prev_desk
+</span><span class="sub">-bind		r		save_pan
+</span><span class="sub">-bind	Shift	r		reset_pan
+</span><span class="def"> bind		i		zoom_in
+</span><span class="def"> bind		o		zoom_out
+</span><span class="add">+bind		r		reset_zoom
+</span><span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="def"> bind		Return		exec wterm
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

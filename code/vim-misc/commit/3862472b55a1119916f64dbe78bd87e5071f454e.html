@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - updqtes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/3862472b55a1119916f64dbe78bd87e5071f454e.html">3862472b55a1119916f64dbe78bd87e5071f454e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/a0fbf11e0e8f66d8b2592087c677ec46d3ecffcd.html">a0fbf11e0e8f66d8b2592087c677ec46d3ecffcd</a>
+<b>Author:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Date:</b> 2025-07-17 17:30:38 +0100
+<b>Committer:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-07-17 17:30:38 +0100
+
+updqtes
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -103,3 +103,11 @@
+<span class="def"> 
+</span><span class="def"> &quot; used by Ctrl-P, likely among other things
+</span><span class="def"> set wildignore+=*/tmp/*,*.so,*.swp,*.zip,node_modules,target,.mypy_cache
+</span><span class="add">+
+</span><span class="add">+&quot; For some reason i need this for typescriptreact files to be configured
+</span><span class="add">+augroup run_ftplugin_typescriptreact
+</span><span class="add">+    autocmd!
+</span><span class="add">+    autocmd FileType typescriptreact source ~/.vim/pack/vim-misc/start/self/ftplugin/typescriptreact.vim
+</span><span class="add">+    autocmd FileType typescript source ~/.vim/pack/vim-misc/start/self/ftplugin/typescript.vim
+</span><span class="add">+    autocmd FileType javascript source ~/.vim/pack/vim-misc/start/self/ftplugin/javascript.vim
+</span><span class="add">+augroup END
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -125,6 +125,7 @@
+<span class="def"> &quot;nmap &lt;silent&gt; &lt;C-S-f&gt; &lt;Plug&gt;(ale_fix)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-i&gt; &lt;Plug&gt;(ale_find_references)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-]&gt; &lt;Plug&gt;(ale_go_to_definition)
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-f&gt; &lt;Plug&gt;(ale_fix)
+</span><span class="def"> 
+</span><span class="def"> &quot; telescope
+</span><span class="def"> nnoremap &lt;silent&gt; &lt;C-p&gt; :Telescope git_files&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -98,12 +98,6 @@
+<span class="def">       &apos;ludovicchabant/vim-gutentags&apos;,
+</span><span class="def">   },
+</span><span class="def">   {
+</span><span class="sub">-      &apos;prichrd/netrw.nvim&apos;,
+</span><span class="sub">-      dependencies = { &apos;nvim-tree/nvim-web-devicons&apos; },
+</span><span class="sub">-      opts = {},
+</span><span class="sub">-      use_devicons = true,
+</span><span class="sub">-  },
+</span><span class="sub">-  {
+</span><span class="def">     &quot;supermaven-inc/supermaven-nvim&quot;,
+</span><span class="def">     opts = {
+</span><span class="def">       keymaps = {
+</span>@@ -112,57 +106,53 @@
+<span class="def">       }
+</span><span class="def">     },
+</span><span class="def">   },
+</span><span class="sub">-  {
+</span><span class="sub">-    &quot;yetone/avante.nvim&quot;,
+</span><span class="sub">-    event = &quot;VeryLazy&quot;,
+</span><span class="sub">-    version = false,
+</span><span class="sub">-    opts = {
+</span><span class="sub">-      provider = &quot;claude&quot;,
+</span><span class="sub">-      --providers = {
+</span><span class="sub">-      --  openai = {
+</span><span class="sub">-      --    endpoint = &quot;https://api.openai.com/v1&quot;,
+</span><span class="sub">-      --    model = &quot;gpt-4o&quot;, -- your desired model (or use gpt-4o, etc.)
+</span><span class="sub">-      --    extra_request_body = {
+</span><span class="sub">-      --      timeout = 30000, -- Timeout in milliseconds, increase this for reasoning models
+</span><span class="sub">-      --      temperature = 0.75,
+</span><span class="sub">-      --      max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
+</span><span class="sub">-      --      --reasoning_effort = &quot;medium&quot;, -- low|medium|high, only used for reasoning models
+</span><span class="sub">-      --    },
+</span><span class="sub">-      --  },
+</span><span class="sub">-      --},
+</span><span class="sub">-    },
+</span><span class="sub">-    dependencies = {
+</span><span class="sub">-      &quot;nvim-treesitter/nvim-treesitter&quot;,
+</span><span class="sub">-      &quot;stevearc/dressing.nvim&quot;,
+</span><span class="sub">-      &quot;nvim-lua/plenary.nvim&quot;,
+</span><span class="sub">-      &quot;MunifTanjim/nui.nvim&quot;,
+</span><span class="sub">-      --- The below dependencies are optional,
+</span><span class="sub">-      &quot;nvim-telescope/telescope.nvim&quot;, -- for file_selector provider telescope
+</span><span class="sub">-      &quot;hrsh7th/nvim-cmp&quot;, -- autocompletion for avante commands and mentions
+</span><span class="sub">-      &quot;nvim-tree/nvim-web-devicons&quot;,
+</span><span class="sub">-      {
+</span><span class="sub">-        -- support for image pasting
+</span><span class="sub">-        &quot;HakonHarnes/img-clip.nvim&quot;,
+</span><span class="sub">-        event = &quot;VeryLazy&quot;,
+</span><span class="sub">-        opts = {
+</span><span class="sub">-          default = {
+</span><span class="sub">-            embed_image_as_base64 = false,
+</span><span class="sub">-            prompt_for_file_name = false,
+</span><span class="sub">-            drag_and_drop = {
+</span><span class="sub">-              insert_mode = true,
+</span><span class="sub">-            },
+</span><span class="sub">-          },
+</span><span class="sub">-        },
+</span><span class="sub">-      },
+</span><span class="sub">-      {
+</span><span class="sub">-        &apos;MeanderingProgrammer/render-markdown.nvim&apos;,
+</span><span class="sub">-        opts = {
+</span><span class="sub">-          file_types = { &quot;Avante&quot; },
+</span><span class="sub">-        },
+</span><span class="sub">-        ft = { &quot;Avante&quot; },
+</span><span class="sub">-      },
+</span><span class="sub">-    },
+</span><span class="sub">-  }
+</span><span class="add">+  --{
+</span><span class="add">+  --  &quot;yetone/avante.nvim&quot;,
+</span><span class="add">+  --  event = &quot;VeryLazy&quot;,
+</span><span class="add">+  --  version = false,
+</span><span class="add">+  --  opts = {
+</span><span class="add">+  --    provider = &quot;gemini&quot;,
+</span><span class="add">+  --    --provider = &quot;claude&quot;,
+</span><span class="add">+  --  },
+</span><span class="add">+  --  behaviour = {
+</span><span class="add">+  --      auto_set_keymaps = false,
+</span><span class="add">+  --  },
+</span><span class="add">+  --  --hints = { enabled = false },
+</span><span class="add">+  --  --windows = {
+</span><span class="add">+  --  --    sidebar_header = { enabled = false },
+</span><span class="add">+  --  --},
+</span><span class="add">+  --  dependencies = {
+</span><span class="add">+  --    &quot;nvim-treesitter/nvim-treesitter&quot;,
+</span><span class="add">+  --    &quot;stevearc/dressing.nvim&quot;,
+</span><span class="add">+  --    &quot;nvim-lua/plenary.nvim&quot;,
+</span><span class="add">+  --    &quot;MunifTanjim/nui.nvim&quot;,
+</span><span class="add">+  --    --- The below dependencies are optional,
+</span><span class="add">+  --    &quot;nvim-telescope/telescope.nvim&quot;, -- for file_selector provider telescope
+</span><span class="add">+  --    &quot;hrsh7th/nvim-cmp&quot;, -- autocompletion for avante commands and mentions
+</span><span class="add">+  --    &quot;nvim-tree/nvim-web-devicons&quot;,
+</span><span class="add">+  --    {
+</span><span class="add">+  --      -- support for image pasting
+</span><span class="add">+  --      &quot;HakonHarnes/img-clip.nvim&quot;,
+</span><span class="add">+  --      event = &quot;VeryLazy&quot;,
+</span><span class="add">+  --      opts = {
+</span><span class="add">+  --        default = {
+</span><span class="add">+  --          embed_image_as_base64 = false,
+</span><span class="add">+  --          prompt_for_file_name = false,
+</span><span class="add">+  --          drag_and_drop = {
+</span><span class="add">+  --            insert_mode = true,
+</span><span class="add">+  --          },
+</span><span class="add">+  --        },
+</span><span class="add">+  --      },
+</span><span class="add">+  --    },
+</span><span class="add">+  --    {
+</span><span class="add">+  --      &apos;MeanderingProgrammer/render-markdown.nvim&apos;,
+</span><span class="add">+  --      opts = {
+</span><span class="add">+  --        file_types = { &quot;Avante&quot; },
+</span><span class="add">+  --      },
+</span><span class="add">+  --      ft = { &quot;Avante&quot; },
+</span><span class="add">+  --    },
+</span><span class="add">+  --  },
+</span><span class="add">+  --}
+</span><span class="def"> })
+</span><span class="def"> 
+</span><span class="def"> --local colors = require(&quot;catppuccin.palettes&quot;).get_palette(&quot;mocha&quot;)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/ftplugin/javascript.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +1,4 @@
+<span class="def"> setlocal tabstop=2
+</span><span class="def"> setlocal softtabstop=2
+</span><span class="def"> setlocal shiftwidth=2
+</span><span class="add">+setlocal expandtab
+</span></pre>
+</div></div>
+  </body>
+</html>

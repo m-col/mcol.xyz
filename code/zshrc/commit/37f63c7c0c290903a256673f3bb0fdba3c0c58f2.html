@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add aliases; ffmpeg func</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/37f63c7c0c290903a256673f3bb0fdba3c0c58f2.html">37f63c7c0c290903a256673f3bb0fdba3c0c58f2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/bd5c17e9e90786907a851a5f98c910392b5e620a.html">bd5c17e9e90786907a851a5f98c910392b5e620a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-17 17:10:59 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-17 17:10:59 +0100
+
+add aliases; ffmpeg func
+</pre><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -63,5 +63,8 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> rec_screen() {
+</span><span class="sub">-    ffmpeg -f x11grab -y -r 30 -s 1920x1080 -i :0.0 -vcodec huffyuv out.mp4
+</span><span class="add">+    ffmpeg -f x11grab -r 30 -s 1920x1080 -i :0.0 out.mp4
+</span><span class="add">+}
+</span><span class="add">+rec_screen_mic() {
+</span><span class="add">+    ffmpeg -f x11grab -r 30 -s 1920x1080 -i :0.0 -f pulse -ac 2 -i default out.mkv
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -11,6 +11,7 @@
+<span class="def"> alias tmp=&apos;cd /tmp; l&apos;
+</span><span class="def"> alias _=&apos;sudo&apos;
+</span><span class="def"> alias grep=&apos;grep --exclude-dir=&quot;__pycache__&quot;&apos;
+</span><span class="add">+alias p=&apos;ps aux  | grep -v grep | grep -i&apos;
+</span><span class="def"> 
+</span><span class="def"> # systemd
+</span><span class="def"> alias sc=&apos;systemctl&apos;
+</span>@@ -60,7 +61,7 @@
+<span class="def"> alias difs=&apos;git diff --staged&apos;
+</span><span class="def"> alias cl=&apos;git clone&apos;
+</span><span class="def"> alias chp=&apos;git cherry-pick&apos;
+</span><span class="sub">-alias res=&apos;git restore&apos;
+</span><span class="add">+alias rs=&apos;git restore&apos;
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

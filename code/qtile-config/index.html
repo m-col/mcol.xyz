@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Qtile window manager configuration</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <table id="log">
+    <thead>
+      <tr>
+        <td><b>Date</b></td>
+        <td><b>Commit message</b></td>
+        <td><b>Author</b></td>
+      </tr>
+    </thead>
+
+    <tbody>
+            <tr><td>2023-02-16 18:53</td><td><a href="commit/2636054241d298887511fcc3f5763fc1938775a0.html">some group changes</a></td><td>mcol</td></tr>
+            <tr><td>2023-02-16 18:53</td><td><a href="commit/195f3d7532b9a5054a0fccf8c561c2aa7e92ff0b.html">bunch of config changes</a></td><td>mcol</td></tr>
+            <tr><td>2023-02-16 18:48</td><td><a href="commit/d6459f4b8a1f7c382b84f507f24725f9cc364863.html">some backend-specific changes</a></td><td>mcol</td></tr>
+            <tr><td>2023-02-16 18:45</td><td><a href="commit/3a88369a072e0573b27fa278bb840dc56550292d.html">update startup script</a></td><td>mcol</td></tr>
+            <tr><td>2022-10-10 21:03</td><td><a href="commit/081da40fe20b9ee6dd6cdafcdac3e7b1b5b92923.html">update cmd_ methods on custom widget</a></td><td>mcol</td></tr>
+            <tr><td>2022-10-10 21:01</td><td><a href="commit/a697c7466142effd5459898ba697d702379f5335.html">update per decorators PR</a></td><td>mcol</td></tr>
+            <tr><td>2022-10-10 20:56</td><td><a href="commit/c6329158c18ebbb122b0d05cd7cfc2884b92ba02.html">config updates</a></td><td>mcol</td></tr>
+            <tr><td>2022-10-10 20:55</td><td><a href="commit/e5ef861b6569bd91e0711744c3d9dd65fb8eb793.html">update startup apps</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-21 04:14</td><td><a href="commit/a748058605dce847cfab5c90b1186a9877388128.html">move spot/spotify to group 4</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-21 04:14</td><td><a href="commit/536995bb80668021e806c1faba78779ce97712ef.html">add swaync-client keybind</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-15 22:45</td><td><a href="commit/51638c15c5cdafecc2c7c8a181f7661a3f4322a1.html">clean up some stuff</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-09 07:14</td><td><a href="commit/aebdd4b96ab7e35730f48a60d545016a8298d1eb.html">misc changes</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-09 07:13</td><td><a href="commit/3b425f791066bcea44962e73079e2cf7249dab96.html">group change</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-03 06:43</td><td><a href="commit/d060471705f2c9df7bd3fd19ea4012e28c0ee7d0.html">increase resoution of backlight button ups and downs</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-03 03:24</td><td><a href="commit/233f2d1ff0fd9070b256d1a2b35f2577b369a46c.html">ensure wlsunset is dead before starting it again</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-03 03:23</td><td><a href="commit/5423cf39f3ee271725a3110479f30cb8925ef2cd.html">add hacky workaround for my bad monitor</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-03 00:50</td><td><a href="commit/cd040823aa191720b57366d1f1e878f27c9e3bb3.html">custom Columns effect where a single &apos;foot&apos; window is centred</a></td><td>mcol</td></tr>
+            <tr><td>2022-09-03 00:49</td><td><a href="commit/99c1e8a3be578905b2b8ab4c070a04ff3b2738d5.html">fork dbus/systemctl commands, sometimes they are slow</a></td><td>mcol</td></tr>
+            <tr><td>2022-08-27 21:21</td><td><a href="commit/ba6c44416188524c3cc458896a38402aa3c11c4c.html">input config</a></td><td>mcol</td></tr>
+            <tr><td>2022-08-24 06:14</td><td><a href="commit/fbec80f801aa52555eaa96f4663fbbe944219a43.html">subclass Columns so i have more nicely display &apos;foot&apos;</a></td><td>mcol</td></tr>
+            <tr><td>2022-08-24 00:15</td><td><a href="commit/67681210520c3d30e2e513bb463e26b2bd190f7d.html">black</a></td><td>mcol</td></tr>
+            <tr><td>2022-08-24 00:14</td><td><a href="commit/908181fa2d2ff0760e821d7b4f07a1818c40d988.html">various updates from last few weeks/months</a></td><td>mcol</td></tr>
+            <tr><td>2022-06-20 01:11</td><td><a href="commit/040f497b4df8772ef83ed44d8b836e83fe650247.html">add wl shadows config</a></td><td>mcol</td></tr>
+            <tr><td>2022-05-28 15:21</td><td><a href="commit/90418e315fe36422489aaa09049fc7ee16baca4d.html">many updates</a></td><td>mcol</td></tr>
+            <tr><td>2022-02-06 19:00</td><td><a href="commit/4957dd312ee19f7097988154dbd556f6d1244031.html">updates</a></td><td>mcol</td></tr>
+            <tr><td>2022-01-15 23:15</td><td><a href="commit/3b2e333c9731b4145f78c63ac45e5c9244f7c1cd.html">temp disable snap drag</a></td><td>mcol</td></tr>
+            <tr><td>2022-01-15 23:07</td><td><a href="commit/2b44747f8994a31ce86f81af29d4db8639a7a96c.html">Updates</a></td><td>mcol</td></tr>
+            <tr><td>2021-12-23 19:07</td><td><a href="commit/1907ed323ebcb03f43d4925633e0b69560487042.html">black</a></td><td>mcol</td></tr>
+            <tr><td>2021-12-23 19:06</td><td><a href="commit/0ff8fda6e2cc41db94e40c756873099e45484df9.html">Add tags prototype</a></td><td>mcol</td></tr>
+            <tr><td>2021-11-14 12:28</td><td><a href="commit/46f968e7fb740ca12dc6ec6d238648a060a3178f.html">update borders</a></td><td>mcol</td></tr>
+            <tr><td>2021-11-13 13:11</td><td><a href="commit/565ff6dedd29e15159b484cba0b0c12be0ffbfa0.html">group cmd_toscreen explicitly toggle</a></td><td>mcol</td></tr>
+            <tr><td>2021-11-13 13:10</td><td><a href="commit/6e555d5f4eefced84eb9fbabb22ec2615aac0816.html">minor config changes</a></td><td>mcol</td></tr>
+            <tr><td>2021-11-13 13:10</td><td><a href="commit/bd846f48207a9ea650c7ca9aed2229dd7d53978f.html">scratchpad: dont hide on focus lost</a></td><td>mcol</td></tr>
+            <tr><td>2021-11-13 13:09</td><td><a href="commit/78bacccec243dd8445b5b0e7a712cf3a19119ed4.html">Wayland: slow cursors; remove wofi; remove change_vt(5) and 6</a></td><td>mcol</td></tr>
+            <tr><td>2021-11-13 13:09</td><td><a href="commit/13d434c2b2ac6b0678b023c2a1ba2fcba1958da5.html">Add Mpd2 next/prev to keybindings</a></td><td>mcol</td></tr>
+            <tr><td>2021-10-23 16:04</td><td><a href="commit/26b2094257ed1de41791e00c0a6be75dc244c0cd.html">update audio keybindings</a></td><td>mcol</td></tr>
+            <tr><td>2021-10-19 20:56</td><td><a href="commit/93ad15ea048a3a2a38a6dda7eb302b37293a6301.html">change ncmpcpp scratchpad binding</a></td><td>mcol</td></tr>
+            <tr><td>2021-10-19 20:56</td><td><a href="commit/8318debf1d9ddb64776f94ba84bd83c57f46b892.html">bindigs</a></td><td>mcol</td></tr>
+            <tr><td>2021-10-18 00:40</td><td><a href="commit/ef06cb42d3fa9a6b9b13df177198c07ec64d3cc1.html">misc config changes</a></td><td>mcol</td></tr>
+            <tr><td>2021-10-18 00:38</td><td><a href="commit/13a047ed527d3edeeb5e0eee6da48e6f0a86d131.html">make my F keys work again</a></td><td>mcol</td></tr>
+            <tr><td>2021-10-18 00:37</td><td><a href="commit/f062e4882055bfe9ab947a5c85e0879b9db29afe.html">Add the qtile-extras power menu!</a></td><td>mcol</td></tr>
+            <tr><td>2021-10-18 00:37</td><td><a href="commit/03e587fff15c900255b4dbe0eb5fe09c33890581.html">Add wayland screensharing variables to startup script</a></td><td>mcol</td></tr>
+            <tr><td>2021-10-18 00:37</td><td><a href="commit/3ad65292c5e8d920648657e18c1f1e694d1a1454.html">Clean out scratchpad</a></td><td>mcol</td></tr>
+            <tr><td>2021-10-10 18:24</td><td><a href="commit/7b455f0baca8640595751f7cfd172674a120834c.html">updates</a></td><td>mcol</td></tr>
+            <tr><td>2021-09-13 01:19</td><td><a href="commit/0c3406ca5b983a5eb574e467dd33a6ad6c945362.html">Remove logging from wayland new_client hook</a></td><td>mcol</td></tr>
+            <tr><td>2021-09-12 20:33</td><td><a href="commit/9cb4493cbb758c69c81c8f8403d3ca0dac54a461.html">Move graphical notifications to dedicated plugin</a></td><td>mcol</td></tr>
+            <tr><td>2021-09-12 19:12</td><td><a href="commit/2849fe1f4524e0cb88b2e8ce62cb786262d59922.html">remove traverse as this has been added to qtile-examples</a></td><td>mcol</td></tr>
+            <tr><td>2021-09-12 19:00</td><td><a href="commit/31f1cb6250ba431e4e60b8616bf0ba1296dd6d7f.html">lazy.change_vt -&gt; lazy.core.change_vt</a></td><td>mcol</td></tr>
+            <tr><td>2021-09-08 18:37</td><td><a href="commit/4fff6c32381e6fcab7e3f10507ad1f23329be689.html">fix image in readme</a></td><td>mcol</td></tr>
+            <tr><td>2021-09-08 18:36</td><td><a href="commit/dc6295eacf2a2f8871c9a0e23df3b3c0becf6829.html">Add graphical notifications screenshot</a></td><td>mcol</td></tr>
+          </tbody>
+  </table>
+</div>
+  </body>
+</html>

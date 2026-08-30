@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - add man page</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/03a8999aa980ed2cfe7286f3fddfe86add6a5e12.html">03a8999aa980ed2cfe7286f3fddfe86add6a5e12</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/d60f17e23ce516c7cef6ea36c1b2e0b5a0fb6d3a.html">d60f17e23ce516c7cef6ea36c1b2e0b5a0fb6d3a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-07 22:58:29 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-07 22:58:29 +0100
+
+add man page
+</pre><div class="diff">
+  <p>
+    <b>xoop.1</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,40 @@
+<span class="add">+.TH XOOP 1
+</span><span class="add">+.SH NAME
+</span><span class="add">+.B xoop
+</span><span class="add">+\- loop your X cursor around the edges of the screen
+</span><span class="add">+.SH SYNOPSIS
+</span><span class="add">+.B xoop
+</span><span class="add">+[\fB\-x\fR | \fB\-y\fR]
+</span><span class="add">+[\fB\-f\fR]
+</span><span class="add">+[\fB\-d\fR]
+</span><span class="add">+.SH DESCRIPTION
+</span><span class="add">+.B xoop
+</span><span class="add">+turns your desktop into a flat torus, so that when the cursor hits one side it
+</span><span class="add">+continues and reappears out from the opposite side.
+</span><span class="add">+.SH OPTIONS
+</span><span class="add">+.TP
+</span><span class="add">+.BR \-x
+</span><span class="add">+Only allow looping parallel to the x axis.
+</span><span class="add">+.TP
+</span><span class="add">+.BR \-y
+</span><span class="add">+Only allow looping parallel to the y axis.
+</span><span class="add">+.TP
+</span><span class="add">+.BR \-f
+</span><span class="add">+Fork the process.
+</span><span class="add">+.TP
+</span><span class="add">+.BR \-d
+</span><span class="add">+Print extra debug information while running.
+</span><span class="add">+.TP
+</span><span class="add">+.BR \-h
+</span><span class="add">+Print a basic help message.
+</span><span class="add">+.SH MULTIMONITOR
+</span><span class="add">+xoop assumes that a multiple monitor setup creates a large rectangle with 4
+</span><span class="add">+edges, for example if you have two monitors of the same height side-by-side. If
+</span><span class="add">+your multi-monitor setup does not produce a large rectangle then the mouse will
+</span><span class="add">+only teleport on the far outside edges. This is because it is not always clear
+</span><span class="add">+where the mouse should teleport to. Contributions are welcome if you have a
+</span><span class="add">+solution!
+</span><span class="add">+.SH MULTIMONITOR
+</span><span class="add">+xoop is maintained by Matt Colligan @ \fIhttps://mcol.xyz/code/xoop\fR
+</span><span class="add">+.P
+</span><span class="add">+Contributions/comments @ \fImcol@posteo.net\fR
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,7 +9,7 @@
+<span class="def">                                           ██║
+</span><span class="def">                                           ╚═╝
+</span><span class="def"> 
+</span><span class="sub">-Loop your X cursor around the screen
+</span><span class="add">+Loop your X cursor around the edges of the screen
+</span><span class="def"> 
+</span><span class="def"> 👉😎👉
+</span><span class="def"> 
+</span>@@ -22,11 +22,11 @@
+<span class="def"> Arguments
+</span><span class="def"> ---------
+</span><span class="def"> 
+</span><span class="sub">--h  help
+</span><span class="sub">--f  fork
+</span><span class="def"> -x  x axis only
+</span><span class="def"> -y  y axis only
+</span><span class="add">+-f  fork
+</span><span class="def"> -d  debug mode
+</span><span class="add">+-h  help
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> To install
+</span>@@ -45,10 +45,12 @@
+<span class="def"> Multimonitor
+</span><span class="def"> ------------
+</span><span class="def"> 
+</span><span class="sub">-xoops assumes that a multiple monitor setup creates a large rectangle with 4
+</span><span class="add">+xoop assumes that a multiple monitor setup creates a large rectangle with 4
+</span><span class="def"> edges, for example if you have two monitors of the same height side-by-side. If
+</span><span class="def"> your multi-monitor setup does not produce a large rectangle then the mouse will
+</span><span class="sub">-only teleport on the far outside edges.
+</span><span class="add">+only teleport on the far outside edges. This is because it is not always clear
+</span><span class="add">+where the mouse should teleport to. Contributions are welcome if you have a
+</span><span class="add">+solution!
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> Contact
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> CFLAGS 	  += -Wall -Wextra -pedantic -lxcb -lxcb-randr -lxcb-xinput -lxcb-xfixes
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span><span class="add">+MANPREFIX ?= $(PREFIX)/man/man1
+</span><span class="def"> 
+</span><span class="def"> all: clean $(OUT)
+</span><span class="def"> 
+</span>@@ -12,9 +13,13 @@
+<span class="def"> install:
+</span><span class="def"> 	mkdir -p &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span><span class="def"> 	cp -pf &quot;$(OUT)&quot; &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span><span class="add">+	mkdir -p &quot;${DESTDIR}${MANPREFIX}&quot;
+</span><span class="add">+	cp -pf &quot;${OUT}.1&quot; &quot;${DESTDIR}${MANPREFIX}&quot;
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> uninstall:
+</span><span class="def"> 	rm -f &quot;$(DESTDIR)$(BINPREFIX)/$(OUT)&quot;
+</span><span class="add">+	rm -f &quot;$(DESTDIR)$(MANPREFIX)/$(OUT).1&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> .PHONY: all debug clean install uninstall
+</span></pre>
+</div></div>
+  </body>
+</html>

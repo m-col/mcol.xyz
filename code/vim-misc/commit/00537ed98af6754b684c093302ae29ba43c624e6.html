@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - key bindings to use tmux-vim navigation</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/00537ed98af6754b684c093302ae29ba43c624e6.html">00537ed98af6754b684c093302ae29ba43c624e6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/3d0b1d3f5bdd02193a3bf759d86b89eb1930fe44.html">3d0b1d3f5bdd02193a3bf759d86b89eb1930fe44</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-08 12:13:38 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-08 12:13:38 +0000
+
+key bindings to use tmux-vim navigation
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,11 +19,12 @@
+<span class="def"> call vundle#begin()
+</span><span class="def"> 
+</span><span class="def"> Plugin &apos;VundleVim/Vundle.vim&apos;	&quot; required
+</span><span class="sub">-&quot;Plugin &apos;ervandew/supertab&apos;	&quot; better tab completion
+</span><span class="sub">-Plugin &apos;jpalardy/vim-slime&apos;	&quot; send text to IDE and execute
+</span><span class="add">+Plugin &apos;mcolligan/vim-misc&apos;	&quot; my vimrc and misc functions 
+</span><span class="def"> Plugin &apos;vimwiki/vimwiki&apos;	&quot; vimwiki
+</span><span class="def"> Plugin &apos;mcolligan/vimlab&apos;	&quot; vimlab
+</span><span class="sub">-Plugin &apos;mcolligan/vim-misc&apos;	&quot; misc functions
+</span><span class="add">+Plugin &apos;mcolligan/tide&apos;		&quot; tmux ide
+</span><span class="add">+Plugin &apos;jpalardy/vim-slime&apos;	&quot; send text to IDE and execute
+</span><span class="add">+Plugin &apos;christoomey/vim-tmux-navigator&apos;	    &quot; navigate vim and tmux splits seamless
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()            &quot; required
+</span><span class="def"> filetype plugin indent on    &quot; required
+</span>@@ -46,6 +47,7 @@
+<span class="def"> set smartcase			&quot; searches ignore case only if all lower case
+</span><span class="def"> set incsearch			&quot; Searches for strings while typing search term
+</span><span class="def"> set gdefault			&quot; use global by default for substitutions
+</span><span class="add">+set nowrap			&quot; don&apos;t wrap really long lines
+</span><span class="def"> 
+</span><span class="def"> set shiftwidth=4		&quot; Default number of auto-indent spaces
+</span><span class="def"> set autoindent			&quot; Auto-indent new lines
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -47,15 +47,21 @@
+<span class="def"> &quot; save read-only file with sudo trick
+</span><span class="def"> cnoremap w!! w !sudo tee &gt; /dev/null %
+</span><span class="def"> 
+</span><span class="sub">-&quot; move between split views
+</span><span class="sub">-nnoremap &lt;C-H&gt; &lt;C-W&gt;&lt;C-H&gt;
+</span><span class="sub">-nnoremap &lt;C-J&gt; &lt;C-W&gt;&lt;C-J&gt;
+</span><span class="sub">-nnoremap &lt;C-K&gt; &lt;C-W&gt;&lt;C-K&gt;
+</span><span class="sub">-nnoremap &lt;C-L&gt; &lt;C-W&gt;&lt;C-L&gt;
+</span><span class="sub">-inoremap &lt;C-H&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-H&gt;
+</span><span class="sub">-inoremap &lt;C-J&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-J&gt;
+</span><span class="sub">-inoremap &lt;C-K&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-K&gt;
+</span><span class="sub">-inoremap &lt;C-L&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-L&gt;
+</span><span class="add">+&quot; move between split views (these are configured by the vim-tmux plugin)
+</span><span class="add">+&quot; except for insert mode:
+</span><span class="add">+inoremap &lt;silent&gt; &lt;C-H&gt; &lt;Esc&gt;:TmuxNavigateLeft&lt;cr&gt;
+</span><span class="add">+inoremap &lt;silent&gt; &lt;C-J&gt; &lt;Esc&gt;:TmuxNavigateDown&lt;cr&gt;
+</span><span class="add">+inoremap &lt;silent&gt; &lt;C-K&gt; &lt;Esc&gt;:TmuxNavigateUp&lt;cr&gt;
+</span><span class="add">+inoremap &lt;silent&gt; &lt;C-L&gt; &lt;Esc&gt;:TmuxNavigateRight&lt;cr&gt;
+</span><span class="add">+inoremap &lt;silent&gt; &lt;C-\&gt; &lt;Esc&gt;:TmuxNavigatePrevious&lt;cr&gt;
+</span><span class="add">+&quot;nnoremap &lt;C-H&gt; &lt;C-W&gt;&lt;C-H&gt;
+</span><span class="add">+&quot;nnoremap &lt;C-J&gt; &lt;C-W&gt;&lt;C-J&gt;
+</span><span class="add">+&quot;nnoremap &lt;C-K&gt; &lt;C-W&gt;&lt;C-K&gt;
+</span><span class="add">+&quot;nnoremap &lt;C-L&gt; &lt;C-W&gt;&lt;C-L&gt;
+</span><span class="add">+&quot;inoremap &lt;C-H&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-H&gt;
+</span><span class="add">+&quot;inoremap &lt;C-J&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-J&gt;
+</span><span class="add">+&quot;inoremap &lt;C-K&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-K&gt;
+</span><span class="add">+&quot;inoremap &lt;C-L&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-L&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; move to start or end of line more easily
+</span><span class="def"> nnoremap H 0
+</span></pre>
+</div></div>
+  </body>
+</html>

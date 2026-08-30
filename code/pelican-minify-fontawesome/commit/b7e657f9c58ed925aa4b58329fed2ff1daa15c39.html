@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - add :fa: context for rst to generate html spans where we want glyphs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/b7e657f9c58ed925aa4b58329fed2ff1daa15c39.html">b7e657f9c58ed925aa4b58329fed2ff1daa15c39</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/836186342e24230b79697af55efd8e2cb50692a6.html">836186342e24230b79697af55efd8e2cb50692a6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-19 18:15:20 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-19 18:15:20 +0100
+
+add :fa: context for rst to generate html spans where we want glyphs
+</pre><div class="diff">
+  <p>
+    <b>minify_fontawesome.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,28 +1,31 @@
+<span class="def"> # -*- coding: utf-8 -*-
+</span><span class="def"> #
+</span><span class="def"> # pelican-minify-fontawesome
+</span><span class="sub">-# 
+</span><span class="add">+#
+</span><span class="def"> # Copyright (C) 2019 mcol@posteo.net
+</span><span class="sub">-# 
+</span><span class="add">+#
+</span><span class="def"> # This program is free software: you can redistribute it and/or modify
+</span><span class="def"> # it under the terms of the GNU General Public License as published by
+</span><span class="def"> # the Free Software Foundation, either version 3 of the License, or
+</span><span class="def"> # (at your option) any later version.
+</span><span class="sub">-# 
+</span><span class="add">+#
+</span><span class="def"> # This program is distributed in the hope that it will be useful,
+</span><span class="def"> # but WITHOUT ANY WARRANTY; without even the implied warranty of
+</span><span class="def"> # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+</span><span class="def"> # GNU General Public License for more details.
+</span><span class="sub">-# 
+</span><span class="add">+#
+</span><span class="def"> # You should have received a copy of the GNU General Public License
+</span><span class="def"> # along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> import fontforge
+</span><span class="def"> import os
+</span><span class="sub">-from pelican import signals
+</span><span class="def"> import re
+</span><span class="def"> 
+</span><span class="add">+from docutils import nodes
+</span><span class="add">+from docutils.parsers.rst import roles
+</span><span class="add">+from pelican import signals
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> def copy_glyphs(source, dest, css_blocks):
+</span><span class="def">     &quot;&quot;&quot;
+</span>@@ -69,7 +72,7 @@
+<span class="def">                     if matches:
+</span><span class="def">                         for match in matches:
+</span><span class="def">                             all_classes.extend(match.split())
+</span><span class="sub">-    
+</span><span class="add">+
+</span><span class="def">     for cls in set(all_classes):
+</span><span class="def">         if cls.startswith(&apos;fa&apos;):
+</span><span class="def">             fa_classes.append(cls)
+</span>@@ -108,7 +111,7 @@
+<span class="def">     return css_blocks
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-def main(instance):
+</span><span class="add">+def output_font(instance):
+</span><span class="def">     FONT_PATH = instance.settings.get(&apos;MINIFY_FONTAWESOME&apos;, None)
+</span><span class="def">     if not FONT_PATH or not os.path.isdir(FONT_PATH):
+</span><span class="def">         return
+</span>@@ -128,5 +131,9 @@
+<span class="def">     )
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+def rst_span(name, rawtext, text, lineno, inliner, options={}, content=[]):
+</span><span class="add">+    return [nodes.raw(&apos;&apos;, f&apos;&lt;span class=&quot;{text}&quot;&gt;&lt;/span&gt;&apos;, format=&apos;html&apos;)], []
+</span><span class="add">+
+</span><span class="def"> def register():
+</span><span class="sub">-    signals.finalized.connect(main)
+</span><span class="add">+    roles.register_local_role(&apos;fa&apos;, rst_span)
+</span><span class="add">+    signals.finalized.connect(output_font)
+</span></pre>
+</div></div>
+  </body>
+</html>

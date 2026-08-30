@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - move user configuration to /etc/vconsole.conf</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/c8b3119a8699d94cb86c779595322fb2b89cd06e.html">c8b3119a8699d94cb86c779595322fb2b89cd06e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/e1f548fbc48a28db86e9f114347d7788271edee6.html">e1f548fbc48a28db86e9f114347d7788271edee6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-29 19:33:00 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-29 19:33:00 +0100
+
+move user configuration to /etc/vconsole.conf
+</pre><div class="diff">
+  <p>
+    <b>install/welcome</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,11 +1,27 @@
+<span class="def"> #!/bin/bash
+</span><span class="def"> 
+</span><span class="def"> build() {
+</span><span class="sub">-    add_runscript
+</span><span class="add">+    (
+</span><span class="add">+	WELCOME_FG=5
+</span><span class="add">+	WELCOME_BG=0
+</span><span class="add">+	WELCOME_IN=4
+</span><span class="add">+
+</span><span class="add">+        [[ -s /etc/vconsole.conf ]] &amp;&amp; . /etc/vconsole.conf
+</span><span class="add">+
+</span><span class="add">+	is_int() { [[ $1 =~ ^-?[0-9]+$ ]] }
+</span><span class="add">+	is_int $WELCOME_FG || error &quot;welcome: WELCOME_FG should be an integer&quot; &amp;&amp; exit 1
+</span><span class="add">+	is_int $WELCOME_BG || error &quot;welcome: WELCOME_BG should be an integer&quot; &amp;&amp; exit 1
+</span><span class="add">+	is_int $WELCOME_IN || error &quot;welcome: WELCOME_IN should be an integer&quot; &amp;&amp; exit 1
+</span><span class="add">+
+</span><span class="add">+	echo &quot;WELCOME_FG=$WELCOME_FG&quot; &gt;&gt; &quot;$BUILDROOT/welcome&quot;
+</span><span class="add">+	echo &quot;WELCOME_BG=$WELCOME_BG&quot; &gt;&gt; &quot;$BUILDROOT/welcome&quot;
+</span><span class="add">+	echo &quot;WELCOME_IN=$WELCOME_IN&quot; &gt;&gt; &quot;$BUILDROOT/welcome&quot;
+</span><span class="add">+    ) &amp;&amp;  add_runscript
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> help() {
+</span><span class="def">     cat &lt;&lt;HELPEOF
+</span><span class="sub">-Sets up console appearance before asking for passphrase
+</span><span class="add">+Prints the word &quot;Welcome&quot; in large letters and draws a box around the input for
+</span><span class="add">+the encrypt hook and output of the fsck hook.
+</span><span class="def"> HELPEOF
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>hooks/welcome</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,28 +1,21 @@
+<span class="def"> #!/usr/bin/ash
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-# # # # # # # USER SETTINGS
+</span><span class="sub">-
+</span><span class="sub">-# These should be a number from 0 to 15
+</span><span class="sub">-
+</span><span class="sub">-BACKGROUND=0
+</span><span class="sub">-WELCOME=5
+</span><span class="sub">-INPUTBOX=4
+</span><span class="sub">-
+</span><span class="sub">-# # # # # # # # # # # # # #
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-run_hook() {
+</span><span class="sub">-    bk=&quot;\x1b[48;5;${BACKGROUND}m&quot;
+</span><span class="sub">-    we=&quot;\x1b[48;5;${WELCOME}m&quot;
+</span><span class="sub">-    in=&quot;\x1b[48;5;${INPUTBOX}m&quot;
+</span><span class="sub">-
+</span><span class="add">+draw_welcome() {
+</span><span class="add">+    # user-defined colours
+</span><span class="add">+    . /welcome
+</span><span class="add">+    we=&quot;\x1b[48;5;${WELCOME_FG}m&quot;
+</span><span class="add">+    bk=&quot;\x1b[48;5;${WELCOME_BG}m&quot;
+</span><span class="add">+    in=&quot;\x1b[48;5;${WELCOME_IN}m&quot;
+</span><span class="add">+
+</span><span class="add">+    # drawing tools
+</span><span class="def">     p=&quot;$we  $bk&quot;  		# single pixel
+</span><span class="def">     s=&quot;$we  &quot;	    		# start pixel row
+</span><span class="def">     e=&quot;  $bk&quot;	    		# end pixel row
+</span><span class="def">     non=&quot;\x1b[0m&quot;		# reset all settings
+</span><span class="def">     fill=&quot;\033[K&quot;   		# fill to end of line
+</span><span class="def"> 
+</span><span class="add">+    # draw &quot;Welcome&quot;
+</span><span class="def">     echo -e &quot;$b14\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="def">     echo -e &quot;                                                                                                  $s$e$fill&quot;
+</span><span class="def">     echo -e &quot;                                                                   $p          $p                   $p$fill&quot;
+</span>@@ -34,11 +27,27 @@
+<span class="def">     echo -e &quot;                                                                   $p  $p  $p  $p  $p               $p          $p        $p    $p        $p    $p    $p    $p  $p$fill&quot;
+</span><span class="def">     echo -e &quot;                                                                   $s$e      $s$e    $s      $e       $s  $e      $s    $e        $s    $e      $p    $p    $p    $s      $e$fill&quot;
+</span><span class="def">     echo -e &quot;$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="sub">-    echo -e &quot;                                                                                             $in                                                      $bk$fill&quot;
+</span><span class="sub">-    echo -e &quot;                                                                                             $in  $bk                                                  $in  $bk$fill&quot;
+</span><span class="sub">-    echo -e &quot;                                                                                             $in                                                      $bk$fill&quot;
+</span><span class="sub">-    echo -e &quot;$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="def"> 
+</span><span class="sub">-    # move cursor to input box
+</span><span class="sub">-    echo -ne &quot;\x1b[32;96H&quot;
+</span><span class="add">+    # draw input box
+</span><span class="add">+    echo -e &quot;                                                                              $in                                                                                   $bk$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                              $in  $bk                                                                               $in  $bk$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                              $in  $bk                                                                               $in  $bk$fill&quot;
+</span><span class="add">+    echo -e &quot;                                                                              $in                                                                                   $bk$fill&quot;
+</span><span class="add">+
+</span><span class="add">+    # fill rest of screen
+</span><span class="add">+    echo -e &quot;$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="add">+    echo -e &quot;$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="add">+
+</span><span class="add">+    # move cursor into inpux box
+</span><span class="add">+    echo -ne &quot;\x1b[32;81H&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+run_hook() {
+</span><span class="add">+    if [ -e /welcome ]
+</span><span class="add">+    then
+</span><span class="add">+	draw_welcome
+</span><span class="add">+    else
+</span><span class="add">+	msg &quot;/welcome not found despite added hook.&quot;
+</span><span class="add">+    fi
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - vimtex and related stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/64837b4c09e32ae5a77fd8721eca98be0515bab6.html">64837b4c09e32ae5a77fd8721eca98be0515bab6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/94f56dc1e799950f66f99679c0b84a8c7dc8ef66.html">94f56dc1e799950f66f99679c0b84a8c7dc8ef66</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-07-01 10:51:45 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-07-01 10:51:45 +0100
+
+vimtex and related stuff
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,6 +24,7 @@
+<span class="def">     Plugin &apos;vimwiki/vimwiki&apos;		    &quot; vimwiki
+</span><span class="def">     Plugin &apos;mclgn/vimlab&apos;		    &quot; vimlab
+</span><span class="def">     Plugin &apos;lervag/vimtex&apos;		    &quot; vimtex
+</span><span class="add">+    Plugin &apos;linkinpark342/xonsh-vim&apos;	    &quot; xonsh vim syntax
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> if hostname() == &quot;ardbeg&quot;
+</span>@@ -96,9 +97,7 @@
+<span class="def"> 
+</span><span class="def"> set background=dark		&quot; needed in case urxvt background colour is transparent
+</span><span class="def"> 
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Misc                                                             &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Misc ------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="def"> &quot; restore last line in opened file
+</span><span class="def"> au BufReadPost *
+</span>@@ -117,9 +116,9 @@
+<span class="def">     let g:mlint_path_to_mlint = expand(&quot;$HOME&quot;) . &quot;/applications/MATLAB/R2018b/bin/glnxa64/mlint&quot;
+</span><span class="def">     let g:vimwiki_list = [{&apos;path&apos;: &apos;~/work/research/research.wiki/&apos;, &apos;path_html&apos;: &apos;~/work/research/research.wiki.html/&apos;}]
+</span><span class="def"> 
+</span><span class="sub">-    let g:vimtex_view_method = &apos;zathura&apos;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="add">+    let g:vimtex_view_general_viewer = &apos;qpdfview&apos;
+</span><span class="add">+    let g:vimtex_view_general_options = &apos;--unique @pdf\#src:@tex:@line:@col&apos;
+</span><span class="add">+    let g:vimtex_view_general_options_latexmk = &apos;--unique&apos;
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> &quot; session saving
+</span>@@ -135,17 +134,7 @@
+<span class="def"> endif
+</span><span class="def"> if &amp;term =~ &apos;^screen&apos; &amp;&amp; !has(&apos;nvim&apos;) | exe &quot;set t_ts=\e]2; t_fs=\7&quot; | endif
+</span><span class="def"> 
+</span><span class="sub">-&quot; vimtex configuration
+</span><span class="sub">-let g:vimtex_doc_handlers = [&apos;Texdoc&apos;]
+</span><span class="sub">-function! Texdoc(context)
+</span><span class="sub">-    call vimtex#doc#make_selection(a:context)
+</span><span class="sub">-    if !empty(a:context.selected)
+</span><span class="sub">-	execute &apos;!texdoc&apos; a:context.selected &apos;&amp;&apos;
+</span><span class="sub">-    endif
+</span><span class="sub">-    return 1
+</span><span class="sub">-endfunction
+</span><span class="sub">-
+</span><span class="sub">-let g:vimtex_view_zathura_hook_callback = &apos;ViewerCallback&apos;
+</span><span class="add">+let g:vimtex_view_qpdfview_hook_callback = &apos;ViewerCallback&apos;
+</span><span class="def"> function! ViewerCallback() dict
+</span><span class="def">     VimtexView
+</span><span class="def"> endfunction
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/vimwiki.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,3 +38,5 @@
+<span class="def"> setlocal wrap
+</span><span class="def"> setlocal linebreak
+</span><span class="def"> setlocal breakindent
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/tex.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,3 +7,5 @@
+<span class="def"> nnoremap K :VimtexDocPackage&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> nnoremap &lt;localleader&gt;lw :exe &apos;cexpr system(&quot;texcount &apos; . expand(&apos;%&apos;) . &apos;&quot;)&apos;&lt;CR&gt;:copen&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/rst.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1,2 @@
+<span class="def"> setlocal textwidth=79
+</span><span class="add">+nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/c.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-nnoremap &lt;buffer&gt; &lt;F2&gt; :make!&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

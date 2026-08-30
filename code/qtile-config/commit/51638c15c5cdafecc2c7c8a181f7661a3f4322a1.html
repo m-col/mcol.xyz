@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - clean up some stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/51638c15c5cdafecc2c7c8a181f7661a3f4322a1.html">51638c15c5cdafecc2c7c8a181f7661a3f4322a1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/aebdd4b96ab7e35730f48a60d545016a8298d1eb.html">aebdd4b96ab7e35730f48a60d545016a8298d1eb</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-09-15 22:45:27 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-09-15 22:45:27 +0100
+
+clean up some stuff
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -95,17 +95,8 @@
+<span class="def"> @hook.subscribe.startup_once
+</span><span class="def"> async def _():
+</span><span class="def">     # Run a startup script
+</span><span class="sub">-    env = os.environ.copy()
+</span><span class="sub">-    env[&quot;WOB_HEIGHT&quot;] = &quot;28&quot;
+</span><span class="sub">-    env[&quot;WOB_WIDTH&quot;] = &quot;1920&quot;
+</span><span class="sub">-    env[&quot;WOB_MARGIN&quot;] = &quot;0&quot;
+</span><span class="sub">-    env[&quot;WOB_OFFSET&quot;] = &quot;0&quot;
+</span><span class="sub">-    env[&quot;WOB_BORDER&quot;] = &quot;0&quot;
+</span><span class="sub">-    env[&quot;WOB_PADDING&quot;] = &quot;0&quot;
+</span><span class="sub">-    env[&quot;WOB_BACKGROUND&quot;] = &quot;#00000000&quot;
+</span><span class="sub">-    env[&quot;WOB_BAR&quot;] = &quot;#66CFCCD6&quot;
+</span><span class="def">     HOME = os.path.expanduser(&quot;~&quot;)
+</span><span class="sub">-    p = subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True, env=env)
+</span><span class="add">+    p = subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;)
+</span><span class="def">     hook.subscribe.shutdown(p.terminate)
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,20 +2,15 @@
+<span class="def"> #
+</span><span class="def"> # Qtile Wayland startup script
+</span><span class="def"> 
+</span><span class="sub">-QTILE_PID=$PPID
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> {
+</span><span class="def">     foot --server &amp;
+</span><span class="def"> 
+</span><span class="def">     # wob
+</span><span class="def">     FIFO=/tmp/wob-$WAYLAND_DISPLAY
+</span><span class="def">     test -e $FIFO || mkfifo $FIFO
+</span><span class="sub">-    tail -f $FIFO | wob -a bottom \
+</span><span class="sub">-	-M ${WOB_MARGIN:-0} -H ${WOB_HEIGHT:-32} -W ${WOB_WIDTH:-400} \
+</span><span class="sub">-	-o ${WOB_OFFSET:-0} -b ${WOB_BORDER:-0} -p ${WOB_PADDING:-0} \
+</span><span class="sub">-	--background-color ${WOB_BACKGROUND:-#ff000000} \
+</span><span class="sub">-	--bar-color ${WOB_BAR:-#00ffffff} -t 800 &amp;
+</span><span class="add">+    tail -f $FIFO | wob \
+</span><span class="add">+	-a bottom -M 0 -H 28 -W 1920 -o 0 -b 0 -p 0 \
+</span><span class="add">+	--background-color &quot;#00000000&quot; --bar-color &quot;#66CFCCD6&quot; -t 800 &amp;
+</span><span class="def"> 
+</span><span class="def"> } &amp;&gt; /dev/null
+</span><span class="def"> 
+</span>@@ -28,7 +23,7 @@
+<span class="def"> 	WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=$XDG_CURRENT_DESKTOP &amp;
+</span><span class="def"> 
+</span><span class="def">     # Services
+</span><span class="sub">-    kanshi &amp;
+</span><span class="add">+    kanshi &amp;&gt;&gt; ~/.local/share/qtile/qtile.log &amp;
+</span><span class="def">     wlsunset &amp;
+</span><span class="def">     swayidle &amp;
+</span><span class="def">     mpDris2 &amp;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>power_menu.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,5 @@
+<span class="sub">-from qtile_extras.popup.toolkit import PopupRelativeLayout, PopupImage, PopupText
+</span><span class="sub">-
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="add">+from qtile_extras.popup.toolkit import PopupImage, PopupRelativeLayout, PopupText
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> def show_power_menu(qtile):
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>mindfulness.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,17 +19,16 @@
+<span class="def"> # SOFTWARE.
+</span><span class="def"> 
+</span><span class="def"> import os
+</span><span class="sub">-from urllib import request
+</span><span class="def"> from random import randint
+</span><span class="add">+from urllib import request
+</span><span class="def"> 
+</span><span class="def"> import gi
+</span><span class="def"> 
+</span><span class="def"> gi.require_version(&quot;Gst&quot;, &quot;1.0&quot;)
+</span><span class="def"> from gi.repository import Gst
+</span><span class="sub">-
+</span><span class="def"> from libqtile.log_utils import logger
+</span><span class="sub">-from libqtile.widget import base
+</span><span class="def"> from libqtile.utils import get_cache_dir
+</span><span class="add">+from libqtile.widget import base
+</span><span class="def"> 
+</span><span class="def"> Gst.init(None)
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -28,14 +28,14 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> groups: list[Group] = [
+</span><span class="sub">-    Group(&quot;1&quot;, label=&quot;term&quot;),
+</span><span class="sub">-    Group(&quot;2&quot;, label=&quot;term&quot;),
+</span><span class="sub">-    Group(&quot;3&quot;, label=&quot;term&quot;),
+</span><span class="sub">-    Group(&quot;4&quot;, label=&quot;spot&quot;, matches=[Match(title=&quot;spotify&quot;)]),
+</span><span class="sub">-    Group(&quot;q&quot;, label=&quot;html&quot;, matches=[Match(wm_class=&quot;firefox&quot;)]),
+</span><span class="sub">-    Group(&quot;w&quot;, label=&quot;imap&quot;, matches=[Match(wm_class=&quot;geary&quot;), Match(title=&quot;Geary&quot;)]),
+</span><span class="sub">-    Group(&quot;e&quot;, label=&quot;work&quot;),
+</span><span class="sub">-    Group(&quot;r&quot;, label=&quot;work&quot;),
+</span><span class="add">+    Group(&quot;1&quot;, label=&quot;html&quot;, matches=[Match(wm_class=&quot;firefox&quot;)]),
+</span><span class="add">+    Group(&quot;2&quot;, label=&quot;mail&quot;, matches=[Match(wm_class=&quot;geary&quot;), Match(title=&quot;Geary&quot;)]),
+</span><span class="add">+    Group(&quot;3&quot;, label=&quot;tune&quot;, matches=[Match(title=&quot;spotify&quot;)]),
+</span><span class="add">+    Group(&quot;4&quot;, label=&quot;term&quot;),
+</span><span class="add">+    Group(&quot;q&quot;, label=&quot;term&quot;),
+</span><span class="add">+    Group(&quot;w&quot;, label=&quot;term&quot;),
+</span><span class="add">+    Group(&quot;e&quot;, label=&quot;term&quot;),
+</span><span class="add">+    Group(&quot;r&quot;, label=&quot;term&quot;),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -121,12 +121,14 @@
+<span class="def">     if len(qtile.screens) &gt; 1:
+</span><span class="def">         qtile.groups_map[&quot;1&quot;].cmd_toscreen(0, toggle=False)
+</span><span class="def">         qtile.groups_map[&quot;q&quot;].cmd_toscreen(1, toggle=False)
+</span><span class="add">+        qtile.focus_screen(1)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-@hook.subscribe.screen_change
+</span><span class="sub">-def _(_):
+</span><span class="add">+@hook.subscribe.screens_reconfigured
+</span><span class="add">+def _():
+</span><span class="def">     # Set groups to screens
+</span><span class="def">     if len(qtile.screens) &gt; 1:
+</span><span class="def">         if qtile.screens[0].group.name not in &quot;1234&quot;:
+</span><span class="def">             qtile.groups_map[&quot;1&quot;].cmd_toscreen(0, toggle=False)
+</span><span class="sub">-        qtile.groups_map[&quot;q&quot;].cmd_toscreen(1, toggle=False)
+</span><span class="add">+        if qtile.screens[1].group.name in &quot;1234&quot;:
+</span><span class="add">+            qtile.groups_map[&quot;q&quot;].cmd_toscreen(1, toggle=False)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,15 +5,14 @@
+<span class="def"> 
+</span><span class="def"> from __future__ import annotations
+</span><span class="def"> 
+</span><span class="sub">-import asyncio
+</span><span class="def"> import importlib
+</span><span class="def"> import os
+</span><span class="add">+import re
+</span><span class="def"> import subprocess
+</span><span class="def"> import sys
+</span><span class="sub">-import re
+</span><span class="def"> from typing import TYPE_CHECKING
+</span><span class="def"> 
+</span><span class="sub">-from libqtile import bar, hook, layout, qtile, widget
+</span><span class="add">+from libqtile import bar, hook, layout, qtile, utils, widget
+</span><span class="def"> from libqtile.backend import base
+</span><span class="def"> from libqtile.config import Click, Drag, Key, Match, Screen
+</span><span class="def"> from libqtile.lazy import lazy
+</span>@@ -33,6 +32,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> import traverse
+</span><span class="add">+from toggle_debug import toggle_debug
+</span><span class="def"> 
+</span><span class="def"> use_tags = False
+</span><span class="def"> 
+</span>@@ -147,6 +147,7 @@
+<span class="def">         ([mod, &quot;control&quot;], &quot;Escape&quot;, lazy.shutdown(), &quot;Shutdown Qtile&quot;),
+</span><span class="def">         ([mod], &quot;Tab&quot;, lazy.next_layout(), &quot;Next layout&quot;),
+</span><span class="def">         ([mod], &quot;b&quot;, lazy.hide_show_bar(&quot;bottom&quot;), &quot;Hide bar&quot;),
+</span><span class="add">+        ([mod, &quot;control&quot;], &quot;d&quot;, lazy.function(toggle_debug), &quot;Toggle debug logging&quot;),
+</span><span class="def">         # Volume control - MyVolume widget is defined further down
+</span><span class="def">         ([], &quot;XF86AudioMute&quot;, lazy.widget[&quot;myvolume&quot;].mute(), &quot;Mute audio&quot;),
+</span><span class="def">         ([mod], &quot;F10&quot;, lazy.widget[&quot;myvolume&quot;].mute(), &quot;Mute audio&quot;),
+</span>@@ -264,11 +265,13 @@
+<span class="def"> border_focus = [colours[5]]
+</span><span class="def"> border_normal = &quot;001122&quot;
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> class MyColumns(layout.Columns):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     I only override this method so I can make &apos;foot&apos; have wide margins at each side if
+</span><span class="def">     it&apos;s the only window open.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="def">     def configure(self, client, screen_rect):
+</span><span class="def">         pos = 0
+</span><span class="def">         for col in self.columns:
+</span>@@ -290,17 +293,27 @@
+<span class="def">             if &quot;foot&quot; in (client.get_wm_class() or []):
+</span><span class="def">                 margin_size = [0, 200, 0, 200]
+</span><span class="def">         width = int(0.5 + col.width * screen_rect.width * 0.01 / len(self.columns))
+</span><span class="sub">-        x = screen_rect.x + int(0.5 + pos * screen_rect.width * 0.01 / len(self.columns))
+</span><span class="add">+        x = screen_rect.x + int(
+</span><span class="add">+            0.5 + pos * screen_rect.width * 0.01 / len(self.columns)
+</span><span class="add">+        )
+</span><span class="def">         if col.split:
+</span><span class="def">             pos = 0
+</span><span class="def">             for c in col:
+</span><span class="def">                 if client == c:
+</span><span class="def">                     break
+</span><span class="def">                 pos += col.heights[c]
+</span><span class="sub">-            height = int(0.5 + col.heights[client] * screen_rect.height * 0.01 / len(col))
+</span><span class="add">+            height = int(
+</span><span class="add">+                0.5 + col.heights[client] * screen_rect.height * 0.01 / len(col)
+</span><span class="add">+            )
+</span><span class="def">             y = screen_rect.y + int(0.5 + pos * screen_rect.height * 0.01 / len(col))
+</span><span class="def">             client.place(
+</span><span class="sub">-                x, y, width - 2 * border, height - 2 * border, border, color, margin=margin_size
+</span><span class="add">+                x,
+</span><span class="add">+                y,
+</span><span class="add">+                width - 2 * border,
+</span><span class="add">+                height - 2 * border,
+</span><span class="add">+                border,
+</span><span class="add">+                color,
+</span><span class="add">+                margin=margin_size,
+</span><span class="def">             )
+</span><span class="def">             client.unhide()
+</span><span class="def">         elif client == col.cw:
+</span>@@ -397,6 +410,8 @@
+<span class="def">     &quot;fontsize&quot;: 16,
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+icon_font_size = 22
+</span><span class="add">+
+</span><span class="def"> groupbox_config = {
+</span><span class="def">     &quot;active&quot;: foreground,
+</span><span class="def">     &quot;highlight_method&quot;: &quot;block&quot;,
+</span>@@ -463,17 +478,17 @@
+<span class="def">                 f.write(str(self.volume) + &quot;\n&quot;)
+</span><span class="def"> 
+</span><span class="def">     def cmd_increase_vol(self):
+</span><span class="sub">-        subprocess.call(&quot;amixer -c PCH set PCM 3%+&quot;.split())
+</span><span class="add">+        subprocess.run(&quot;amixer -c PCH set PCM 3%+&quot;.split(), capture_output=True)
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def">     def cmd_decrease_vol(self):
+</span><span class="sub">-        subprocess.call(&quot;amixer -c PCH set PCM 3%-&quot;.split())
+</span><span class="add">+        subprocess.run(&quot;amixer -c PCH set PCM 3%-&quot;.split(), capture_output=True)
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def">     def cmd_mute(self):
+</span><span class="sub">-        subprocess.call(&quot;amixer -c PCH set PCM toggle&quot;.split())
+</span><span class="add">+        subprocess.run(&quot;amixer -c PCH set PCM toggle&quot;.split(), capture_output=True)
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=False)
+</span><span class="def"> 
+</span>@@ -483,6 +498,7 @@
+<span class="def">     step=1,
+</span><span class="def">     update_interval=None,
+</span><span class="def">     format=&quot;&quot;,
+</span><span class="add">+    fontsize=icon_font_size,
+</span><span class="def">     change_command=None,
+</span><span class="def">     foreground=colours[3],
+</span><span class="def"> )
+</span>@@ -493,7 +509,7 @@
+<span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> volume = MyVolume(
+</span><span class="sub">-    fontsize=18,
+</span><span class="add">+    fontsize=icon_font_size,
+</span><span class="def">     channel=&quot;PCM&quot;,
+</span><span class="def">     font=&quot;Font Awesome 5 Free&quot;,
+</span><span class="def">     foreground=colours[4],
+</span>@@ -507,13 +523,6 @@
+<span class="def"> else:
+</span><span class="def">     systray = widget.Systray(padding=20, icon_size=24)
+</span><span class="def"> 
+</span><span class="sub">-wlan = widget.Wlan(
+</span><span class="sub">-    format=&quot;&quot;,
+</span><span class="sub">-    disconnected_message=&quot;&quot;,
+</span><span class="sub">-    foreground=colours[5],
+</span><span class="sub">-    update_interval=5,
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="def"> # mind = ReMindfulness(
+</span><span class="def"> #    &quot;&quot;,
+</span><span class="def"> #    reminder_text=&quot;MIND!&quot;,
+</span>@@ -576,13 +585,14 @@
+<span class="def">     low_percentage=0.12,
+</span><span class="def">     foreground=colours[6],
+</span><span class="def">     notify_below=12,
+</span><span class="add">+    fontsize=icon_font_size + 10,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> date = widget.Clock(
+</span><span class="def">     format=&quot;%e/%m/%g&quot;,
+</span><span class="def">     fontsize=16,
+</span><span class="def">     font=&quot;TamzenForPowerline Bold&quot;,
+</span><span class="sub">-    foreground=colours[7],
+</span><span class="add">+    foreground=foreground,
+</span><span class="def">     update_interval=60,
+</span><span class="def">     name=&quot;date&quot;,
+</span><span class="def"> )
+</span>@@ -591,7 +601,7 @@
+<span class="def">     fontsize=20,
+</span><span class="def">     font=&quot;TamzenForPowerline Medium&quot;,
+</span><span class="def">     update_interval=60,
+</span><span class="sub">-    foreground=colours[7],
+</span><span class="add">+    foreground=foreground,
+</span><span class="def">     name=&quot;time&quot;,
+</span><span class="def"> )
+</span><span class="def"> 
+</span>@@ -637,7 +647,6 @@
+<span class="def">                 # mind,
+</span><span class="def">                 volume,
+</span><span class="def">                 bklight,
+</span><span class="sub">-                wlan,
+</span><span class="def">                 battery,
+</span><span class="def">                 date,
+</span><span class="def">                 time,
+</span>@@ -661,7 +670,6 @@
+<span class="def">                 pomodoro,
+</span><span class="def">                 volume,
+</span><span class="def">                 bklight,
+</span><span class="sub">-                wlan,
+</span><span class="def">                 battery,
+</span><span class="def">                 date,
+</span><span class="def">                 time,
+</span></pre>
+</div></div>
+  </body>
+</html>

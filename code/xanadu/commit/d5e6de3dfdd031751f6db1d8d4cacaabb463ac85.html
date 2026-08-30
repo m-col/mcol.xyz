@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Hook function to activaiton of item</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/d5e6de3dfdd031751f6db1d8d4cacaabb463ac85.html">d5e6de3dfdd031751f6db1d8d4cacaabb463ac85</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/1050dbd759ff90f75bbdcd46613ae601317bb979.html">1050dbd759ff90f75bbdcd46613ae601317bb979</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-21 22:31:22 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-21 22:31:22 +0100
+
+Hook function to activaiton of item
+</pre><div class="diff">
+  <p>
+    <b>src/Icons.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,13 +24,15 @@
+<span class="def">     iconTheme &lt;- Gtk.iconThemeGetForScreen =&lt;&lt; Gtk.windowGetScreen win
+</span><span class="def">     root &lt;- getRoot
+</span><span class="def">     populate listStore iconTheme root
+</span><span class="sub">-    new Gtk.IconView
+</span><span class="add">+    iconView &lt;- new Gtk.IconView
+</span><span class="def">         [ #model := listStore
+</span><span class="def">         , #selectionMode := Gtk.SelectionModeMultiple
+</span><span class="def">         , #textColumn := 0
+</span><span class="def">         , #tooltipColumn := 0
+</span><span class="def">         , #pixbufColumn := 1
+</span><span class="def">         ]
+</span><span class="add">+    on iconView #itemActivated $ onItemActivated listStore
+</span><span class="add">+    return iconView
+</span><span class="def"> 
+</span><span class="def"> -- Root folder is $(XDG_DESKTOP_DIR:-$HOME/Desktop)
+</span><span class="def"> getRoot :: IO FilePath
+</span>@@ -70,3 +72,12 @@
+<span class="def">     path &lt;- listDirectory root
+</span><span class="def">     isDir &lt;- sequence $ doesDirectoryExist . (&lt;&gt;) root &lt;$&gt; path
+</span><span class="def">     return . getZipList $ Item &lt;$&gt; ZipList path &lt;*&gt; ZipList isDir
+</span><span class="add">+
+</span><span class="add">+onItemActivated :: Gtk.ListStore -&gt; Gtk.TreePath -&gt; IO ()
+</span><span class="add">+onItemActivated listStore treePath = do
+</span><span class="add">+    (_, iter) &lt;- Gtk.treeModelGetIter listStore treePath
+</span><span class="add">+    gvalue &lt;- Gtk.treeModelGetValue listStore iter 0
+</span><span class="add">+    maybeValue &lt;- (Gtk.fromGValue gvalue :: IO (Maybe String))
+</span><span class="add">+    case maybeValue of
+</span><span class="add">+        Nothing -&gt; return ()
+</span><span class="add">+        Just value -&gt; putStrLn $ show value
+</span></pre>
+</div></div>
+  </body>
+</html>

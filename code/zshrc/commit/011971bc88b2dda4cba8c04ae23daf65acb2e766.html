@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add trash dir to ranger shortcuts, git checkout to ranger cmds</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/011971bc88b2dda4cba8c04ae23daf65acb2e766.html">011971bc88b2dda4cba8c04ae23daf65acb2e766</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/5e4234bb2bc38c52223ff03b41154a4bd31d3b37.html">5e4234bb2bc38c52223ff03b41154a4bd31d3b37</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-03-02 20:12:46 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-03-02 20:12:46 +0000
+
+add trash dir to ranger shortcuts, git checkout to ranger cmds
+</pre><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -620,7 +620,7 @@
+<span class="def"> map f console scout -ftsea%space
+</span><span class="def"> 
+</span><span class="def"> # open split in tmux
+</span><span class="sub">-map ev eval import shlex; fm.run(&quot;tmux splitw -v rifle &quot; + shlex.quote(fm.thisfile.basename))
+</span><span class="add">+map L eval import shlex; fm.run(&quot;tmux splitw -h rifle &quot; + shlex.quote(fm.thisfile.basename))
+</span><span class="def"> 
+</span><span class="def"> # shortcuts
+</span><span class="def"> map gh cd ~
+</span>@@ -649,9 +649,10 @@
+<span class="def"> map gC cd ~/documents/C
+</span><span class="def"> map gD cd ~/Downloads
+</span><span class="def"> map gz cd ~/.zsh
+</span><span class="sub">-map gt cd ~/.local/share/Trash/files
+</span><span class="add">+map gB cd ~/.local/share/Trash/files
+</span><span class="def"> 
+</span><span class="sub">-# view git diffs
+</span><span class="add">+# git
+</span><span class="def"> map bd shell git diff --color=always %s | less -r
+</span><span class="def"> map bD shell git diff --color=always | less -r
+</span><span class="def"> map ba shell git add %s
+</span><span class="add">+map bc console shell git checkout%space
+</span></pre>
+</div></div>
+  </body>
+</html>

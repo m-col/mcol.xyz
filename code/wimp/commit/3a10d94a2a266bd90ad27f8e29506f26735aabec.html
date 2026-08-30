@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Make pan_desk configurable by keybindings and percentages</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/3a10d94a2a266bd90ad27f8e29506f26735aabec.html">3a10d94a2a266bd90ad27f8e29506f26735aabec</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/3e7f6d357deec527e53fd11a8fbbabe21eb9f696.html">3e7f6d357deec527e53fd11a8fbbabe21eb9f696</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 16:11:27 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 16:11:36 +0000
+
+Make pan_desk configurable by keybindings and percentages
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -137,6 +137,7 @@
+<span class="def"> struct motion {
+</span><span class="def">     double dx;
+</span><span class="def">     double dy;
+</span><span class="add">+    bool is_percentage;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> enum mouse_keys {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -116,6 +116,7 @@
+<span class="def"> 		struct motion motion = {
+</span><span class="def"> 		    .dx = dx,
+</span><span class="def"> 		    .dy = dy,
+</span><span class="add">+		    .is_percentage = false,
+</span><span class="def"> 		};
+</span><span class="def"> 		server-&gt;on_mouse_motion(server, &amp;motion);
+</span><span class="def"> 	    }
+</span>@@ -177,11 +178,12 @@
+<span class="def"> 	    struct motion motion = {
+</span><span class="def"> 		.dx = 0,
+</span><span class="def"> 		.dy = 0,
+</span><span class="add">+		.is_percentage = false,
+</span><span class="def"> 	    };
+</span><span class="def"> 	    if (event-&gt;orientation == WLR_AXIS_ORIENTATION_VERTICAL) {
+</span><span class="sub">-		motion.dy = server-&gt;reverse_scrolling ? event-&gt;delta : - event-&gt;delta;
+</span><span class="add">+		motion.dy = server-&gt;reverse_scrolling ? - event-&gt;delta : event-&gt;delta;
+</span><span class="def"> 	    } else {
+</span><span class="sub">-		motion.dx = server-&gt;reverse_scrolling ? event-&gt;delta : - event-&gt;delta;
+</span><span class="add">+		motion.dx = server-&gt;reverse_scrolling ? - event-&gt;delta : event-&gt;delta;
+</span><span class="def"> 	    };
+</span><span class="def"> 	    server-&gt;on_mouse_scroll(server, &amp;motion);
+</span><span class="def"> 	}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -70,13 +70,13 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void dir_handler(struct binding *kb, const char *data) {
+</span><span class="add">+static void dir_handler(struct binding *kb, char *data) {
+</span><span class="def">     kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="def">     *(enum direction *)(kb-&gt;data) = get(dirs, data);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void str_handler(struct binding *kb, const char *data) {
+</span><span class="add">+static void str_handler(struct binding *kb, char *data) {
+</span><span class="def">     if (is_number(data)) {
+</span><span class="def"> 	kb-&gt;data = calloc(1, sizeof(double));
+</span><span class="def"> 	*(double *)(kb-&gt;data) = strtod(data, NULL);
+</span>@@ -87,10 +87,39 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void motion_handler(struct binding *kb, char *data) {
+</span><span class="add">+    kb-&gt;data = calloc(1, sizeof(struct motion));
+</span><span class="add">+    char *s;
+</span><span class="add">+    if (!data)
+</span><span class="add">+	goto fail;
+</span><span class="add">+
+</span><span class="add">+    s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="add">+    if (!is_number(s) || !data)
+</span><span class="add">+	goto fail;
+</span><span class="add">+    int x = atoi(s);
+</span><span class="add">+
+</span><span class="add">+    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    if (!is_number(s))
+</span><span class="add">+	goto fail;
+</span><span class="add">+    int y = atoi(s);
+</span><span class="add">+
+</span><span class="add">+    struct motion motion = {
+</span><span class="add">+	.dx = x,
+</span><span class="add">+	.dy = y,
+</span><span class="add">+	.is_percentage = true,
+</span><span class="add">+    };
+</span><span class="add">+    *(struct motion *)(kb-&gt;data) = motion;
+</span><span class="add">+    return;
+</span><span class="add">+
+</span><span class="add">+fail:
+</span><span class="add">+    free(kb-&gt;data);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static struct {
+</span><span class="def">     const char *name;
+</span><span class="def">     const action action;
+</span><span class="sub">-    void (*data_handler)(struct binding *kb, const char *data);
+</span><span class="add">+    void (*data_handler)(struct binding *kb, char *data);
+</span><span class="def"> } action_map[] = {
+</span><span class="def">     { &quot;shutdown&quot;, &amp;shutdown, NULL },
+</span><span class="def">     { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span>@@ -98,7 +127,8 @@
+<span class="def">     { &quot;focus&quot;, &amp;focus_in_direction, &amp;dir_handler },
+</span><span class="def">     { &quot;next_desk&quot;, &amp;next_desk, NULL },
+</span><span class="def">     { &quot;prev_desk&quot;, &amp;prev_desk, NULL },
+</span><span class="sub">-    { &quot;pan_desk&quot;, &amp;pan_desk, NULL },
+</span><span class="add">+    { &quot;pan_desk&quot;, &amp;pan_desk, &amp;motion_handler },
+</span><span class="add">+    { &quot;pan_desk_mouse&quot;, &amp;pan_desk, NULL },
+</span><span class="def">     { &quot;reset_zoom&quot;, &amp;reset_zoom, NULL },
+</span><span class="def">     { &quot;zoom&quot;, &amp;zoom, &amp;str_handler },
+</span><span class="def">     { &quot;zoom_mouse&quot;, &amp;zoom_mouse, NULL },
+</span>@@ -112,7 +142,7 @@
+<span class="def"> static const int num_actions = sizeof(action_map) / sizeof(action_map[0]);
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool assign_action(const char *name, const char *data, struct binding *kb) {
+</span><span class="add">+static bool assign_action(const char *name, char *data, struct binding *kb) {
+</span><span class="def">     kb-&gt;action = NULL;
+</span><span class="def">     kb-&gt;data = NULL;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -108,10 +108,16 @@
+<span class="def">     struct motion motion = *(struct motion*)data;
+</span><span class="def">     double dx = motion.dx;
+</span><span class="def">     double dy = motion.dy;
+</span><span class="add">+    if (motion.is_percentage) {
+</span><span class="add">+	struct wlr_box *extents =
+</span><span class="add">+	    wlr_output_layout_get_box(server-&gt;output_layout, NULL);
+</span><span class="add">+	dx = extents-&gt;width * (dx / 100);
+</span><span class="add">+	dy = extents-&gt;height * (dy / 100);
+</span><span class="add">+    }
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="sub">-	view-&gt;x += dx;
+</span><span class="sub">-	view-&gt;y += dy;
+</span><span class="add">+	view-&gt;x -= dx;
+</span><span class="add">+	view-&gt;y -= dy;
+</span><span class="def">     }
+</span><span class="def">     desk-&gt;panned_x += dx;
+</span><span class="def">     desk-&gt;panned_y += dy;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,6 +18,5 @@
+<span class="def">  - fix issue where Shift-using key bindings require pre-shifted key in config
+</span><span class="def">  - pan desk when focussing window in direction that isn&apos;t in view
+</span><span class="def">  - xwayland
+</span><span class="sub">- - functions to shift desk view
+</span><span class="def">  - pinch gestures for desk zooming
+</span><span class="def">  - draw rect with mouse when zoomed out to set new view
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -58,6 +58,12 @@
+<span class="def"> bind		o		zoom -15
+</span><span class="def"> bind		r		reset_zoom
+</span><span class="def"> 
+</span><span class="add">+# These pan the desk using the given percentage changes in x and y
+</span><span class="add">+bind		s		pan_desk 0 40
+</span><span class="add">+bind		w		pan_desk 0 -40
+</span><span class="add">+bind		a		pan_desk -40 0
+</span><span class="add">+bind		d		pan_desk 40 0
+</span><span class="add">+
+</span><span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="def"> bind		Return		exec gnome-terminal
+</span><span class="def"> 
+</span>@@ -70,7 +76,7 @@
+<span class="def"> bind		grave		go_to_mark
+</span><span class="def"> 
+</span><span class="def"> # Possible mouse bindings: motion, scroll (+ additional modifiers)
+</span><span class="sub">-bind		scroll		pan_desk
+</span><span class="add">+bind		scroll		pan_desk_mouse
+</span><span class="def"> bind	Shift	scroll		zoom_mouse
+</span><span class="def"> 
+</span><span class="def"> # Scroll direction. Can be one of: natural, reverse
+</span></pre>
+</div></div>
+  </body>
+</html>

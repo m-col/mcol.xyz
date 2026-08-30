@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - different segment separator, and segment showing host, when ssh</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/9ed48c7d59f689be0015cad5dd23a53a2d062f1e.html">9ed48c7d59f689be0015cad5dd23a53a2d062f1e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/42a7ed32af826f9d77180ea317dc00b8e08e7c9c.html">42a7ed32af826f9d77180ea317dc00b8e08e7c9c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 01:04:02 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 01:04:02 +0000
+
+different segment separator, and segment showing host, when ssh
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,11 @@
+<span class="def"> # zshrc
+</span><span class="def"> #
+</span><span class="def"> 
+</span><span class="add">+if [ -n &quot;$SSH_CLIENT&quot; ] || [ -n &quot;$SSH_TTY&quot; ]; then
+</span><span class="add">+    export is_ssh=true
+</span><span class="add">+else
+</span><span class="add">+    export is_ssh=false
+</span><span class="add">+fi
+</span><span class="def"> 
+</span><span class="def"> ZSH=&quot;$HOME/.zsh&quot;
+</span><span class="def"> HYPHEN_INSENSITIVE=&quot;true&quot;
+</span>@@ -35,9 +40,3 @@
+<span class="def"> TRAPWINCH () {
+</span><span class="def">     zle &amp;&amp;  zle -R
+</span><span class="def"> }
+</span><span class="sub">-
+</span><span class="sub">-if [ -n &quot;$SSH_CLIENT&quot; ] || [ -n &quot;$SSH_TTY&quot; ]; then
+</span><span class="sub">-    export is_ssh=true
+</span><span class="sub">-else
+</span><span class="sub">-    export is_ssh=false
+</span><span class="sub">-fi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,82 +4,77 @@
+<span class="def"> CURRENT_BG=&apos;NONE&apos;
+</span><span class="def"> 
+</span><span class="def"> # Special Powerline characters
+</span><span class="sub">-
+</span><span class="def"> () {
+</span><span class="sub">-  local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="sub">-  # NOTE: This segment separator character is correct.  In 2012, Powerline changed
+</span><span class="sub">-  # the code points they use for their special characters. This is the new code point.
+</span><span class="sub">-  # If this is not working for you, you probably have an old version of the
+</span><span class="sub">-  # Powerline-patched fonts installed. Download and install the new version.
+</span><span class="sub">-  # Do not submit PRs to change this unless you have reviewed the Powerline code point
+</span><span class="sub">-  # history and have new information.
+</span><span class="sub">-  # This is defined using a Unicode escape sequence so it is unambiguously readable, regardless of
+</span><span class="sub">-  # what font the user is viewing this source code in. Do not replace the
+</span><span class="sub">-  # escape sequence with a single literal character.
+</span><span class="sub">-  # Do not change this! Do not make it &apos;\u2b80&apos;; that is the old, wrong code point.
+</span><span class="sub">-  #SEGMENT_SEPARATOR=$&apos;\ue0b0&apos;
+</span><span class="sub">-  SEGMENT_SEPARATOR=$&apos;&apos;
+</span><span class="add">+local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="add">+
+</span><span class="add">+# prompt segment shape: arrow or square
+</span><span class="add">+if $is_ssh
+</span><span class="add">+then
+</span><span class="add">+    SEGMENT_SEPARATOR=$&apos;\ue0b0&apos;
+</span><span class="add">+else
+</span><span class="add">+    SEGMENT_SEPARATOR=$&apos;&apos;
+</span><span class="add">+fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> # Begin a segment
+</span><span class="def"> # Takes two arguments, background and foreground. Both can be omitted,
+</span><span class="def"> # rendering default background/foreground.
+</span><span class="def"> prompt_segment() {
+</span><span class="sub">-  local bg fg
+</span><span class="sub">-  [[ -n $1 ]] &amp;&amp; bg=&quot;%K{$1}&quot; || bg=&quot;%k&quot;
+</span><span class="sub">-  [[ -n $2 ]] &amp;&amp; fg=&quot;%F{$2}&quot; || fg=&quot;%f&quot;
+</span><span class="sub">-  if [[ $CURRENT_BG != &apos;NONE&apos; &amp;&amp; $1 != $CURRENT_BG ]]; then
+</span><span class="sub">-    echo -n &quot; %{$bg%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR%{$fg%} &quot;
+</span><span class="sub">-  else
+</span><span class="sub">-    echo -n &quot;%{$bg%}%{$fg%} &quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  CURRENT_BG=$1
+</span><span class="sub">-  [[ -n $3 ]] &amp;&amp; echo -n $3
+</span><span class="add">+    local bg fg
+</span><span class="add">+    [[ -n $1 ]] &amp;&amp; bg=&quot;%K{$1}&quot; || bg=&quot;%k&quot;
+</span><span class="add">+    [[ -n $2 ]] &amp;&amp; fg=&quot;%F{$2}&quot; || fg=&quot;%f&quot;
+</span><span class="add">+    if [[ $CURRENT_BG != &apos;NONE&apos; &amp;&amp; $1 != $CURRENT_BG ]]; then
+</span><span class="add">+	echo -n &quot; %{$bg%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR%{$fg%} &quot;
+</span><span class="add">+    else
+</span><span class="add">+	echo -n &quot;%{$bg%}%{$fg%} &quot;
+</span><span class="add">+    fi
+</span><span class="add">+    CURRENT_BG=$1
+</span><span class="add">+    [[ -n $3 ]] &amp;&amp; echo -n $3
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> # End the prompt, closing any open segments
+</span><span class="def"> prompt_end() {
+</span><span class="sub">-  if [[ -n $CURRENT_BG ]]; then
+</span><span class="sub">-    echo -n &quot; %{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR&quot;
+</span><span class="sub">-  else
+</span><span class="sub">-    echo -n &quot;%{%k%}&quot;
+</span><span class="sub">-  fi
+</span><span class="sub">-  echo -n &quot;%{%f%}&quot;
+</span><span class="sub">-  CURRENT_BG=&apos;&apos;
+</span><span class="add">+    if [[ -n $CURRENT_BG ]]; then
+</span><span class="add">+	echo -n &quot; %{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR&quot;
+</span><span class="add">+    else
+</span><span class="add">+	echo -n &quot;%{%k%}&quot;
+</span><span class="add">+    fi
+</span><span class="add">+    echo -n &quot;%{%f%}&quot;
+</span><span class="add">+    CURRENT_BG=&apos;&apos;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> prompt_context() {
+</span><span class="sub">-  if [[ &quot;$USER&quot; != &quot;$DEFAULT_USER&quot; || -n &quot;$SSH_CLIENT&quot; ]]; then
+</span><span class="sub">-    prompt_segment black default &quot;%(!.%{%F{yellow}%}.)$USER&quot;
+</span><span class="sub">-  fi
+</span><span class="add">+    if $is_ssh; then
+</span><span class="add">+	prompt_segment green black &quot;%(!.%{%F{yellow}%}.)$USER@$HOST&quot;
+</span><span class="add">+    fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> prompt_git() {
+</span><span class="sub">-  (( $+commands[git] )) || return
+</span><span class="sub">-  local PL_BRANCH_CHAR
+</span><span class="sub">-  () {
+</span><span class="add">+    (( $+commands[git] )) || return
+</span><span class="add">+    local PL_BRANCH_CHAR
+</span><span class="add">+    () {
+</span><span class="def">     local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="def">     #PL_BRANCH_CHAR=$&apos;\ue0a0&apos;         # 
+</span><span class="def">     PL_BRANCH_CHAR=$&apos;&apos;
+</span><span class="sub">-  }
+</span><span class="sub">-  local ref dirty mode repo_path
+</span><span class="sub">-  repo_path=$(git rev-parse --git-dir 2&gt;/dev/null)
+</span><span class="add">+}
+</span><span class="add">+local ref dirty mode repo_path
+</span><span class="add">+repo_path=$(git rev-parse --git-dir 2&gt;/dev/null)
+</span><span class="def"> 
+</span><span class="sub">-  if $(git rev-parse --is-inside-work-tree &gt;/dev/null 2&gt;&amp;1); then
+</span><span class="add">+if $(git rev-parse --is-inside-work-tree &gt;/dev/null 2&gt;&amp;1); then
+</span><span class="def">     dirty=$(parse_git_dirty)
+</span><span class="def">     ref=$(git symbolic-ref HEAD 2&gt; /dev/null) || ref=&quot;➦ $(git rev-parse --short HEAD 2&gt; /dev/null)&quot;
+</span><span class="def">     if [[ -n $dirty ]]; then
+</span><span class="sub">-      prompt_segment yellow black
+</span><span class="add">+	prompt_segment yellow black
+</span><span class="def">     else
+</span><span class="sub">-      prompt_segment green black
+</span><span class="add">+	prompt_segment green black
+</span><span class="def">     fi
+</span><span class="def"> 
+</span><span class="def">     if [[ -e &quot;${repo_path}/BISECT_LOG&quot; ]]; then
+</span><span class="sub">-      mode=&quot; &lt;B&gt;&quot;
+</span><span class="add">+	mode=&quot; &lt;B&gt;&quot;
+</span><span class="def">     elif [[ -e &quot;${repo_path}/MERGE_HEAD&quot; ]]; then
+</span><span class="sub">-      mode=&quot; &gt;M&lt;&quot;
+</span><span class="add">+	mode=&quot; &gt;M&lt;&quot;
+</span><span class="def">     elif [[ -e &quot;${repo_path}/rebase&quot; || -e &quot;${repo_path}/rebase-apply&quot; || -e &quot;${repo_path}/rebase-merge&quot; || -e &quot;${repo_path}/../.dotest&quot; ]]; then
+</span><span class="sub">-      mode=&quot; &gt;R&gt;&quot;
+</span><span class="add">+	mode=&quot; &gt;R&gt;&quot;
+</span><span class="def">     fi
+</span><span class="def"> 
+</span><span class="def">     setopt promptsubst
+</span>@@ -94,35 +89,35 @@
+<span class="def">     zstyle &apos;:vcs_info:*&apos; actionformats &apos; %u%c&apos;
+</span><span class="def">     vcs_info
+</span><span class="def">     echo -n &quot;${ref/refs\/heads\//$PL_BRANCH_CHAR }${vcs_info_msg_0_%% }${mode}&quot;
+</span><span class="sub">-  fi
+</span><span class="add">+fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> # Dir: current working directory
+</span><span class="def"> prompt_dir() {
+</span><span class="sub">-  prompt_segment magenta black &apos;%3~&apos;
+</span><span class="add">+    prompt_segment magenta black &apos;%3~&apos;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> prompt_mes() {
+</span><span class="sub">-  [[ $RETVAL -ne 0 ]] &amp;&amp; prompt_segment red black &apos;&gt;&apos;
+</span><span class="sub">-  [[ $RETVAL -eq 0 ]] &amp;&amp; prompt_segment blue black &apos;&gt;&apos;
+</span><span class="add">+    [[ $RETVAL -ne 0 ]] &amp;&amp; prompt_segment red black &apos;&gt;&apos;
+</span><span class="add">+    [[ $RETVAL -eq 0 ]] &amp;&amp; prompt_segment blue black &apos;&gt;&apos;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> # Virtualenv: current working virtualenv
+</span><span class="def"> prompt_virtualenv() {
+</span><span class="sub">-  local virtualenv_path=&quot;$VIRTUAL_ENV&quot;
+</span><span class="sub">-  if [[ -n $virtualenv_path &amp;&amp; -n $VIRTUAL_ENV_DISABLE_PROMPT ]]; then
+</span><span class="sub">-    prompt_segment red black &quot;(`basename $virtualenv_path`)&quot;
+</span><span class="sub">-  fi
+</span><span class="add">+    local virtualenv_path=&quot;$VIRTUAL_ENV&quot;
+</span><span class="add">+    if [[ -n $virtualenv_path &amp;&amp; -n $VIRTUAL_ENV_DISABLE_PROMPT ]]; then
+</span><span class="add">+	prompt_segment red black &quot;(`basename $virtualenv_path`)&quot;
+</span><span class="add">+    fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> prompt_status() {
+</span><span class="sub">-  local symbols
+</span><span class="sub">-  symbols=()
+</span><span class="sub">-  [[ $RETVAL -ne 0 ]] &amp;&amp; symbols+=&quot;%{%F{red}%}x&quot;
+</span><span class="sub">-  [[ $UID -eq 0 ]] &amp;&amp; symbols+=&quot;%{%F{yellow}%}⚡&quot;
+</span><span class="sub">-  [[ $(jobs -l | wc -l) -gt 0 ]] &amp;&amp; symbols+=&quot;%{%F{cyan}%}⚙&quot;
+</span><span class="add">+    local symbols
+</span><span class="add">+    symbols=()
+</span><span class="add">+    [[ $RETVAL -ne 0 ]] &amp;&amp; symbols+=&quot;%{%F{red}%}x&quot;
+</span><span class="add">+    [[ $UID -eq 0 ]] &amp;&amp; symbols+=&quot;%{%F{yellow}%}⚡&quot;
+</span><span class="add">+    [[ $(jobs -l | wc -l) -gt 0 ]] &amp;&amp; symbols+=&quot;%{%F{cyan}%}⚙&quot;
+</span><span class="def"> 
+</span><span class="sub">-  [[ -n &quot;$symbols&quot; ]] &amp;&amp; prompt_segment black default &quot;$symbols&quot;
+</span><span class="add">+    [[ -n &quot;$symbols&quot; ]] &amp;&amp; prompt_segment black default &quot;$symbols&quot;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -139,18 +134,19 @@
+<span class="def"> 
+</span><span class="def"> ## Main left prompt
+</span><span class="def"> build_prompt() {
+</span><span class="sub">-  RETVAL=$?
+</span><span class="sub">-  prompt_dir
+</span><span class="sub">-  prompt_mes
+</span><span class="sub">-  prompt_end
+</span><span class="add">+    RETVAL=$?
+</span><span class="add">+    prompt_context
+</span><span class="add">+    prompt_dir
+</span><span class="add">+    prompt_mes
+</span><span class="add">+    prompt_end
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> build_rprompt() {
+</span><span class="sub">-  RETVAL=$?
+</span><span class="sub">-  prompt_virtualenv
+</span><span class="sub">-  prompt_vi
+</span><span class="sub">-  prompt_git
+</span><span class="sub">-  prompt_end
+</span><span class="add">+    RETVAL=$?
+</span><span class="add">+    prompt_virtualenv
+</span><span class="add">+    prompt_vi
+</span><span class="add">+    prompt_git
+</span><span class="add">+    prompt_end
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> PROMPT=&apos;%{%f%b%k%}$(build_prompt) &apos;
+</span>@@ -158,18 +154,18 @@
+<span class="def"> 
+</span><span class="def"> # redraw prompt on mode changes
+</span><span class="def"> zle-keymap-select() {
+</span><span class="sub">-    if [ $KEYMAP = vicmd ]; then
+</span><span class="sub">-	printf &quot;\033[2 q&quot; # block cursor
+</span><span class="sub">-	VIM_PROMPT=&quot;-- NORMAL --&quot;
+</span><span class="sub">-    else
+</span><span class="sub">-	printf &quot;\033[4 q&quot; # underline. Change 4 to 6 for vertical line
+</span><span class="sub">-	VIM_PROMPT=&quot;&quot;
+</span><span class="sub">-    fi
+</span><span class="add">+if [ $KEYMAP = vicmd ]; then
+</span><span class="add">+    printf &quot;\033[2 q&quot; # block cursor
+</span><span class="add">+    VIM_PROMPT=&quot;-- NORMAL --&quot;
+</span><span class="add">+else
+</span><span class="add">+    printf &quot;\033[4 q&quot; # underline. Change 4 to 6 for vertical line
+</span><span class="add">+    VIM_PROMPT=&quot;&quot;
+</span><span class="add">+fi
+</span><span class="def"> 
+</span><span class="sub">-    PROMPT=&apos;%{%f%b%k%}$(build_prompt) &apos;
+</span><span class="sub">-    RPROMPT=&apos;%{%f%b%k%}$(build_rprompt)&apos;
+</span><span class="sub">-    zle reset-prompt
+</span><span class="sub">-    zle -R
+</span><span class="add">+PROMPT=&apos;%{%f%b%k%}$(build_prompt) &apos;
+</span><span class="add">+RPROMPT=&apos;%{%f%b%k%}$(build_rprompt)&apos;
+</span><span class="add">+zle reset-prompt
+</span><span class="add">+zle -R
+</span><span class="def"> }
+</span><span class="def"> zle -N zle-keymap-select
+</span><span class="def"> 
+</span>@@ -191,3 +187,5 @@
+<span class="def"> #ZSH_THEME_GIT_PROMPT_RENAMED=&quot;%{$fg[blue]%}~&quot;
+</span><span class="def"> #ZSH_THEME_GIT_PROMPT_UNMERGED=&quot;%{$fg[magenta]%}&gt;&lt;&quot;
+</span><span class="def"> #ZSH_THEME_GIT_PROMPT_UNTRACKED=&quot;%{$fg[white]%}**&quot;
+</span><span class="add">+
+</span><span class="add">+# vim:ft=sh
+</span></pre>
+</div></div>
+  </body>
+</html>

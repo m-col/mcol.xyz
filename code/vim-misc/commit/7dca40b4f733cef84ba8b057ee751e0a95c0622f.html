@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - more</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/7dca40b4f733cef84ba8b057ee751e0a95c0622f.html">7dca40b4f733cef84ba8b057ee751e0a95c0622f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/b5935578a6816763e0ff28b7f6ba84779fba7755.html">b5935578a6816763e0ff28b7f6ba84779fba7755</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2026-01-08 14:11:20 +0000
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2026-01-08 14:11:20 +0000
+
+more
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -144,3 +144,9 @@
+<span class="def"> 
+</span><span class="def"> &quot; buffer write close
+</span><span class="def"> nnoremap &lt;silent&gt; &lt;leader&gt;&lt;BS&gt; :write&lt;CR&gt;:BuffCls&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; pg_format visual blocks with Ctrl-f
+</span><span class="add">+&quot;vmap &lt;C-f&gt; &lt;ESC&gt;:&apos;&lt;,&apos;&gt;! pg_format --comma-break --redundant-parenthesis --format-type&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot;buffer close window
+</span><span class="add">+autocmd FileType ale-preview-selection nnoremap &lt;buffer&gt; &lt;Esc&gt; :close&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

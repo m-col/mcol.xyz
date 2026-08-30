@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - added systemd commands and couple more shortcuts to aliases</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/f607781c897e12738403fb02b6ae8e97c5b1832b.html">f607781c897e12738403fb02b6ae8e97c5b1832b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/011971bc88b2dda4cba8c04ae23daf65acb2e766.html">011971bc88b2dda4cba8c04ae23daf65acb2e766</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-03-08 10:51:58 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-03-08 10:51:58 +0000
+
+added systemd commands and couple more shortcuts to aliases
+</pre><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,6 +13,18 @@
+<span class="def"> alias tmp=&quot;cd /tmp; l&quot;
+</span><span class="def"> alias _=&quot;sudo&quot;
+</span><span class="def"> 
+</span><span class="add">+# systemd
+</span><span class="add">+alias sc=&apos;sudo systemctl&apos;
+</span><span class="add">+alias scs=&apos;sudo systemctl status&apos;
+</span><span class="add">+alias scsta=&apos;sudo systemctl start&apos;
+</span><span class="add">+alias scsto=&apos;sudo systemctl start&apos;
+</span><span class="add">+alias scrsta=&apos;sudo systemctl restart&apos;
+</span><span class="add">+alias sce=&apos;sudo systemctl enable&apos;
+</span><span class="add">+alias scen=&apos;sudo systemctl enable --now&apos;
+</span><span class="add">+alias scd=&apos;sudo systemctl disable&apos;
+</span><span class="add">+alias scdr=&apos;sudo systemctl daemon-reload&apos;
+</span><span class="add">+alias scc=&apos;sudo systemctl cat&apos;
+</span><span class="add">+
+</span><span class="def"> # networking
+</span><span class="def"> alias eduroam=&apos;nmcli con up eduroam&apos;
+</span><span class="def"> alias pinga=&apos;ping archlinux.org&apos;
+</span>@@ -55,9 +67,12 @@
+<span class="def"> alias modrc=&apos;vim $HOME/.config/ranger/rc.conf&apos;
+</span><span class="def"> 
+</span><span class="def"> # shortcuts
+</span><span class="add">+alias gc=&apos;cd $HOME/.config; l&apos;
+</span><span class="def"> alias gh=&apos;cd $HOME; ls&apos;
+</span><span class="def"> alias gd=&apos;cd $HOME/documents&apos;
+</span><span class="def"> alias gD=&apos;cd $HOME/Downloads&apos;
+</span><span class="add">+alias gg=&apos;cd $HOME/git; l&apos;
+</span><span class="add">+alias gb=&apos;cd $HOME/bin; ls&apos;
+</span><span class="def"> alias ge=&apos;cd /etc&apos;
+</span><span class="def"> alias gv=&apos;cd $HOME/.vim; ranger&apos;
+</span><span class="def"> alias gvm=&apos;cd $HOME/.vim/bundle/vim-misc; ra&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

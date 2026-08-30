@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add host config and template variable</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/ca39007d14ffa3f3b0a653382ed0c3e9d35ff101.html">ca39007d14ffa3f3b0a653382ed0c3e9d35ff101</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/d75a1ede4dcf34c7022b621afe3e9d238807e20a.html">d75a1ede4dcf34c7022b621afe3e9d238807e20a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-19 21:53:31 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-19 21:53:31 +0100
+
+Add host config and template variable
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -57,6 +57,3 @@
+<span class="def">     case e of
+</span><span class="def">         Right contents -&gt; return $ Just contents
+</span><span class="def">         Left err -&gt; return Nothing
+</span><span class="sub">-
+</span><span class="sub">--- Variables:
+</span><span class="sub">---host = &quot;http://localhost&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Config.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,6 +14,7 @@
+<span class="def">     { repoPaths :: [FilePath]
+</span><span class="def">     , templateDirectory :: FilePath
+</span><span class="def">     , outputDirectory :: FilePath
+</span><span class="add">+    , host :: FilePath
+</span><span class="def">     }
+</span><span class="def">     deriving (Generic, Show)
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.dhall</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,6 +14,7 @@
+<span class="def">     { repoPaths = folders
+</span><span class="def">     , templateDirectory = &quot;./templates&quot;
+</span><span class="def">     , outputDirectory = &quot;./output&quot;
+</span><span class="add">+    , host = &quot;http://localhost&quot;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def"> in config
+</span></pre>
+</div></div>
+  </body>
+</html>

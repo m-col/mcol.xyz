@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Use dark theme by default</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/698897f5e15f2a60953b8312dceebdcc800eb261.html">698897f5e15f2a60953b8312dceebdcc800eb261</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/1a77d57f9a71273222e4e2c9712835551b2d4bdf.html">1a77d57f9a71273222e4e2c9712835551b2d4bdf</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-02 12:54:01 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-02 12:54:01 +0000
+
+Use dark theme by default
+</pre><div class="diff">
+  <p>
+    <b>src/Window.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,6 +44,8 @@
+<span class="def"> addCSS :: Gtk.ApplicationWindow -&gt; IO ()
+</span><span class="def"> addCSS win = do
+</span><span class="def">     screen &lt;- Gtk.windowGetScreen win
+</span><span class="add">+    settings &lt;- Gtk.settingsGetForScreen screen
+</span><span class="add">+    Gtk.setSettingsGtkApplicationPreferDarkTheme settings True
+</span><span class="def">     cssProvider &lt;- Gtk.cssProviderNew
+</span><span class="def">     Gtk.cssProviderLoadFromData cssProvider &quot;* { background-color: transparent; }&quot;
+</span><span class="def">     Gtk.styleContextAddProviderForScreen screen cssProvider 800
+</span></pre>
+</div></div>
+  </body>
+</html>

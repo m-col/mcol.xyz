@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - optimise when installing or building for prod</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/4efe9c247b50bb4a182f6df9e72849e8e6a1dcc7.html">4efe9c247b50bb4a182f6df9e72849e8e6a1dcc7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/5faaffe51bf89fe94ab7a8fd1efab397d06ce0f7.html">5faaffe51bf89fe94ab7a8fd1efab397d06ce0f7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-25 22:43:41 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-25 22:44:18 +0100
+
+optimise when installing or building for prod
+
+also shush when profiling
+</pre><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,7 +18,7 @@
+<span class="def"> 
+</span><span class="def"> .PHONY: install
+</span><span class="def"> install: ## Install the compiled executable
+</span><span class="sub">-	@stack install
+</span><span class="add">+	@stack install --ghc-options=&quot;-O2&quot;
+</span><span class="def"> 
+</span><span class="def"> .PHONY: clean
+</span><span class="def"> clean: ## Clean generated files
+</span>@@ -40,13 +40,13 @@
+<span class="def"> 
+</span><span class="def"> .PHONY: prod
+</span><span class="def"> prod: ## Build with optimise flags
+</span><span class="sub">-	@stack build --ghc-options=&quot;-O&quot;
+</span><span class="add">+	@stack build --ghc-options=&quot;-O2&quot;
+</span><span class="def"> 
+</span><span class="def"> .PHONY: prof
+</span><span class="def"> prof: ## Build with profiling enabled
+</span><span class="def"> 	@stack build --profile
+</span><span class="def"> 	@rm -r output
+</span><span class="sub">-	@stack exec --profile -- gitserve +RTS -p
+</span><span class="add">+	@stack exec --profile -- gitserve -q +RTS -p
+</span><span class="def"> 	@head -n 6 gitserve.prof
+</span><span class="def"> 
+</span><span class="def"> .PHONY: all
+</span></pre>
+</div></div>
+  </body>
+</html>

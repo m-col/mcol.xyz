@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - wimp.conf -&gt; startup</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/ac4924acc98af2c9be02975cbb269a3ac7d7fec4.html">ac4924acc98af2c9be02975cbb269a3ac7d7fec4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/6cfd652362a213169a3e2b1dcc7fb54c58b882d9.html">6cfd652362a213169a3e2b1dcc7fb54c58b882d9</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 19:31:57 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 19:31:57 +0000
+
+wimp.conf -&gt; startup
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,123 +0,0 @@
+<span class="sub">-#!/usr/bin/env bash
+</span><span class="sub">-#
+</span><span class="sub">-#
+</span><span class="sub">-# ██      ██  ██  ████████    ██████
+</span><span class="sub">-# ██  ██  ██      ██  ██  ██  ██    ██
+</span><span class="sub">-# ██  ██  ██  ██  ██  ██  ██  ██    ██
+</span><span class="sub">-# ██  ██  ██  ██  ██  ██  ██  ██████
+</span><span class="sub">-#   ████████  ██  ██      ██  ██
+</span><span class="sub">-#             ██              ██
+</span><span class="sub">-#             ██
+</span><span class="sub">-# 
+</span><span class="sub">-# Example startup script.
+</span><span class="sub">-#
+</span><span class="sub">-# All possible options are described here.
+</span><span class="sub">-# Options that are commented out contain their default values.
+</span><span class="sub">-# The executable &apos;wimptool&apos; configures wimp by sending messages to it.
+</span><span class="sub">-#
+</span><span class="sub">-# The first to be found of these paths is run as a startup script:
+</span><span class="sub">-#   $XDG_CONFIG_HOME/.config/wimp/startup
+</span><span class="sub">-#   $HOME/.config/wimp/startup
+</span><span class="sub">-#
+</span><span class="sub">-
+</span><span class="sub">-#wimptool set desks 2
+</span><span class="sub">-#wimptool set desk 1 background #31475c
+</span><span class="sub">-#wimptool set desk 1 borders normal #3e3e73
+</span><span class="sub">-#wimptool set desk 1 corners normal #31315c
+</span><span class="sub">-#wimptool set desk 1 borders focus #47315c
+</span><span class="sub">-#wimptool set desk 1 corners focus #7e5992
+</span><span class="sub">-#wimptool set desk 1 borders width 6
+</span><span class="sub">-#wimptool set desk 2 background #3e3e73
+</span><span class="sub">-#wimptool set desk 2 borders normal #31475c
+</span><span class="sub">-#wimptool set desk 1 corners normal #3e5973
+</span><span class="sub">-#wimptool set desk 2 borders focus #47315c
+</span><span class="sub">-#wimptool set desk 1 corners focus #7e5992
+</span><span class="sub">-#wimptool set desk 2 borders width 6
+</span><span class="sub">-wimptool set desk 1 background ~/path/to/tiling-image.png
+</span><span class="sub">-
+</span><span class="sub">-# Magnification bounds
+</span><span class="sub">-#wimptool set zoom_min 0.2
+</span><span class="sub">-#wimptool set zoom_max 5
+</span><span class="sub">-
+</span><span class="sub">-# Set the colour for the snap box indicator shown when dragging
+</span><span class="sub">-#wimptool set snap_box \#47315c66
+</span><span class="sub">-
+</span><span class="sub">-# Set the colour for the mark setter/getter indicator
+</span><span class="sub">-#wimptool set mark_indicator #000000
+</span><span class="sub">-
+</span><span class="sub">-# Whether to allow VT switching: on or off.
+</span><span class="sub">-#wimptool set vt_switching on
+</span><span class="sub">-
+</span><span class="sub">-# natural or reverse scrolling
+</span><span class="sub">-#wimptool set scroll_direction natural
+</span><span class="sub">-
+</span><span class="sub">-# Focus when moving the pointer over a window
+</span><span class="sub">-#wimptool set auto_focus on
+</span><span class="sub">-
+</span><span class="sub">-# Whether to automatically bind marks to keys if the key is vacant
+</span><span class="sub">-# This means instead of &quot;mod+backtick 1&quot; you can just do &quot;mod+1&quot;
+</span><span class="sub">-#wimptool set bind_marks on
+</span><span class="sub">-
+</span><span class="sub">-# Primary modifier be one of: shift, caps, ctrl, alt, mod2, mod3, logo, mod5
+</span><span class="sub">-#wimptool set mod logo
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-## Key bindings
+</span><span class="sub">-
+</span><span class="sub">-# additional modifiers, key, action
+</span><span class="sub">-wimptool bind	ctrl	escape		terminate
+</span><span class="sub">-
+</span><span class="sub">-# These actions act on windows
+</span><span class="sub">-wimptool bind	ctrl	q		close_window
+</span><span class="sub">-wimptool bind		j		focus down
+</span><span class="sub">-wimptool bind		k		focus up
+</span><span class="sub">-wimptool bind		h		focus left
+</span><span class="sub">-wimptool bind		l		focus right
+</span><span class="sub">-wimptool bind		f		toggle_fullscreen
+</span><span class="sub">-wimptool bind	shift	m		maximize
+</span><span class="sub">-wimptool bind	shift	1		send_to_desk 1
+</span><span class="sub">-wimptool bind	shift	2		send_to_desk 2
+</span><span class="sub">-
+</span><span class="sub">-# These give the focussed window half of the screen
+</span><span class="sub">-wimptool bind	shift	j		halfimize down
+</span><span class="sub">-wimptool bind	shift	k		halfimize up
+</span><span class="sub">-wimptool bind	shift	h		halfimize left
+</span><span class="sub">-wimptool bind	shift	l		halfimize right
+</span><span class="sub">-
+</span><span class="sub">-# And these act on desks
+</span><span class="sub">-wimptool bind		tab		next_desk
+</span><span class="sub">-wimptool bind	shift	tab		prev_desk
+</span><span class="sub">-wimptool bind		i		zoom 15
+</span><span class="sub">-wimptool bind		o		zoom -15
+</span><span class="sub">-wimptool bind		r		reset_zoom
+</span><span class="sub">-
+</span><span class="sub">-# These pan the desk using the given percentage changes in x and y
+</span><span class="sub">-wimptool bind		s		pan_desk 0 40
+</span><span class="sub">-wimptool bind		w		pan_desk 0 -40
+</span><span class="sub">-wimptool bind		a		pan_desk -40 0
+</span><span class="sub">-wimptool bind		d		pan_desk 40 0
+</span><span class="sub">-
+</span><span class="sub">-# The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="sub">-wimptool bind		return		exec gnome-terminal
+</span><span class="sub">-
+</span><span class="sub">-# We can execute windows as scratchpads with a fixed geometry like this, where
+</span><span class="sub">-# the geometry is specified as &lt;width&gt;x&lt;height&gt;+&lt;x&gt;+&lt;y&gt;
+</span><span class="sub">-wimptool bind	ctrl	e		scratchpad 1000x800+20+20 footclient mutt
+</span><span class="sub">-# A percentage of the used output can also be requested:
+</span><span class="sub">-wimptool bind	ctrl	t		scratchpad 50%+50%+0+0 footclient tmux
+</span><span class="sub">-
+</span><span class="sub">-wimptool bind		s		exec wimptool to_region \`slurp -f %wx%h+%x+%y\`
+</span><span class="sub">-
+</span><span class="sub">-# These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="sub">-# pressed, waits for the next key press and uses that as the &apos;mark&apos;, e.g.
+</span><span class="sub">-# hitting &apos;mod + m&apos; then &apos;a&apos; will save the current position, then hitting &apos;mod
+</span><span class="sub">-# + `&apos; then &apos;a&apos; later will move to that marked position. These can be cancelled
+</span><span class="sub">-# with the escape key.
+</span><span class="sub">-wimptool bind		m		set_mark
+</span><span class="sub">-wimptool bind		grave		go_to_mark
+</span><span class="sub">-
+</span><span class="sub">-# Possible mouse bindings: motion, scroll, pinch, drag{1,2,3} (+ additional modifiers)
+</span><span class="sub">-wimptool bind		scroll		pan_desk
+</span><span class="sub">-wimptool bind		pinch		zoom
+</span><span class="sub">-wimptool bind	shift	scroll		zoom
+</span><span class="sub">-wimptool bind		drag1		move_window
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>startup</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,123 @@
+<span class="add">+#!/usr/bin/env bash
+</span><span class="add">+#
+</span><span class="add">+#
+</span><span class="add">+# ██      ██  ██  ████████    ██████
+</span><span class="add">+# ██  ██  ██      ██  ██  ██  ██    ██
+</span><span class="add">+# ██  ██  ██  ██  ██  ██  ██  ██    ██
+</span><span class="add">+# ██  ██  ██  ██  ██  ██  ██  ██████
+</span><span class="add">+#   ████████  ██  ██      ██  ██
+</span><span class="add">+#             ██              ██
+</span><span class="add">+#             ██
+</span><span class="add">+# 
+</span><span class="add">+# Example startup script.
+</span><span class="add">+#
+</span><span class="add">+# All possible options are described here.
+</span><span class="add">+# Options that are commented out contain their default values.
+</span><span class="add">+# The executable &apos;wimptool&apos; configures wimp by sending messages to it.
+</span><span class="add">+#
+</span><span class="add">+# The first to be found of these paths is run as a startup script:
+</span><span class="add">+#   $XDG_CONFIG_HOME/.config/wimp/startup
+</span><span class="add">+#   $HOME/.config/wimp/startup
+</span><span class="add">+#
+</span><span class="add">+
+</span><span class="add">+#wimptool set desks 2
+</span><span class="add">+#wimptool set desk 1 background #31475c
+</span><span class="add">+#wimptool set desk 1 borders normal #3e3e73
+</span><span class="add">+#wimptool set desk 1 corners normal #31315c
+</span><span class="add">+#wimptool set desk 1 borders focus #47315c
+</span><span class="add">+#wimptool set desk 1 corners focus #7e5992
+</span><span class="add">+#wimptool set desk 1 borders width 6
+</span><span class="add">+#wimptool set desk 2 background #3e3e73
+</span><span class="add">+#wimptool set desk 2 borders normal #31475c
+</span><span class="add">+#wimptool set desk 1 corners normal #3e5973
+</span><span class="add">+#wimptool set desk 2 borders focus #47315c
+</span><span class="add">+#wimptool set desk 1 corners focus #7e5992
+</span><span class="add">+#wimptool set desk 2 borders width 6
+</span><span class="add">+wimptool set desk 1 background ~/path/to/tiling-image.png
+</span><span class="add">+
+</span><span class="add">+# Magnification bounds
+</span><span class="add">+#wimptool set zoom_min 0.2
+</span><span class="add">+#wimptool set zoom_max 5
+</span><span class="add">+
+</span><span class="add">+# Set the colour for the snap box indicator shown when dragging
+</span><span class="add">+#wimptool set snap_box \#47315c66
+</span><span class="add">+
+</span><span class="add">+# Set the colour for the mark setter/getter indicator
+</span><span class="add">+#wimptool set mark_indicator #000000
+</span><span class="add">+
+</span><span class="add">+# Whether to allow VT switching: on or off.
+</span><span class="add">+#wimptool set vt_switching on
+</span><span class="add">+
+</span><span class="add">+# natural or reverse scrolling
+</span><span class="add">+#wimptool set scroll_direction natural
+</span><span class="add">+
+</span><span class="add">+# Focus when moving the pointer over a window
+</span><span class="add">+#wimptool set auto_focus on
+</span><span class="add">+
+</span><span class="add">+# Whether to automatically bind marks to keys if the key is vacant
+</span><span class="add">+# This means instead of &quot;mod+backtick 1&quot; you can just do &quot;mod+1&quot;
+</span><span class="add">+#wimptool set bind_marks on
+</span><span class="add">+
+</span><span class="add">+# Primary modifier be one of: shift, caps, ctrl, alt, mod2, mod3, logo, mod5
+</span><span class="add">+#wimptool set mod logo
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+## Key bindings
+</span><span class="add">+
+</span><span class="add">+# additional modifiers, key, action
+</span><span class="add">+wimptool bind	ctrl	escape		terminate
+</span><span class="add">+
+</span><span class="add">+# These actions act on windows
+</span><span class="add">+wimptool bind	ctrl	q		close_window
+</span><span class="add">+wimptool bind		j		focus down
+</span><span class="add">+wimptool bind		k		focus up
+</span><span class="add">+wimptool bind		h		focus left
+</span><span class="add">+wimptool bind		l		focus right
+</span><span class="add">+wimptool bind		f		toggle_fullscreen
+</span><span class="add">+wimptool bind	shift	m		maximize
+</span><span class="add">+wimptool bind	shift	1		send_to_desk 1
+</span><span class="add">+wimptool bind	shift	2		send_to_desk 2
+</span><span class="add">+
+</span><span class="add">+# These give the focussed window half of the screen
+</span><span class="add">+wimptool bind	shift	j		halfimize down
+</span><span class="add">+wimptool bind	shift	k		halfimize up
+</span><span class="add">+wimptool bind	shift	h		halfimize left
+</span><span class="add">+wimptool bind	shift	l		halfimize right
+</span><span class="add">+
+</span><span class="add">+# And these act on desks
+</span><span class="add">+wimptool bind		tab		next_desk
+</span><span class="add">+wimptool bind	shift	tab		prev_desk
+</span><span class="add">+wimptool bind		i		zoom 15
+</span><span class="add">+wimptool bind		o		zoom -15
+</span><span class="add">+wimptool bind		r		reset_zoom
+</span><span class="add">+
+</span><span class="add">+# These pan the desk using the given percentage changes in x and y
+</span><span class="add">+wimptool bind		s		pan_desk 0 40
+</span><span class="add">+wimptool bind		w		pan_desk 0 -40
+</span><span class="add">+wimptool bind		a		pan_desk -40 0
+</span><span class="add">+wimptool bind		d		pan_desk 40 0
+</span><span class="add">+
+</span><span class="add">+# The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="add">+wimptool bind		return		exec gnome-terminal
+</span><span class="add">+
+</span><span class="add">+# We can execute windows as scratchpads with a fixed geometry like this, where
+</span><span class="add">+# the geometry is specified as &lt;width&gt;x&lt;height&gt;+&lt;x&gt;+&lt;y&gt;
+</span><span class="add">+wimptool bind	ctrl	e		scratchpad 1000x800+20+20 footclient mutt
+</span><span class="add">+# A percentage of the used output can also be requested:
+</span><span class="add">+wimptool bind	ctrl	t		scratchpad 50%+50%+0+0 footclient tmux
+</span><span class="add">+
+</span><span class="add">+wimptool bind		s		exec wimptool to_region \`slurp -f %wx%h+%x+%y\`
+</span><span class="add">+
+</span><span class="add">+# These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="add">+# pressed, waits for the next key press and uses that as the &apos;mark&apos;, e.g.
+</span><span class="add">+# hitting &apos;mod + m&apos; then &apos;a&apos; will save the current position, then hitting &apos;mod
+</span><span class="add">+# + `&apos; then &apos;a&apos; later will move to that marked position. These can be cancelled
+</span><span class="add">+# with the escape key.
+</span><span class="add">+wimptool bind		m		set_mark
+</span><span class="add">+wimptool bind		grave		go_to_mark
+</span><span class="add">+
+</span><span class="add">+# Possible mouse bindings: motion, scroll, pinch, drag{1,2,3} (+ additional modifiers)
+</span><span class="add">+wimptool bind		scroll		pan_desk
+</span><span class="add">+wimptool bind		pinch		zoom
+</span><span class="add">+wimptool bind	shift	scroll		zoom
+</span><span class="add">+wimptool bind		drag1		move_window
+</span></pre>
+</div></div>
+  </body>
+</html>

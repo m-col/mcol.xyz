@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - update</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/56597a235f5d99cada167013c7804e3be3d13d20.html">56597a235f5d99cada167013c7804e3be3d13d20</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/f57d117e7af74bb6541ac17505c7bace8e5b2bc3.html">f57d117e7af74bb6541ac17505c7bace8e5b2bc3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-16 20:42:59 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-16 20:42:59 +0100
+
+update
+</pre><div class="diff">
+  <p>
+    <b>z</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-Subproject commit 9d5a3fe0407101e2443499e4b95bca33f7a9a9ca
+</span><span class="add">+Subproject commit e77e9384937bd43eb6ca8f1ba036924f4006df07
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -614,7 +614,7 @@
+<span class="def"> map r3 shell mogrify -rotate 270 %s
+</span><span class="def"> 
+</span><span class="def"> # drag files
+</span><span class="sub">-map &lt;C-d&gt; shell dragon -a -x %p
+</span><span class="add">+map &lt;C-d&gt; shell dragon-drag-and-drop -a -x %p
+</span><span class="def"> 
+</span><span class="def"> # filter while finding
+</span><span class="def"> map f console scout -ftsea%space
+</span>@@ -667,3 +667,4 @@
+<span class="def"> map bp shell git push | less -r
+</span><span class="def"> map bl shell git pull | less -r
+</span><span class="def"> map bt shell tig
+</span><span class="add">+map bg shell gita add $(git rev-parse --show-toplevel) | less
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,7 +6,7 @@
+<span class="def"> # misc
+</span><span class="def"> alias ..=&apos;cd ../&apos;
+</span><span class="def"> alias ...=&apos;cd ../../&apos;
+</span><span class="sub">-alias l=&apos;ls -lhF&apos;
+</span><span class="add">+alias l=&apos;ls -lhFv&apos;
+</span><span class="def"> alias lc=&apos;ls -c1&apos;
+</span><span class="def"> alias tmp=&apos;cd /tmp; l&apos;
+</span><span class="def"> alias _=&apos;sudo&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

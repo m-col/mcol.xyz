@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - increase resoution of backlight button ups and downs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/d060471705f2c9df7bd3fd19ea4012e28c0ee7d0.html">d060471705f2c9df7bd3fd19ea4012e28c0ee7d0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/233f2d1ff0fd9070b256d1a2b35f2577b369a46c.html">233f2d1ff0fd9070b256d1a2b35f2577b369a46c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-09-03 06:43:07 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-09-03 06:43:07 +0100
+
+increase resoution of backlight button ups and downs
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -172,25 +172,25 @@
+<span class="def">         (
+</span><span class="def">             [],
+</span><span class="def">             &quot;XF86MonBrightnessUp&quot;,
+</span><span class="sub">-            lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.UP, 5),
+</span><span class="add">+            lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.UP, 3),
+</span><span class="def">             &quot;Increase backlight&quot;,
+</span><span class="def">         ),
+</span><span class="def">         (
+</span><span class="def">             [],
+</span><span class="def">             &quot;XF86MonBrightnessDown&quot;,
+</span><span class="sub">-            lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.DOWN, 5),
+</span><span class="add">+            lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.DOWN, 3),
+</span><span class="def">             &quot;Decrease backlight&quot;,
+</span><span class="def">         ),
+</span><span class="def">         (
+</span><span class="def">             [mod],
+</span><span class="def">             &quot;F6&quot;,
+</span><span class="sub">-            lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.UP, 5),
+</span><span class="add">+            lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.UP, 3),
+</span><span class="def">             &quot;Increase backlight&quot;,
+</span><span class="def">         ),
+</span><span class="def">         (
+</span><span class="def">             [mod],
+</span><span class="def">             &quot;F5&quot;,
+</span><span class="sub">-            lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.DOWN, 5),
+</span><span class="add">+            lazy.widget[&quot;backlight&quot;].change_backlight(ChangeDirection.DOWN, 3),
+</span><span class="def">             &quot;Decrease backlight&quot;,
+</span><span class="def">         ),
+</span><span class="def">         # Music control
+</span></pre>
+</div></div>
+  </body>
+</html>

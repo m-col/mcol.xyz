@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - update prompt and aliases</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/f540541f53897584de2e045d8f86d830941d6b9f.html">f540541f53897584de2e045d8f86d830941d6b9f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/86406dc2d7cbe15841f73d1b234add11bc5d64e3.html">86406dc2d7cbe15841f73d1b234add11bc5d64e3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-05-28 19:38:17 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-05-28 19:38:17 +0100
+
+update prompt and aliases
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,8 +24,8 @@
+<span class="def"> 
+</span><span class="def"> # zsh history
+</span><span class="def"> HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span><span class="sub">-HISTSIZE=8000
+</span><span class="sub">-SAVEHIST=4000
+</span><span class="add">+HISTSIZE=12000
+</span><span class="add">+SAVEHIST=8000
+</span><span class="def"> setopt SHARE_HISTORY
+</span><span class="def"> setopt HIST_IGNORE_ALL_DUPS
+</span><span class="def"> setopt HIST_REDUCE_BLANKS
+</span>@@ -68,4 +68,4 @@
+<span class="def"> # don&apos;t load default ranger config
+</span><span class="def"> export RANGER_LOAD_DEFAULT_RC=FALSE
+</span><span class="def"> 
+</span><span class="sub">-export PYTHONPATH=$HOME/work/analysis/reach
+</span><span class="add">+export PYTHONPATH=$HOME/git/reach
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,9 +18,11 @@
+<span class="def"> then
+</span><span class="def">     SEGMENT_SEPARATOR_L=$&apos;\ue0b0&apos;
+</span><span class="def">     SEGMENT_SEPARATOR_R=$&apos;&apos;
+</span><span class="add">+    SEGMENT_END=$&apos;\ue0b0&apos;
+</span><span class="def"> else
+</span><span class="sub">-    SEGMENT_SEPARATOR_L=$&apos;&apos;
+</span><span class="sub">-    SEGMENT_SEPARATOR_R=$&apos;&apos;
+</span><span class="add">+    SEGMENT_SEPARATOR_L=$&apos;▋▌&apos;
+</span><span class="add">+    #SEGMENT_SEPARATOR_R=$&apos;&apos;
+</span><span class="add">+    #SEGMENT_END=$&apos;&apos;
+</span><span class="def"> fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -43,7 +45,7 @@
+<span class="def"> # End the prompt, closing any open segments
+</span><span class="def"> prompt_end() {
+</span><span class="def">     if [[ -n $CURRENT_BG ]]; then
+</span><span class="sub">-	echo -n &quot;%{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR&quot;
+</span><span class="add">+	echo -n &quot;%{%k%F{$CURRENT_BG}%}$SEGMENT_END&quot;
+</span><span class="def">     else
+</span><span class="def"> 	echo -n &quot;%{%k%}&quot;
+</span><span class="def">     fi
+</span>@@ -98,16 +100,20 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> prompt_dir() {
+</span><span class="sub">-    prompt_segment magenta black &apos; %3~ &apos;
+</span><span class="add">+    prompt_segment magenta 4 &apos; %4~ &apos;
+</span><span class="add">+    #dir=$(print -Pn &apos;%3~/&apos;)
+</span><span class="add">+    #[[ &quot;${(q)dir:0:2}&quot; == &apos;\~/&apos; ]] &amp;&amp; dir=&quot;%F{12}🏠%F{black}${dir:1}&quot;
+</span><span class="add">+    #echo -n &quot; $dir &quot;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> prompt_mes() {
+</span><span class="def">     if [[ $RETVAL -ne 0 ]]
+</span><span class="def">     then
+</span><span class="sub">-	prompt_segment red black &apos; &gt; &apos;
+</span><span class="add">+	#prompt_segment red black &apos; ▶ &apos;
+</span><span class="add">+	prompt_segment black red &apos;▍&apos;
+</span><span class="def">     else
+</span><span class="sub">-	prompt_segment blue black &apos; &gt; &apos;
+</span><span class="add">+	prompt_segment black magenta &apos;▍&apos;
+</span><span class="def">     fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -141,7 +147,8 @@
+<span class="def"> fi
+</span><span class="def"> if $IS_TMUX
+</span><span class="def"> then
+</span><span class="sub">-    tmux_indicator=$&apos;\ue0b0&apos;
+</span><span class="add">+    #tmux_indicator=$&apos;\ue0b0&apos;
+</span><span class="add">+    tmux_indicator=⬜
+</span><span class="def"> else
+</span><span class="def">     tmux_indicator=&apos;&apos;
+</span><span class="def"> fi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -66,8 +66,8 @@
+<span class="def"> alias psiu=&apos;python setup.py install --user&apos;
+</span><span class="def"> 
+</span><span class="def"> # quick edits
+</span><span class="sub">-alias modalia=&apos;vim $HOME/.config/aliases&apos;
+</span><span class="sub">-alias modaliaz=&apos;vim $ZSH/aliases&apos;
+</span><span class="add">+alias modalia=&apos;vim $HOME/.config/aliases &amp;&amp; source $HOME/.config/aliases&apos;
+</span><span class="add">+alias modaliaz=&apos;vim $ZSH/aliases &amp;&amp; source $ZSH/aliases&apos;
+</span><span class="def"> alias vimrc=&apos;vim $HOME/.vim/bundle/vim-misc/vimrc&apos;
+</span><span class="def"> alias zshrc=&apos;vim $HOME/.zsh/zshrc&apos;
+</span><span class="def"> alias modrc=&apos;vim $HOME/.config/ranger/rc.conf&apos;
+</span>@@ -77,6 +77,7 @@
+<span class="def"> alias gh=&apos;cd $HOME; ls&apos;
+</span><span class="def"> alias gd=&apos;cd $HOME/documents&apos;
+</span><span class="def"> alias gD=&apos;cd $HOME/Downloads&apos;
+</span><span class="add">+alias gDe=&apos;cd $HOME/Desktop&apos;
+</span><span class="def"> alias gg=&apos;cd $HOME/git; l&apos;
+</span><span class="def"> alias gb=&apos;cd $HOME/.config/bin; ls&apos;
+</span><span class="def"> alias ge=&apos;cd /etc&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

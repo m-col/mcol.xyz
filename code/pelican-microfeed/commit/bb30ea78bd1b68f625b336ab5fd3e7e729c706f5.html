@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-microfeed - Allow outputting of individual entries as articles</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-microfeed">pelican-microfeed</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to create tiny single-page feeds</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-microfeed">https://github.com/m-col/pelican-microfeed</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-microfeed/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-microfeed/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-microfeed/file/README.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-microfeed/commit/bb30ea78bd1b68f625b336ab5fd3e7e729c706f5.html">bb30ea78bd1b68f625b336ab5fd3e7e729c706f5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-microfeed/commit/9f305fd922dad3b7022375a76277957eeb16751b.html">9f305fd922dad3b7022375a76277957eeb16751b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-11-24 21:12:45 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-11-24 21:12:45 +0000
+
+Allow outputting of individual entries as articles
+</pre><div class="diff">
+  <p>
+    <b>microfeed.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,6 +18,8 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+from functools import partial
+</span><span class="add">+
+</span><span class="def"> from pelican import signals
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -100,6 +102,14 @@
+<span class="def">                 feed_title=cat.name,
+</span><span class="def">                 feed_type=&apos;rss&apos;
+</span><span class="def">             )
+</span><span class="add">+    if article_generator.settings.get(&apos;GENERATE_MICROFEED_POSTS&apos;, False):
+</span><span class="add">+        write = partial(
+</span><span class="add">+            writer.write_file,
+</span><span class="add">+            relative_urls=article_generator.settings[&apos;RELATIVE_URLS&apos;],
+</span><span class="add">+        )
+</span><span class="add">+        for cat_name in microfeed.categories:
+</span><span class="add">+            article_generator.articles = microfeed.articles[cat_name]
+</span><span class="add">+            article_generator.generate_articles(write)
+</span><span class="def"> 
+</span><span class="def"> def register():
+</span><span class="def">     signals.initialized.connect(get_categories)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>README.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +1,8 @@
+<span class="def"> microfeed - Pelican plugin
+</span><span class="def"> ==========================
+</span><span class="def"> 
+</span><span class="sub">-microfeeds allows for the creation of pages that each act as a feed of content separate
+</span><span class="sub">-to the main articles. The how and what:
+</span><span class="add">+microfeeds allows for the creation of pages that each act as a feed of content
+</span><span class="add">+separate to the main articles. The how and what:
+</span><span class="def"> 
+</span><span class="def">  - Write articles under a category that will be used to make a microfeed.
+</span><span class="def">  - Create the config setting MICROFEEDS as a list of these categories.
+</span>@@ -12,3 +12,7 @@
+<span class="def">    as microfeed.*category* or microfeed[*category*] (these are equivalent).
+</span><span class="def">  - Each microfeed will also generate an ATOM/RSS feed as usual if you have set
+</span><span class="def">    CATEGORY_FEED_ATOM or CATEGORY_FEED_RSS.
+</span><span class="add">+ - The GENERATE_MICROFEED_POSTS setting can be set to True to make the
+</span><span class="add">+   microfeed entries still generate individual articles at the very end of
+</span><span class="add">+   generation, still keeping them hidden from all other pages except via the
+</span><span class="add">+   microfeed object.
+</span></pre>
+</div></div>
+  </body>
+</html>

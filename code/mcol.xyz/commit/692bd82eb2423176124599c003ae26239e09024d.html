@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Merge repos.dhall back into config.dhall</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/692bd82eb2423176124599c003ae26239e09024d.html">692bd82eb2423176124599c003ae26239e09024d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/ae517baaf254aa4e06309af5f82b8e3ff76d2791.html">ae517baaf254aa4e06309af5f82b8e3ff76d2791</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 19:04:01 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 19:04:01 +0000
+
+Merge repos.dhall back into config.dhall
+
+Now that the workflow parses the repo list with a real Dhall parser
+(dhall-to-json) rather than grep, there&apos;s no need to keep the list in a
+separate file just so the workflow can read it in isolation - it can
+project .repos straight out of config.dhall.
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_012RfZTyHvxLyVp4yaWmNvhN
+</pre><div class="diff">
+  <p>
+    <b>gitja/repos.dhall</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,24 +0,0 @@
+<span class="sub">--- The single source of truth for which repos appear on /code. Imported by
+</span><span class="sub">--- ./config.dhall, and parsed directly by .github/workflows/deploy.yaml to
+</span><span class="sub">--- know which repos to clone - so this is the only place to edit when
+</span><span class="sub">--- adding, removing or renaming a repo.
+</span><span class="sub">-
+</span><span class="sub">-let repos = &quot;..&quot;
+</span><span class="sub">-
+</span><span class="sub">-in  [ &quot;${repos}/bdf2flf&quot;
+</span><span class="sub">-    , &quot;${repos}/gitja&quot;
+</span><span class="sub">-    , &quot;${repos}/mcol.xyz&quot;
+</span><span class="sub">-    , &quot;${repos}/mini-theme&quot;
+</span><span class="sub">-    , &quot;${repos}/mkinitcpio-welcome&quot;
+</span><span class="sub">-    , &quot;${repos}/pelican-microfeed&quot;
+</span><span class="sub">-    , &quot;${repos}/pelican-minify-fontawesome&quot;
+</span><span class="sub">-    , &quot;${repos}/qtile-config&quot;
+</span><span class="sub">-    , &quot;${repos}/qtools&quot;
+</span><span class="sub">-    , &quot;${repos}/sudoku-solver&quot;
+</span><span class="sub">-    , &quot;${repos}/tide&quot;
+</span><span class="sub">-    , &quot;${repos}/vim-misc&quot;
+</span><span class="sub">-    , &quot;${repos}/wimp&quot;
+</span><span class="sub">-    , &quot;${repos}/xanadu&quot;
+</span><span class="sub">-    , &quot;${repos}/xoop&quot;
+</span><span class="sub">-    , &quot;${repos}/zshrc&quot;
+</span><span class="sub">-    ]
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/config.dhall</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,12 +1,32 @@
+<span class="def"> -- gitja config for generating the /code section of mcol.xyz.
+</span><span class="def"> --
+</span><span class="sub">--- This expects to be run from the mcol.xyz repo root, with the repos
+</span><span class="sub">--- listed in ./repos.dhall checked out as sibling directories of that
+</span><span class="sub">--- checkout (see .github/workflows/deploy.yaml), mirroring gitja&apos;s own CI
+</span><span class="add">+-- This expects to be run from the mcol.xyz repo root, with the repos below
+</span><span class="add">+-- checked out as sibling directories of that checkout (see
+</span><span class="add">+-- .github/workflows/deploy.yaml, which parses `repos` out of this file via
+</span><span class="add">+-- dhall-to-json to know which repos to clone), mirroring gitja&apos;s own CI
+</span><span class="def"> -- setup. Paths here are resolved relative to the working directory gitja
+</span><span class="def"> -- is invoked from, not relative to this file.
+</span><span class="def"> 
+</span><span class="sub">-let folders = ./repos.dhall
+</span><span class="add">+let repos = &quot;..&quot;
+</span><span class="add">+
+</span><span class="add">+let folders =
+</span><span class="add">+    [ &quot;${repos}/bdf2flf&quot;
+</span><span class="add">+    , &quot;${repos}/gitja&quot;
+</span><span class="add">+    , &quot;${repos}/mcol.xyz&quot;
+</span><span class="add">+    , &quot;${repos}/mini-theme&quot;
+</span><span class="add">+    , &quot;${repos}/mkinitcpio-welcome&quot;
+</span><span class="add">+    , &quot;${repos}/pelican-microfeed&quot;
+</span><span class="add">+    , &quot;${repos}/pelican-minify-fontawesome&quot;
+</span><span class="add">+    , &quot;${repos}/qtile-config&quot;
+</span><span class="add">+    , &quot;${repos}/qtools&quot;
+</span><span class="add">+    , &quot;${repos}/sudoku-solver&quot;
+</span><span class="add">+    , &quot;${repos}/tide&quot;
+</span><span class="add">+    , &quot;${repos}/vim-misc&quot;
+</span><span class="add">+    , &quot;${repos}/wimp&quot;
+</span><span class="add">+    , &quot;${repos}/xanadu&quot;
+</span><span class="add">+    , &quot;${repos}/xoop&quot;
+</span><span class="add">+    , &quot;${repos}/zshrc&quot;
+</span><span class="add">+    ]
+</span><span class="def"> 
+</span><span class="def"> let config =
+</span><span class="def">     { repos = folders
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.github/workflows/deploy.yaml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -59,7 +59,7 @@
+<span class="def"> 
+</span><span class="def">       - name: Clone repos listed on /code
+</span><span class="def">         run: |
+</span><span class="sub">-          repos=$(dhall-to-json --file gitja/repos.dhall | jq -r &apos;.[]&apos; | sed &apos;s#^\.\./##&apos;)
+</span><span class="add">+          repos=$(dhall-to-json --file gitja/config.dhall | jq -r &apos;.repos[]&apos; | sed &apos;s#^\.\./##&apos;)
+</span><span class="def">           cd ..
+</span><span class="def">           for repo in $repos; do
+</span><span class="def">             # mcol.xyz is already checked out here as this workflow&apos;s own repo.
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - set termguicolors</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/232666bc5168fd4d015bfc77b8119127b6e17c3f.html">232666bc5168fd4d015bfc77b8119127b6e17c3f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/dd628963560709a9e8831630f033eec5b637c993.html">dd628963560709a9e8831630f033eec5b637c993</a>
+<b>Author:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Date:</b> 2025-06-17 13:23:42 +0100
+<b>Committer:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-06-17 13:23:42 +0100
+
+set termguicolors
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -103,4 +103,3 @@
+<span class="def"> 
+</span><span class="def"> &quot; used by Ctrl-P, likely among other things
+</span><span class="def"> set wildignore+=*/tmp/*,*.so,*.swp,*.zip,node_modules,target,.mypy_cache
+</span><span class="sub">-set notermguicolors
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,8 @@
+<span class="def"> # neovim lua config
+</span><span class="def"> 
+</span><span class="add">+-- set this early so that theming can be set up
+</span><span class="add">+vim.opt.termguicolors = true
+</span><span class="add">+
+</span><span class="def"> -- Initialize lazy.nvim
+</span><span class="def"> local lazypath = vim.fn.stdpath(&quot;data&quot;) .. &quot;/lazy/lazy.nvim&quot;
+</span><span class="def"> if not (vim.uv or vim.loop).fs_stat(lazypath) then
+</span></pre>
+</div></div>
+  </body>
+</html>

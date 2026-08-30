@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - implement disable_vt_switching</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/40faefb75809ef4560385c3fcdc1c48b8e0751d9.html">40faefb75809ef4560385c3fcdc1c48b8e0751d9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/03fdc1ae6f41ea9e1d04100498d22c5fdc98705b.html">03fdc1ae6f41ea9e1d04100498d22c5fdc98705b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 18:17:27 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 18:17:27 +0000
+
+implement disable_vt_switching
+</pre><div class="diff">
+  <p>
+    <b>src/keybind.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,7 @@
+<span class="def"> #ifndef WIMP_KEYBIND_H
+</span><span class="def"> #define WIMP_KEYBIND_H
+</span><span class="def"> 
+</span><span class="add">+void free_binding(struct binding *kb);
+</span><span class="def"> void add_binding(char *message, char *response);
+</span><span class="def"> void set_mod(char *message, char *response);
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keybind.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -290,7 +290,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void free_binding(struct binding *kb) {
+</span><span class="add">+void free_binding(struct binding *kb) {
+</span><span class="def">     if (kb-&gt;data)
+</span><span class="def"> 	free(kb-&gt;data);
+</span><span class="def">     wl_list_remove(&amp;kb-&gt;link);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -95,7 +95,12 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static void disable_vt_switching() {
+</span><span class="sub">-    // TODO
+</span><span class="add">+    struct binding *kb, *tmp;
+</span><span class="add">+    wl_list_for_each_safe(kb, tmp, &amp;wimp.key_bindings, link) {
+</span><span class="add">+	if (kb-&gt;action == &amp;change_vt) {
+</span><span class="add">+	    free_binding(kb);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

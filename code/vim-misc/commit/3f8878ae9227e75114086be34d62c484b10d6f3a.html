@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - tmux titles, removed old code from tmux.conf</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/3f8878ae9227e75114086be34d62c484b10d6f3a.html">3f8878ae9227e75114086be34d62c484b10d6f3a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/752290a196ccb011469fd144e72d843c6686662a.html">752290a196ccb011469fd144e72d843c6686662a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-04-05 08:58:54 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-04-05 08:58:54 +0100
+
+tmux titles, removed old code from tmux.conf
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,17 +19,19 @@
+<span class="def"> call vundle#begin()
+</span><span class="def"> 
+</span><span class="def"> Plugin &apos;VundleVim/Vundle.vim&apos;		    &quot; required
+</span><span class="add">+
+</span><span class="def"> if hostname() == &quot;zenbook&quot;
+</span><span class="def">     Plugin &apos;vimwiki/vimwiki&apos;		    &quot; vimwiki
+</span><span class="def">     Plugin &apos;mcolligan/vimlab&apos;		    &quot; vimlab
+</span><span class="def"> endif
+</span><span class="add">+
+</span><span class="def"> if hostname() == &quot;ardbeg&quot;
+</span><span class="def">     Plugin &apos;mcolligan/vimlab&apos;		    &quot; vimlab
+</span><span class="def"> endif
+</span><span class="add">+
+</span><span class="def"> Plugin &apos;junegunn/goyo.vim&apos;
+</span><span class="def"> Plugin &apos;mcolligan/vim-misc&apos;		    &quot; my vimrc and misc functions 
+</span><span class="def"> Plugin &apos;mcolligan/tide&apos;			    &quot; tmux ide
+</span><span class="sub">-&quot;Plugin &apos;christoomey/vim-tmux-navigator&apos;	    &quot; navigate vim and tmux splits seamlessly
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span><span class="def"> filetype plugin indent on		    &quot; required
+</span>@@ -121,5 +123,9 @@
+<span class="def"> &quot; Intelligently navigate tmux panes and Vim splits using the same keys.
+</span><span class="def"> &quot; See https://sunaku.github.io/tmux-select-pane.html for documentation.
+</span><span class="def"> let progname = substitute($VIM, &apos;.*[/\\]&apos;, &apos;&apos;, &apos;&apos;)
+</span><span class="sub">-set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
+</span><span class="add">+if empty(v:servername)
+</span><span class="add">+    set title titlestring=%{progname}\ [%n]\ %F
+</span><span class="add">+else
+</span><span class="add">+    set title titlestring=%{progname}\ [%{v:servername}]\ [%n]\ %F
+</span><span class="add">+endif
+</span><span class="def"> if &amp;term =~ &apos;^screen&apos; &amp;&amp; !has(&apos;nvim&apos;) | exe &quot;set t_ts=\e]2; t_fs=\7&quot; | endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,43 +18,10 @@
+<span class="def"> set -g history-limit 5000
+</span><span class="def"> set -s escape-time 0
+</span><span class="def"> set -g base-index 1
+</span><span class="sub">-
+</span><span class="sub">-# copy mode
+</span><span class="sub">-# enter it with pre-[
+</span><span class="sub">-# select region with space
+</span><span class="sub">-# copy with enter
+</span><span class="sub">-# or quit with q
+</span><span class="sub">-# paste it with pre=]
+</span><span class="sub">-set-window-option -g mode-keys vi
+</span><span class="sub">-
+</span><span class="sub">-# Vim bindings in copy-mode
+</span><span class="sub">-#bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel &quot;xclip -i -sel clip &gt; /dev/null&quot;
+</span><span class="sub">-#bind-key p run &quot;xclip -o -sel clip | tmux load-buffer - ; tmux paste-buffer&quot;
+</span><span class="sub">-#bind-key -T copy-mode-vi &apos;v&apos; send -X begin-selection
+</span><span class="sub">-#bind-key -T copy-mode-vi &apos;y&apos; send -X copy-selection
+</span><span class="sub">-
+</span><span class="sub">-# status bar
+</span><span class="sub">-#setw -g window-status-current-attr bold
+</span><span class="sub">-#setw -g window-status-current-format &apos; #I#[fg=colour7]:#[fg=colour8]#W#[fg=colour7]#F &apos;
+</span><span class="sub">-#set -g status-right &apos;#[fg=colour8,bg=colour4,bold] %H:%M &apos;
+</span><span class="sub">-#setw -g window-status-format &apos; #I#[fg=colour7]:#[fg=colour8]#W#[fg=colour7]#F &apos;
+</span><span class="def"> set -g status off
+</span><span class="sub">-
+</span><span class="sub">-## Smart pane switching with awareness of Vim splits.
+</span><span class="sub">-## See: https://github.com/christoomey/vim-tmux-navigator
+</span><span class="sub">-#is_vim=&quot;ps -o state= -o comm= -t &apos;#{pane_tty}&apos; \
+</span><span class="sub">-#    | grep -iqE &apos;^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$&apos;&quot;
+</span><span class="sub">-#bind-key -n C-h if-shell &quot;$is_vim&quot; &quot;send-keys C-h&quot;  &quot;select-pane -L&quot;
+</span><span class="sub">-#bind-key -n C-j if-shell &quot;$is_vim&quot; &quot;send-keys C-j&quot;  &quot;select-pane -D&quot;
+</span><span class="sub">-#bind-key -n C-k if-shell &quot;$is_vim&quot; &quot;send-keys C-k&quot;  &quot;select-pane -U&quot;
+</span><span class="sub">-#bind-key -n C-l if-shell &quot;$is_vim&quot; &quot;send-keys C-l&quot;  &quot;select-pane -R&quot;
+</span><span class="sub">-#bind-key -n C-\ if-shell &quot;$is_vim&quot; &quot;send-keys C-\\&quot; &quot;select-pane -l&quot;
+</span><span class="sub">-#bind-key -T copy-mode-vi C-h select-pane -L
+</span><span class="sub">-#bind-key -T copy-mode-vi C-j select-pane -D
+</span><span class="sub">-#bind-key -T copy-mode-vi C-k select-pane -U
+</span><span class="sub">-#bind-key -T copy-mode-vi C-l select-pane -R
+</span><span class="sub">-#bind-key -T copy-mode-vi C-\ select-pane -l
+</span><span class="sub">-
+</span><span class="add">+set -g set-titles on
+</span><span class="add">+set -g set-titles-string &quot;[tmux] #T&quot;
+</span><span class="add">+set-window-option -g mode-keys vi
+</span><span class="def"> 
+</span><span class="def"> # Intelligently navigate tmux panes and Vim splits using the same keys.
+</span><span class="def"> # See https://sunaku.github.io/tmux-select-pane.html for documentation.
+</span>@@ -119,7 +86,6 @@
+<span class="def">                           &apos;tmux send-keys C-w p&apos;                       \
+</span><span class="def">                           &apos;pane_is_zoomed&apos;                             &quot;
+</span><span class="def"> 
+</span><span class="sub">-# QWERTY keys - comment these out if you don&apos;t use QWERTY layout!
+</span><span class="def"> bind-key -n C-h run-shell -b &quot;$navigate_left&quot;
+</span><span class="def"> bind-key -n C-j run-shell -b &quot;$navigate_down&quot;
+</span><span class="def"> bind-key -n C-k run-shell -b &quot;$navigate_up&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

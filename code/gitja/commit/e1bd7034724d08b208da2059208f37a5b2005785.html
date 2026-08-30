@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Package tree data into type</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/e1bd7034724d08b208da2059208f37a5b2005785.html">e1bd7034724d08b208da2059208f37a5b2005785</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/759165bd351f359e5df08979785dec4beddc8222.html">759165bd351f359e5df08979785dec4beddc8222</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-24 23:42:47 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-24 23:42:47 +0100
+
+Package tree data into type
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -87,7 +87,7 @@
+<span class="def">     -&gt; FilePath
+</span><span class="def">     -&gt; Text
+</span><span class="def">     -&gt; [Commit LgRepo]
+</span><span class="sub">-    -&gt; [(TreeFilePath, TreeEntry r)]
+</span><span class="add">+    -&gt; [TreeFile]
+</span><span class="def">     -&gt; HashMap.HashMap Text (GVal (Run SourcePos IO Html))
+</span><span class="def"> package config name description commits tree = HashMap.fromList
+</span><span class="def">     [ (&quot;host&quot;, toGVal $ host config)
+</span>@@ -106,8 +106,15 @@
+<span class="def"> loadCommit (CommitObjOid oid) = Just $ lookupCommit oid
+</span><span class="def"> loadCommit _ = Nothing
+</span><span class="def"> 
+</span><span class="sub">-getTree :: CommitOid LgRepo -&gt; ReaderT LgRepo IO [(TreeFilePath, TreeEntry LgRepo)]
+</span><span class="sub">-getTree commitID = lookupCommit commitID &gt;&gt;= lookupTree . commitTree &gt;&gt;= listTreeEntries
+</span><span class="add">+data TreeFile = TreeFile
+</span><span class="add">+    { treeFilePath :: TreeFilePath
+</span><span class="add">+    , treeEntry :: TreeEntry LgRepo
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+getTree :: CommitOid LgRepo -&gt; ReaderT LgRepo IO [TreeFile]
+</span><span class="add">+getTree commitID = do
+</span><span class="add">+    entries &lt;- listTreeEntries =&lt;&lt; lookupTree . commitTree =&lt;&lt; lookupCommit commitID
+</span><span class="add">+    return $ uncurry TreeFile &lt;$&gt; entries
+</span><span class="def"> 
+</span><span class="def"> getDescription :: FilePath -&gt; IO Text
+</span><span class="def"> getDescription path = fromRight &quot;&quot; &lt;$&gt; tryIOError (pack &lt;$&gt; readFile path)
+</span></pre>
+</div></div>
+  </body>
+</html>

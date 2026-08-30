@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Implement custom keybindings for various deskwm actions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/ade3fa2c13a0bc6f3e7fa6506bcb3680260e3ffb.html">ade3fa2c13a0bc6f3e7fa6506bcb3680260e3ffb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/4f571200cbe4afcc4967618f5c201032fdeef551.html">4f571200cbe4afcc4967618f5c201032fdeef551</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-22 01:29:14 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-22 01:29:14 +0000
+
+Implement custom keybindings for various deskwm actions
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -48,6 +48,7 @@
+<span class="def">     struct wl_listener request_set_selection_listener;
+</span><span class="def">     struct wl_list keyboards;
+</span><span class="def">     enum wlr_keyboard_modifier mod;
+</span><span class="add">+    struct wl_list keybindings;
+</span><span class="def">     enum cursor_mode cursor_mode;
+</span><span class="def">     struct view *grabbed_view;
+</span><span class="def">     double grab_x, grab_y;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,7 +3,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-void close_current_window(struct server *server);
+</span><span class="add">+void close_current_window(struct server *server, void *data);
+</span><span class="def"> void unmap_view(struct view *view);
+</span><span class="def"> void map_view(struct view *view);
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,7 +6,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void close_current_window(struct server *server) {
+</span><span class="add">+void close_current_window(struct server *server, void *data) {
+</span><span class="def">     struct wlr_surface *surface = server-&gt;seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     if (surface) {
+</span><span class="def"> 	struct wlr_xdg_surface *xdg_surface = surface-&gt;role_data;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,8 +2,10 @@
+<span class="def"> #define DESKWM_INPUT_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="add">+#include &quot;shell.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-void set_modifier(struct server *server, char *modifier);
+</span><span class="add">+enum wlr_keyboard_modifier modifier_by_name(char *mod);
+</span><span class="add">+void add_binding(struct server *server, char *data, int line);
+</span><span class="def"> void process_cursor_move(struct server *server, uint32_t time, double zoom);
+</span><span class="def"> void process_cursor_resize(struct server *server, uint32_t time, double zoom);
+</span><span class="def"> bool view_at(
+</span>@@ -21,7 +23,6 @@
+<span class="def"> void on_cursor_axis(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_cursor_frame(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_modifier(struct wl_listener *listener, void *data);
+</span><span class="sub">-bool handle_keybinding(struct server *server, xkb_keysym_t sym);
+</span><span class="def"> void on_key(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_new_keyboard(struct server *server, struct wlr_input_device *device);
+</span><span class="def"> void on_new_input(struct wl_listener *listener, void *data);
+</span>@@ -30,4 +31,14 @@
+<span class="def"> void set_up_cursor(struct server *server);
+</span><span class="def"> void set_up_keyboard(struct server *server);
+</span><span class="def"> 
+</span><span class="add">+typedef void (*action)(struct server *server, void *data);
+</span><span class="add">+
+</span><span class="add">+struct keybinding {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    enum wlr_keyboard_modifier mods;
+</span><span class="add">+    xkb_keysym_t key;
+</span><span class="add">+    action action;
+</span><span class="add">+    void *data;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +1,4 @@
+<span class="add">+#include &lt;inttypes.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_cursor.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_keyboard.h&gt;
+</span>@@ -9,24 +10,114 @@
+<span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+#define is_int(s) (strspn(s, &quot;-0123456789&quot;) == strlen(s))
+</span><span class="def"> 
+</span><span class="sub">-void set_modifier(struct server *server, char *mod) {
+</span><span class="add">+
+</span><span class="add">+void shutdown(struct server *server, void *data) {
+</span><span class="add">+    wl_display_terminate(server-&gt;display);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void exec_command(struct server *server, void *data) {
+</span><span class="add">+    if (fork() == 0) {
+</span><span class="add">+	//char *const command[] = {data};
+</span><span class="add">+	//execvp(command[0], command);
+</span><span class="add">+	execl(&quot;/bin/sh&quot;, &quot;/bin/sh&quot;, &quot;-c&quot;, data, (void *)NULL);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+enum wlr_keyboard_modifier modifier_by_name(char *mod) {
+</span><span class="def">     if (strcasecmp(mod, &quot;shift&quot;) == 0)
+</span><span class="sub">-	server-&gt;mod = WLR_MODIFIER_SHIFT;
+</span><span class="sub">-    else if (strcasecmp(mod, &quot;caps&quot;) == 0)
+</span><span class="sub">-	server-&gt;mod = WLR_MODIFIER_CAPS;
+</span><span class="sub">-    else if (strcasecmp(mod, &quot;ctrl&quot;) == 0)
+</span><span class="sub">-	server-&gt;mod = WLR_MODIFIER_CTRL;
+</span><span class="sub">-    else if (strcasecmp(mod, &quot;alt&quot;) == 0)
+</span><span class="sub">-	server-&gt;mod = WLR_MODIFIER_ALT;
+</span><span class="sub">-    else if (strcasecmp(mod, &quot;mod2&quot;) == 0)
+</span><span class="sub">-	server-&gt;mod = WLR_MODIFIER_MOD2;
+</span><span class="sub">-    else if (strcasecmp(mod, &quot;mod3&quot;) == 0)
+</span><span class="sub">-	server-&gt;mod = WLR_MODIFIER_MOD3;
+</span><span class="sub">-    else if (strcasecmp(mod, &quot;mod4&quot;) == 0)
+</span><span class="sub">-	server-&gt;mod = WLR_MODIFIER_LOGO;
+</span><span class="sub">-    else if (strcasecmp(mod, &quot;mod5&quot;) == 0)
+</span><span class="sub">-	server-&gt;mod = WLR_MODIFIER_MOD5;
+</span><span class="add">+	return WLR_MODIFIER_SHIFT;
+</span><span class="add">+    if (strcasecmp(mod, &quot;caps&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_CAPS;
+</span><span class="add">+    if (strcasecmp(mod, &quot;ctrl&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_CTRL;
+</span><span class="add">+    if (strcasecmp(mod, &quot;alt&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_ALT;
+</span><span class="add">+    if (strcasecmp(mod, &quot;mod2&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_MOD2;
+</span><span class="add">+    if (strcasecmp(mod, &quot;mod3&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_MOD3;
+</span><span class="add">+    if (strcasecmp(mod, &quot;logo&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_LOGO;
+</span><span class="add">+    if (strcasecmp(mod, &quot;mod5&quot;) == 0)
+</span><span class="add">+	return WLR_MODIFIER_MOD5;
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void assign_action(char *name, char *data, struct keybinding *kb) {
+</span><span class="add">+    kb-&gt;data = NULL;
+</span><span class="add">+    kb-&gt;action = NULL;
+</span><span class="add">+
+</span><span class="add">+    if (strcasecmp(name, &quot;shutdown&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;shutdown;
+</span><span class="add">+    else if (strcasecmp(name, &quot;close_current_window&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;close_current_window;
+</span><span class="add">+    else if (strcasecmp(name, &quot;next_desk&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;next_desk;
+</span><span class="add">+    else if (strcasecmp(name, &quot;prev_desk&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;prev_desk;
+</span><span class="add">+    else if (strcasecmp(name, &quot;reset_pan&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;reset_pan;
+</span><span class="add">+    else if (strcasecmp(name, &quot;save_pan&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;save_pan;
+</span><span class="add">+    else if (strcasecmp(name, &quot;zoom_desk&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;zoom_desk;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="add">+	*(int *)(kb-&gt;data) = atoi(data);
+</span><span class="add">+    }
+</span><span class="add">+    else if (strcasecmp(name, &quot;exec&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;exec_command;
+</span><span class="add">+	kb-&gt;data = calloc(strlen(data), sizeof(char));
+</span><span class="add">+	strncpy(kb-&gt;data, data, strlen(data));
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void add_binding(struct server *server, char *data, int line) {
+</span><span class="add">+    struct keybinding *kb = calloc(1, sizeof(struct keybinding));
+</span><span class="add">+    enum wlr_keyboard_modifier mod;
+</span><span class="add">+    char *s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="add">+
+</span><span class="add">+    // modifiers
+</span><span class="add">+    kb-&gt;mods = 0;
+</span><span class="add">+    for (int i = 0; i &lt; 8; i++) {
+</span><span class="add">+	mod = modifier_by_name(s);
+</span><span class="add">+	if (mod == 0)
+</span><span class="add">+	    break;
+</span><span class="add">+	kb-&gt;mods |= mod;
+</span><span class="add">+	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // key
+</span><span class="add">+    kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_CASE_INSENSITIVE);
+</span><span class="add">+    if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Config line %i: No such key &apos;%s&apos;.&quot;, line, s);
+</span><span class="add">+	free(kb);
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // action
+</span><span class="add">+    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    assign_action(s, strtok(NULL, &quot;&quot;), kb);
+</span><span class="add">+    if (kb-&gt;action == NULL) {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Config line %i: No such action &apos;%s&apos;.&quot;, line, s);
+</span><span class="add">+	free(kb);
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct keybinding *kb_existing;
+</span><span class="add">+    wl_list_for_each(kb_existing, &amp;server-&gt;keybindings, link) {
+</span><span class="add">+	if (kb_existing-&gt;key == kb-&gt;key &amp;&amp; kb_existing-&gt;mods == kb-&gt;mods) {
+</span><span class="add">+	    wlr_log(WLR_ERROR, &quot;Config line %i: binding exists for key combo.&quot;, line);
+</span><span class="add">+	    free(kb);
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    wl_list_insert(&amp;server-&gt;keybindings, &amp;kb-&gt;link);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -193,7 +284,7 @@
+<span class="def">     struct server *server = wl_container_of(listener, server, cursor_axis_listener);
+</span><span class="def">     struct wlr_event_pointer_axis *event = data;
+</span><span class="def">     if (server-&gt;cursor_mode == CURSOR_PAN) {
+</span><span class="sub">-	zoom_desk(server-&gt;current_desk, event-&gt;delta);
+</span><span class="add">+	zoom_desk(server, &amp;event-&gt;delta);
+</span><span class="def">     } else {
+</span><span class="def"> 	wlr_seat_pointer_notify_axis(
+</span><span class="def"> 	    server-&gt;seat, event-&gt;time_msec, event-&gt;orientation, event-&gt;delta,
+</span>@@ -223,46 +314,6 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-bool handle_keybinding(struct server *server, xkb_keysym_t sym) {
+</span><span class="sub">-    switch (sym) {
+</span><span class="sub">-
+</span><span class="sub">-    case XKB_KEY_Up:
+</span><span class="sub">-	if (fork() == 0) {
+</span><span class="sub">-	    execl(&quot;/usr/bin/thunar&quot;, &quot;/usr/bin/thunar&quot;, (void *)NULL);
+</span><span class="sub">-	}
+</span><span class="sub">-	break;
+</span><span class="sub">-
+</span><span class="sub">-    case XKB_KEY_Escape:
+</span><span class="sub">-	wl_display_terminate(server-&gt;display);
+</span><span class="sub">-	break;
+</span><span class="sub">-
+</span><span class="sub">-    case XKB_KEY_Left:
+</span><span class="sub">-	prev_desk(server);
+</span><span class="sub">-	break;
+</span><span class="sub">-
+</span><span class="sub">-    case XKB_KEY_Right:
+</span><span class="sub">-	next_desk(server);
+</span><span class="sub">-	break;
+</span><span class="sub">-
+</span><span class="sub">-    case XKB_KEY_Q:
+</span><span class="sub">-	close_current_window(server);
+</span><span class="sub">-	break;
+</span><span class="sub">-
+</span><span class="sub">-    case XKB_KEY_r:
+</span><span class="sub">-	reset_pan(server-&gt;current_desk);
+</span><span class="sub">-	break;
+</span><span class="sub">-
+</span><span class="sub">-    case XKB_KEY_R:
+</span><span class="sub">-	save_pan(server-&gt;current_desk);
+</span><span class="sub">-	break;
+</span><span class="sub">-
+</span><span class="sub">-    default:
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    return true;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void on_key(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct keyboard *keyboard = wl_container_of(listener, keyboard, key_listener);
+</span><span class="def">     struct server *server = keyboard-&gt;server;
+</span>@@ -278,9 +329,17 @@
+<span class="def"> 
+</span><span class="def">     bool handled = false;
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="add">+    struct keybinding *kb;
+</span><span class="def">     if ((modifiers &amp; server-&gt;mod) &amp;&amp; event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="add">+	modifiers &amp;= ~server-&gt;mod;
+</span><span class="def"> 	for (int i = 0; i &lt; nsyms; i++) {
+</span><span class="sub">-	    handled = handle_keybinding(server, syms[i]);
+</span><span class="add">+	    wl_list_for_each(kb, &amp;server-&gt;keybindings, link) {
+</span><span class="add">+		if (syms[i] == kb-&gt;key &amp;&amp; modifiers == kb-&gt;mods) {
+</span><span class="add">+		    kb-&gt;action(server, kb-&gt;data);
+</span><span class="add">+		    handled = true;
+</span><span class="add">+		} else if (modifiers == kb-&gt;mods) {
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,11 +5,11 @@
+<span class="def"> 
+</span><span class="def"> void add_desk(struct server *server);
+</span><span class="def"> void remove_desk(struct desk *desk);
+</span><span class="sub">-void next_desk(struct server *server);
+</span><span class="sub">-void prev_desk(struct server *server);
+</span><span class="sub">-void reset_pan(struct desk *desk);
+</span><span class="sub">-void save_pan(struct desk *desk);
+</span><span class="sub">-void zoom_desk(struct desk *desk, int dir);
+</span><span class="add">+void next_desk(struct server *server, void *data);
+</span><span class="add">+void prev_desk(struct server *server, void *data);
+</span><span class="add">+void reset_pan(struct server *server, void *data);
+</span><span class="add">+void save_pan(struct server *server, void *data);
+</span><span class="add">+void zoom_desk(struct server *server, void *data);
+</span><span class="def"> 
+</span><span class="def"> struct wallpaper {
+</span><span class="def">     struct wlr_texture *texture;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,7 +38,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void next_desk(struct server *server) {
+</span><span class="add">+void next_desk(struct server *server, void *data) {
+</span><span class="def">     struct desk *desk;
+</span><span class="def">     if (server-&gt;current_desk-&gt;index + 1 == num_desks) {
+</span><span class="def"> 	desk = wl_container_of(server-&gt;desks.next, desk, link);
+</span>@@ -49,7 +49,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void prev_desk(struct server *server) {
+</span><span class="add">+void prev_desk(struct server *server, void *data) {
+</span><span class="def">     struct desk *desk;
+</span><span class="def">     if (server-&gt;current_desk-&gt;index == 0) {
+</span><span class="def"> 	desk = wl_container_of(server-&gt;desks.prev, desk, link);
+</span>@@ -60,7 +60,8 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void reset_pan(struct desk *desk) {
+</span><span class="add">+void reset_pan(struct server *server, void *data) {
+</span><span class="add">+    struct desk *desk = server-&gt;current_desk;
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each(view, &amp;desk-&gt;views, link) {
+</span><span class="def"> 	view-&gt;x -= desk-&gt;panned_x;
+</span>@@ -71,14 +72,15 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void save_pan(struct desk *desk) {
+</span><span class="sub">-    desk-&gt;panned_x = desk-&gt;panned_y = 0;
+</span><span class="add">+void save_pan(struct server *server, void *data) {
+</span><span class="add">+    server-&gt;current_desk-&gt;panned_x = server-&gt;current_desk-&gt;panned_y = 0;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void zoom_desk(struct desk *desk, int dir) {
+</span><span class="add">+void zoom_desk(struct server *server, void *data) {
+</span><span class="def">     /* dir &gt; 0 ? zoom in : zoom out */
+</span><span class="sub">-    struct server *server = desk-&gt;server;
+</span><span class="add">+    struct desk *desk = server-&gt;current_desk;
+</span><span class="add">+    int dir = *(int*)data;
+</span><span class="def">     double f = dir &gt; 0 ? 1.015 : 1/1.015;
+</span><span class="def">     if (
+</span><span class="def"> 	(f &gt; 1 &amp;&amp; desk-&gt;zoom &gt;= server-&gt;zoom_max) ||
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -93,6 +93,7 @@
+<span class="def">     server-&gt;zoom_max = 3;
+</span><span class="def"> 
+</span><span class="def">     server-&gt;mod = WLR_MODIFIER_LOGO;
+</span><span class="add">+    wl_list_init(&amp;server-&gt;keybindings);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -120,7 +121,9 @@
+<span class="def"> 
+</span><span class="def">     char *s;
+</span><span class="def">     char linebuf[1024];
+</span><span class="add">+    int line = 0;
+</span><span class="def">     while (fgets(linebuf, sizeof(linebuf), fd)) {
+</span><span class="add">+	line++;
+</span><span class="def"> 	if (!(s = strtok(linebuf, &quot; \t\n\r&quot;)) || s[0] == &apos;#&apos;) {
+</span><span class="def"> 	    continue;
+</span><span class="def"> 	}
+</span>@@ -132,7 +135,7 @@
+<span class="def"> 	    }
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;set_modifier&quot;)) {
+</span><span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-		set_modifier(server, s);
+</span><span class="add">+		server-&gt;mod = modifier_by_name(s);
+</span><span class="def"> 	    }
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;zoom_min&quot;)) {
+</span><span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_decimal(s)) {
+</span>@@ -142,6 +145,8 @@
+<span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_decimal(s)) {
+</span><span class="def"> 		server-&gt;zoom_max = strtod(s, NULL);
+</span><span class="def"> 	    }
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;bind&quot;)) {
+</span><span class="add">+	    add_binding(server, strtok(NULL, &quot;&quot;), line);
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def">     fclose(fd);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,12 +13,35 @@
+<span class="def"> # ignored. Options that are commented out contain their default values.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+## General settings
+</span><span class="add">+
+</span><span class="def"> # These specify the min and max magnification bounds when zooming.
+</span><span class="def"> #zoom_min 0.5
+</span><span class="def"> #zoom_max 3
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+## Keybindings
+</span><span class="add">+
+</span><span class="add">+# Set the modifier key used for keybindings
+</span><span class="add">+# Can be one of: Shift, Caps, Ctrl, Alt, Mod2, Mod3, Logo, Mod5
+</span><span class="add">+#set_modifier Logo
+</span><span class="add">+
+</span><span class="add">+# Define keybindings
+</span><span class="add">+# additional modifiers, key, action(, data)
+</span><span class="add">+bind	Ctrl	Escape		shutdown
+</span><span class="add">+bind	Ctrl	q		close_current_window
+</span><span class="add">+bind		Tab		next_desk
+</span><span class="add">+bind		ISO_Left_Tab	prev_desk
+</span><span class="add">+bind		r		save_pan
+</span><span class="add">+bind	Shift	r		reset_pan
+</span><span class="add">+bind		i		zoom_desk  1
+</span><span class="add">+bind		o		zoom_desk -1
+</span><span class="add">+# The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="add">+bind		Return		exec wterm
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> ## Configure desks
+</span><span class="add">+
+</span><span class="def"> # Commands until a further desk is added pertain to desk 1.
+</span><span class="def"> 
+</span><span class="def"> # This can be a path to a png image, or a colour in the form #rrggbb.
+</span></pre>
+</div></div>
+  </body>
+</html>

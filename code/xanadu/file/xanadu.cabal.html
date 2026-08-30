@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - xanadu.cabal</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- xanadu.cabal</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> name:                xanadu
+<a href="#l2" class="line" id="l2">      2</a> version:             0.1.0.0
+<a href="#l3" class="line" id="l3">      3</a> -- synopsis:
+<a href="#l4" class="line" id="l4">      4</a> description:         A standalone desktop metaphor for standalone window managers.
+<a href="#l5" class="line" id="l5">      5</a> homepage:            https://github.com/m-col/xanadu
+<a href="#l6" class="line" id="l6">      6</a> license:             BSD3
+<a href="#l7" class="line" id="l7">      7</a> license-file:        LICENSE
+<a href="#l8" class="line" id="l8">      8</a> author:              Matt Colligan
+<a href="#l9" class="line" id="l9">      9</a> maintainer:          mcol@posteo.net
+<a href="#l10" class="line" id="l10">     10</a> copyright:           2021 Matt Colligan
+<a href="#l11" class="line" id="l11">     11</a> category:            Desktop
+<a href="#l12" class="line" id="l12">     12</a> build-type:          Simple
+<a href="#l13" class="line" id="l13">     13</a> cabal-version:       &gt;=1.10
+<a href="#l14" class="line" id="l14">     14</a> extra-source-files:  README.rst
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> executable xanadu
+<a href="#l17" class="line" id="l17">     17</a>   hs-source-dirs:      src
+<a href="#l18" class="line" id="l18">     18</a>   main-is:             Main.hs
+<a href="#l19" class="line" id="l19">     19</a>   other-modules:       Icons
+<a href="#l20" class="line" id="l20">     20</a>                      , Style
+<a href="#l21" class="line" id="l21">     21</a>                      , Window
+<a href="#l22" class="line" id="l22">     22</a>   default-language:    Haskell2010
+<a href="#l23" class="line" id="l23">     23</a>   build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+<a href="#l24" class="line" id="l24">     24</a>                      , directory
+<a href="#l25" class="line" id="l25">     25</a>                      , filepath
+<a href="#l26" class="line" id="l26">     26</a>                      , gi-gdk
+<a href="#l27" class="line" id="l27">     27</a>                      , gi-gdkpixbuf
+<a href="#l28" class="line" id="l28">     28</a>                      , gi-gio
+<a href="#l29" class="line" id="l29">     29</a>                      , gi-gtk
+<a href="#l30" class="line" id="l30">     30</a>                      , gi-gtk-layer-shell
+<a href="#l31" class="line" id="l31">     31</a>                      , haskell-gi-base &gt;= 0.26.0
+<a href="#l32" class="line" id="l32">     32</a>                      , text
+<a href="#l33" class="line" id="l33">     33</a>                      , transformers
+<a href="#l34" class="line" id="l34">     34</a> 
+</pre>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - clean up following pylint&apos;s orders</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/449ddf3371fa052e4a665195b69e241dc4cbc337.html">449ddf3371fa052e4a665195b69e241dc4cbc337</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/f77a91d0e3b99446651957494b52233de68bc715.html">f77a91d0e3b99446651957494b52233de68bc715</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-02-29 10:55:53 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-02-29 10:55:53 +0000
+
+clean up following pylint&apos;s orders
+</pre><div class="diff">
+  <p>
+    <b>setup.cfg</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,5 +10,9 @@
+<span class="def">     unused-argument,
+</span><span class="def">     missing-function-doctring,
+</span><span class="def">     missing-module-doctring,
+</span><span class="sub">-    access-member-before-definition
+</span><span class="add">+    access-member-before-definition,
+</span><span class="add">+    no-name-in-module,
+</span><span class="add">+    c-extension-no-member
+</span><span class="def"> max-line-length = 88
+</span><span class="add">+max-attributes = 14
+</span><span class="add">+max-args = 10
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/rofi_searx/searx.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -45,7 +45,8 @@
+<span class="def">         (&apos;prompt&apos;, &apos;Search the web&apos;, &apos;Prompt displayed by rofi.&apos;),
+</span><span class="def">         (&apos;theme&apos;, None, &apos;rofi theme to use.&apos;),
+</span><span class="def">         (&apos;launcher&apos;, &apos;tor-browser --allow-remote {url}&apos;, &apos;Command used to open web &apos;
+</span><span class="sub">-                     &apos;browser. Requires {url} to place the search url.&apos;),
+</span><span class="add">+                                                         &apos;browser. Requires {url} to &apos;
+</span><span class="add">+                                                         &apos;place the search url.&apos;),
+</span><span class="def">         (&apos;notify_on_remove&apos;, True, &apos;Whether to make a notification when removing a &apos;
+</span><span class="def">                                    &apos;searx instance.&apos;),
+</span><span class="def">     ]
+</span>@@ -66,9 +67,7 @@
+<span class="def"> 
+</span><span class="def">     def search(self, qtile=None):
+</span><span class="def">         output = subprocess.run(
+</span><span class="sub">-            self.command,
+</span><span class="sub">-            stdout=subprocess.PIPE,
+</span><span class="sub">-            universal_newlines=True,
+</span><span class="add">+            self.command, stdout=subprocess.PIPE, universal_newlines=True, check=False
+</span><span class="def">         )
+</span><span class="def">         if output.stdout and not output.returncode:
+</span><span class="def">             if self.instances_file:
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -153,24 +153,24 @@
+<span class="def">         if self.border_width:
+</span><span class="def">             self.border = [self.qtile.color_pixel(c) for c in self.border]
+</span><span class="def"> 
+</span><span class="sub">-        self._popup_config = {}
+</span><span class="add">+        popup_config = {}
+</span><span class="def">         for opt in Popup.defaults:
+</span><span class="def">             key = opt[0]
+</span><span class="def">             if hasattr(self, key):
+</span><span class="def">                 value = getattr(self, key)
+</span><span class="def">                 if isinstance(value, (tuple, list)):
+</span><span class="sub">-                    self._popup_config[key] = value[1]
+</span><span class="add">+                    popup_config[key] = value[1]
+</span><span class="def">                 else:
+</span><span class="sub">-                    self._popup_config[key] = value
+</span><span class="add">+                    popup_config[key] = value
+</span><span class="def"> 
+</span><span class="def">         for win in range(self.max_windows):
+</span><span class="sub">-            popup = Popup(self.qtile, **self._popup_config)
+</span><span class="add">+            popup = Popup(self.qtile, **popup_config)
+</span><span class="def">             popup.win.handle_ButtonPress = self._buttonpress(popup)
+</span><span class="def">             popup.replaces_id = None
+</span><span class="def">             self._hidden.append(popup)
+</span><span class="def">             self._positions.append(
+</span><span class="def">                 (self.x, self.y + win * (self.height + 2 * self.border_width +
+</span><span class="sub">-                 self.gap))
+</span><span class="add">+                                         self.gap))
+</span><span class="def">             )
+</span><span class="def"> 
+</span><span class="def">         notifier.register(self._notify, Server.capabilities)
+</span>@@ -325,26 +325,24 @@
+<span class="def">             shown.place()
+</span><span class="def"> 
+</span><span class="def">     def _load_icon(self, notif):
+</span><span class="sub">-        if notif.app_icon:
+</span><span class="sub">-            if notif.app_icon in self._icons:
+</span><span class="sub">-                return self._icons.get(notif.app_icon)
+</span><span class="sub">-            else:
+</span><span class="sub">-                try:
+</span><span class="sub">-                    img = images.Img.from_path(notif.app_icon)
+</span><span class="sub">-                    if img.width &gt; img.height:
+</span><span class="sub">-                        img.resize(width=self.icon_size)
+</span><span class="sub">-                    else:
+</span><span class="sub">-                        img.resize(height=self.icon_size)
+</span><span class="sub">-                    surface, _ = images._decode_to_image_surface(
+</span><span class="sub">-                        img.bytes_img, img.width, img.height
+</span><span class="sub">-                    )
+</span><span class="sub">-                    self._icons[notif.app_icon] = surface, surface.get_height()
+</span><span class="sub">-                except (FileNotFoundError, images.LoadingError, IsADirectoryError) as e:
+</span><span class="sub">-                    logger.exception(e)
+</span><span class="sub">-                    self._icons[notif.app_icon] = None
+</span><span class="sub">-                return self._icons[notif.app_icon]
+</span><span class="sub">-        else:
+</span><span class="add">+        if not notif.app_icon:
+</span><span class="def">             return None
+</span><span class="add">+        if notif.app_icon in self._icons:
+</span><span class="add">+            return self._icons.get(notif.app_icon)
+</span><span class="add">+        try:
+</span><span class="add">+            img = images.Img.from_path(notif.app_icon)
+</span><span class="add">+            if img.width &gt; img.height:
+</span><span class="add">+                img.resize(width=self.icon_size)
+</span><span class="add">+            else:
+</span><span class="add">+                img.resize(height=self.icon_size)
+</span><span class="add">+            surface, _ = images._decode_to_image_surface(
+</span><span class="add">+                img.bytes_img, img.width, img.height
+</span><span class="add">+            )
+</span><span class="add">+            self._icons[notif.app_icon] = surface, surface.get_height()
+</span><span class="add">+        except (FileNotFoundError, images.LoadingError, IsADirectoryError) as e:
+</span><span class="add">+            logger.exception(e)
+</span><span class="add">+            self._icons[notif.app_icon] = None
+</span><span class="add">+        return self._icons[notif.app_icon]
+</span><span class="def"> 
+</span><span class="def">     def close(self, qtile=None):
+</span><span class="def">         &quot;&quot;&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/mpc/mpc.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,7 +13,7 @@
+<span class="def">     }.items()])
+</span><span class="def"> 
+</span><span class="def"> &quot;&quot;&quot;
+</span><span class="sub">-# pylint: disable=no-member
+</span><span class="add">+# pylint: disable=no-member,redefined-builtin
+</span><span class="def"> 
+</span><span class="def"> from functools import wraps
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/amixer/amixer.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,58 +44,64 @@
+<span class="def">             self.mute_master = False
+</span><span class="def"> 
+</span><span class="def">     def increase(self, qtile=None):
+</span><span class="sub">-        stdout = self._run([&apos;set&apos;, self.mixer, f&apos;{self.interval}%+&apos;])
+</span><span class="sub">-        volume = self._get_volume(stdout)
+</span><span class="add">+        stdout = _run([&apos;set&apos;, self.mixer, f&apos;{self.interval}%+&apos;])
+</span><span class="add">+        volume = _get_volume(stdout)
+</span><span class="def">         self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="def">     def decrease(self, qtile=None):
+</span><span class="sub">-        stdout = self._run([&apos;set&apos;, self.mixer, f&apos;{self.interval}%-&apos;])
+</span><span class="sub">-        volume = self._get_volume(stdout)
+</span><span class="add">+        stdout = _run([&apos;set&apos;, self.mixer, f&apos;{self.interval}%-&apos;])
+</span><span class="add">+        volume = _get_volume(stdout)
+</span><span class="def">         self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="def">     def toggle(self, qtile=None):
+</span><span class="sub">-        stdout = self._run([&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;toggle&apos;])
+</span><span class="sub">-        if self._get_mute(stdout):
+</span><span class="add">+        stdout = _run(
+</span><span class="add">+            [&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;toggle&apos;]
+</span><span class="add">+        )
+</span><span class="add">+        if _get_mute(stdout):
+</span><span class="def">             self.show(&apos;Muted&apos;)
+</span><span class="def">         else:
+</span><span class="def">             if self.mute_master:
+</span><span class="sub">-                stdout = self._run([&apos;get&apos;, self.mixer])
+</span><span class="sub">-            volume = self._get_volume(stdout)
+</span><span class="add">+                stdout = _run([&apos;get&apos;, self.mixer])
+</span><span class="add">+            volume = _get_volume(stdout)
+</span><span class="def">             self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="def">     def mute(self, qtile=None):
+</span><span class="sub">-        self._run([&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;mute&apos;])
+</span><span class="add">+        _run([&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;mute&apos;])
+</span><span class="def">         self.show(&apos;Muted&apos;)
+</span><span class="def"> 
+</span><span class="def">     def unmute(self, qtile=None):
+</span><span class="sub">-        stdout = self._run(
+</span><span class="sub">-            [&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;unmute&apos;]
+</span><span class="sub">-        )
+</span><span class="sub">-        volume = self._get_volume(self._run([&apos;get&apos;, self.mixer]))
+</span><span class="add">+        _run([&apos;set&apos;, &apos;Master&apos; if self.mute_master else self.mixer, &apos;unmute&apos;])
+</span><span class="add">+        volume = _get_volume(_run([&apos;get&apos;, self.mixer]))
+</span><span class="def">         self.show(self.interval * round(volume / self.interval))
+</span><span class="def"> 
+</span><span class="sub">-    def _get_mute(self, stdout):
+</span><span class="sub">-        if len(stdout) == 5:
+</span><span class="sub">-            if stdout[4].decode().split()[5][1:-1] == &apos;on&apos;:
+</span><span class="sub">-                return False
+</span><span class="sub">-            else:
+</span><span class="sub">-                return True
+</span><span class="sub">-        logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="def"> 
+</span><span class="sub">-    def _get_volume(self, stdout):
+</span><span class="sub">-        if len(stdout) == 5:
+</span><span class="sub">-            return int(stdout[4].decode().split()[3][1:-2])
+</span><span class="sub">-        if len(stdout) == 7:
+</span><span class="sub">-            return int(stdout[5].decode().split()[4][1:-2])
+</span><span class="add">+def _get_mute(stdout):
+</span><span class="add">+    if len(stdout) == 5:
+</span><span class="add">+        if stdout[4].decode().split()[5][1:-1] == &apos;on&apos;:
+</span><span class="add">+            muted = False
+</span><span class="add">+        else:
+</span><span class="add">+            muted = True
+</span><span class="add">+    else:
+</span><span class="add">+        muted = False
+</span><span class="def">         logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="sub">-
+</span><span class="sub">-    def _run(self, args):
+</span><span class="sub">-        cmd = [&apos;amixer&apos;]
+</span><span class="sub">-        cmd.extend(args)
+</span><span class="sub">-        try:
+</span><span class="sub">-            output = subprocess.run(cmd, stdout=subprocess.PIPE)
+</span><span class="sub">-            stdout = output.stdout.splitlines()
+</span><span class="sub">-        except subprocess.CalledProcessError as err:
+</span><span class="sub">-            logger.error(err.output.decode())
+</span><span class="sub">-            return
+</span><span class="sub">-        return stdout
+</span><span class="add">+    return muted
+</span><span class="add">+
+</span><span class="add">+def _get_volume(stdout):
+</span><span class="add">+    if (stdlen:=len(stdout)) == 5:
+</span><span class="add">+        vol = int(stdout[4].decode().split()[3][1:-2])
+</span><span class="add">+    elif stdlen == 7:
+</span><span class="add">+        vol = int(stdout[5].decode().split()[4][1:-2])
+</span><span class="add">+    else:
+</span><span class="add">+        logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="add">+        vol = 0
+</span><span class="add">+    return vol
+</span><span class="add">+
+</span><span class="add">+def _run(args):
+</span><span class="add">+    cmd = [&apos;amixer&apos;]
+</span><span class="add">+    cmd.extend(args)
+</span><span class="add">+    try:
+</span><span class="add">+        output = subprocess.run(cmd, stdout=subprocess.PIPE, check=False)
+</span><span class="add">+    except subprocess.CalledProcessError as err:
+</span><span class="add">+        logger.error(err.output.decode())
+</span><span class="add">+        return &apos;&apos;
+</span><span class="add">+    return output.stdout.splitlines()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/__init__.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,13 +3,13 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+from random import randint
+</span><span class="add">+
+</span><span class="def"> import gi
+</span><span class="def"> gi.require_version(&apos;Notify&apos;, &apos;0.7&apos;)
+</span><span class="def"> from gi.repository import Notify
+</span><span class="def"> 
+</span><span class="sub">-from random import randint
+</span><span class="def"> from xcffib.xproto import StackMode
+</span><span class="sub">-
+</span><span class="def"> from libqtile import configurable, pangocffi, window
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.drawer import Drawer
+</span></pre>
+</div></div>
+  </body>
+</html>

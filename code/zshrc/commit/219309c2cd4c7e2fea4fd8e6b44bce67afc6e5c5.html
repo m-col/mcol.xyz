@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - added ranger config</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/219309c2cd4c7e2fea4fd8e6b44bce67afc6e5c5.html">219309c2cd4c7e2fea4fd8e6b44bce67afc6e5c5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/92954c191e57533b00951b7409b2ce1fb8fed0d7.html">92954c191e57533b00951b7409b2ce1fb8fed0d7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-21 21:18:02 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-21 21:18:02 +0000
+
+added ranger config
+</pre><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,25 +15,18 @@
+<span class="def"> # on the UI such as :delete or :mark.
+</span><span class="def"> # ===================================================================
+</span><span class="def"> 
+</span><span class="sub">-# ===================================================================
+</span><span class="def"> # == Options
+</span><span class="sub">-# ===================================================================
+</span><span class="def"> 
+</span><span class="sub">-# Which viewmode should be used?  Possible values are:
+</span><span class="sub">-#     miller: Use miller columns which show multiple levels of the hierarchy
+</span><span class="sub">-#     multipane: Midnight-commander like multipane view showing all tabs next
+</span><span class="sub">-#                to each other
+</span><span class="add">+# miller or multipane
+</span><span class="def"> set viewmode miller
+</span><span class="sub">-#set viewmode multipane
+</span><span class="def"> 
+</span><span class="sub">-# How many columns are there, and what are their relative widths?
+</span><span class="def"> set column_ratios 1,3,4
+</span><span class="def"> 
+</span><span class="def"> # Which files should be hidden? (regular expression)
+</span><span class="def"> set hidden_filter ^\.|\.(?:pyc|pyo|bak|swp)$|^lost\+found$|^__(py)?cache__$
+</span><span class="def"> 
+</span><span class="def"> # Show hidden files? You can toggle this by typing &apos;zh&apos;
+</span><span class="sub">-set show_hidden false
+</span><span class="add">+set show_hidden true
+</span><span class="def"> 
+</span><span class="def"> # Ask for a confirmation when running the &quot;delete&quot; command?
+</span><span class="def"> # Valid values are &quot;always&quot;, &quot;never&quot;, &quot;multiple&quot; (default)
+</span>@@ -49,7 +42,7 @@
+<span class="def"> set use_preview_script true
+</span><span class="def"> 
+</span><span class="def"> # Automatically count files in the directory, even before entering them?
+</span><span class="sub">-set automatically_count_files false
+</span><span class="add">+set automatically_count_files true
+</span><span class="def"> 
+</span><span class="def"> # Open all images in this directory when running certain image viewers
+</span><span class="def"> # like feh or sxiv?  You can still open selected files by marking them.
+</span>@@ -94,12 +87,8 @@
+<span class="def"> #   whole terminal window.
+</span><span class="def"> set preview_images_method w3m
+</span><span class="def"> 
+</span><span class="sub">-# Default iTerm2 font size (see: preview_images_method: iterm2)
+</span><span class="sub">-set iterm2_font_width 8
+</span><span class="sub">-set iterm2_font_height 11
+</span><span class="sub">-
+</span><span class="def"> # Use a unicode &quot;...&quot; character to mark cut-off filenames?
+</span><span class="sub">-set unicode_ellipsis false
+</span><span class="add">+set unicode_ellipsis true
+</span><span class="def"> 
+</span><span class="def"> # Show dotfiles in the bookmark preview box?
+</span><span class="def"> set show_hidden_bookmarks true
+</span>@@ -115,10 +104,10 @@
+<span class="def"> set collapse_preview true
+</span><span class="def"> 
+</span><span class="def"> # Save the console history on exit?
+</span><span class="sub">-set save_console_history false
+</span><span class="add">+set save_console_history true
+</span><span class="def"> 
+</span><span class="def"> # Draw the status bar on top of the browser window (default: bottom)
+</span><span class="sub">-set status_bar_on_top false
+</span><span class="add">+set status_bar_on_top true
+</span><span class="def"> 
+</span><span class="def"> # Draw a progress bar in the status bar which displays the average state of all
+</span><span class="def"> # currently running tasks which support progress bars?
+</span>@@ -135,7 +124,7 @@
+<span class="def"> 
+</span><span class="def"> # Display the file size in the main column or status bar?
+</span><span class="def"> set display_size_in_main_column true
+</span><span class="sub">-set display_size_in_status_bar true
+</span><span class="add">+set display_size_in_status_bar false
+</span><span class="def"> 
+</span><span class="def"> # Display files tags in all columns or only in main column?
+</span><span class="def"> set display_tags_in_all_columns true
+</span>@@ -144,7 +133,7 @@
+<span class="def"> set update_title true
+</span><span class="def"> 
+</span><span class="def"> # Set the title to &quot;ranger&quot; in the tmux program?
+</span><span class="sub">-set update_tmux_title false
+</span><span class="add">+set update_tmux_title true
+</span><span class="def"> 
+</span><span class="def"> # Shorten the title if it gets long?  The number defines how many
+</span><span class="def"> # directories are displayed at once, 0 turns off this feature.
+</span>@@ -157,8 +146,8 @@
+<span class="def"> set tilde_in_titlebar true
+</span><span class="def"> 
+</span><span class="def"> # How many directory-changes or console-commands should be kept in history?
+</span><span class="sub">-set max_history_size 20
+</span><span class="sub">-set max_console_history_size 50
+</span><span class="add">+set max_history_size 10
+</span><span class="add">+set max_console_history_size 20
+</span><span class="def"> 
+</span><span class="def"> # Try to keep so much space between the top/bottom border when scrolling:
+</span><span class="def"> set scroll_offset 8
+</span>@@ -168,7 +157,7 @@
+<span class="def"> 
+</span><span class="def"> # Padding on the right when there&apos;s no preview?
+</span><span class="def"> # This allows you to click into the space to run the file.
+</span><span class="sub">-set padding_right false
+</span><span class="add">+set padding_right true
+</span><span class="def"> 
+</span><span class="def"> # Save bookmarks (used with mX and `X) instantly?
+</span><span class="def"> # This helps to synchronize bookmarks between multiple ranger
+</span>@@ -214,7 +203,7 @@
+<span class="def"> 
+</span><span class="def"> # Avoid previewing files larger than this size, in bytes.  Use a value of 0 to
+</span><span class="def"> # disable this feature.
+</span><span class="sub">-set preview_max_size 0
+</span><span class="add">+set preview_max_size 1000000
+</span><span class="def"> 
+</span><span class="def"> # Add the highlighted file to the path in the titlebar
+</span><span class="def"> set show_selection_in_titlebar true
+</span>@@ -230,13 +219,13 @@
+<span class="def"> set metadata_deep_search false
+</span><span class="def"> 
+</span><span class="def"> # Clear all existing filters when leaving a directory
+</span><span class="sub">-set clear_filters_on_dir_change false
+</span><span class="add">+set clear_filters_on_dir_change true
+</span><span class="def"> 
+</span><span class="def"> # Disable displaying line numbers in main column
+</span><span class="def"> set line_numbers true
+</span><span class="def"> 
+</span><span class="def"> # Start line numbers from 1 instead of 0
+</span><span class="sub">-set one_indexed false
+</span><span class="add">+set one_indexed true
+</span><span class="def"> 
+</span><span class="def"> # Save tabs on exit
+</span><span class="def"> set save_tabs_on_exit false
+</span>@@ -257,6 +246,7 @@
+<span class="def"> # Examples:
+</span><span class="def"> # setlocal path=~/downloads sort mtime
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> # ===================================================================
+</span><span class="def"> # == Command Aliases in the Console
+</span><span class="def"> # ===================================================================
+</span>@@ -268,15 +258,11 @@
+<span class="def"> alias qa!   quitall!
+</span><span class="def"> alias qall  quitall
+</span><span class="def"> alias qall! quitall!
+</span><span class="sub">-alias setl  setlocal
+</span><span class="def"> 
+</span><span class="def"> alias filter     scout -prt
+</span><span class="def"> alias find       scout -aeit
+</span><span class="def"> alias mark       scout -mr
+</span><span class="def"> alias unmark     scout -Mr
+</span><span class="sub">-alias search     scout -rs
+</span><span class="sub">-alias search_inc scout -rts
+</span><span class="sub">-alias travel     scout -aefklst
+</span><span class="def"> 
+</span><span class="def"> # ===================================================================
+</span><span class="def"> # == Define keys for the browser
+</span>@@ -293,7 +279,6 @@
+<span class="def"> map &lt;C-l&gt; redraw_window
+</span><span class="def"> map &lt;C-c&gt; abort
+</span><span class="def"> map &lt;esc&gt; change_mode normal
+</span><span class="sub">-map ~ set viewmode!
+</span><span class="def"> 
+</span><span class="def"> map i display_file
+</span><span class="def"> map ? help
+</span>@@ -648,6 +633,7 @@
+<span class="def"> map g/ cd /
+</span><span class="def"> map gS cd /etc/systemd/system
+</span><span class="def"> 
+</span><span class="add">+map gg cd ~/git
+</span><span class="def"> map gc cd ~/.config
+</span><span class="def"> map gx cd ~/.Xresources.d
+</span><span class="def"> map gm cd ~/media
+</span>@@ -663,3 +649,8 @@
+<span class="def"> map gC cd ~/documents/C
+</span><span class="def"> map gD cd ~/Downloads
+</span><span class="def"> map gz cd ~/.zsh
+</span><span class="add">+
+</span><span class="add">+# view git diffs
+</span><span class="add">+map bd shell git diff --color=always %s | less -r
+</span><span class="add">+map bD shell git diff --color=always | less -r
+</span><span class="add">+map ba shell git add %s
+</span></pre>
+</div></div>
+  </body>
+</html>

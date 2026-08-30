@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add backlight Notifier-based plugin</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/e4d3b1585cd6accd15c77e0ec167ad55c9913405.html">e4d3b1585cd6accd15c77e0ec167ad55c9913405</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/52e9e3c95e26c68c06d2e4f2e9d82d3d3629b6fe.html">52e9e3c95e26c68c06d2e4f2e9d82d3d3629b6fe</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-10 18:40:57 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-10 18:40:57 +0000
+
+add backlight Notifier-based plugin
+</pre><div class="diff">
+  <p>
+    <b>backlight/backlight.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,60 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile plugin to control the screen backlight.
+</span><span class="add">+
+</span><span class="add">+Example usage:
+</span><span class="add">+
+</span><span class="add">+    import qtools.backlight
+</span><span class="add">+    backlight = qtools.backlight.Backlight()
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;&lt;XF86MonBrightnessUp&gt;&apos;:    backlight.lazy_inc_brightness,
+</span><span class="add">+        &apos;&lt;XF86MonBrightnessDown&gt;&apos;:  backlight.lazy_dec_brightness,
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+import os
+</span><span class="add">+
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from qtools import Notifier
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Backlight(Notifier):
+</span><span class="add">+
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;summary&apos;, &apos;Backlight&apos;, &apos;Notification summary.&apos;),
+</span><span class="add">+        (&apos;interval&apos;, 10, &apos;Percentage interval by which to change backlight&apos;),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;path&apos;,
+</span><span class="add">+            &apos;/sys/class/backlight/nv_backlight/brightness&apos;,
+</span><span class="add">+            &apos;Full path to backlight device.&apos;
+</span><span class="add">+        ),
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        Notifier.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Backlight.defaults)
+</span><span class="add">+
+</span><span class="add">+        if os.path.isfile(self.path):
+</span><span class="add">+            self.brightness = self.read()
+</span><span class="add">+        else:
+</span><span class="add">+            logger.error(&apos;Path passed to Backlight plugin is invalid&apos;)
+</span><span class="add">+            self.path = &apos;/dev/null&apos;
+</span><span class="add">+            self.brightness = 0
+</span><span class="add">+
+</span><span class="add">+    def read(self):
+</span><span class="add">+        with open(self.path, &apos;r&apos;) as f:
+</span><span class="add">+            return int(f.read())
+</span><span class="add">+
+</span><span class="add">+    def write(self, string):
+</span><span class="add">+        with open(self.path, &apos;w&apos;) as f:
+</span><span class="add">+            f.write(string)
+</span><span class="add">+        self.update(string)
+</span><span class="add">+        self.show()
+</span><span class="add">+
+</span><span class="add">+    def inc_brightness(self, qtile=None):
+</span><span class="add">+        self.brightness = min(self.brightness + self.interval, 100)
+</span><span class="add">+        self.write(str(self.brightness))
+</span><span class="add">+
+</span><span class="add">+    def dec_brightness(self, qtile=None):
+</span><span class="add">+        self.brightness = max(self.brightness - self.interval, 0)
+</span><span class="add">+        self.write(str(self.brightness))
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>backlight/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+from .backlight import Backlight
+</span></pre>
+</div></div>
+  </body>
+</html>

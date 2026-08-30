@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - update audio keybindings</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/26b2094257ed1de41791e00c0a6be75dc244c0cd.html">26b2094257ed1de41791e00c0a6be75dc244c0cd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/93ad15ea048a3a2a38a6dda7eb302b37293a6301.html">93ad15ea048a3a2a38a6dda7eb302b37293a6301</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-23 16:04:34 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-23 16:04:34 +0100
+
+update audio keybindings
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -161,6 +161,7 @@
+<span class="def">     ([&apos;shift&apos;],         &apos;Print&apos;,    lazy.spawn(&apos;screenshot&apos;),                   &quot;Screenshot to file&quot;),
+</span><span class="def">     ([mod],             &apos;p&apos;,        lazy.spawn(&apos;get_password_rofi&apos;),            &quot;Keepass passwords&quot;),
+</span><span class="def">     ([mod],             &apos;i&apos;,        lazy.spawn(&apos;systemctl suspend -i&apos;),         &quot;Suspend system&quot;),
+</span><span class="add">+    ([], &apos;Pause&apos;,                   lazy.spawn(&apos;mpc toggle&apos;),                   &quot;Play/unpause music&quot;),
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -327,12 +328,12 @@
+<span class="def">                 f.write(str(self.volume) + &quot;\n&quot;)
+</span><span class="def"> 
+</span><span class="def">     def cmd_increase_vol(self):
+</span><span class="sub">-        subprocess.call(&apos;amixer -c PCH set PCM 4%+&apos;.split())
+</span><span class="add">+        subprocess.call(&apos;amixer -c PCH set PCM 3%+&apos;.split())
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def">     def cmd_decrease_vol(self):
+</span><span class="sub">-        subprocess.call(&apos;amixer -c PCH set PCM 4%-&apos;.split())
+</span><span class="add">+        subprocess.call(&apos;amixer -c PCH set PCM 3%-&apos;.split())
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

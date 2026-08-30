@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - leave new view size damage to view_process_resize</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/5bee7ec4312ac7afbcfd55469500d2e93456a7ae.html">5bee7ec4312ac7afbcfd55469500d2e93456a7ae</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/914243bac21a2211434a90686e6de4d1ffbf0936.html">914243bac21a2211434a90686e6de4d1ffbf0936</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-21 21:30:16 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-21 21:30:16 +0000
+
+leave new view size damage to view_process_resize
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -229,28 +229,7 @@
+<span class="def"> 
+</span><span class="def"> static void on_commit(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, commit_listener);
+</span><span class="sub">-
+</span><span class="sub">-    struct wlr_box new;
+</span><span class="sub">-    wlr_xdg_surface_get_geometry(view-&gt;surface, &amp;new);
+</span><span class="sub">-
+</span><span class="sub">-    if (new.width != view-&gt;width || new.height != view-&gt;height) {
+</span><span class="sub">-       struct wlr_box old = {
+</span><span class="sub">-           .x = view-&gt;x,
+</span><span class="sub">-           .y = view-&gt;x,
+</span><span class="sub">-           .width = view-&gt;width,
+</span><span class="sub">-           .height = view-&gt;height,
+</span><span class="sub">-       };
+</span><span class="sub">-       if (new.width &gt; old.width || new.height &gt; old.height) {
+</span><span class="sub">-           damage_box(&amp;new, true);
+</span><span class="sub">-       } else if (new.width &lt;= old.width || new.height &lt;= old.height) {
+</span><span class="sub">-           damage_box(&amp;old, true);
+</span><span class="sub">-       }
+</span><span class="sub">-       view-&gt;width = new.width;
+</span><span class="sub">-       view-&gt;height = new.height;
+</span><span class="sub">-
+</span><span class="sub">-    } else {
+</span><span class="sub">-       damage_by_view(view, false);
+</span><span class="sub">-    }
+</span><span class="add">+    damage_by_view(view, false);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

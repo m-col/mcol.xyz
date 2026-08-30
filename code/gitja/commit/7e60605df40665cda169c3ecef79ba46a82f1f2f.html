@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Remove redundant brackets as per hlint</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/7e60605df40665cda169c3ecef79ba46a82f1f2f.html">7e60605df40665cda169c3ecef79ba46a82f1f2f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/e9af2c6322ba0d4801c60cfee4127344942a174c.html">e9af2c6322ba0d4801c60cfee4127344942a174c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-20 21:19:23 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-20 21:19:23 +0000
+
+Remove redundant brackets as per hlint
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -158,7 +158,7 @@
+<span class="def"> -}
+</span><span class="def"> findFile :: Text -&gt; [TreeFile] -&gt; Maybe TreeFile
+</span><span class="def"> findFile _ [] = Nothing
+</span><span class="sub">-findFile prefix (f:fs) = if (isReadme f) then (Just f) else (findFile prefix fs)
+</span><span class="add">+findFile prefix (f:fs) = if isReadme f then Just f else findFile prefix fs
+</span><span class="def">   where
+</span><span class="def">     isReadme = isPrefixOf prefix . toLower . decodeUtf8With lenientDecode . treeFilePath
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -52,7 +52,7 @@
+<span class="def"> main :: IO ()
+</span><span class="def"> main = do
+</span><span class="def">     options &lt;- parser
+</span><span class="sub">-    if (version options)
+</span><span class="add">+    if version options
+</span><span class="def">         then
+</span><span class="def">             putStrLn $ &quot;Your gitserve version is: &quot; &lt;&gt; currentVersion
+</span><span class="def">         else do
+</span></pre>
+</div></div>
+  </body>
+</html>

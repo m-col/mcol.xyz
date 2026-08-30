@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Make separate files for each backend</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/3e82be7e7aa6f5966d7c1f70c9f0a8c91b75b364.html">3e82be7e7aa6f5966d7c1f70c9f0a8c91b75b364</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/ed37b3f48d8bcc53077def8001ed79325d1ba5b3.html">ed37b3f48d8bcc53077def8001ed79325d1ba5b3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-15 23:46:00 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-15 23:46:00 +0100
+
+Make separate files for each backend
+</pre><div class="diff">
+  <p>
+    <b>x11.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,24 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+X11-specific configuration
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+import os
+</span><span class="add">+
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="add">+
+</span><span class="add">+IS_XEPHYR = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0))
+</span><span class="add">+mod = &quot;mod1&quot; if IS_XEPHYR else &quot;mod4&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+term = &apos;xterm&apos; if IS_XEPHYR else &apos;urxvt&apos;  # urxvt doesn&apos;t like xephyr
+</span><span class="add">+wmname = &apos;LG3D&apos;
+</span><span class="add">+keys_backend = []
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Keys to run X11-only launchers
+</span><span class="add">+keys_backend.extend([
+</span><span class="add">+    ([mod],             &apos;d&apos;,    lazy.spawn(&apos;rofi -show run -theme ~/.config/rofi/common-large.rasi&apos;), &quot;rofi: run&quot;),
+</span><span class="add">+    ([],    &apos;XF86PowerOff&apos;,     lazy.spawn(&apos;power-menu&apos;),                   &quot;Power menu&quot;),
+</span><span class="add">+    ([mod, &apos;shift&apos;],    &apos;x&apos;,    lazy.spawn(&apos;set_monitors&apos;),                 &quot;Configure monitors&quot;),
+</span><span class="add">+    ([mod, &apos;shift&apos;],    &apos;i&apos;,    lazy.spawn(&apos;slock systemctl suspend -i&apos;),   &quot;Suspend system and lock&quot;),
+</span><span class="add">+])
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,37 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Wayland-specific configuration
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+import os
+</span><span class="add">+
+</span><span class="add">+from libqtile.backend.wayland import InputConfig
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="add">+
+</span><span class="add">+IS_XEPHYR = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0))
+</span><span class="add">+mod = &quot;mod1&quot; if IS_XEPHYR else &quot;mod4&quot;
+</span><span class="add">+
+</span><span class="add">+term = &apos;footclient&apos;
+</span><span class="add">+keys_backend = []
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Keys to change VT
+</span><span class="add">+keys_backend.extend([
+</span><span class="add">+    ([mod], &apos;F1&apos;,     lazy.change_vt(1),    &quot;Change to VT 1&quot;),
+</span><span class="add">+    ([mod], &apos;F2&apos;,     lazy.change_vt(2),    &quot;Change to VT 2&quot;),
+</span><span class="add">+    ([mod], &apos;F3&apos;,     lazy.change_vt(3),    &quot;Change to VT 3&quot;),
+</span><span class="add">+    ([mod], &apos;F4&apos;,     lazy.change_vt(4),    &quot;Change to VT 4&quot;),
+</span><span class="add">+    ([mod], &apos;F5&apos;,     lazy.change_vt(5),    &quot;Change to VT 5&quot;),
+</span><span class="add">+    ([mod], &apos;F6&apos;,     lazy.change_vt(6),    &quot;Change to VT 6&quot;),
+</span><span class="add">+])
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Keys to run Wayland-only launchers
+</span><span class="add">+keys_backend.extend([
+</span><span class="add">+    ([mod], &apos;d&apos;, lazy.spawn(&apos;wofi --gtk-dark --show run&apos;), &quot;wofi: run&quot;),
+</span><span class="add">+])
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Configure libinput devices
+</span><span class="add">+wayland_libinput_config = {
+</span><span class="add">+    &quot;type:pointer&quot;: InputConfig(drag=True, tap=True)
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,27 +24,18 @@
+<span class="def"> if TYPE_CHECKING:
+</span><span class="def">     from typing import List, Tuple
+</span><span class="def"> 
+</span><span class="add">+    from libqtile.core.manager import Qtile
+</span><span class="def"> 
+</span><span class="sub">-## Basic vars
+</span><span class="sub">-IS_WAYLAND = qtile.core.name == &quot;wayland&quot;
+</span><span class="def"> 
+</span><span class="sub">-if IS_WAYLAND:
+</span><span class="sub">-    term = &apos;footclient&apos;
+</span><span class="sub">-else:
+</span><span class="sub">-    term = &apos;xterm&apos;
+</span><span class="add">+HOME: str = os.path.expanduser(&apos;~&apos;)
+</span><span class="add">+IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+</span><span class="add">+IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span><span class="def"> 
+</span><span class="sub">-xephyr = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0))
+</span><span class="sub">-if xephyr:
+</span><span class="sub">-    mod = &quot;mod1&quot;
+</span><span class="sub">-    alt = &quot;control&quot;
+</span><span class="sub">-    if not IS_WAYLAND:
+</span><span class="sub">-        # urxvt doesn&apos;t like xephyr
+</span><span class="sub">-        term = &apos;xterm&apos;
+</span><span class="add">+if IS_WAYLAND:
+</span><span class="add">+    from wayland import term, keys_backend, wayland_libinput_config
+</span><span class="def"> else:
+</span><span class="sub">-    mod = &quot;mod4&quot;
+</span><span class="sub">-    alt = &quot;mod1&quot;
+</span><span class="add">+    from x11 import term, keys_backend, wmname
+</span><span class="def"> 
+</span><span class="sub">-HOME = os.path.expanduser(&apos;~&apos;)
+</span><span class="def"> 
+</span><span class="def"> ## Colours
+</span><span class="def"> theme = dict(
+</span>@@ -83,21 +74,31 @@
+<span class="def"> 
+</span><span class="def"> ## Keys
+</span><span class="def"> 
+</span><span class="add">+if IS_XEPHYR:
+</span><span class="add">+    mod = &quot;mod1&quot;
+</span><span class="add">+    alt = &quot;control&quot;
+</span><span class="add">+else:
+</span><span class="add">+    mod = &quot;mod4&quot;
+</span><span class="add">+    alt = &quot;mod1&quot;
+</span><span class="def"> 
+</span><span class="sub">-@lazy.function
+</span><span class="sub">-def float_to_front(qtile):
+</span><span class="add">+# My keybindings - they are converted at the bottom of this file
+</span><span class="add">+my_keys: List[Tuple[List[str], str, Any, str]] = []
+</span><span class="add">+my_keys.extend(keys_backend)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def float_to_front(qtile: Qtile) -&gt; None:
+</span><span class="def">     &quot;&quot;&quot; Bring all floating windows of the group to front &quot;&quot;&quot;
+</span><span class="def">     for window in qtile.current_group.windows:
+</span><span class="def">         if window.floating:
+</span><span class="def">             window.cmd_bring_to_front()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-my_keys: Tuple[List[str], str, Any, str] = [
+</span><span class="add">+my_keys.extend([
+</span><span class="def">     # Window management
+</span><span class="def">     ([mod, &apos;control&apos;],  &apos;q&apos;,        lazy.window.kill(),                 &quot;Close window&quot;),
+</span><span class="def">     ([mod],             &apos;f&apos;,        lazy.window.toggle_fullscreen(),    &quot;Toggle fullscreen&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;space&apos;,    lazy.window.toggle_floating(),      &quot;Toggle floating&quot;),
+</span><span class="sub">-    ([mod],             &apos;space&apos;,    float_to_front,                     &quot;Move floating windows to the front&quot;),
+</span><span class="add">+    ([mod],             &apos;space&apos;,    lazy.function(float_to_front),      &quot;Move floating windows to the front&quot;),
+</span><span class="def">     ([mod],             &apos;j&apos;,        lazy.function(traverse.down),       &quot;Traverse down&quot;),
+</span><span class="def">     ([mod],             &apos;k&apos;,        lazy.function(traverse.up),         &quot;Traverse up&quot;),
+</span><span class="def">     ([mod],             &apos;h&apos;,        lazy.function(traverse.left),       &quot;Traverse left&quot;),
+</span>@@ -116,7 +117,7 @@
+<span class="def">     ([mod],             &apos;s&apos;,        lazy.window.static(),               &quot;Make window static&quot;),
+</span><span class="def">     ([mod, &apos;control&apos;],  &apos;Escape&apos;,   lazy.shutdown(),                    &quot;Shutdown Qtile&quot;),
+</span><span class="def"> 
+</span><span class="sub">-    # Volume control
+</span><span class="add">+    # Volume control - MyVolume widget is defined further down
+</span><span class="def">     ([], &apos;XF86AudioMute&apos;,         lazy.widget[&apos;myvolume&apos;].mute(),         &quot;Mute audio&quot;),
+</span><span class="def">     ([], &apos;F10&apos;,                   lazy.widget[&apos;myvolume&apos;].mute(),         &quot;Mute audio&quot;),
+</span><span class="def">     ([], &apos;XF86AudioRaiseVolume&apos;,  lazy.widget[&apos;myvolume&apos;].increase_vol(), &quot;Increase volume&quot;),
+</span>@@ -138,34 +139,7 @@
+<span class="def">     ([&apos;shift&apos;],         &apos;Print&apos;,    lazy.spawn(&apos;screenshot&apos;),                   &quot;Screenshot to file&quot;),
+</span><span class="def">     ([mod],             &apos;p&apos;,        lazy.spawn(&apos;get_password_rofi&apos;),            &quot;Keepass passwords&quot;),
+</span><span class="def">     ([mod],             &apos;i&apos;,        lazy.spawn(&apos;systemctl suspend -i&apos;),         &quot;Suspend system&quot;),
+</span><span class="sub">-]
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-# Backend-specific launchers
+</span><span class="sub">-if IS_WAYLAND:
+</span><span class="sub">-    my_keys.extend([
+</span><span class="sub">-        ([mod], &apos;d&apos;, lazy.spawn(&apos;wofi --gtk-dark --show run&apos;), &quot;wofi: run&quot;),
+</span><span class="sub">-    ])
+</span><span class="sub">-
+</span><span class="sub">-else:
+</span><span class="sub">-    my_keys.extend([
+</span><span class="sub">-        ([mod],             &apos;d&apos;,    lazy.spawn(&apos;rofi -show run -theme ~/.config/rofi/common-large.rasi&apos;), &quot;rofi: run&quot;),
+</span><span class="sub">-        ([],    &apos;XF86PowerOff&apos;,     lazy.spawn(&apos;power-menu&apos;),                   &quot;Power menu&quot;),
+</span><span class="sub">-        ([mod, &apos;shift&apos;],    &apos;x&apos;,    lazy.spawn(&apos;set_monitors&apos;),                 &quot;Configure monitors&quot;),
+</span><span class="sub">-        ([mod, &apos;shift&apos;],    &apos;i&apos;,    lazy.spawn(&apos;slock systemctl suspend -i&apos;),   &quot;Suspend system and lock&quot;),
+</span><span class="sub">-    ])
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-# Changing VT
+</span><span class="sub">-if IS_WAYLAND:
+</span><span class="sub">-    my_keys.extend([
+</span><span class="sub">-        ([mod], &apos;F1&apos;,     lazy.change_vt(1),    &quot;Change to VT 1&quot;),
+</span><span class="sub">-        ([mod], &apos;F2&apos;,     lazy.change_vt(2),    &quot;Change to VT 2&quot;),
+</span><span class="sub">-        ([mod], &apos;F3&apos;,     lazy.change_vt(3),    &quot;Change to VT 3&quot;),
+</span><span class="sub">-        ([mod], &apos;F4&apos;,     lazy.change_vt(4),    &quot;Change to VT 4&quot;),
+</span><span class="sub">-        ([mod], &apos;F5&apos;,     lazy.change_vt(5),    &quot;Change to VT 5&quot;),
+</span><span class="sub">-        ([mod], &apos;F6&apos;,     lazy.change_vt(6),    &quot;Change to VT 6&quot;),
+</span><span class="sub">-    ])
+</span><span class="add">+])
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> ## Mouse control
+</span>@@ -565,7 +539,7 @@
+<span class="def">         env[&quot;WOB_BAR&quot;] = &quot;#ff&quot; + foreground[1:]
+</span><span class="def">         subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True, env=env)
+</span><span class="def"> 
+</span><span class="sub">-    if xephyr:
+</span><span class="add">+    if IS_XEPHYR:
+</span><span class="def">         # To adapt to whatever window size it was given
+</span><span class="def">         @hook.subscribe.startup_once
+</span><span class="def">         async def _():
+</span>@@ -580,18 +554,8 @@
+<span class="def"> cursor_warp = False
+</span><span class="def"> auto_fullscreen = True
+</span><span class="def"> focus_on_window_activation = &apos;smart&apos;
+</span><span class="sub">-wmname = &apos;LG3D&apos;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Reformat keys
+</span><span class="def"> my_keys.extend(keys_group)
+</span><span class="def"> keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-# Configure libinput devices
+</span><span class="sub">-if IS_WAYLAND:
+</span><span class="sub">-    from libqtile.backend.wayland import InputConfig
+</span><span class="sub">-
+</span><span class="sub">-    wayland_libinput_config = {
+</span><span class="sub">-        &quot;type:pointer&quot;: InputConfig(drag=True, tap=True)
+</span><span class="sub">-    }
+</span></pre>
+</div></div>
+  </body>
+</html>

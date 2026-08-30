@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add reverse_scrolling option</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/1cec4446c1cd7f707e42bee1368416717f062218.html">1cec4446c1cd7f707e42bee1368416717f062218</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/fbd8d7e039fd0f72d605950aa317742b1cf89bad.html">fbd8d7e039fd0f72d605950aa317742b1cf89bad</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-22 17:53:33 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-22 17:53:33 +0000
+
+add reverse_scrolling option
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -57,6 +57,7 @@
+<span class="def">     struct wl_list mouse_bindings;
+</span><span class="def">     action on_mouse_motion;
+</span><span class="def">     action on_mouse_scroll;
+</span><span class="add">+    bool reverse_scrolling;
+</span><span class="def">     enum cursor_mode cursor_mode;
+</span><span class="def">     struct view *grabbed_view;
+</span><span class="def">     double grab_x, grab_y;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -182,9 +182,9 @@
+<span class="def"> 		.dy = 0,
+</span><span class="def"> 	    };
+</span><span class="def"> 	    if (event-&gt;orientation == WLR_AXIS_ORIENTATION_VERTICAL) {
+</span><span class="sub">-		motion.dy = event-&gt;delta;
+</span><span class="add">+		motion.dy = server-&gt;reverse_scrolling ? event-&gt;delta : - event-&gt;delta;
+</span><span class="def"> 	    } else {
+</span><span class="sub">-		motion.dx = event-&gt;delta;
+</span><span class="add">+		motion.dx = server-&gt;reverse_scrolling ? event-&gt;delta : - event-&gt;delta;
+</span><span class="def"> 	    };
+</span><span class="def"> 	    server-&gt;on_mouse_scroll(server, &amp;motion);
+</span><span class="def"> 	}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -215,14 +215,15 @@
+<span class="def">     add_desk(server);
+</span><span class="def">     server-&gt;current_desk =
+</span><span class="def"> 	wl_container_of(server-&gt;desks.next, server-&gt;current_desk, link);
+</span><span class="sub">-    server-&gt;zoom_min = 0.5;
+</span><span class="sub">-    server-&gt;zoom_max = 3;
+</span><span class="def"> 
+</span><span class="def">     server-&gt;mod = WLR_MODIFIER_LOGO;
+</span><span class="def">     wl_list_init(&amp;server-&gt;key_bindings);
+</span><span class="def">     wl_list_init(&amp;server-&gt;mouse_bindings);
+</span><span class="def">     server-&gt;on_mouse_motion = NULL;
+</span><span class="def">     server-&gt;on_mouse_scroll = NULL;
+</span><span class="add">+    server-&gt;zoom_min = 0.5;
+</span><span class="add">+    server-&gt;zoom_max = 3;
+</span><span class="add">+    server-&gt;reverse_scrolling = false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,6 @@
+<span class="def">  - xwayland
+</span><span class="def">  - xdg-decoration protocol
+</span><span class="def">  - primary-selection protocol
+</span><span class="sub">- - configurable keybindings
+</span><span class="def">  - functions to shift focus
+</span><span class="def">  - functions to shift desk view
+</span><span class="def">  - screenshots protocol
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -43,6 +43,8 @@
+<span class="def"> bind		scroll		pan_desk
+</span><span class="def"> bind	Shift	scroll		zoom_desk
+</span><span class="def"> 
+</span><span class="add">+# Scroll direction. Can be one of: natural, reverse
+</span><span class="add">+#scroll_direction natural
+</span><span class="def"> 
+</span><span class="def"> ## Configure desks
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

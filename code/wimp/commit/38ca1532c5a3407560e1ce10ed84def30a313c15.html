@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - take into account border when position new windows</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/38ca1532c5a3407560e1ce10ed84def30a313c15.html">38ca1532c5a3407560e1ce10ed84def30a313c15</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/571f5228bbc3ba85e227b714613f2e10ae906280.html">571f5228bbc3ba85e227b714613f2e10ae906280</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-31 18:59:18 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-31 18:59:18 +0000
+
+take into account border when position new windows
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -205,6 +205,8 @@
+<span class="def">     view-&gt;request_fullscreen_listener.notify = on_request_fullscreen;
+</span><span class="def">     wl_signal_add(&amp;toplevel-&gt;events.request_fullscreen, &amp;view-&gt;request_fullscreen_listener);
+</span><span class="def"> 
+</span><span class="add">+    view-&gt;x = wimp.current_desk-&gt;border_width;
+</span><span class="add">+    view-&gt;y = wimp.current_desk-&gt;border_width;
+</span><span class="def">     wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

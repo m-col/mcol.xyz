@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Add action handler to notification server</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/b8aca9d4bff107971f896f8c6fd54351e70eec6f.html">b8aca9d4bff107971f896f8c6fd54351e70eec6f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/237feaea460b96f662c9926fdbf3fb18fb6b250e.html">237feaea460b96f662c9926fdbf3fb18fb6b250e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-30 21:49:38 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-30 21:49:38 +0100
+
+Add action handler to notification server
+</pre><div class="diff">
+  <p>
+    <b>notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,6 +38,12 @@
+<span class="def">         Notification = Any  # type: ignore
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+class ClosedReason:
+</span><span class="add">+    expired = 1
+</span><span class="add">+    dismissed = 2
+</span><span class="add">+    method = 3  # CloseNotification method
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> class Server(configurable.Configurable):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     This class provides a full graphical notification manager for the
+</span>@@ -61,7 +67,6 @@
+<span class="def">         - select screen / follow mouse/keyboard focus
+</span><span class="def">         - critical notifications to replace any visible non-critical notifs immediately?
+</span><span class="def">         - hints: image-path, desktop-entry (for icon)
+</span><span class="sub">-        - hints: actions
+</span><span class="def">         - hints: Server parameters set for single notification?
+</span><span class="def">         - hints: progress value e.g. int:value:42 with drawing
+</span><span class="def"> 
+</span>@@ -114,7 +119,6 @@
+<span class="def">         (&apos;fullscreen&apos;, &apos;show&apos;, &apos;What to do when in fullscreen: show, hide, or queue.&apos;),
+</span><span class="def">         (&apos;screen&apos;, &apos;focus&apos;, &apos;How to select a screen: focus, mouse, or an int.&apos;),
+</span><span class="def">     ]
+</span><span class="sub">-    # &apos;actions&apos; is (currently) a lie so that Firefox uses this
+</span><span class="def">     capabilities = {&apos;body&apos;, &apos;body-markup&apos;, &apos;actions&apos;}
+</span><span class="def">     # specification: https://developer.gnome.org/notification-spec/
+</span><span class="def"> 
+</span>@@ -136,7 +140,7 @@
+<span class="def">         self._make_attr_list(&apos;timeout&apos;)
+</span><span class="def">         self._make_attr_list(&apos;border&apos;)
+</span><span class="def"> 
+</span><span class="sub">-        qtile.call_soon(asyncio.create_task, self.configure())
+</span><span class="add">+        qtile.call_soon(asyncio.create_task, self._configure())
+</span><span class="def"> 
+</span><span class="def">     def __getattr__(self, name: str) -&gt; Any:
+</span><span class="def">         &quot;&quot;&quot;
+</span>@@ -155,7 +159,7 @@
+<span class="def">         if not isinstance(value, (tuple, list)):
+</span><span class="def">             setattr(self, attr, (value,) * 3)
+</span><span class="def"> 
+</span><span class="sub">-    async def configure(self) -&gt; None:
+</span><span class="add">+    async def _configure(self) -&gt; None:
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         This method needs to be called to set up the Server with the Qtile manager and
+</span><span class="def">         create the required popup windows.
+</span>@@ -184,7 +188,7 @@
+<span class="def">         for win in range(self.max_windows):
+</span><span class="def">             popup = Popup(qtile, **popup_config)
+</span><span class="def">             popup.win.process_button_click = self._buttonpress(popup)
+</span><span class="sub">-            popup.replaces_id = None
+</span><span class="add">+            popup.notif = None
+</span><span class="def">             self._hidden.append(popup)
+</span><span class="def">             self._positions.append(
+</span><span class="def">                 (
+</span>@@ -198,9 +202,11 @@
+<span class="def"> 
+</span><span class="def">     def _buttonpress(self, popup: Popup) -&gt; Callable:
+</span><span class="def">         def _(x: int, y: int, button: int) -&gt; None:
+</span><span class="sub">-            # TODO: actions
+</span><span class="def">             if button == 1:
+</span><span class="sub">-                self._close(popup)
+</span><span class="add">+                self._act(popup)
+</span><span class="add">+                self._close(popup, reason=ClosedReason.dismissed)
+</span><span class="add">+            if button == 3:
+</span><span class="add">+                self._close(popup, reason=ClosedReason.dismissed)
+</span><span class="def">         return _
+</span><span class="def"> 
+</span><span class="def">     def _notify(self, notif: Notification) -&gt; None:
+</span>@@ -222,7 +228,7 @@
+<span class="def"> 
+</span><span class="def">         if notif.replaces_id:
+</span><span class="def">             for popup in self._shown:
+</span><span class="sub">-                if notif.replaces_id == popup.replaces_id:
+</span><span class="add">+                if notif.replaces_id == popup.notif.replaces_id:
+</span><span class="def">                     self._shown.remove(popup)
+</span><span class="def">                     self._send(notif, popup)
+</span><span class="def">                     self._reposition()
+</span>@@ -233,6 +239,10 @@
+<span class="def">         else:
+</span><span class="def">             self._queue.append(notif)
+</span><span class="def"> 
+</span><span class="add">+    def _on_close(self, nid: int) -&gt; None:
+</span><span class="add">+        for popup in self._shown:
+</span><span class="add">+            self._close(popup, nid=nid, reason=ClosedReason.method)
+</span><span class="add">+
+</span><span class="def">     def _unfullscreen(self) -&gt; None:
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         Begin displaying of queue notifications after leaving fullscreen.
+</span>@@ -265,7 +275,8 @@
+<span class="def">             urgency = 1
+</span><span class="def"> 
+</span><span class="def">         self._current_id += 1
+</span><span class="sub">-        popup.id = self._current_id
+</span><span class="add">+        popup.id = self._current_id  # Used for closing the popup
+</span><span class="add">+        popup.notif = notif  # Used for finding the visible popup&apos;s notif for actions
+</span><span class="def">         if popup not in self._shown:
+</span><span class="def">             self._shown.append(popup)
+</span><span class="def">         popup.x, popup.y = self._get_coordinates()
+</span>@@ -292,7 +303,6 @@
+<span class="def">         if self.border_width:
+</span><span class="def">             popup.set_border(self.border[urgency])
+</span><span class="def">         popup.draw()
+</span><span class="sub">-        popup.replaces_id = notif.replaces_id
+</span><span class="def">         if icon:
+</span><span class="def">             popup.horizontal_padding = self.horizontal_padding
+</span><span class="def"> 
+</span>@@ -328,7 +338,7 @@
+<span class="def">             screen = qtile.find_screen(*qtile.mouse_position)
+</span><span class="def">         return x + screen.x, y + screen.y
+</span><span class="def"> 
+</span><span class="sub">-    def _close(self, popup: Popup, nid: Optional[int] = None) -&gt; None:
+</span><span class="add">+    def _close(self, popup: Popup, nid: Optional[int] = None, reason=1) -&gt; None:
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         Close the specified Popup instance.
+</span><span class="def">         &quot;&quot;&quot;
+</span>@@ -344,8 +354,18 @@
+<span class="def">                 self._send(self._queue.pop(0), popup)
+</span><span class="def">             else:
+</span><span class="def">                 self._hidden.append(popup)
+</span><span class="add">+            notifier._service.NotificationClosed(popup.notif.id, 2 if clicked else 1)
+</span><span class="def">         self._reposition()
+</span><span class="def"> 
+</span><span class="add">+    def _act(self, popup: Popup) -&gt; None:
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Execute the actions specified by the notification visible on a clicked popup.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        # Currently this always invokes default action
+</span><span class="add">+        #actions = {i: l for i, l in zip(notif.actions[:-1:2], notif.actions[1::2])}
+</span><span class="add">+        if popup.notif.actions:
+</span><span class="add">+            notifier._service.ActionInvoked(popup.notif.id, popup.notif.actions[0])
+</span><span class="add">+
+</span><span class="def">     def _reposition(self) -&gt; None:
+</span><span class="def">         for index, shown in enumerate(self._shown):
+</span><span class="def">             shown.x, shown.y = self._positions[index]
+</span></pre>
+</div></div>
+  </body>
+</html>

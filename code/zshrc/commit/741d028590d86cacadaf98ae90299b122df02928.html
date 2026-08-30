@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - added gitstatus submod</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/741d028590d86cacadaf98ae90299b122df02928.html">741d028590d86cacadaf98ae90299b122df02928</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/6ba632edadf3a9eea810b20b7dcd1b8288b334e9.html">6ba632edadf3a9eea810b20b7dcd1b8288b334e9</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-04-29 21:46:24 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-04-29 21:46:24 +0100
+
+added gitstatus submod
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,7 +2,7 @@
+<span class="def"> # zshrc
+</span><span class="def"> #
+</span><span class="def"> 
+</span><span class="sub">-if [ -n &quot;$SSH_CLIENT&quot; ] || [ -n &quot;$SSH_TTY&quot; ]
+</span><span class="add">+if [[ -n &quot;$SSH_CLIENT&quot; ]] || [[ -n &quot;$SSH_TTY&quot; ]]
+</span><span class="def"> then
+</span><span class="def">     export IS_SSH=true
+</span><span class="def"> else
+</span>@@ -38,8 +38,8 @@
+<span class="def"> 
+</span><span class="def"> so () { [[ -e $1 ]] &amp;&amp; source $1 }
+</span><span class="def"> 
+</span><span class="sub">-so $ZSH/aliases		    # general aliases
+</span><span class="sub">-so $HOME/.config/aliases    # machine-specific aliases
+</span><span class="add">+so $ZSH/aliases		    # common
+</span><span class="add">+so $HOME/.config/aliases    # machine-specific
+</span><span class="def"> 
+</span><span class="def"> ZSH_THEME=&quot;ban&quot;
+</span><span class="def"> so $ZSH/themes/$ZSH_THEME.zsh-theme
+</span>@@ -55,7 +55,7 @@
+<span class="def"> export SUDO_EDITOR=vim
+</span><span class="def"> export EDITOR=vim
+</span><span class="def"> 
+</span><span class="sub">-# Ensure that the prompt is redrawn when the terminal size changes.
+</span><span class="add">+# ensure that the prompt is redrawn when the terminal size changes.
+</span><span class="def"> TRAPWINCH () { zle &amp;&amp;  zle -R }
+</span><span class="def"> 
+</span><span class="def"> # these are needed for some unicode to work (e.g. in tmux)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>themes/simple2.zsh-theme</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +0,0 @@
+<span class="sub">-PROMPT=&apos;%(!.%{$fg[red]%}.%{$fg[green]%})%~%{$fg_bold[blue]%}$(git_prompt_info)%{$reset_color%} &apos;
+</span><span class="sub">-
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_PREFIX=&quot;(&quot;
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;)&quot;
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_DIRTY=&quot; √&quot;
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_CLEAN=&quot; x&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,10 @@
+<span class="sub">-### Segment drawing
+</span><span class="add">+# vim:ft=zsh
+</span><span class="add">+#
+</span><span class="add">+# ban zsh theme
+</span><span class="add">+#
+</span><span class="add">+
+</span><span class="add">+## Segment drawing
+</span><span class="add">+
+</span><span class="def"> # A few utility functions to make it easy and re-usable to draw segmented prompts
+</span><span class="def"> 
+</span><span class="def"> CURRENT_BG=&apos;NONE&apos;
+</span>@@ -51,47 +57,41 @@
+<span class="def">     fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+source $HOME/.zsh/gitstatus/gitstatus.plugin.zsh
+</span><span class="add">+gitstatus_start MY
+</span><span class="def"> prompt_git() {
+</span><span class="sub">-    (( $+commands[git] )) || return
+</span><span class="def">     local PL_BRANCH_CHAR
+</span><span class="def">     () {
+</span><span class="sub">-    local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="sub">-    #PL_BRANCH_CHAR=$&apos;\ue0a0&apos;         # 
+</span><span class="sub">-    PL_BRANCH_CHAR=$&apos;&apos;
+</span><span class="sub">-}
+</span><span class="sub">-local ref dirty mode repo_path
+</span><span class="sub">-repo_path=$(git rev-parse --git-dir 2&gt;/dev/null)
+</span><span class="sub">-
+</span><span class="sub">-if $(git rev-parse --is-inside-work-tree &gt;/dev/null 2&gt;&amp;1); then
+</span><span class="sub">-    dirty=$(parse_git_dirty)
+</span><span class="sub">-    ref=$(git symbolic-ref HEAD 2&gt; /dev/null) || ref=&quot;➦ $(git rev-parse --short HEAD 2&gt; /dev/null)&quot;
+</span><span class="sub">-    if [[ -n $dirty ]]; then
+</span><span class="sub">-	prompt_segment yellow black
+</span><span class="add">+	local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="add">+	PL_BRANCH_CHAR=$&apos;\ue0a0&apos;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    gitstatus_query MY                  || return 1  # error
+</span><span class="add">+    [[ $VCS_STATUS_RESULT == ok-sync ]] || return 0  # not a git repo
+</span><span class="add">+
+</span><span class="add">+    local     clean=&apos;%F{076}&apos;  # green foreground
+</span><span class="add">+    local untracked=&apos;%F{014}&apos;  # teal foreground
+</span><span class="add">+    local  modified=&apos;%F{011}&apos;  # yellow foreground
+</span><span class="add">+
+</span><span class="add">+    local p
+</span><span class="add">+    if (( VCS_STATUS_HAS_STAGED || VCS_STATUS_HAS_UNSTAGED )); then
+</span><span class="add">+	p+=$modified
+</span><span class="add">+    elif (( VCS_STATUS_HAS_UNTRACKED )); then
+</span><span class="add">+	p+=$untracked
+</span><span class="def">     else
+</span><span class="sub">-	prompt_segment green black
+</span><span class="add">+	p+=$clean
+</span><span class="def">     fi
+</span><span class="add">+    p+=${${VCS_STATUS_LOCAL_BRANCH:-@${VCS_STATUS_COMMIT}}//\%/%%}            # escape %
+</span><span class="def"> 
+</span><span class="sub">-    if [[ -e &quot;${repo_path}/BISECT_LOG&quot; ]]; then
+</span><span class="sub">-	mode=&quot; &lt;B&gt;&quot;
+</span><span class="sub">-    elif [[ -e &quot;${repo_path}/MERGE_HEAD&quot; ]]; then
+</span><span class="sub">-	mode=&quot; &gt;M&lt;&quot;
+</span><span class="sub">-    elif [[ -e &quot;${repo_path}/rebase&quot; || -e &quot;${repo_path}/rebase-apply&quot; || -e &quot;${repo_path}/rebase-merge&quot; || -e &quot;${repo_path}/../.dotest&quot; ]]; then
+</span><span class="sub">-	mode=&quot; &gt;R&gt;&quot;
+</span><span class="sub">-    fi
+</span><span class="add">+    #[[ -n $VCS_STATUS_TAG               ]] &amp;&amp; p+=&quot;#${VCS_STATUS_TAG//\%/%%}&quot;  # escape %
+</span><span class="add">+    [[ $VCS_STATUS_HAS_STAGED      == 1 ]] &amp;&amp; p+=&quot;${modified}+&quot;
+</span><span class="add">+    [[ $VCS_STATUS_HAS_UNSTAGED    == 1 ]] &amp;&amp; p+=&quot;${modified}!&quot;
+</span><span class="add">+    [[ $VCS_STATUS_HAS_UNTRACKED   == 1 ]] &amp;&amp; p+=&quot;${untracked}?&quot;
+</span><span class="add">+    [[ $VCS_STATUS_COMMITS_AHEAD  -gt 0 ]] &amp;&amp; p+=&quot;${clean} ⇡${VCS_STATUS_COMMITS_AHEAD}&quot;
+</span><span class="add">+    [[ $VCS_STATUS_COMMITS_BEHIND -gt 0 ]] &amp;&amp; p+=&quot;${clean} ⇣${VCS_STATUS_COMMITS_BEHIND}&quot;
+</span><span class="add">+    #[[ $VCS_STATUS_STASHES        -gt 0 ]] &amp;&amp; p+=&quot;${clean} *${VCS_STATUS_STASHES}&quot;
+</span><span class="def"> 
+</span><span class="sub">-    setopt promptsubst
+</span><span class="sub">-    autoload -Uz vcs_info
+</span><span class="sub">-
+</span><span class="sub">-    zstyle &apos;:vcs_info:*&apos; enable git
+</span><span class="sub">-    zstyle &apos;:vcs_info:*&apos; get-revision true
+</span><span class="sub">-    zstyle &apos;:vcs_info:*&apos; check-for-changes true
+</span><span class="sub">-    zstyle &apos;:vcs_info:*&apos; stagedstr &apos;+&apos;
+</span><span class="sub">-    zstyle &apos;:vcs_info:*&apos; unstagedstr &apos;**&apos;
+</span><span class="sub">-    zstyle &apos;:vcs_info:*&apos; formats &apos; %u%c&apos;
+</span><span class="sub">-    zstyle &apos;:vcs_info:*&apos; actionformats &apos; %u%c&apos;
+</span><span class="sub">-    vcs_info
+</span><span class="sub">-    echo -n &quot; ${ref/refs\/heads\//$PL_BRANCH_CHAR }${vcs_info_msg_0_%% }${mode} &quot;
+</span><span class="sub">-fi
+</span><span class="add">+    prompt_segment default green &quot;${p}&quot;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -101,8 +101,12 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> prompt_mes() {
+</span><span class="sub">-    [[ $RETVAL -ne 0 ]] &amp;&amp; prompt_segment red black &apos; &gt; &apos;
+</span><span class="sub">-    [[ $RETVAL -eq 0 ]] &amp;&amp; prompt_segment blue black &apos; &gt; &apos;
+</span><span class="add">+    if [[ $RETVAL -ne 0 ]]
+</span><span class="add">+    then
+</span><span class="add">+	prompt_segment red black &apos; &gt; &apos;
+</span><span class="add">+    else
+</span><span class="add">+	prompt_segment blue black &apos; &gt; &apos;
+</span><span class="add">+    fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -130,16 +134,16 @@
+<span class="def"> else
+</span><span class="def">     tmux_following_colour=magenta
+</span><span class="def"> fi
+</span><span class="add">+if $IS_TMUX
+</span><span class="add">+then
+</span><span class="add">+    tmux_indicator=$&apos;\ue0b0&apos;
+</span><span class="add">+else
+</span><span class="add">+    tmux_indicator=&apos;&apos;
+</span><span class="add">+fi
+</span><span class="def"> prompt_tmux() {
+</span><span class="sub">-    local tmux_indicator
+</span><span class="def">     local SEGMENT_SEPARATOR=&apos;&apos;
+</span><span class="sub">-    if $IS_TMUX
+</span><span class="sub">-    then
+</span><span class="sub">-	tmux_indicator=$&apos;\ue0b0&apos;
+</span><span class="sub">-    else
+</span><span class="sub">-	tmux_indicator=&apos;&apos;
+</span><span class="sub">-    fi
+</span><span class="sub">-    [[ -n &quot;$tmux_indicator&quot; ]] &amp;&amp; prompt_segment $tmux_following_colour 11 &quot;$tmux_indicator&quot;
+</span><span class="add">+    [[ -n &quot;$tmux_indicator&quot; ]] || return 0
+</span><span class="add">+    prompt_segment $tmux_following_colour 11 &quot;$tmux_indicator&quot;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -153,7 +157,6 @@
+<span class="def"> zle -N zle-line-init
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-## Main left prompt
+</span><span class="def"> build_prompt() {
+</span><span class="def">     RETVAL=$?
+</span><span class="def">     local SEGMENT_SEPARATOR=$SEGMENT_SEPARATOR_L
+</span>@@ -176,9 +179,9 @@
+<span class="def"> PROMPT=&apos;%{%f%b%k%}$(build_prompt) &apos;
+</span><span class="def"> RPROMPT=&apos;%{%f%b%k%}$(build_rprompt)&apos;
+</span><span class="def"> 
+</span><span class="sub">-# redraw prompt on mode changes
+</span><span class="add">+# redraw on mode change
+</span><span class="def"> zle-keymap-select() {
+</span><span class="sub">-    if [ $KEYMAP = vicmd ]; then
+</span><span class="add">+    if [[ $KEYMAP == vicmd ]]; then
+</span><span class="def"> 	printf &quot;\033[2 q&quot; # block cursor
+</span><span class="def"> 	VIM_PROMPT=&quot; -- NORMAL -- &quot;
+</span><span class="def">     else
+</span>@@ -186,30 +189,7 @@
+<span class="def"> 	VIM_PROMPT=&quot;&quot;
+</span><span class="def">     fi
+</span><span class="def"> 
+</span><span class="sub">-    PROMPT=&apos;%{%f%b%k%}$(build_prompt) &apos;
+</span><span class="sub">-    RPROMPT=&apos;%{%f%b%k%}$(build_rprompt)&apos;
+</span><span class="def">     zle reset-prompt
+</span><span class="def">     zle -R
+</span><span class="def"> }
+</span><span class="def"> zle -N zle-keymap-select
+</span><span class="sub">-
+</span><span class="sub">-#PROMPT=&apos;%{$FG[001]%}&gt; %{$reset_color%}&apos;
+</span><span class="sub">-#RPROMPT=&apos;%{$FG[001]%}%2~ $(git_prompt_info)$(git_prompt_status)%{$reset_color%}&apos;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_DIRTY=&quot;%{$fg[yellow]%}✗%{$reset_color%}&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_PREFIX=&quot;(&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;)&quot;
+</span><span class="sub">-
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_PREFIX=&quot;%{$fg[magenta]%}[&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;]%{$reset_color%}&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_DIRTY=&quot;&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_CLEAN=&quot;&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_ADDED=&quot;%{$fg[cyan]%}+&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_MODIFIED=&quot;%{$fg[yellow]%}*&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_DELETED=&quot;%{$fg[red]%}x&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_RENAMED=&quot;%{$fg[blue]%}~&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_UNMERGED=&quot;%{$fg[magenta]%}&gt;&lt;&quot;
+</span><span class="sub">-#ZSH_THEME_GIT_PROMPT_UNTRACKED=&quot;%{$fg[white]%}**&quot;
+</span><span class="sub">-
+</span><span class="sub">-# vim:ft=sh
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -639,7 +639,7 @@
+<span class="def"> map gU cd ~/.cache/aurutils/sync
+</span><span class="def"> 
+</span><span class="def"> map gc cd ~/.config
+</span><span class="sub">-map gx cd ~/.Xresources.d
+</span><span class="add">+map gx cd ~/.config/Xresources.d
+</span><span class="def"> map gm cd ~/media
+</span><span class="def"> map gb cd ~/bin
+</span><span class="def"> map gP cd ~/pictures
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitstatus</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+Subproject commit 2ba519e0f5e0ac52056d73f4965831bcbc16b699
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitmodules</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,3 +7,6 @@
+<span class="def"> [submodule &quot;zsh-syntax-highlighting&quot;]
+</span><span class="def"> 	path = zsh-syntax-highlighting
+</span><span class="def"> 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
+</span><span class="add">+[submodule &quot;gitstatus&quot;]
+</span><span class="add">+	path = gitstatus
+</span><span class="add">+	url = https://github.com/romkatv/gitstatus
+</span></pre>
+</div></div>
+  </body>
+</html>

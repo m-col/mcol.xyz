@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - move general settings into plugin</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/ff87ca1adc31c48d6ba42386364772c789ece9eb.html">ff87ca1adc31c48d6ba42386364772c789ece9eb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/3cecabc103eb14a2841584d85e44fea8f7a35ac8.html">3cecabc103eb14a2841584d85e44fea8f7a35ac8</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2023-06-17 22:27:27 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2023-06-17 22:27:27 +0100
+
+move general settings into plugin
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,116 +0,0 @@
+<span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot;                          _                                       &quot;
+</span><span class="sub">-&quot;                         (_)                                      &quot;
+</span><span class="sub">-&quot;                   __   ___ _ __ ___  _ __ ___                    &quot;
+</span><span class="sub">-&quot;                   \ \ / / | &apos;_ ` _ \| &apos;__/ __|                   &quot;
+</span><span class="sub">-&quot;                    \ V /| | | | | | | | | (__                    &quot;
+</span><span class="sub">-&quot;                     \_/ |_|_| |_| |_|_|  \___|                   &quot;
+</span><span class="sub">-&quot;                                                                  &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; Plugins                                                          &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-set nocompatible			    &quot; be iMproved, required
+</span><span class="sub">-filetype plugin indent on		    &quot; required
+</span><span class="sub">-
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-&quot; General settings                                                 &quot;
+</span><span class="sub">-&quot;------------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-set autoread			&quot; update when file is modified outside of vim
+</span><span class="sub">-set autowrite			&quot; update file when changing buffers, opening new files, etc
+</span><span class="sub">-au BufLeave * :silent! update	&quot; save automatically when leaving buffer
+</span><span class="sub">-set lazyredraw			&quot; dont update screen during macros/scripts
+</span><span class="sub">-set hlsearch			&quot; Highlight all search results - toggled by &lt;Leader&gt;h
+</span><span class="sub">-set smartcase			&quot; searches ignore case only if all lower case
+</span><span class="sub">-set incsearch			&quot; Searches for strings while typing search term
+</span><span class="sub">-set gdefault			&quot; use global by default for substitutions
+</span><span class="sub">-
+</span><span class="sub">-set shiftwidth=4		&quot; Default number of auto-indent spaces
+</span><span class="sub">-set autoindent			&quot; Auto-indent new lines
+</span><span class="sub">-set smartindent			&quot; Enable smart-indent
+</span><span class="sub">-set smarttab			&quot; shiftwidth tab at start of line, otherwise softtabstop width tab
+</span><span class="sub">-set softtabstop=4		&quot; Number of spaces per tab
+</span><span class="sub">-set linebreak			&quot; Allow backspacing over indention, line breaks and insertion start
+</span><span class="sub">-set backspace=indent,eol,start	&quot; Backspace behaviour
+</span><span class="sub">-set formatoptions+=j	        &quot; Delete comment characters when joining lines.
+</span><span class="sub">-&quot;autocmd FileType * setlocal formatoptions-=cro    &quot; disable autocommenting
+</span><span class="sub">-set matchtime=2
+</span><span class="sub">-set conceallevel=0              &quot; disable all concealing
+</span><span class="sub">-set nojoinspaces                &quot; don&apos;t put 2 spaces after periods when joining lines
+</span><span class="sub">-
+</span><span class="sub">-set undolevels=200		&quot; Number of undo levels
+</span><span class="sub">-set undodir=~/.vim/undo//	&quot; undo files
+</span><span class="sub">-set backupdir=~/.vim/backups//	&quot; backups
+</span><span class="sub">-set directory=~/.vim/swap//	&quot; swap files
+</span><span class="sub">-set noswapfile
+</span><span class="sub">-
+</span><span class="sub">-set splitbelow			&quot; default new sp window goes below
+</span><span class="sub">-set splitright			&quot; default new vsp window goes right
+</span><span class="sub">-set scrolloff=4			&quot; keep x lines at top and bottom visible when scrollingkeep x lines at top and bottom visible when scrolling
+</span><span class="sub">-autocmd VimResized * wincmd =	&quot; keep splits equal size when resizing window
+</span><span class="sub">-
+</span><span class="sub">-syntax on			&quot; enable syntax highlighting
+</span><span class="sub">-set mouse=a			&quot; enable mouse
+</span><span class="sub">-set t_Co=16			&quot; use the 16 terminal colours
+</span><span class="sub">-
+</span><span class="sub">-set sessionoptions=buffers,folds,tabpages
+</span><span class="sub">-set viewoptions=folds,cursor
+</span><span class="sub">-
+</span><span class="sub">-set wildmenu			&quot; enable wildmenu for tab completion of commands
+</span><span class="sub">-set wildignorecase		&quot; disable wildmenu case sensitivity
+</span><span class="sub">-set wildmode=full:list		&quot; format wildmenu to expand and scroll with tab
+</span><span class="sub">-
+</span><span class="sub">-set autochdir			&quot; cwd to current file
+</span><span class="sub">-
+</span><span class="sub">-let g:netrw_liststyle=3		&quot; Set netrw style to tree
+</span><span class="sub">-
+</span><span class="sub">-&quot; Misc ------------------------------------------------------------&quot;
+</span><span class="sub">-
+</span><span class="sub">-&quot; restore last line in opened file
+</span><span class="sub">-au BufReadPost *
+</span><span class="sub">-	    \ if line(&quot;&apos;\&quot;&quot;) &gt; 1 &amp;&amp; line(&quot;&apos;\&quot;&quot;) &lt;= line(&quot;$&quot;) &amp;&amp; &amp;ft !~# &apos;commit&apos;
+</span><span class="sub">-	    \ |   exe &quot;normal! g`\&quot;&quot;
+</span><span class="sub">-	    \ | endif
+</span><span class="sub">-
+</span><span class="sub">-&quot; Intelligently navigate tmux panes and Vim splits using the same keys.
+</span><span class="sub">-&quot; See https://sunaku.github.io/tmux-select-pane.html for documentation.
+</span><span class="sub">-let progname = substitute($VIM, &apos;.*[/\\]&apos;, &apos;&apos;, &apos;&apos;)
+</span><span class="sub">-if empty(v:servername)
+</span><span class="sub">-    set title titlestring=%{progname}\ [%n]\ %F
+</span><span class="sub">-else
+</span><span class="sub">-    set title titlestring=%{progname}\ [%{v:servername}]\ [%n]\ %F
+</span><span class="sub">-endif
+</span><span class="sub">-if &amp;term =~ &apos;^screen&apos; &amp;&amp; !has(&apos;nvim&apos;) | exe &quot;set t_ts=\e]2; t_fs=\7&quot; | endif
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-if exists(&quot;$WAYLAND_DISPLAY&quot;)
+</span><span class="sub">-    set ttym=sgr
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-let g:indentLine_defaultGroup = &apos;LineNr&apos;
+</span><span class="sub">-let g:indentLine_char_list = [&apos;|&apos;, &apos;¦&apos;, &apos;┆&apos;, &apos;┊&apos;]
+</span><span class="sub">-
+</span><span class="sub">-runtime macros/emoji-ab.vim
+</span><span class="sub">-
+</span><span class="sub">-&quot;\   &apos;python&apos;: [&apos;flake8&apos;, &apos;mypy&apos;],
+</span><span class="sub">-let g:ale_linters = {
+</span><span class="sub">-\   &apos;haskell&apos;: [&apos;hlint&apos;],
+</span><span class="sub">-\}
+</span><span class="sub">-let g:ale_linters_explicit = 1
+</span><span class="sub">-let g:ale_lint_on_text_changed = &apos;never&apos;
+</span><span class="sub">-let g:ale_lint_on_insert_leave = 0
+</span><span class="sub">-&quot;let g:ale_command_wrapper = &apos;nice -n5&apos;
+</span><span class="sub">-let g:ale_fixers = {
+</span><span class="sub">-\   &apos;haskell&apos;: [&apos;ormolu&apos;],
+</span><span class="sub">-\   &apos;python&apos;: [&apos;black&apos;, &apos;isort&apos;],
+</span><span class="sub">-\}
+</span><span class="sub">-&quot;\   &apos;markdown&apos;: [&apos;prettier&apos;],
+</span><span class="sub">-
+</span><span class="sub">-let g:vim_markdown_conceal = 0
+</span><span class="sub">-let g:vim_markdown_conceal_code_blocks = 0
+</span><span class="sub">-let g:vim_json_conceal=0
+</span><span class="sub">-let g:markdown_syntax_conceal=0
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,94 @@
+<span class="add">+set nocompatible		&quot; be iMproved, required
+</span><span class="add">+filetype plugin indent on	&quot; required
+</span><span class="add">+set autoread			&quot; update when file is modified outside of vim
+</span><span class="add">+set autowrite			&quot; update file when changing buffers, opening new files, etc
+</span><span class="add">+au BufLeave * :silent! update	&quot; save automatically when leaving buffer
+</span><span class="add">+set lazyredraw			&quot; dont update screen during macros/scripts
+</span><span class="add">+set hlsearch			&quot; Highlight all search results - toggled by &lt;Leader&gt;h
+</span><span class="add">+set smartcase			&quot; searches ignore case only if all lower case
+</span><span class="add">+set incsearch			&quot; Searches for strings while typing search term
+</span><span class="add">+set gdefault			&quot; use global by default for substitutions
+</span><span class="add">+
+</span><span class="add">+set shiftwidth=4		&quot; Default number of auto-indent spaces
+</span><span class="add">+set autoindent			&quot; Auto-indent new lines
+</span><span class="add">+set smartindent			&quot; Enable smart-indent
+</span><span class="add">+set smarttab			&quot; shiftwidth tab at start of line, otherwise softtabstop width tab
+</span><span class="add">+set softtabstop=4		&quot; Number of spaces per tab
+</span><span class="add">+set linebreak			&quot; Allow backspacing over indention, line breaks and insertion start
+</span><span class="add">+set backspace=indent,eol,start	&quot; Backspace behaviour
+</span><span class="add">+set formatoptions+=j	        &quot; Delete comment characters when joining lines.
+</span><span class="add">+&quot;autocmd FileType * setlocal formatoptions-=cro    &quot; disable autocommenting
+</span><span class="add">+set matchtime=2
+</span><span class="add">+set conceallevel=0              &quot; disable all concealing
+</span><span class="add">+set nojoinspaces                &quot; don&apos;t put 2 spaces after periods when joining lines
+</span><span class="add">+
+</span><span class="add">+set undolevels=200		&quot; Number of undo levels
+</span><span class="add">+set undodir=~/.vim/undo//	&quot; undo files
+</span><span class="add">+set backupdir=~/.vim/backups//	&quot; backups
+</span><span class="add">+set directory=~/.vim/swap//	&quot; swap files
+</span><span class="add">+set noswapfile
+</span><span class="add">+
+</span><span class="add">+set splitbelow			&quot; default new sp window goes below
+</span><span class="add">+set splitright			&quot; default new vsp window goes right
+</span><span class="add">+set scrolloff=4			&quot; keep x lines at top and bottom visible when scrollingkeep x lines at top and bottom visible when scrolling
+</span><span class="add">+autocmd VimResized * wincmd =	&quot; keep splits equal size when resizing window
+</span><span class="add">+
+</span><span class="add">+syntax on			&quot; enable syntax highlighting
+</span><span class="add">+set mouse=a			&quot; enable mouse
+</span><span class="add">+set t_Co=16			&quot; use the 16 terminal colours
+</span><span class="add">+
+</span><span class="add">+set sessionoptions=buffers,folds,tabpages
+</span><span class="add">+set viewoptions=folds,cursor
+</span><span class="add">+
+</span><span class="add">+set wildmenu			&quot; enable wildmenu for tab completion of commands
+</span><span class="add">+set wildignorecase		&quot; disable wildmenu case sensitivity
+</span><span class="add">+set wildmode=full:list		&quot; format wildmenu to expand and scroll with tab
+</span><span class="add">+
+</span><span class="add">+set autochdir			&quot; cwd to current file
+</span><span class="add">+
+</span><span class="add">+let g:netrw_liststyle=3		&quot; Set netrw style to tree
+</span><span class="add">+
+</span><span class="add">+&quot; restore last line in opened file
+</span><span class="add">+au BufReadPost *
+</span><span class="add">+	    \ if line(&quot;&apos;\&quot;&quot;) &gt; 1 &amp;&amp; line(&quot;&apos;\&quot;&quot;) &lt;= line(&quot;$&quot;) &amp;&amp; &amp;ft !~# &apos;commit&apos;
+</span><span class="add">+	    \ |   exe &quot;normal! g`\&quot;&quot;
+</span><span class="add">+	    \ | endif
+</span><span class="add">+
+</span><span class="add">+&quot; Intelligently navigate tmux panes and Vim splits using the same keys.
+</span><span class="add">+&quot; See https://sunaku.github.io/tmux-select-pane.html for documentation.
+</span><span class="add">+let progname = substitute($VIM, &apos;.*[/\\]&apos;, &apos;&apos;, &apos;&apos;)
+</span><span class="add">+if empty(v:servername)
+</span><span class="add">+    set title titlestring=%{progname}\ [%n]\ %F
+</span><span class="add">+else
+</span><span class="add">+    set title titlestring=%{progname}\ [%{v:servername}]\ [%n]\ %F
+</span><span class="add">+endif
+</span><span class="add">+if &amp;term =~ &apos;^screen&apos; &amp;&amp; !has(&apos;nvim&apos;) | exe &quot;set t_ts=\e]2; t_fs=\7&quot; | endif
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+if exists(&quot;$WAYLAND_DISPLAY&quot;)
+</span><span class="add">+    set ttym=sgr
+</span><span class="add">+endif
+</span><span class="add">+
+</span><span class="add">+let g:indentLine_defaultGroup = &apos;LineNr&apos;
+</span><span class="add">+let g:indentLine_char_list = [&apos;|&apos;, &apos;¦&apos;, &apos;┆&apos;, &apos;┊&apos;]
+</span><span class="add">+
+</span><span class="add">+runtime macros/emoji-ab.vim
+</span><span class="add">+
+</span><span class="add">+&quot;\   &apos;python&apos;: [&apos;flake8&apos;, &apos;mypy&apos;],
+</span><span class="add">+let g:ale_linters = {
+</span><span class="add">+\   &apos;haskell&apos;: [&apos;hlint&apos;],
+</span><span class="add">+\}
+</span><span class="add">+let g:ale_linters_explicit = 1
+</span><span class="add">+let g:ale_lint_on_text_changed = &apos;never&apos;
+</span><span class="add">+let g:ale_lint_on_insert_leave = 0
+</span><span class="add">+&quot;let g:ale_command_wrapper = &apos;nice -n5&apos;
+</span><span class="add">+let g:ale_fixers = {
+</span><span class="add">+\   &apos;haskell&apos;: [&apos;ormolu&apos;],
+</span><span class="add">+\   &apos;python&apos;: [&apos;black&apos;, &apos;isort&apos;],
+</span><span class="add">+\}
+</span><span class="add">+&quot;\   &apos;markdown&apos;: [&apos;prettier&apos;],
+</span><span class="add">+
+</span><span class="add">+let g:vim_markdown_conceal = 0
+</span><span class="add">+let g:vim_markdown_conceal_code_blocks = 0
+</span><span class="add">+let g:vim_json_conceal=0
+</span><span class="add">+let g:markdown_syntax_conceal=0
+</span></pre>
+</div></div>
+  </body>
+</html>

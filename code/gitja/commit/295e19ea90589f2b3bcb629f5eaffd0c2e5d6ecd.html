@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Ensure all folders are created ahead of generation</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/295e19ea90589f2b3bcb629f5eaffd0c2e5d6ecd.html">295e19ea90589f2b3bcb629f5eaffd0c2e5d6ecd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/89f0b82c2b06a7ffa5865a78b99aa1f96f3d7660.html">89f0b82c2b06a7ffa5865a78b99aa1f96f3d7660</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-21 18:23:51 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-21 18:23:51 +0000
+
+Ensure all folders are created ahead of generation
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -67,11 +67,13 @@
+<span class="def">             branches &lt;- getRefs &quot;refs/heads/&quot;
+</span><span class="def">             let scope = package env name (repoDescription repo) commits tree tags branches
+</span><span class="def"> 
+</span><span class="add">+            -- Create the destination folders
+</span><span class="add">+            liftIO . createDirectoryIfMissing True $ output &lt;/&gt; &quot;commit&quot;
+</span><span class="add">+            liftIO . createDirectoryIfMissing True $ output &lt;/&gt; &quot;file&quot;
+</span><span class="add">+
+</span><span class="def">             -- Run the generator --
+</span><span class="sub">-            liftIO . mapM_ (genRepo output scope) $ envTemplates env
+</span><span class="def">             let force = envForce env
+</span><span class="sub">-            liftIO . createDirectoryIfMissing True $ output &lt;/&gt; &quot;commits&quot;
+</span><span class="sub">-            liftIO . createDirectoryIfMissing True $ output &lt;/&gt; &quot;files&quot;
+</span><span class="add">+            liftIO . mapM_ (genRepo output scope) $ envTemplates env
+</span><span class="def">             liftIO . mapM_ (genTarget output scope force $ envCommitTemplate env) $ commits
+</span><span class="def">             liftIO . mapM_ (genTarget output scope True $ envFileTemplate env) $ tree -- TODO: detect file changes
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

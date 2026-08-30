@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - fix is_int function</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/bfd7ef9564851bce16d4da42ce920355f1207d4c.html">bfd7ef9564851bce16d4da42ce920355f1207d4c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/c8b3119a8699d94cb86c779595322fb2b89cd06e.html">c8b3119a8699d94cb86c779595322fb2b89cd06e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-29 20:38:43 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-29 20:38:43 +0100
+
+fix is_int function
+</pre><div class="diff">
+  <p>
+    <b>install/welcome</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,7 +8,7 @@
+<span class="def"> 
+</span><span class="def">         [[ -s /etc/vconsole.conf ]] &amp;&amp; . /etc/vconsole.conf
+</span><span class="def"> 
+</span><span class="sub">-	is_int() { [[ $1 =~ ^-?[0-9]+$ ]] }
+</span><span class="add">+	is_int() { [[ $1 =~ ^-?[0-9]+$ ]]; }
+</span><span class="def"> 	is_int $WELCOME_FG || error &quot;welcome: WELCOME_FG should be an integer&quot; &amp;&amp; exit 1
+</span><span class="def"> 	is_int $WELCOME_BG || error &quot;welcome: WELCOME_BG should be an integer&quot; &amp;&amp; exit 1
+</span><span class="def"> 	is_int $WELCOME_IN || error &quot;welcome: WELCOME_IN should be an integer&quot; &amp;&amp; exit 1
+</span></pre>
+</div></div>
+  </body>
+</html>

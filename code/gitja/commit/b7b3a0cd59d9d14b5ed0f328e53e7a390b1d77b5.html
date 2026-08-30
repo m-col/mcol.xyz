@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - fix ginger version problem in deps</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/b7b3a0cd59d9d14b5ed0f328e53e7a390b1d77b5.html">b7b3a0cd59d9d14b5ed0f328e53e7a390b1d77b5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/06c5d6d4860ff86bb8717d367eecae4fad730cb1.html">06c5d6d4860ff86bb8717d367eecae4fad730cb1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-25 21:17:10 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-25 21:17:10 +0000
+
+fix ginger version problem in deps
+</pre><div class="diff">
+  <p>
+    <b>stack.yaml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,3 +14,5 @@
+<span class="def">     -Wincomplete-record-updates -Wredundant-constraints -Wpartial-fields
+</span><span class="def">     -Wmissing-deriving-strategies -Wunused-packages -fno-warn-unused-do-bind
+</span><span class="def">     -fno-warn-orphans
+</span><span class="add">+
+</span><span class="add">+allow-newer: true
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitserve.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -25,7 +25,7 @@
+<span class="def">                      , dhall
+</span><span class="def">                      , directory
+</span><span class="def">                      , filepath
+</span><span class="sub">-                     , ginger &gt;= 0.10.3
+</span><span class="add">+                     , ginger &gt;= 0.10.3.0
+</span><span class="def">                      , gitlib
+</span><span class="def">                      , gitlib-libgit2
+</span><span class="def">                      , optparse-applicative
+</span></pre>
+</div></div>
+  </body>
+</html>

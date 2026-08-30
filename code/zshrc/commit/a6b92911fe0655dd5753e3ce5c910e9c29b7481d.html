@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add sb</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/a6b92911fe0655dd5753e3ce5c910e9c29b7481d.html">a6b92911fe0655dd5753e3ce5c910e9c29b7481d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/f540541f53897584de2e045d8f86d830941d6b9f.html">f540541f53897584de2e045d8f86d830941d6b9f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-06 11:40:43 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-06 11:40:43 +0100
+
+add sb
+</pre><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -40,3 +40,9 @@
+<span class="def"> 
+</span><span class="def"> # copy file path to clipboard
+</span><span class="def"> cpath() { readlink -f $1 | copy }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+sb () {
+</span><span class="add">+    sed &apos;s/.*/\L&amp;/g; s/\(.\{1\}\)\(.\)/\1\U\2/g&apos; &lt;&lt;&lt; &quot;$@&quot;
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

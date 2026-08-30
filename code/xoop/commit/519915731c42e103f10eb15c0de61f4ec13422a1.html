@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - explicitly include stdio</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/519915731c42e103f10eb15c0de61f4ec13422a1.html">519915731c42e103f10eb15c0de61f4ec13422a1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/f7e761f62c87b665c9050129cca95a1de3c959b7.html">f7e761f62c87b665c9050129cca95a1de3c959b7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-20 12:28:17 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-20 12:28:17 +0100
+
+explicitly include stdio
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,15 +21,12 @@
+<span class="def"> */
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+#include &lt;stdio.h&gt;
+</span><span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="sub">-#include &lt;xcb/xcb.h&gt;
+</span><span class="def"> #include &lt;xcb/shape.h&gt;
+</span><span class="add">+#include &lt;xcb/xcb.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> 
+</span><span class="sub">-#ifdef DEBUG
+</span><span class="sub">-#include &lt;stdio.h&gt;
+</span><span class="sub">-#endif
+</span><span class="sub">-
+</span><span class="def"> #define PROGNAME &quot;xoop&quot;
+</span><span class="def"> 
+</span><span class="def"> xcb_connection_t    *conn;
+</span></pre>
+</div></div>
+  </body>
+</html>

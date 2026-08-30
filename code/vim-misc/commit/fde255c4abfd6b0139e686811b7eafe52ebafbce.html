@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - Merge branch &apos;master&apos; of https://github.com/mcolligan/vim-misc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/fde255c4abfd6b0139e686811b7eafe52ebafbce.html">fde255c4abfd6b0139e686811b7eafe52ebafbce</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/de2e2944a1e6484464133ffbfb60652a696db10e.html">de2e2944a1e6484464133ffbfb60652a696db10e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 14:56:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 14:56:06 +0000
+
+Merge branch &apos;master&apos; of https://github.com/mcolligan/vim-misc
+</pre><div class="diff">
+  <p>
+    <b>install</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,14 +1,30 @@
+<span class="def"> #!/usr/bin/env bash
+</span><span class="def"> 
+</span><span class="def"> # vim-misc directory 
+</span><span class="sub">-dir=&quot;source $(dirname &quot;$(readlink -f &quot;$0&quot;)&quot;)&quot;
+</span><span class="add">+#dir=&quot;source $(dirname &quot;$(readlink -f &quot;$0&quot;)&quot;)&quot;
+</span><span class="add">+dir=&quot;$HOME/.vim/bundle/vim-misc&quot;
+</span><span class="def"> 
+</span><span class="sub">-echo &quot;source $dir/vimrc&quot; &gt;&gt; ~/.vimrc
+</span><span class="sub">-echo &quot;source $dir/tmux.conf&quot; &gt;&gt; ~/.tmux.conf
+</span><span class="add">+if [[ -f $HOME/.vimrc ]]
+</span><span class="add">+then
+</span><span class="add">+    mv $HOME/.vimrc $HOME/.vimrc.backup
+</span><span class="add">+    echo &apos;~/.vimrc was moved to ~/.vimrc/backup&apos;
+</span><span class="add">+fi
+</span><span class="add">+echo &quot;source $dir/vimrc&quot; &gt; ~/.vimrc
+</span><span class="def"> 
+</span><span class="sub">-add_dir() { [[ ! -d $1 ]] &amp;&amp; mkdir -p $1 }
+</span><span class="sub">-add_dir $HOME/backups
+</span><span class="sub">-add_dir $HOME/sessions
+</span><span class="sub">-add_dir $HOME/swap
+</span><span class="sub">-add_dir $HOME/undo
+</span><span class="sub">-add_dir $HOME/spell
+</span><span class="add">+if [[ -f $HOME/.tmux.conf ]]
+</span><span class="add">+then
+</span><span class="add">+    mv $HOME/.tmux.conf $HOME/.tmux.conf.backup
+</span><span class="add">+    echo &apos;~/.tmux.conf was moved to ~/.tmuf.conf.backup&apos;
+</span><span class="add">+fi
+</span><span class="add">+echo &quot;source $dir/tmux.conf&quot; &gt; ~/.tmux.conf
+</span><span class="add">+
+</span><span class="add">+add_dir() {
+</span><span class="add">+    [[ ! -d $1 ]] &amp;&amp; mkdir -p $1
+</span><span class="add">+}
+</span><span class="add">+add_dir $HOME/.vim/backups
+</span><span class="add">+add_dir $HOME/.vim/sessions
+</span><span class="add">+add_dir $HOME/.vim/swap
+</span><span class="add">+add_dir $HOME/.vim/undo
+</span><span class="add">+add_dir $HOME/.vim/spell
+</span><span class="add">+
+</span><span class="add">+echo &apos;open vim and run PluginInstall&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

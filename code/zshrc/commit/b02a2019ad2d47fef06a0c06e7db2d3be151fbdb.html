@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - claude</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/b02a2019ad2d47fef06a0c06e7db2d3be151fbdb.html">b02a2019ad2d47fef06a0c06e7db2d3be151fbdb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/880b591fccb697d49611f935f112f2f7e88cb5c6.html">880b591fccb697d49611f935f112f2f7e88cb5c6</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2026-04-29 12:42:31 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2026-04-29 12:42:31 +0100
+
+claude
+</pre><div class="diff">
+  <p>
+    <b>zsh-autosuggestions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,6 +12,7 @@
+<span class="def"> ZSH_AUTOSUGGEST_ORIGINAL_WIDGET_PREFIX=autosuggest-orig-
+</span><span class="def"> 
+</span><span class="def"> #ZSH_AUTOSUGGEST_STRATEGY=default
+</span><span class="add">+source $ZSH/claude-context/plugin.zsh
+</span><span class="def"> ZSH_AUTOSUGGEST_STRATEGY=(claude match_prev_cmd)
+</span><span class="def"> 
+</span><span class="def"> # Widgets that clear the suggestion
+</span></pre>
+</div></div>
+  </body>
+</html>

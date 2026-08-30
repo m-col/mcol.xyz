@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add file modes to tree entries</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/528d545f3e355e91555265e61ac46de7f93906e7.html">528d545f3e355e91555265e61ac46de7f93906e7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/7889de50d07eabbb36b9d0b9099b8c3c0c86b606.html">7889de50d07eabbb36b9d0b9099b8c3c0c86b606</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-05 20:52:27 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-05 20:52:27 +0100
+
+Add file modes to tree entries
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -122,7 +122,22 @@
+<span class="def"> loadCommit (CommitObjOid oid) = Just $ lookupCommit oid
+</span><span class="def"> loadCommit _ = Nothing
+</span><span class="def"> 
+</span><span class="sub">-data TreeFileContents = FileContents Text | FolderContents [TreeFilePath]
+</span><span class="add">+{-
+</span><span class="add">+Valid modes:
+</span><span class="add">+040000 Directory
+</span><span class="add">+100644 Regular non-executable file
+</span><span class="add">+100755 Regular executable file
+</span><span class="add">+120000 Symbolic link
+</span><span class="add">+160000 Submodule
+</span><span class="add">+-}
+</span><span class="add">+data TreeEntryMode = ModeDirectory | ModePlain | ModeExecutable | ModeSymlink | ModeSubmodule
+</span><span class="add">+
+</span><span class="add">+toMode :: BlobKind -&gt; TreeEntryMode
+</span><span class="add">+toMode PlainBlob = ModePlain
+</span><span class="add">+toMode ExecutableBlob = ModeExecutable
+</span><span class="add">+toMode SymlinkBlob = ModeSymlink
+</span><span class="add">+
+</span><span class="add">+data TreeFileContents = FileContents (TreeEntryMode, Text) | FolderContents [TreeFilePath]
+</span><span class="def"> 
+</span><span class="def"> data TreeFile = TreeFile
+</span><span class="def">     { treeFilePath :: TreeFilePath
+</span>@@ -136,9 +151,10 @@
+<span class="def">     return $ zipWith TreeFile (fmap fst entries) contents
+</span><span class="def"> 
+</span><span class="def"> gvalTreeEntry :: TreeEntry LgRepo -&gt; ReaderT LgRepo IO TreeFileContents
+</span><span class="sub">-gvalTreeEntry (BlobEntry oid _) = FileContents . decodeUtf8With lenientDecode &lt;$&gt; catBlob oid
+</span><span class="add">+gvalTreeEntry (BlobEntry oid kind) =
+</span><span class="add">+    FileContents . (,) (toMode kind) . decodeUtf8With lenientDecode &lt;$&gt; catBlob oid
+</span><span class="def"> gvalTreeEntry (TreeEntry oid) = FolderContents . fmap fst &lt;$&gt; (listTreeEntries =&lt;&lt; lookupTree oid)
+</span><span class="sub">-gvalTreeEntry (CommitEntry _) = return . FileContents $ &quot;No contents&quot;
+</span><span class="add">+gvalTreeEntry (CommitEntry _) = return . FileContents $ (ModeSubmodule, &quot;No contents&quot;)  -- TODO
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> {-
+</span>@@ -181,7 +197,7 @@
+<span class="def"> 
+</span><span class="def"> instance ToGVal m TreeFileContents where
+</span><span class="def">     toGVal :: TreeFileContents -&gt; GVal m
+</span><span class="sub">-    toGVal (FileContents text) = toGVal text
+</span><span class="add">+    toGVal (FileContents (_, text)) = toGVal text
+</span><span class="def">     toGVal (FolderContents filePaths) = def
+</span><span class="def">         { asHtml = html . pack . show $ filePaths
+</span><span class="def">         , asText = pack . show $ filePaths
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sudoku-solver - format</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/sudoku-solver">sudoku-solver</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A small haskell script to solve sudoku puzzles</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/sudoku-solver">https://github.com/m-col/sudoku-solver</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/sudoku-solver/tree.html">Files</a> | <a href="https://mcol.xyz/code/sudoku-solver/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/sudoku-solver/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/256a409effb48f3376991fca47d11e10273cf4fd.html">256a409effb48f3376991fca47d11e10273cf4fd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/161b3ff437125773bcf7acf15f32b1b2edc6ff13.html">161b3ff437125773bcf7acf15f32b1b2edc6ff13</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-03 12:41:43 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-03 12:41:43 +0100
+
+format
+</pre><div class="diff">
+  <p>
+    <b>sudoku.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,5 @@
+<span class="def"> #!/usr/bin/env runhaskell
+</span><span class="add">+
+</span><span class="def"> {-
+</span><span class="def"> sudoku-solver script. Copyright Matt Colligan 2022.
+</span><span class="def"> -}
+</span>@@ -113,15 +114,15 @@
+<span class="def">     -}
+</span><span class="def">     go :: [(Puzzle, Index, Cell)] -&gt; Maybe Index -&gt; Cell -&gt; Maybe Puzzle
+</span><span class="def">     -- We are finished when the maybe index is Nothing.
+</span><span class="sub">-    go ((p, _, _):_) Nothing _ = Just p
+</span><span class="add">+    go ((p, _, _) : _) Nothing _ = Just p
+</span><span class="def">     go pps@((p, pi, pc) : ps) (Just i) c
+</span><span class="def">         -- This index is already filled - continue.
+</span><span class="sub">-        | isJust (p ! i) = go ((puz p, pi, pc):ps) (next i) One
+</span><span class="add">+        | isJust (p ! i) = go ((puz p, pi, pc) : ps) (next i) One
+</span><span class="def">         -- This index is empty - let&apos;s find a possibly valid value.
+</span><span class="def">         | otherwise =
+</span><span class="def">             case getOptions p i c of
+</span><span class="def">                 [] -&gt; Nothing
+</span><span class="sub">-                opts -&gt; listToMaybe . mapMaybe (\o -&gt; go ((puz o, i, c):pps) (next i) One) $ opts
+</span><span class="add">+                opts -&gt; listToMaybe . mapMaybe (\o -&gt; go ((puz o, i, c) : pps) (next i) One) $ opts
+</span><span class="def"> 
+</span><span class="def">     getOptions :: Puzzle -&gt; Index -&gt; Cell -&gt; [Puzzle]
+</span><span class="def">     getOptions p i c = filter isValid . map (\c -&gt; p // [(i, Just c)]) $ [c .. Nine]
+</span>@@ -155,7 +156,7 @@
+<span class="def"> loadPuzzle :: [Char] -&gt; Puzzle
+</span><span class="def"> loadPuzzle = asArray . zip indices . map parse . filter (`elem` chars)
+</span><span class="def">   where
+</span><span class="sub">-    chars = [&apos; &apos;] ++ [&apos;1&apos;..&apos;9&apos;]
+</span><span class="add">+    chars = [&apos; &apos;] ++ [&apos;1&apos; .. &apos;9&apos;]
+</span><span class="def">     indices = [(r, c) | r &lt;- set, c &lt;- set]
+</span><span class="def"> 
+</span><span class="def">     parse :: Char -&gt; Maybe Cell
+</span>@@ -171,7 +172,7 @@
+<span class="def">     putStrLn . showPuzzle $ puzzle
+</span><span class="def"> 
+</span><span class="def">     case solve puzzle of
+</span><span class="sub">-        Nothing -&gt; 
+</span><span class="add">+        Nothing -&gt;
+</span><span class="def">             putStrLn &quot;Failed! Is the puzzle valid?&quot;
+</span><span class="def">         Just solved -&gt; do
+</span><span class="def">             putStrLn &quot;Completed:&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

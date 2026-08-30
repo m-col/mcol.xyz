@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Import version data provided by cabal</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/62ca2ef70d9b8ad797268b5ad7016faec06759ef.html">62ca2ef70d9b8ad797268b5ad7016faec06759ef</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/cdd0f330e131cf58d77428586dfa9d8c9750ea0d.html">cdd0f330e131cf58d77428586dfa9d8c9750ea0d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-21 00:35:56 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-21 00:35:56 +0000
+
+Import version data provided by cabal
+</pre><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,7 +4,10 @@
+<span class="def">     main
+</span><span class="def"> ) where
+</span><span class="def"> 
+</span><span class="add">+import Paths_gitserve (version)
+</span><span class="add">+
+</span><span class="def"> import Data.Text (Text)
+</span><span class="add">+import Data.Version (showVersion)
+</span><span class="def"> import qualified Options.Applicative as O
+</span><span class="def"> 
+</span><span class="def"> import Config (getConfig)
+</span>@@ -18,7 +21,7 @@
+<span class="def"> data Options = Options
+</span><span class="def">     { config :: Text
+</span><span class="def">     , force :: Bool
+</span><span class="sub">-    , version :: Bool
+</span><span class="add">+    , printVersion :: Bool
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def"> opts :: O.Parser Options
+</span>@@ -52,14 +55,11 @@
+<span class="def"> main :: IO ()
+</span><span class="def"> main = do
+</span><span class="def">     options &lt;- parser
+</span><span class="sub">-    if version options
+</span><span class="add">+    if printVersion options
+</span><span class="def">         then
+</span><span class="sub">-            putStrLn $ &quot;Your gitserve version is: &quot; &lt;&gt; currentVersion
+</span><span class="add">+            putStrLn $ &quot;Your gitserve version is: &quot; &lt;&gt; showVersion version
+</span><span class="def">         else do
+</span><span class="def">             conf &lt;- getConfig (config options)
+</span><span class="def">             env &lt;- loadTemplates (force options) conf
+</span><span class="def">             repos &lt;- runIndex env
+</span><span class="def">             run env repos
+</span><span class="sub">-
+</span><span class="sub">-currentVersion :: String
+</span><span class="sub">-currentVersion = &quot;0.1.0&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitserve.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,7 +16,7 @@
+<span class="def"> executable gitserve
+</span><span class="def">   hs-source-dirs:      src
+</span><span class="def">   main-is:             Main.hs
+</span><span class="sub">-  other-modules:       Config, Index, Repositories, Templates, Types
+</span><span class="add">+  other-modules:       Config, Index, Repositories, Templates, Types, Paths_gitserve
+</span><span class="def">   default-language:    Haskell2010
+</span><span class="def">   build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+</span><span class="def">                      , conduit
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - make my F keys work again</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/13a047ed527d3edeeb5e0eee6da48e6f0a86d131.html">13a047ed527d3edeeb5e0eee6da48e6f0a86d131</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/f062e4882055bfe9ab947a5c85e0879b9db29afe.html">f062e4882055bfe9ab947a5c85e0879b9db29afe</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-18 00:38:27 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-18 00:38:27 +0100
+
+make my F keys work again
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -137,20 +137,20 @@
+<span class="def"> 
+</span><span class="def">     # Volume control - MyVolume widget is defined further down
+</span><span class="def">     ([], &apos;XF86AudioMute&apos;,         lazy.widget[&apos;myvolume&apos;].mute(),         &quot;Mute audio&quot;),
+</span><span class="sub">-    ([], &apos;F10&apos;,                   lazy.widget[&apos;myvolume&apos;].mute(),         &quot;Mute audio&quot;),
+</span><span class="add">+    ([mod], &apos;F10&apos;,                   lazy.widget[&apos;myvolume&apos;].mute(),         &quot;Mute audio&quot;),
+</span><span class="def">     ([], &apos;XF86AudioRaiseVolume&apos;,  lazy.widget[&apos;myvolume&apos;].increase_vol(), &quot;Increase volume&quot;),
+</span><span class="sub">-    ([], &apos;F12&apos;,                   lazy.widget[&apos;myvolume&apos;].increase_vol(), &quot;Increase volume&quot;),
+</span><span class="add">+    ([mod], &apos;F12&apos;,                   lazy.widget[&apos;myvolume&apos;].increase_vol(), &quot;Increase volume&quot;),
+</span><span class="def">     ([], &apos;XF86AudioLowerVolume&apos;,  lazy.widget[&apos;myvolume&apos;].decrease_vol(), &quot;Decrease volume&quot;),
+</span><span class="sub">-    ([], &apos;F11&apos;,                   lazy.widget[&apos;myvolume&apos;].decrease_vol(), &quot;Decrease volume&quot;),
+</span><span class="add">+    ([mod], &apos;F11&apos;,                   lazy.widget[&apos;myvolume&apos;].decrease_vol(), &quot;Decrease volume&quot;),
+</span><span class="def"> 
+</span><span class="def">     # Backlight control
+</span><span class="def">     ([], &apos;XF86MonBrightnessUp&apos;,
+</span><span class="def">         lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.UP, 5),   &quot;Increase backlight&quot;),
+</span><span class="def">     ([], &apos;XF86MonBrightnessDown&apos;,
+</span><span class="def">         lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.DOWN, 5), &quot;Decrease backlight&quot;),
+</span><span class="sub">-    ([], &apos;F6&apos;,
+</span><span class="add">+    ([mod], &apos;F6&apos;,
+</span><span class="def">         lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.UP, 5),   &quot;Increase backlight&quot;),
+</span><span class="sub">-    ([], &apos;F5&apos;,
+</span><span class="add">+    ([mod], &apos;F5&apos;,
+</span><span class="def">         lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.DOWN, 5), &quot;Decrease backlight&quot;),
+</span><span class="def"> 
+</span><span class="def">     # Launchers
+</span></pre>
+</div></div>
+  </body>
+</html>

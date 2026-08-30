@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - qtools/notification/notification.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- qtools/notification/notification.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &quot;&quot;&quot;
+<a href="#l2" class="line" id="l2">      2</a> Qtile plugin that acts as a notification server and draws notification windows.
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> Example usage:
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a>     import qtools.notification
+<a href="#l7" class="line" id="l7">      7</a>     notifier = qtools.notification.Server()
+<a href="#l8" class="line" id="l8">      8</a>     keys.extend([EzKey(k, v) for k, v in {
+<a href="#l9" class="line" id="l9">      9</a>         &apos;M-&lt;grave&gt;&apos;:    notifier.lazy_prev,
+<a href="#l10" class="line" id="l10">     10</a>         &apos;M-S-&lt;grave&gt;&apos;:  notifier.lazy_next,
+<a href="#l11" class="line" id="l11">     11</a>         &apos;C-&lt;space&gt;&apos;:    notifier.lazy_close,
+<a href="#l12" class="line" id="l12">     12</a>     }.items()])
+<a href="#l13" class="line" id="l13">     13</a> 
+<a href="#l14" class="line" id="l14">     14</a> &quot;&quot;&quot;
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a> from libqtile import configurable, hook, images, pangocffi, qtile
+<a href="#l18" class="line" id="l18">     18</a> from libqtile.lazy import lazy
+<a href="#l19" class="line" id="l19">     19</a> from libqtile.log_utils import logger
+<a href="#l20" class="line" id="l20">     20</a> from libqtile.notify import notifier
+<a href="#l21" class="line" id="l21">     21</a> from libqtile.popup import Popup
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> class Server(configurable.Configurable):
+<a href="#l25" class="line" id="l25">     25</a>     &quot;&quot;&quot;
+<a href="#l26" class="line" id="l26">     26</a>     This class provides a full graphical notification manager for the
+<a href="#l27" class="line" id="l27">     27</a>     org.freedesktop.Notifications service implemented in libqtile.notify.
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a>     Hints can be provided by notification clients to modify behaviour:
+<a href="#l30" class="line" id="l30">     30</a>         hint    behaviour
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a>     The format option determines what text is shown on the popup windows, and supports
+<a href="#l33" class="line" id="l33">     33</a>     markup and new line characters e.g. &apos;&lt;b&gt;{summary}&lt;/b&gt;\n{body}&apos;. Available
+<a href="#l34" class="line" id="l34">     34</a>     placeholders are summary, body and app_name.
+<a href="#l35" class="line" id="l35">     35</a> 
+<a href="#l36" class="line" id="l36">     36</a>     Foreground and background colours can be specified either as tuples/lists of 3
+<a href="#l37" class="line" id="l37">     37</a>     strings, corresponding to low, normal and critical urgencies, or just a single
+<a href="#l38" class="line" id="l38">     38</a>     string which will then be used for all urgencies. The timeout and border options can
+<a href="#l39" class="line" id="l39">     39</a>     be set in the same way.
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a>     The max_windows option limits how many popup windows can be drawn at a time. When
+<a href="#l42" class="line" id="l42">     42</a>     more notifications are recieved while the maximum number are already drawn,
+<a href="#l43" class="line" id="l43">     43</a>     notifications are queued and displayed when existing notifications are closed.
+<a href="#l44" class="line" id="l44">     44</a> 
+<a href="#l45" class="line" id="l45">     45</a>     TODO:
+<a href="#l46" class="line" id="l46">     46</a>         - overflow
+<a href="#l47" class="line" id="l47">     47</a>         - select screen / follow mouse/keyboard focus
+<a href="#l48" class="line" id="l48">     48</a>         - critical notifications to replace any visible non-critical notifs immediately?
+<a href="#l49" class="line" id="l49">     49</a>         - hints: image-path, desktop-entry (for icon)
+<a href="#l50" class="line" id="l50">     50</a>         - hints: Server parameters set for single notification?
+<a href="#l51" class="line" id="l51">     51</a>         - hints: progress value e.g. int:value:42 with drawing
+<a href="#l52" class="line" id="l52">     52</a> 
+<a href="#l53" class="line" id="l53">     53</a>     &quot;&quot;&quot;
+<a href="#l54" class="line" id="l54">     54</a>     defaults = [
+<a href="#l55" class="line" id="l55">     55</a>         (&apos;x&apos;, 32, &apos;x position on screen to start drawing notifications.&apos;),
+<a href="#l56" class="line" id="l56">     56</a>         (&apos;y&apos;, 64, &apos;y position on screen to start drawing notifications.&apos;),
+<a href="#l57" class="line" id="l57">     57</a>         (&apos;width&apos;, 192, &apos;Width of notifications.&apos;),
+<a href="#l58" class="line" id="l58">     58</a>         (&apos;height&apos;, 64, &apos;Height of notifications.&apos;),
+<a href="#l59" class="line" id="l59">     59</a>         (&apos;format&apos;, &apos;{summary}\n{body}&apos;, &apos;Text format.&apos;),
+<a href="#l60" class="line" id="l60">     60</a>         (
+<a href="#l61" class="line" id="l61">     61</a>             &apos;foreground&apos;,
+<a href="#l62" class="line" id="l62">     62</a>             (&apos;#ffffff&apos;, &apos;#ffffff&apos;, &apos;#ffffff&apos;),
+<a href="#l63" class="line" id="l63">     63</a>             &apos;Foreground colour of notifications, in ascending order of urgency.&apos;,
+<a href="#l64" class="line" id="l64">     64</a>         ),
+<a href="#l65" class="line" id="l65">     65</a>         (
+<a href="#l66" class="line" id="l66">     66</a>             &apos;background&apos;,
+<a href="#l67" class="line" id="l67">     67</a>             (&apos;#111111&apos;, &apos;#111111&apos;, &apos;#111111&apos;),
+<a href="#l68" class="line" id="l68">     68</a>             &apos;Background colour of notifications, in ascending order of urgency.&apos;,
+<a href="#l69" class="line" id="l69">     69</a>         ),
+<a href="#l70" class="line" id="l70">     70</a>         (
+<a href="#l71" class="line" id="l71">     71</a>             &apos;border&apos;,
+<a href="#l72" class="line" id="l72">     72</a>             (&apos;#111111&apos;, &apos;#111111&apos;, &apos;#111111&apos;),
+<a href="#l73" class="line" id="l73">     73</a>             &apos;Border colours in ascending order of urgency. Or None for none.&apos;,
+<a href="#l74" class="line" id="l74">     74</a>         ),
+<a href="#l75" class="line" id="l75">     75</a>         (
+<a href="#l76" class="line" id="l76">     76</a>             &apos;timeout&apos;,
+<a href="#l77" class="line" id="l77">     77</a>             (5000, 5000, 0),
+<a href="#l78" class="line" id="l78">     78</a>             &apos;Millisecond timeout duration, in ascending order of urgency.&apos;,
+<a href="#l79" class="line" id="l79">     79</a>         ),
+<a href="#l80" class="line" id="l80">     80</a>         (&apos;opacity&apos;, 1.0, &apos;Opacity of notifications.&apos;),
+<a href="#l81" class="line" id="l81">     81</a>         (&apos;border_width&apos;, 4, &apos;Line width of drawn borders.&apos;),
+<a href="#l82" class="line" id="l82">     82</a>         (&apos;corner_radius&apos;, None, &apos;Corner radius for round corners, or None.&apos;),
+<a href="#l83" class="line" id="l83">     83</a>         (&apos;font&apos;, &apos;sans&apos;, &apos;Font used in notifications.&apos;),
+<a href="#l84" class="line" id="l84">     84</a>         (&apos;font_size&apos;, 14, &apos;Size of font.&apos;),
+<a href="#l85" class="line" id="l85">     85</a>         (&apos;fontshadow&apos;, None, &apos;Color for text shadows, or None for no shadows.&apos;),
+<a href="#l86" class="line" id="l86">     86</a>         (&apos;text_alignment&apos;, &apos;left&apos;, &apos;Text alignment: left, center or right.&apos;),
+<a href="#l87" class="line" id="l87">     87</a>         (&apos;horizontal_padding&apos;, None, &apos;Padding at sides of text.&apos;),
+<a href="#l88" class="line" id="l88">     88</a>         (&apos;vertical_padding&apos;, None, &apos;Padding at top and bottom of text.&apos;),
+<a href="#l89" class="line" id="l89">     89</a>         (&apos;line_spacing&apos;, 4, &apos;Space between lines.&apos;),
+<a href="#l90" class="line" id="l90">     90</a>         (
+<a href="#l91" class="line" id="l91">     91</a>             &apos;overflow&apos;,
+<a href="#l92" class="line" id="l92">     92</a>             &apos;truncate&apos;,
+<a href="#l93" class="line" id="l93">     93</a>             &apos;How to deal with too much text: more_width, more_height, or truncate.&apos;,
+<a href="#l94" class="line" id="l94">     94</a>         ),
+<a href="#l95" class="line" id="l95">     95</a>         (&apos;max_windows&apos;, 2, &apos;Maximum number of windows to show at once.&apos;),
+<a href="#l96" class="line" id="l96">     96</a>         (&apos;gap&apos;, 12, &apos;Vertical gap between popup windows.&apos;),
+<a href="#l97" class="line" id="l97">     97</a>         (&apos;sticky_history&apos;, True, &apos;Disable timeout when browsing history.&apos;),
+<a href="#l98" class="line" id="l98">     98</a>         (&apos;icon_size&apos;, 36, &apos;Pixel size of any icons.&apos;),
+<a href="#l99" class="line" id="l99">     99</a>         (&apos;fullscreen&apos;, &apos;show&apos;, &apos;What to do when in fullscreen: show, hide, or queue.&apos;),
+<a href="#l100" class="line" id="l100">    100</a>         (&apos;screen&apos;, &apos;focus&apos;, &apos;How to select a screen: focus, mouse, or an int.&apos;),
+<a href="#l101" class="line" id="l101">    101</a>     ]
+<a href="#l102" class="line" id="l102">    102</a>     capabilities = {&apos;body&apos;, &apos;body-markup&apos;, &apos;actions&apos;}
+<a href="#l103" class="line" id="l103">    103</a>     # specification: https://developer.gnome.org/notification-spec/
+<a href="#l104" class="line" id="l104">    104</a> 
+<a href="#l105" class="line" id="l105">    105</a>     def __init__(self, **config):
+<a href="#l106" class="line" id="l106">    106</a>         configurable.Configurable.__init__(self, **config)
+<a href="#l107" class="line" id="l107">    107</a>         self.add_defaults(Server.defaults)
+<a href="#l108" class="line" id="l108">    108</a>         self._hidden = []
+<a href="#l109" class="line" id="l109">    109</a>         self._shown = []
+<a href="#l110" class="line" id="l110">    110</a>         self._queue = []
+<a href="#l111" class="line" id="l111">    111</a>         self._positions = []
+<a href="#l112" class="line" id="l112">    112</a>         self._scroll_popup = None
+<a href="#l113" class="line" id="l113">    113</a>         self._current_id = 0
+<a href="#l114" class="line" id="l114">    114</a>         self._notif_id = None
+<a href="#l115" class="line" id="l115">    115</a>         self._paused = False
+<a href="#l116" class="line" id="l116">    116</a>         self._icons = {}
+<a href="#l117" class="line" id="l117">    117</a> 
+<a href="#l118" class="line" id="l118">    118</a>         self._make_attr_list(&apos;foreground&apos;)
+<a href="#l119" class="line" id="l119">    119</a>         self._make_attr_list(&apos;background&apos;)
+<a href="#l120" class="line" id="l120">    120</a>         self._make_attr_list(&apos;timeout&apos;)
+<a href="#l121" class="line" id="l121">    121</a>         self._make_attr_list(&apos;border&apos;)
+<a href="#l122" class="line" id="l122">    122</a> 
+<a href="#l123" class="line" id="l123">    123</a>     def __getattr__(self, name):
+<a href="#l124" class="line" id="l124">    124</a>         &quot;&quot;&quot;
+<a href="#l125" class="line" id="l125">    125</a>         Using this, we can get e.g. Server.lazy_close which is the equivalent of
+<a href="#l126" class="line" id="l126">    126</a>         lazy.function(Server.close) but more convenient for setting keybindings.
+<a href="#l127" class="line" id="l127">    127</a>         &quot;&quot;&quot;
+<a href="#l128" class="line" id="l128">    128</a>         if name.startswith(&apos;lazy_&apos;):
+<a href="#l129" class="line" id="l129">    129</a>             return lazy.function(getattr(self, name[5:]))
+<a href="#l130" class="line" id="l130">    130</a>         return configurable.Configurable.__getattr__(self, name)
+<a href="#l131" class="line" id="l131">    131</a> 
+<a href="#l132" class="line" id="l132">    132</a>     def _make_attr_list(self, attr):
+<a href="#l133" class="line" id="l133">    133</a>         &quot;&quot;&quot;
+<a href="#l134" class="line" id="l134">    134</a>         Turns &apos;#000000&apos; into (&apos;#000000&apos;, &apos;#000000&apos;, &apos;#000000&apos;)
+<a href="#l135" class="line" id="l135">    135</a>         &quot;&quot;&quot;
+<a href="#l136" class="line" id="l136">    136</a>         value = getattr(self, attr)
+<a href="#l137" class="line" id="l137">    137</a>         if not isinstance(value, (tuple, list)):
+<a href="#l138" class="line" id="l138">    138</a>             setattr(self, attr, (value,) * 3)
+<a href="#l139" class="line" id="l139">    139</a> 
+<a href="#l140" class="line" id="l140">    140</a>     def configure(self):
+<a href="#l141" class="line" id="l141">    141</a>         &quot;&quot;&quot;
+<a href="#l142" class="line" id="l142">    142</a>         This method needs to be called to set up the Server with the Qtile manager and
+<a href="#l143" class="line" id="l143">    143</a>         create the required popup windows.
+<a href="#l144" class="line" id="l144">    144</a>         &quot;&quot;&quot;
+<a href="#l145" class="line" id="l145">    145</a>         if self.horizontal_padding is None:
+<a href="#l146" class="line" id="l146">    146</a>             self.horizontal_padding = self.font_size / 2
+<a href="#l147" class="line" id="l147">    147</a>         if self.vertical_padding is None:
+<a href="#l148" class="line" id="l148">    148</a>             self.vertical_padding = self.font_size / 2
+<a href="#l149" class="line" id="l149">    149</a> 
+<a href="#l150" class="line" id="l150">    150</a>         popup_config = {}
+<a href="#l151" class="line" id="l151">    151</a>         for opt in Popup.defaults:
+<a href="#l152" class="line" id="l152">    152</a>             key = opt[0]
+<a href="#l153" class="line" id="l153">    153</a>             if hasattr(self, key):
+<a href="#l154" class="line" id="l154">    154</a>                 value = getattr(self, key)
+<a href="#l155" class="line" id="l155">    155</a>                 if isinstance(value, (tuple, list)):
+<a href="#l156" class="line" id="l156">    156</a>                     popup_config[key] = value[1]
+<a href="#l157" class="line" id="l157">    157</a>                 else:
+<a href="#l158" class="line" id="l158">    158</a>                     popup_config[key] = value
+<a href="#l159" class="line" id="l159">    159</a> 
+<a href="#l160" class="line" id="l160">    160</a>         for win in range(self.max_windows):
+<a href="#l161" class="line" id="l161">    161</a>             popup = Popup(qtile, **popup_config)
+<a href="#l162" class="line" id="l162">    162</a>             popup.win.handle_ButtonPress = self._buttonpress(popup)
+<a href="#l163" class="line" id="l163">    163</a>             popup.replaces_id = None
+<a href="#l164" class="line" id="l164">    164</a>             self._hidden.append(popup)
+<a href="#l165" class="line" id="l165">    165</a>             self._positions.append(
+<a href="#l166" class="line" id="l166">    166</a>                 (self.x, self.y + win * (self.height + 2 * self.border_width +
+<a href="#l167" class="line" id="l167">    167</a>                                          self.gap))
+<a href="#l168" class="line" id="l168">    168</a>             )
+<a href="#l169" class="line" id="l169">    169</a> 
+<a href="#l170" class="line" id="l170">    170</a>         notifier.register(self._notify, Server.capabilities)
+<a href="#l171" class="line" id="l171">    171</a> 
+<a href="#l172" class="line" id="l172">    172</a>     def _buttonpress(self, popup):
+<a href="#l173" class="line" id="l173">    173</a>         def _(event):
+<a href="#l174" class="line" id="l174">    174</a>             if event.detail == 1:
+<a href="#l175" class="line" id="l175">    175</a>                 self._close(popup)
+<a href="#l176" class="line" id="l176">    176</a>         return _
+<a href="#l177" class="line" id="l177">    177</a> 
+<a href="#l178" class="line" id="l178">    178</a>     def _notify(self, notif):
+<a href="#l179" class="line" id="l179">    179</a>         &quot;&quot;&quot;
+<a href="#l180" class="line" id="l180">    180</a>         This method is registered with the NotificationManager to handle notifications
+<a href="#l181" class="line" id="l181">    181</a>         received via dbus. They will either be drawn now or queued to be drawn soon.
+<a href="#l182" class="line" id="l182">    182</a>         &quot;&quot;&quot;
+<a href="#l183" class="line" id="l183">    183</a>         if self._paused:
+<a href="#l184" class="line" id="l184">    184</a>             self._queue.append(notif)
+<a href="#l185" class="line" id="l185">    185</a>             return
+<a href="#l186" class="line" id="l186">    186</a> 
+<a href="#l187" class="line" id="l187">    187</a>         if qtile.current_window and qtile.current_window.fullscreen:
+<a href="#l188" class="line" id="l188">    188</a>             if self.fullscreen != &apos;show&apos;:
+<a href="#l189" class="line" id="l189">    189</a>                 if self.fullscreen == &apos;queue&apos;:
+<a href="#l190" class="line" id="l190">    190</a>                     if self._unfullscreen not in hook.subscriptions:
+<a href="#l191" class="line" id="l191">    191</a>                         hook.subscribe.float_change(self._unfullscreen)
+<a href="#l192" class="line" id="l192">    192</a>                     self._queue.append(notif)
+<a href="#l193" class="line" id="l193">    193</a>                 return
+<a href="#l194" class="line" id="l194">    194</a> 
+<a href="#l195" class="line" id="l195">    195</a>         if notif.replaces_id:
+<a href="#l196" class="line" id="l196">    196</a>             for popup in self._shown:
+<a href="#l197" class="line" id="l197">    197</a>                 if notif.replaces_id == popup.replaces_id:
+<a href="#l198" class="line" id="l198">    198</a>                     self._shown.remove(popup)
+<a href="#l199" class="line" id="l199">    199</a>                     self._send(notif, popup)
+<a href="#l200" class="line" id="l200">    200</a>                     self._reposition()
+<a href="#l201" class="line" id="l201">    201</a>                     return
+<a href="#l202" class="line" id="l202">    202</a> 
+<a href="#l203" class="line" id="l203">    203</a>         if self._hidden:
+<a href="#l204" class="line" id="l204">    204</a>             self._send(notif, self._hidden.pop())
+<a href="#l205" class="line" id="l205">    205</a>         else:
+<a href="#l206" class="line" id="l206">    206</a>             self._queue.append(notif)
+<a href="#l207" class="line" id="l207">    207</a> 
+<a href="#l208" class="line" id="l208">    208</a>     def _unfullscreen(self):
+<a href="#l209" class="line" id="l209">    209</a>         &quot;&quot;&quot;
+<a href="#l210" class="line" id="l210">    210</a>         Begin displaying of queue notifications after leaving fullscreen.
+<a href="#l211" class="line" id="l211">    211</a>         &quot;&quot;&quot;
+<a href="#l212" class="line" id="l212">    212</a>         if not qtile.current_window.fullscreen:
+<a href="#l213" class="line" id="l213">    213</a>             hook.unsubscribe.float_change(self._unfullscreen)
+<a href="#l214" class="line" id="l214">    214</a>             self._renotify()
+<a href="#l215" class="line" id="l215">    215</a> 
+<a href="#l216" class="line" id="l216">    216</a>     def _renotify(self):
+<a href="#l217" class="line" id="l217">    217</a>         &quot;&quot;&quot;
+<a href="#l218" class="line" id="l218">    218</a>         If we hold off temporarily on sending notifications and accumulate a queue, we
+<a href="#l219" class="line" id="l219">    219</a>         should use this to the queue through self._notify again.
+<a href="#l220" class="line" id="l220">    220</a>         &quot;&quot;&quot;
+<a href="#l221" class="line" id="l221">    221</a>         queue = self._queue.copy()
+<a href="#l222" class="line" id="l222">    222</a>         self._queue.clear()
+<a href="#l223" class="line" id="l223">    223</a>         while queue:
+<a href="#l224" class="line" id="l224">    224</a>             self._notify(queue.pop(0))
+<a href="#l225" class="line" id="l225">    225</a> 
+<a href="#l226" class="line" id="l226">    226</a>     def _send(self, notif, popup, timeout=None):
+<a href="#l227" class="line" id="l227">    227</a>         &quot;&quot;&quot;
+<a href="#l228" class="line" id="l228">    228</a>         Draw the desired notification using the specified Popup instance.
+<a href="#l229" class="line" id="l229">    229</a>         &quot;&quot;&quot;
+<a href="#l230" class="line" id="l230">    230</a>         text = self._get_text(notif)
+<a href="#l231" class="line" id="l231">    231</a>         urgency = notif.hints.get(&apos;urgency&apos;, 1)
+<a href="#l232" class="line" id="l232">    232</a>         self._current_id += 1
+<a href="#l233" class="line" id="l233">    233</a>         popup.id = self._current_id
+<a href="#l234" class="line" id="l234">    234</a>         if popup not in self._shown:
+<a href="#l235" class="line" id="l235">    235</a>             self._shown.append(popup)
+<a href="#l236" class="line" id="l236">    236</a>         popup.x, popup.y = self._get_coordinates()
+<a href="#l237" class="line" id="l237">    237</a>         icon = self._load_icon(notif)
+<a href="#l238" class="line" id="l238">    238</a> 
+<a href="#l239" class="line" id="l239">    239</a>         popup.background = self.background[urgency]
+<a href="#l240" class="line" id="l240">    240</a>         popup.foreground = self.foreground[urgency]
+<a href="#l241" class="line" id="l241">    241</a>         popup.clear()
+<a href="#l242" class="line" id="l242">    242</a> 
+<a href="#l243" class="line" id="l243">    243</a>         if icon:
+<a href="#l244" class="line" id="l244">    244</a>             popup.draw_image(
+<a href="#l245" class="line" id="l245">    245</a>                 icon[0],
+<a href="#l246" class="line" id="l246">    246</a>                 self.horizontal_padding,
+<a href="#l247" class="line" id="l247">    247</a>                 1 + (self.height - icon[1]) / 2,
+<a href="#l248" class="line" id="l248">    248</a>             )
+<a href="#l249" class="line" id="l249">    249</a>             popup.horizontal_padding += self.icon_size + self.horizontal_padding / 2
+<a href="#l250" class="line" id="l250">    250</a> 
+<a href="#l251" class="line" id="l251">    251</a>         for num, line in enumerate(text.split(&apos;\n&apos;)):
+<a href="#l252" class="line" id="l252">    252</a>             popup.text = line
+<a href="#l253" class="line" id="l253">    253</a>             y = self.vertical_padding + num * (popup.layout.height + self.line_spacing)
+<a href="#l254" class="line" id="l254">    254</a>             popup.draw_text(y=y)
+<a href="#l255" class="line" id="l255">    255</a>         if self.border_width:
+<a href="#l256" class="line" id="l256">    256</a>             popup.set_border(self.border[urgency])
+<a href="#l257" class="line" id="l257">    257</a>         popup.place()
+<a href="#l258" class="line" id="l258">    258</a>         popup.unhide()
+<a href="#l259" class="line" id="l259">    259</a>         popup.draw()
+<a href="#l260" class="line" id="l260">    260</a>         popup.replaces_id = notif.replaces_id
+<a href="#l261" class="line" id="l261">    261</a>         if icon:
+<a href="#l262" class="line" id="l262">    262</a>             popup.horizontal_padding = self.horizontal_padding
+<a href="#l263" class="line" id="l263">    263</a> 
+<a href="#l264" class="line" id="l264">    264</a>         if timeout is None:
+<a href="#l265" class="line" id="l265">    265</a>             if notif.timeout is None or notif.timeout &lt; 0:
+<a href="#l266" class="line" id="l266">    266</a>                 timeout = self.timeout[urgency]
+<a href="#l267" class="line" id="l267">    267</a>             else:
+<a href="#l268" class="line" id="l268">    268</a>                 timeout = notif.timeout
+<a href="#l269" class="line" id="l269">    269</a>         elif timeout &lt; 0:
+<a href="#l270" class="line" id="l270">    270</a>             timeout = self.timeout[urgency]
+<a href="#l271" class="line" id="l271">    271</a>         if timeout &gt; 0:
+<a href="#l272" class="line" id="l272">    272</a>             qtile.call_later(timeout / 1000, self._close, popup, self._current_id)
+<a href="#l273" class="line" id="l273">    273</a> 
+<a href="#l274" class="line" id="l274">    274</a>     def _get_text(self, notif):
+<a href="#l275" class="line" id="l275">    275</a>         summary = &apos;&apos;
+<a href="#l276" class="line" id="l276">    276</a>         body = &apos;&apos;
+<a href="#l277" class="line" id="l277">    277</a>         app_name = &apos;&apos;
+<a href="#l278" class="line" id="l278">    278</a>         if notif.summary:
+<a href="#l279" class="line" id="l279">    279</a>             summary = pangocffi.markup_escape_text(notif.summary)
+<a href="#l280" class="line" id="l280">    280</a>         if notif.body:
+<a href="#l281" class="line" id="l281">    281</a>             body = pangocffi.markup_escape_text(notif.body)
+<a href="#l282" class="line" id="l282">    282</a>         if notif.app_name:
+<a href="#l283" class="line" id="l283">    283</a>             app_name = pangocffi.markup_escape_text(notif.app_name)
+<a href="#l284" class="line" id="l284">    284</a>         return self.format.format(summary=summary, body=body, app_name=app_name)
+<a href="#l285" class="line" id="l285">    285</a> 
+<a href="#l286" class="line" id="l286">    286</a>     def _get_coordinates(self):
+<a href="#l287" class="line" id="l287">    287</a>         x, y = self._positions[len(self._shown) - 1]
+<a href="#l288" class="line" id="l288">    288</a>         if isinstance(self.screen, int):
+<a href="#l289" class="line" id="l289">    289</a>             screen = qtile.screens[self.screen]
+<a href="#l290" class="line" id="l290">    290</a>         elif self.screen == &apos;focus&apos;:
+<a href="#l291" class="line" id="l291">    291</a>             screen = qtile.current_screen
+<a href="#l292" class="line" id="l292">    292</a>         elif self.screen == &apos;mouse&apos;:
+<a href="#l293" class="line" id="l293">    293</a>             screen = qtile.find_screen(*qtile.mouse_position)
+<a href="#l294" class="line" id="l294">    294</a>         return x + screen.x, y + screen.y
+<a href="#l295" class="line" id="l295">    295</a> 
+<a href="#l296" class="line" id="l296">    296</a>     def _close(self, popup, nid=None):
+<a href="#l297" class="line" id="l297">    297</a>         &quot;&quot;&quot;
+<a href="#l298" class="line" id="l298">    298</a>         Close the specified Popup instance.
+<a href="#l299" class="line" id="l299">    299</a>         &quot;&quot;&quot;
+<a href="#l300" class="line" id="l300">    300</a>         if popup in self._shown:
+<a href="#l301" class="line" id="l301">    301</a>             if nid is not None and popup.id != nid:
+<a href="#l302" class="line" id="l302">    302</a>                 return
+<a href="#l303" class="line" id="l303">    303</a>             self._shown.remove(popup)
+<a href="#l304" class="line" id="l304">    304</a>             if self._scroll_popup is popup:
+<a href="#l305" class="line" id="l305">    305</a>                 self._scroll_popup = None
+<a href="#l306" class="line" id="l306">    306</a>                 self._notif_id = None
+<a href="#l307" class="line" id="l307">    307</a>             popup.hide()
+<a href="#l308" class="line" id="l308">    308</a>             if self._queue and not self._paused:
+<a href="#l309" class="line" id="l309">    309</a>                 self._send(self._queue.pop(0), popup)
+<a href="#l310" class="line" id="l310">    310</a>             else:
+<a href="#l311" class="line" id="l311">    311</a>                 self._hidden.append(popup)
+<a href="#l312" class="line" id="l312">    312</a>         self._reposition()
+<a href="#l313" class="line" id="l313">    313</a> 
+<a href="#l314" class="line" id="l314">    314</a>     def _reposition(self):
+<a href="#l315" class="line" id="l315">    315</a>         for index, shown in enumerate(self._shown):
+<a href="#l316" class="line" id="l316">    316</a>             shown.x, shown.y = self._positions[index]
+<a href="#l317" class="line" id="l317">    317</a>             shown.place()
+<a href="#l318" class="line" id="l318">    318</a> 
+<a href="#l319" class="line" id="l319">    319</a>     def _load_icon(self, notif):
+<a href="#l320" class="line" id="l320">    320</a>         if not notif.app_icon:
+<a href="#l321" class="line" id="l321">    321</a>             return None
+<a href="#l322" class="line" id="l322">    322</a>         if notif.app_icon in self._icons:
+<a href="#l323" class="line" id="l323">    323</a>             return self._icons.get(notif.app_icon)
+<a href="#l324" class="line" id="l324">    324</a>         try:
+<a href="#l325" class="line" id="l325">    325</a>             img = images.Img.from_path(notif.app_icon)
+<a href="#l326" class="line" id="l326">    326</a>             if img.width &gt; img.height:
+<a href="#l327" class="line" id="l327">    327</a>                 img.resize(width=self.icon_size)
+<a href="#l328" class="line" id="l328">    328</a>             else:
+<a href="#l329" class="line" id="l329">    329</a>                 img.resize(height=self.icon_size)
+<a href="#l330" class="line" id="l330">    330</a>             surface, _ = images._decode_to_image_surface(
+<a href="#l331" class="line" id="l331">    331</a>                 img.bytes_img, img.width, img.height
+<a href="#l332" class="line" id="l332">    332</a>             )
+<a href="#l333" class="line" id="l333">    333</a>             self._icons[notif.app_icon] = surface, surface.get_height()
+<a href="#l334" class="line" id="l334">    334</a>         except (FileNotFoundError, images.LoadingError, IsADirectoryError) as e:
+<a href="#l335" class="line" id="l335">    335</a>             logger.exception(e)
+<a href="#l336" class="line" id="l336">    336</a>             self._icons[notif.app_icon] = None
+<a href="#l337" class="line" id="l337">    337</a>         return self._icons[notif.app_icon]
+<a href="#l338" class="line" id="l338">    338</a> 
+<a href="#l339" class="line" id="l339">    339</a>     def close(self, qtile=None):
+<a href="#l340" class="line" id="l340">    340</a>         &quot;&quot;&quot;
+<a href="#l341" class="line" id="l341">    341</a>         Close the oldest of all visible popup windows.
+<a href="#l342" class="line" id="l342">    342</a>         &quot;&quot;&quot;
+<a href="#l343" class="line" id="l343">    343</a>         if self._shown:
+<a href="#l344" class="line" id="l344">    344</a>             self._close(self._shown[0])
+<a href="#l345" class="line" id="l345">    345</a> 
+<a href="#l346" class="line" id="l346">    346</a>     def close_all(self, qtile=None):
+<a href="#l347" class="line" id="l347">    347</a>         &quot;&quot;&quot;
+<a href="#l348" class="line" id="l348">    348</a>         Close all popup windows.
+<a href="#l349" class="line" id="l349">    349</a>         &quot;&quot;&quot;
+<a href="#l350" class="line" id="l350">    350</a>         self._queue.clear()
+<a href="#l351" class="line" id="l351">    351</a>         while self._shown:
+<a href="#l352" class="line" id="l352">    352</a>             self._close(self._shown[0])
+<a href="#l353" class="line" id="l353">    353</a> 
+<a href="#l354" class="line" id="l354">    354</a>     def prev(self, qtile=None):
+<a href="#l355" class="line" id="l355">    355</a>         &quot;&quot;&quot;
+<a href="#l356" class="line" id="l356">    356</a>         Display the previous notification in the history.
+<a href="#l357" class="line" id="l357">    357</a>         &quot;&quot;&quot;
+<a href="#l358" class="line" id="l358">    358</a>         if notifier.notifications:
+<a href="#l359" class="line" id="l359">    359</a>             if self._scroll_popup is None:
+<a href="#l360" class="line" id="l360">    360</a>                 if self._hidden:
+<a href="#l361" class="line" id="l361">    361</a>                     self._scroll_popup = self._hidden.pop(0)
+<a href="#l362" class="line" id="l362">    362</a>                 else:
+<a href="#l363" class="line" id="l363">    363</a>                     self._scroll_popup = self._shown[0]
+<a href="#l364" class="line" id="l364">    364</a>                 self._notif_id = len(notifier.notifications)
+<a href="#l365" class="line" id="l365">    365</a>             if self._notif_id &gt; 0:
+<a href="#l366" class="line" id="l366">    366</a>                 self._notif_id -= 1
+<a href="#l367" class="line" id="l367">    367</a>             self._send(
+<a href="#l368" class="line" id="l368">    368</a>                 notifier.notifications[self._notif_id],
+<a href="#l369" class="line" id="l369">    369</a>                 self._scroll_popup,
+<a href="#l370" class="line" id="l370">    370</a>                 0 if self.sticky_history else None,
+<a href="#l371" class="line" id="l371">    371</a>             )
+<a href="#l372" class="line" id="l372">    372</a> 
+<a href="#l373" class="line" id="l373">    373</a>     def next(self, qtile=None):
+<a href="#l374" class="line" id="l374">    374</a>         &quot;&quot;&quot;
+<a href="#l375" class="line" id="l375">    375</a>         Display the next notification in the history.
+<a href="#l376" class="line" id="l376">    376</a>         &quot;&quot;&quot;
+<a href="#l377" class="line" id="l377">    377</a>         if self._scroll_popup:
+<a href="#l378" class="line" id="l378">    378</a>             if self._notif_id &lt; len(notifier.notifications) - 1:
+<a href="#l379" class="line" id="l379">    379</a>                 self._notif_id += 1
+<a href="#l380" class="line" id="l380">    380</a>             if self._scroll_popup in self._shown:
+<a href="#l381" class="line" id="l381">    381</a>                 self._shown.remove(self._scroll_popup)
+<a href="#l382" class="line" id="l382">    382</a>             self._send(
+<a href="#l383" class="line" id="l383">    383</a>                 notifier.notifications[self._notif_id],
+<a href="#l384" class="line" id="l384">    384</a>                 self._scroll_popup,
+<a href="#l385" class="line" id="l385">    385</a>                 0 if self.sticky_history else None,
+<a href="#l386" class="line" id="l386">    386</a>             )
+<a href="#l387" class="line" id="l387">    387</a> 
+<a href="#l388" class="line" id="l388">    388</a>     def pause(self, qtile=None):
+<a href="#l389" class="line" id="l389">    389</a>         &quot;&quot;&quot;
+<a href="#l390" class="line" id="l390">    390</a>         Pause display of notifications on screen. Notifications will be queued and
+<a href="#l391" class="line" id="l391">    391</a>         presented as usual when this is called again.
+<a href="#l392" class="line" id="l392">    392</a>         &quot;&quot;&quot;
+<a href="#l393" class="line" id="l393">    393</a>         if self._paused:
+<a href="#l394" class="line" id="l394">    394</a>             self._paused = False
+<a href="#l395" class="line" id="l395">    395</a>             self._renotify()
+<a href="#l396" class="line" id="l396">    396</a>         else:
+<a href="#l397" class="line" id="l397">    397</a>             self._paused = True
+<a href="#l398" class="line" id="l398">    398</a>             while self._shown:
+<a href="#l399" class="line" id="l399">    399</a>                 self._close(self._shown[0])
+<a href="#l400" class="line" id="l400">    400</a> 
+</pre>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add blamer</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/0f6ba20d78348b8a1ca380ce42c24253a56b1a85.html">0f6ba20d78348b8a1ca380ce42c24253a56b1a85</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/727876040cba852384be7e2380b81fd5bbd48d0c.html">727876040cba852384be7e2380b81fd5bbd48d0c</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2023-10-10 15:17:52 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2023-10-10 15:17:52 +0100
+
+add blamer
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -135,3 +135,6 @@
+<span class="def"> let g:any_jump_disable_default_keybindings = 1
+</span><span class="def"> nnoremap &lt;leader&gt;g :AnyJump&lt;CR&gt;
+</span><span class="def"> xnoremap &lt;leader&gt;g :AnyJumpVisual&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; blamer
+</span><span class="add">+nnoremap &lt;C-b&gt; :BlamerToggle&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/blamer.nvim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+Subproject commit e0d43c11697300eb68f00d69df8b87deb0bf52dc
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitmodules</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -31,3 +31,6 @@
+<span class="def"> [submodule &quot;start/vim-gutentags&quot;]
+</span><span class="def"> 	path = start/vim-gutentags
+</span><span class="def"> 	url = https://github.com/ludovicchabant/vim-gutentags
+</span><span class="add">+[submodule &quot;start/blamer.nvim&quot;]
+</span><span class="add">+	path = start/blamer.nvim
+</span><span class="add">+	url = https://github.com/APZelos/blamer.nvim
+</span></pre>
+</div></div>
+  </body>
+</html>

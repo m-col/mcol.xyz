@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - remove in_mapped flag; draw all views in wl_list</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/2bfdee0aec288528ae72c44308bf490ee353f7a3.html">2bfdee0aec288528ae72c44308bf490ee353f7a3</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/9c64b124fc4266d7a2c38cab3ce3a71610f53602.html">9c64b124fc4266d7a2c38cab3ce3a71610f53602</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-08 17:30:05 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-08 17:30:05 +0000
+
+remove in_mapped flag; draw all views in wl_list
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -60,7 +60,6 @@
+<span class="def">     struct wl_listener destroy_listener;
+</span><span class="def">     struct wl_listener request_move_listener;
+</span><span class="def">     struct wl_listener request_resize_listener;
+</span><span class="sub">-    bool is_mapped;
+</span><span class="def">     int x, y;
+</span><span class="def"> };
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -46,7 +46,6 @@
+<span class="def"> 
+</span><span class="def"> void on_map(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, map_listener);
+</span><span class="sub">-    view-&gt;is_mapped = true;
+</span><span class="def">     focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -64,9 +64,6 @@
+<span class="def"> 
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each_reverse(view, &amp;output-&gt;server-&gt;views, link) {
+</span><span class="sub">-	if (!view-&gt;is_mapped) {
+</span><span class="sub">-	    continue;
+</span><span class="sub">-	}
+</span><span class="def"> 	struct render_data rdata = {
+</span><span class="def"> 	    .output = output-&gt;wlr_output,
+</span><span class="def"> 	    .view = view,
+</span></pre>
+</div></div>
+  </body>
+</html>

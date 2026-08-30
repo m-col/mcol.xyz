@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - remove verbose helper</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/f74439ab3c9e9a901879ebe1829af7bd76d451c0.html">f74439ab3c9e9a901879ebe1829af7bd76d451c0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/d865d37bd9e04076e2a980c48d875e8fd95e2b01.html">d865d37bd9e04076e2a980c48d875e8fd95e2b01</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-14 22:12:10 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-14 22:12:10 +0100
+
+remove verbose helper
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -34,11 +34,11 @@
+<span class="def"> import Foreign.Storable (peek)
+</span><span class="def"> import qualified Git
+</span><span class="def"> import Git.Libgit2 (LgRepo, lgDiffTreeToTree, lgFactory)
+</span><span class="sub">-import Path (Abs, Dir, File, Path, Rel, dirname, parseRelDir, parseRelFile, toFilePath, (&lt;/&gt;))
+</span><span class="add">+import Path (Abs, Dir, Path, Rel, dirname, parseRelDir, parseRelFile, toFilePath, (&lt;/&gt;))
+</span><span class="def"> import Path.IO (doesFileExist, ensureDir)
+</span><span class="def"> import qualified System.Directory as D
+</span><span class="def"> import qualified System.FilePath as FP
+</span><span class="sub">-import Text.Ginger.GVal (GVal, ToGVal, toGVal)
+</span><span class="add">+import Text.Ginger.GVal (GVal, toGVal)
+</span><span class="def"> 
+</span><span class="def"> import Env (Env (..))
+</span><span class="def"> import Templates (Template (..), generate)
+</span>@@ -385,16 +385,10 @@
+<span class="def">     ReaderT LgRepo IO ()
+</span><span class="def"> genTarget _ _ _ _ Nothing _ _ _ = return ()
+</span><span class="def"> genTarget output scope quiet force (Just template) category href target = do
+</span><span class="sub">-    outFile &lt;- liftIO destination
+</span><span class="add">+    outFile &lt;- liftIO $ (&lt;/&gt;) &lt;$&gt; parseRelDir category &lt;*&gt; parseRelFile href
+</span><span class="def">     let output&apos; = output &lt;/&gt; outFile
+</span><span class="def">     exists &lt;- liftIO . doesFileExist $ output&apos;
+</span><span class="def">     when (force || not exists) $ do
+</span><span class="def">         liftIO . unless quiet . putStrLn $ &quot;Writing &quot; &lt;&gt; toFilePath output&apos;
+</span><span class="def">         let scope&apos; = scope &lt;&gt; HashMap.fromList [(T.pack category, target)]
+</span><span class="def">         generate output&apos; scope&apos; template
+</span><span class="sub">-  where
+</span><span class="sub">-    destination :: IO (Path Rel File)
+</span><span class="sub">-    destination = do
+</span><span class="sub">-        dir &lt;- parseRelDir category
+</span><span class="sub">-        file &lt;- parseRelFile href
+</span><span class="sub">-        return $ dir &lt;/&gt; file
+</span></pre>
+</div></div>
+  </body>
+</html>

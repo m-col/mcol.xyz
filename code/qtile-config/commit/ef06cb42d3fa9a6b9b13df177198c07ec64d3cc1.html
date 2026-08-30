@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - misc config changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/ef06cb42d3fa9a6b9b13df177198c07ec64d3cc1.html">ef06cb42d3fa9a6b9b13df177198c07ec64d3cc1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/13a047ed527d3edeeb5e0eee6da48e6f0a86d131.html">13a047ed527d3edeeb5e0eee6da48e6f0a86d131</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-18 00:40:27 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-18 00:40:27 +0100
+
+misc config changes
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -208,7 +208,9 @@
+<span class="def">         Match(title=&apos;Open File&apos;),
+</span><span class="def">         Match(title=&apos;Unlock Database - KeePassXC&apos;),  # Wayland
+</span><span class="def">         Match(title=&apos;File Operation Progress&apos;, wm_class=&apos;thunar&apos;),  # Wayland
+</span><span class="add">+        Match(title=&apos;Firefox — Sharing Indicator&apos;),  # Wayland
+</span><span class="def">         Match(wm_class=&apos;Arandr&apos;),
+</span><span class="add">+        Match(wm_class=&apos;org.gnome.clocks&apos;),
+</span><span class="def">         Match(wm_class=&apos;org.kde.ark&apos;),
+</span><span class="def">         Match(wm_class=&apos;confirm&apos;),
+</span><span class="def">         Match(wm_class=&apos;dialog&apos;),
+</span>@@ -325,22 +327,18 @@
+<span class="def">                 f.write(str(self.volume) + &quot;\n&quot;)
+</span><span class="def"> 
+</span><span class="def">     def cmd_increase_vol(self):
+</span><span class="sub">-        subprocess.call(&apos;amixer set PCM 4%+&apos;.split())
+</span><span class="add">+        subprocess.call(&apos;amixer -c PCH set PCM 4%+&apos;.split())
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def">     def cmd_decrease_vol(self):
+</span><span class="sub">-        subprocess.call(&apos;amixer set PCM 4%-&apos;.split())
+</span><span class="add">+        subprocess.call(&apos;amixer -c PCH set PCM 4%-&apos;.split())
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def">     def cmd_mute(self):
+</span><span class="sub">-        subprocess.call(&apos;amixer set Master toggle&apos;.split())
+</span><span class="sub">-        self.channel = &apos;Master&apos;
+</span><span class="add">+        subprocess.call(&apos;amixer -c PCH set PCM toggle&apos;.split())
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="sub">-        self.channel = &apos;PCM&apos;
+</span><span class="sub">-        if self.volume == 0:
+</span><span class="sub">-            self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=False)
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -350,6 +348,8 @@
+<span class="def">     font=&apos;Font Awesome 5 Free&apos;,
+</span><span class="def">     foreground=colours[4],
+</span><span class="def">     update_interval=60,
+</span><span class="add">+    cardid=&quot;PCH&quot;,
+</span><span class="add">+    device=None,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> systray = widget.StatusNotifier(padding=20)
+</span>@@ -365,10 +365,11 @@
+<span class="def"> class MyBattery(Battery):
+</span><span class="def">     def build_string(self, status):
+</span><span class="def">         if self.layout is not None:
+</span><span class="add">+            self.layout.colour = self.foreground
+</span><span class="def">             if status.state == BatteryState.DISCHARGING and status.percent &lt; self.low_percentage:
+</span><span class="sub">-                self.layout.colour = self.low_foreground
+</span><span class="add">+                self.background = self.low_background
+</span><span class="def">             else:
+</span><span class="sub">-                self.layout.colour = self.foreground
+</span><span class="add">+                self.background = self.normal_background
+</span><span class="def">         if status.state == BatteryState.DISCHARGING:
+</span><span class="def">             if status.percent &gt; 0.75:
+</span><span class="def">                 char = &apos;&apos;
+</span>@@ -399,7 +400,7 @@
+<span class="def"> 
+</span><span class="def"> battery = MyBattery(
+</span><span class="def">     format=&apos;{char}&apos;,
+</span><span class="sub">-    low_foreground=colours[1],
+</span><span class="add">+    low_background=colours[1],
+</span><span class="def">     show_short_text=False,
+</span><span class="def">     low_percentage=0.12,
+</span><span class="def">     foreground=colours[6],
+</span>@@ -522,10 +523,8 @@
+<span class="def"> my_keys.extend([
+</span><span class="def">     ([mod],             &apos;grave&apos;,    lazy.function(notifier.prev),     &quot;Previous notification&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;grave&apos;,    lazy.function(notifier.next),     &quot;Next notification&quot;),
+</span><span class="sub">-    ([&apos;control&apos;],       &apos;space&apos;,    lazy.function(notifier.close),    &quot;Close notification&quot;),
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> # Config variables
+</span><span class="def"> reconfigure_screens = True
+</span><span class="def"> follow_mouse_focus = True
+</span></pre>
+</div></div>
+  </body>
+</html>

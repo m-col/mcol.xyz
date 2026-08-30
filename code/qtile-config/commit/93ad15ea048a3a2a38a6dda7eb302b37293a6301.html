@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - change ncmpcpp scratchpad binding</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/93ad15ea048a3a2a38a6dda7eb302b37293a6301.html">93ad15ea048a3a2a38a6dda7eb302b37293a6301</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/8318debf1d9ddb64776f94ba84bd83c57f46b892.html">8318debf1d9ddb64776f94ba84bd83c57f46b892</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-19 20:56:41 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-19 20:56:41 +0100
+
+change ncmpcpp scratchpad binding
+</pre><div class="diff">
+  <p>
+    <b>scratchpad.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,7 +44,7 @@
+<span class="def"> # Keybindings to open each DropDown
+</span><span class="def"> keys_scratchpad = [
+</span><span class="def">     ([mod, &apos;shift&apos;], &apos;Return&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;tmux&apos;), &quot;Toggle tmux scratchpad&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;], &apos;e&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;ncmpcpp&apos;), &quot;Toggle ncmpcpp scratchpad&quot;),
+</span><span class="add">+    ([mod, &apos;control&apos;], &apos;m&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;ncmpcpp&apos;), &quot;Toggle ncmpcpp scratchpad&quot;),
+</span><span class="def">     ([mod], &apos;c&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;python&apos;), &quot;Toggle python scratchpad&quot;),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

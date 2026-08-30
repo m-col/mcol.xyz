@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Put scratchpad configuration into own file</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/54d7075e9d3eef589a6b711c989e7334ed857f4e.html">54d7075e9d3eef589a6b711c989e7334ed857f4e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/3e82be7e7aa6f5966d7c1f70c9f0a8c91b75b364.html">3e82be7e7aa6f5966d7c1f70c9f0a8c91b75b364</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-16 00:03:53 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-16 00:03:53 +0100
+
+Put scratchpad configuration into own file
+</pre><div class="diff">
+  <p>
+    <b>scratchpad.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,65 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Scratchpad and DropDowns
+</span><span class="add">+========================
+</span><span class="add">+
+</span><span class="add">+The scratchpads are the same with either backend, but the terminal used differs. I
+</span><span class="add">+prefer these terminals over something like alacritty, which would be an easier
+</span><span class="add">+alternative to configure because it works under both Wayland and X.
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+import os
+</span><span class="add">+
+</span><span class="add">+from libqtile import qtile
+</span><span class="add">+from libqtile.config import DropDown, ScratchPad
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="add">+
+</span><span class="add">+HOME: str = os.path.expanduser(&apos;~&apos;)
+</span><span class="add">+IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+</span><span class="add">+IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span><span class="add">+mod = &quot;mod1&quot; if IS_XEPHYR else &quot;mod4&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+if IS_WAYLAND:
+</span><span class="add">+    term = &quot;foot &quot;
+</span><span class="add">+else:
+</span><span class="add">+    if IS_XEPHYR:
+</span><span class="add">+        term = &quot;xterm -e &quot;
+</span><span class="add">+    else:
+</span><span class="add">+        term = &quot;urxvt -e &quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+conf = {
+</span><span class="add">+    &quot;warp_pointer&quot;: False,
+</span><span class="add">+    &quot;on_focus_lost_hide&quot;: True,
+</span><span class="add">+    &quot;opacity&quot;: 1,
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+dropdowns = [
+</span><span class="add">+    DropDown(&quot;tmux&quot;, term + &quot;tmux&quot;, height=0.4, **conf),
+</span><span class="add">+    DropDown(&quot;irc&quot;, term + &quot;irc&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **conf),
+</span><span class="add">+    DropDown(&quot;ncmpcpp&quot;, term + &quot;ncmpcpp&quot;, x=0.12, y=0.2, width=0.56, height=0.7, **conf),
+</span><span class="add">+    DropDown(&quot;python&quot;, term + &quot;python&quot;, x=0.05, y=0.1, width=0.2, height=0.3, **conf),
+</span><span class="add">+    #DropDown(&quot;newsboat&quot;, term + &quot;newsboat&quot;, x=0.2, y=0.05, width=0.6, height=0.9, **conf),
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Special case because I want to start mutt in ~/Downloads
+</span><span class="add">+if IS_WAYLAND:
+</span><span class="add">+    mutt = DropDown(&quot;email&quot;, f&quot;foot -D {HOME}/Downloads mutt&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **conf)
+</span><span class="add">+else:
+</span><span class="add">+    mutt = DropDown(&quot;email&quot;, f&quot;urxvt -cd {HOME}/Downloads -e mutt&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **conf)
+</span><span class="add">+dropdowns.append(mutt)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Keybindings to open each DropDown
+</span><span class="add">+keys_scratchpad = [
+</span><span class="add">+    ([mod, &apos;shift&apos;],     &apos;Return&apos;,   lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;tmux&apos;), &quot;Toggle tmux scratchpad&quot;),
+</span><span class="add">+    ([mod, &apos;control&apos;],   &apos;e&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;email&apos;), &quot;Toggle email scratchpad&quot;),
+</span><span class="add">+    ([mod, &apos;control&apos;],   &apos;w&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;irc&apos;), &quot;Toggle irc scratchpad&quot;),
+</span><span class="add">+    ([mod, &apos;control&apos;],   &apos;m&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;ncmpcpp&apos;), &quot;Toggle ncmpcpp scratchpad&quot;),
+</span><span class="add">+    ([mod],              &apos;c&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;python&apos;), &quot;Toggle python scratchpad&quot;),
+</span><span class="add">+    #([mod, &apos;control&apos;],   &apos;n&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;newsboat&apos;), &quot;Toggle newsboat scratchpad&quot;),
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+scratchpad = ScratchPad(&quot;scratchpad&quot;, dropdowns)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,6 +20,7 @@
+<span class="def"> 
+</span><span class="def"> import traverse
+</span><span class="def"> from groups import groups, keys_group
+</span><span class="add">+from scratchpad import scratchpad, keys_scratchpad
+</span><span class="def"> 
+</span><span class="def"> if TYPE_CHECKING:
+</span><span class="def">     from typing import List, Tuple
+</span>@@ -433,45 +434,6 @@
+<span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-# Dropdowns and Scratchpad
+</span><span class="sub">-
+</span><span class="sub">-dd_defaults = {
+</span><span class="sub">-    &quot;warp_pointer&quot;: False,
+</span><span class="sub">-    &quot;on_focus_lost_hide&quot;: True,
+</span><span class="sub">-    &quot;opacity&quot;: 1,
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-if IS_WAYLAND:
+</span><span class="sub">-    dropdowns = [
+</span><span class="sub">-        DropDown(&quot;tmux&quot;, &quot;foot tmux&quot;, height=0.4, **dd_defaults),
+</span><span class="sub">-        DropDown(&quot;email&quot;, f&quot;foot -D {HOME}/Downloads mutt&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **dd_defaults),
+</span><span class="sub">-        DropDown(&quot;irc&quot;, &quot;foot irc&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **dd_defaults),
+</span><span class="sub">-        DropDown(&quot;ncmpcpp&quot;, &quot;foot ncmpcpp&quot;, x=0.12, y=0.2, width=0.56, height=0.7, **dd_defaults),
+</span><span class="sub">-        DropDown(&quot;python&quot;, &quot;foot python&quot;, x=0.05, y=0.1, width=0.2, height=0.3, **dd_defaults),
+</span><span class="sub">-        #DropDown(&quot;newsboat&quot;, &quot;foot newsboat&quot;, x=0.2, y=0.05, width=0.6, height=0.9, **dd_defaults),
+</span><span class="sub">-    ]
+</span><span class="sub">-else:
+</span><span class="sub">-    dropdowns = [
+</span><span class="sub">-        DropDown(&quot;tmux&quot;, &quot;urxvt -e tmux&quot;, height=0.4, **dd_defaults),
+</span><span class="sub">-        DropDown(&quot;email&quot;, f&quot;urxvt -cd {HOME}/Downloads -e mutt&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **dd_defaults),
+</span><span class="sub">-        DropDown(&quot;irc&quot;, &quot;urxvt -b 100 -e irc&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **dd_defaults),
+</span><span class="sub">-        DropDown(&quot;ncmpcpp&quot;, &quot;urxvt -e ncmpcpp&quot;, x=0.12, y=0.2, width=0.56, height=0.7, **dd_defaults),
+</span><span class="sub">-        DropDown(&quot;python&quot;, &quot;urxvt -e python&quot;, x=0.05, y=0.1, width=0.2, height=0.3, **dd_defaults),
+</span><span class="sub">-        #DropDown(&quot;newsboat&quot;, &quot;urxvt -e newsboat&quot;, x=0.2, y=0.05, width=0.6, height=0.9, **dd_defaults),
+</span><span class="sub">-    ]
+</span><span class="sub">-
+</span><span class="sub">-groups.append(ScratchPad(&quot;scratchpad&quot;, dropdowns))
+</span><span class="sub">-
+</span><span class="sub">-my_keys.extend([
+</span><span class="sub">-    ([mod, &apos;shift&apos;],     &apos;Return&apos;,   lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;tmux&apos;), &quot;Toggle tmux scratchpad&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;],   &apos;e&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;email&apos;), &quot;Toggle email scratchpad&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;],   &apos;w&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;irc&apos;), &quot;Toggle irc scratchpad&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;],   &apos;m&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;ncmpcpp&apos;), &quot;Toggle ncmpcpp scratchpad&quot;),
+</span><span class="sub">-    ([mod],              &apos;c&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;python&apos;), &quot;Toggle python scratchpad&quot;),
+</span><span class="sub">-    #([mod, &apos;control&apos;],   &apos;n&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;newsboat&apos;), &quot;Toggle newsboat scratchpad&quot;),
+</span><span class="sub">-])
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> # Hooks
+</span><span class="def"> 
+</span><span class="def"> @hook.subscribe.startup
+</span>@@ -547,15 +509,15 @@
+<span class="def">             qtile.cmd_reconfigure_screens()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-## General settings
+</span><span class="add">+## Config variables
+</span><span class="def"> reconfigure_screens = True
+</span><span class="def"> follow_mouse_focus = True
+</span><span class="def"> bring_front_click = True
+</span><span class="def"> cursor_warp = False
+</span><span class="def"> auto_fullscreen = True
+</span><span class="def"> focus_on_window_activation = &apos;smart&apos;
+</span><span class="add">+groups.append(scratchpad)
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="sub">-# Reformat keys
+</span><span class="def"> my_keys.extend(keys_group)
+</span><span class="add">+my_keys.extend(keys_scratchpad)
+</span><span class="def"> keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+</span></pre>
+</div></div>
+  </body>
+</html>

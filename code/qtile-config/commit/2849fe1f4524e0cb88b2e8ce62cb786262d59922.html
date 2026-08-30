@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - remove traverse as this has been added to qtile-examples</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/2849fe1f4524e0cb88b2e8ce62cb786262d59922.html">2849fe1f4524e0cb88b2e8ce62cb786262d59922</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/31f1cb6250ba431e4e60b8616bf0ba1296dd6d7f.html">31f1cb6250ba431e4e60b8616bf0ba1296dd6d7f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-12 19:12:28 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-12 19:12:28 +0100
+
+remove traverse as this has been added to qtile-examples
+</pre><div class="diff">
+  <p>
+    <b>traverse.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,91 +0,0 @@
+<span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-This plugin exports four functions - up, down, left and right - that when called will
+</span><span class="sub">-move window focus to the first window in that general direction. Focussing is based
+</span><span class="sub">-entirely on position and geometry, so is independent of screens, layouts and whether
+</span><span class="sub">-windows are floating or tiled. It can also move focus to and from empty screens.
+</span><span class="sub">-
+</span><span class="sub">-Example usage:
+</span><span class="sub">-
+</span><span class="sub">-    import traverse
+</span><span class="sub">-    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="sub">-        &apos;M-k&apos;: lazy.function(traverse.up)
+</span><span class="sub">-        &apos;M-j&apos;: lazy.function(traverse.down)
+</span><span class="sub">-        &apos;M-h&apos;: lazy.function(traverse.left)
+</span><span class="sub">-        &apos;M-l&apos;: lazy.function(traverse.right)
+</span><span class="sub">-    }.items()])
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-from libqtile.config import Screen
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def up(qtile):
+</span><span class="sub">-    _focus_window(qtile, -1, &apos;y&apos;)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def down(qtile):
+</span><span class="sub">-    _focus_window(qtile, 1, &apos;y&apos;)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def left(qtile):
+</span><span class="sub">-    _focus_window(qtile, -1, &apos;x&apos;)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def right(qtile):
+</span><span class="sub">-    _focus_window(qtile, 1, &apos;x&apos;)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def _focus_window(qtile, dir, axis):
+</span><span class="sub">-    win = None
+</span><span class="sub">-    win_wide = None
+</span><span class="sub">-    dist = 10000
+</span><span class="sub">-    dist_wide = 10000
+</span><span class="sub">-    cur = qtile.current_window
+</span><span class="sub">-    if not cur:
+</span><span class="sub">-        cur = qtile.current_screen
+</span><span class="sub">-
+</span><span class="sub">-    if axis == &apos;x&apos;:
+</span><span class="sub">-        dim = &apos;width&apos;
+</span><span class="sub">-        band_axis = &apos;y&apos;
+</span><span class="sub">-        band_dim = &apos;height&apos;
+</span><span class="sub">-        cur_pos = cur.x
+</span><span class="sub">-        band_min = cur.y
+</span><span class="sub">-        band_max = cur.y + cur.height
+</span><span class="sub">-    else:
+</span><span class="sub">-        dim = &apos;height&apos;
+</span><span class="sub">-        band_axis = &apos;x&apos;
+</span><span class="sub">-        band_dim = &apos;width&apos;
+</span><span class="sub">-        band_min = cur.x
+</span><span class="sub">-        cur_pos = cur.y
+</span><span class="sub">-        band_max = cur.x + cur.width
+</span><span class="sub">-
+</span><span class="sub">-    cur_pos += getattr(cur, dim) / 2
+</span><span class="sub">-
+</span><span class="sub">-    windows = [w for g in qtile.groups if g.screen for w in g.windows]
+</span><span class="sub">-    windows.extend([s for s in qtile.screens if not s.group.windows])
+</span><span class="sub">-
+</span><span class="sub">-    if cur in windows:
+</span><span class="sub">-        windows.remove(cur)
+</span><span class="sub">-
+</span><span class="sub">-    for w in windows:
+</span><span class="sub">-        if isinstance(w, Screen) or not w.minimized:
+</span><span class="sub">-            pos = getattr(w, axis) + getattr(w, dim) / 2
+</span><span class="sub">-            gap = dir * (pos - cur_pos)
+</span><span class="sub">-            if gap &gt; 5:
+</span><span class="sub">-                band_pos = getattr(w, band_axis) + getattr(w, band_dim) / 2
+</span><span class="sub">-                if band_min &lt; band_pos &lt; band_max:
+</span><span class="sub">-                    if gap &lt; dist:
+</span><span class="sub">-                        dist = gap
+</span><span class="sub">-                        win = w
+</span><span class="sub">-                else:
+</span><span class="sub">-                    if gap &lt; dist_wide:
+</span><span class="sub">-                        dist_wide = gap
+</span><span class="sub">-                        win_wide = w
+</span><span class="sub">-
+</span><span class="sub">-    if not win:
+</span><span class="sub">-        win = win_wide
+</span><span class="sub">-    if win:
+</span><span class="sub">-        qtile.focus_screen(win.group.screen.index)
+</span><span class="sub">-        win.group.focus(win, True)
+</span><span class="sub">-        if not isinstance(win, Screen):
+</span><span class="sub">-            win.focus(False)
+</span></pre>
+</div></div>
+  </body>
+</html>

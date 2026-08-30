@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - small updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/56e502d55df0a7e4ba35dd16f495c03a612c1dc8.html">56e502d55df0a7e4ba35dd16f495c03a612c1dc8</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/6ce4aca3e2c7cc8ef7a0f3656561baa586946020.html">6ce4aca3e2c7cc8ef7a0f3656561baa586946020</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-15 23:22:04 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-15 23:22:04 +0100
+
+small updates
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -261,7 +261,9 @@
+<span class="def">     &apos;other_current_screen_border&apos;: colours[5],
+</span><span class="def">     &apos;highlight_color&apos;: [background, colours[5]],
+</span><span class="def">     &apos;disable_drag&apos;: True,
+</span><span class="sub">-    &apos;padding&apos;: 8,
+</span><span class="add">+    &apos;padding&apos;: 4,
+</span><span class="add">+    #&apos;font&apos;: &apos;TamzenForPowerline Bold&apos;,
+</span><span class="add">+    &apos;fontsize&apos;: 10,
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> mpd2 = widget.Mpd2(
+</span>@@ -270,11 +272,10 @@
+<span class="def">     status_format_stopped=&apos;&apos;,
+</span><span class="def">     foreground=colours[12],
+</span><span class="def">     idle_format=&apos;&apos;,
+</span><span class="sub">-    fontsize=16,
+</span><span class="def">     font=&apos;TamzenForPowerline Bold&apos;,
+</span><span class="def">     update_interval=10,
+</span><span class="def"> )
+</span><span class="sub">- 
+</span><span class="add">+
+</span><span class="def"> cpugraph = widget.CPUGraph(
+</span><span class="def">     graph_color=colours[12],
+</span><span class="def">     fill_color=colour_unfocussed,
+</span>@@ -359,9 +360,6 @@
+<span class="def"> wlan = widget.Wlan(
+</span><span class="def">     format=&apos;&apos;,
+</span><span class="def">     disconnected_message=&apos;&apos;,
+</span><span class="sub">-    mouse_callbacks={
+</span><span class="sub">-        &apos;Button1&apos;: partial(qtile.cmd_spawn, &apos;nm-connection-editor&apos;),
+</span><span class="sub">-    },
+</span><span class="def">     foreground=colours[5],
+</span><span class="def">     update_interval=5,
+</span><span class="def"> )
+</span>@@ -569,7 +567,10 @@
+<span class="def"> 
+</span><span class="def">     if xephyr:
+</span><span class="def">         # To adapt to whatever window size it was given
+</span><span class="sub">-        hook.subscribe.startup_once(qtile.cmd_reconfigure_screens)
+</span><span class="add">+        @hook.subscribe.startup_once
+</span><span class="add">+        async def _():
+</span><span class="add">+            await asyncio.sleep(0.5)
+</span><span class="add">+            qtile.cmd_reconfigure_screens()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> ## General settings
+</span></pre>
+</div></div>
+  </body>
+</html>

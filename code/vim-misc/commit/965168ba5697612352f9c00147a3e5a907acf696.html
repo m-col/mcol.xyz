@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/965168ba5697612352f9c00147a3e5a907acf696.html">965168ba5697612352f9c00147a3e5a907acf696</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/1165f581037e4755f4623f929ad1458f26dd7228.html">1165f581037e4755f4623f929ad1458f26dd7228</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-07-27 15:24:12 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-07-27 15:24:12 +0100
+
+updates
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -114,6 +114,8 @@
+<span class="def">     endfunction
+</span><span class="def"> 
+</span><span class="def">     let g:riv_projects = [{ &apos;path&apos;: &apos;~/git/phd&apos;, }]
+</span><span class="add">+    let g:riv_disable_folding = 1
+</span><span class="add">+    set mmp=2000
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> let g:gitgutter_enabled = 0
+</span>@@ -132,7 +134,7 @@
+<span class="def"> 
+</span><span class="def"> &quot; vim-multiple-cursors
+</span><span class="def"> let g:multi_cursor_use_default_mapping = 0
+</span><span class="sub">-let g:multi_cursor_start_word_key      = &apos;&lt;C-m&gt;&apos;
+</span><span class="add">+let g:multi_cursor_start_word_key      = &apos;&lt;C-c&gt;&apos;
+</span><span class="def"> let g:multi_cursor_next_key            = &apos;&lt;C-n&gt;&apos;
+</span><span class="def"> let g:multi_cursor_prev_key            = &apos;&lt;C-p&gt;&apos;
+</span><span class="def"> let g:multi_cursor_skip_key            = &apos;&lt;C-x&gt;&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

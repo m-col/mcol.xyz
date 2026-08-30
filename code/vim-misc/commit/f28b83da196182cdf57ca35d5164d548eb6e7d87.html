@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - swaits/zellij-nav.nvim</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/f28b83da196182cdf57ca35d5164d548eb6e7d87.html">f28b83da196182cdf57ca35d5164d548eb6e7d87</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/6ceff0655005271f6980857fedab2d15d2935b36.html">6ceff0655005271f6980857fedab2d15d2935b36</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2026-05-10 18:27:37 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2026-05-10 18:27:37 +0100
+
+swaits/zellij-nav.nvim
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -85,6 +85,19 @@
+<span class="def">     },
+</span><span class="def">   },
+</span><span class="def"> 
+</span><span class="add">+ {
+</span><span class="add">+    &quot;swaits/zellij-nav.nvim&quot;,
+</span><span class="add">+    lazy = true,
+</span><span class="add">+    event = &quot;VeryLazy&quot;,
+</span><span class="add">+    keys = {
+</span><span class="add">+        { &quot;&lt;c-h&gt;&quot;, &quot;&lt;cmd&gt;ZellijNavigateLeft&lt;cr&gt;&quot;, { silent = true, desc = &quot;navigate left&quot; } },
+</span><span class="add">+        { &quot;&lt;c-j&gt;&quot;, &quot;&lt;cmd&gt;ZellijNavigateDown&lt;cr&gt;&quot;, { silent = true, desc = &quot;navigate down&quot; } },
+</span><span class="add">+        { &quot;&lt;c-k&gt;&quot;, &quot;&lt;cmd&gt;ZellijNavigateUp&lt;cr&gt;&quot;, { silent = true, desc = &quot;navigate up&quot; } },
+</span><span class="add">+        { &quot;&lt;c-l&gt;&quot;, &quot;&lt;cmd&gt;ZellijNavigateRight&lt;cr&gt;&quot;, { silent = true, desc = &quot;navigate right&quot; } },
+</span><span class="add">+    },
+</span><span class="add">+    opts = {},
+</span><span class="add">+  },
+</span><span class="add">+
+</span><span class="def">   {
+</span><span class="def">     &apos;nvim-telescope/telescope.nvim&apos;,
+</span><span class="def">     tag = &apos;0.1.8&apos;,
+</span></pre>
+</div></div>
+  </body>
+</html>

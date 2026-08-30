@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - added setopt lines to zshrc, fixing history</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/4f198fe2677fbc9596d410694fe0a0797e2171ba.html">4f198fe2677fbc9596d410694fe0a0797e2171ba</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/219309c2cd4c7e2fea4fd8e6b44bce67afc6e5c5.html">219309c2cd4c7e2fea4fd8e6b44bce67afc6e5c5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-22 23:51:19 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-22 23:51:19 +0000
+
+added setopt lines to zshrc, fixing history
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,13 +16,24 @@
+<span class="def">     export IS_TMUX=false
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="add">+# zsh settings
+</span><span class="def"> ZSH=&quot;$HOME/.zsh&quot;
+</span><span class="def"> HYPHEN_INSENSITIVE=&quot;true&quot;
+</span><span class="def"> COMPLETION_WAITING_DOTS=&quot;true&quot;
+</span><span class="def"> ZSH_COMPDUMP=&quot;$HOME/.zcompdump&quot;
+</span><span class="add">+setopt CORRECT
+</span><span class="add">+
+</span><span class="add">+# zsh history
+</span><span class="def"> HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span><span class="sub">-bindkey &apos;^A&apos; autosuggest-execute
+</span><span class="add">+HISTSIZE=2000
+</span><span class="add">+SAVEHIST=1000
+</span><span class="add">+#setopt INC_APPEND_HISTORY
+</span><span class="add">+setopt SHARE_HISTORY
+</span><span class="add">+setopt HIST_IGNORE_ALL_DUPS
+</span><span class="add">+setopt HIST_REDUCE_BLANKS
+</span><span class="def"> 
+</span><span class="add">+# plugins
+</span><span class="add">+bindkey &apos;^A&apos; autosuggest-execute
+</span><span class="def"> for plugin ($ZSH/oh-my-zsh/*.zsh $ZSH/*.zsh(N))
+</span><span class="def"> do
+</span><span class="def">     source $plugin
+</span></pre>
+</div></div>
+  </body>
+</html>

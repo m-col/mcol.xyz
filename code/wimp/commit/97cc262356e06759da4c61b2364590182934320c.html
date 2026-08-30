@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - focus next window on unmap</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/97cc262356e06759da4c61b2364590182934320c.html">97cc262356e06759da4c61b2364590182934320c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/80b7e8d6cb64bc918e851ebd053d9a19dc340191.html">80b7e8d6cb64bc918e851ebd053d9a19dc340191</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-12 23:18:19 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-12 23:18:19 +0000
+
+focus next window on unmap
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -59,6 +59,7 @@
+<span class="def">     struct server *server;
+</span><span class="def">     struct wlr_xdg_surface *surface;
+</span><span class="def">     struct wl_listener map_listener;
+</span><span class="add">+    struct wl_listener unmap_listener;
+</span><span class="def">     struct wl_listener destroy_listener;
+</span><span class="def">     struct wl_listener request_move_listener;
+</span><span class="def">     struct wl_listener request_resize_listener;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -61,6 +61,14 @@
+<span class="def">     focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct view *view = wl_container_of(listener, view, unmap_listener);
+</span><span class="add">+    wl_list_remove(&amp;view-&gt;link);
+</span><span class="add">+    wl_list_insert(view-&gt;server-&gt;current_desk-&gt;views.prev, &amp;view-&gt;link);
+</span><span class="add">+    struct view *next_view = wl_container_of(view-&gt;server-&gt;current_desk-&gt;views.next, view, link);
+</span><span class="add">+    focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> void on_surface_destroy(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, destroy_listener);
+</span>@@ -119,6 +127,8 @@
+<span class="def"> 
+</span><span class="def">     view-&gt;map_listener.notify = on_map;
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.map, &amp;view-&gt;map_listener);
+</span><span class="add">+    view-&gt;unmap_listener.notify = on_unmap;
+</span><span class="add">+    wl_signal_add(&amp;surface-&gt;events.unmap, &amp;view-&gt;unmap_listener);
+</span><span class="def">     view-&gt;destroy_listener.notify = on_surface_destroy;
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.destroy, &amp;view-&gt;destroy_listener);
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

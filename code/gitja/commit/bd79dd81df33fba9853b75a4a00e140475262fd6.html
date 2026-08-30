@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - add minimum conduit version</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/bd79dd81df33fba9853b75a4a00e140475262fd6.html">bd79dd81df33fba9853b75a4a00e140475262fd6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/2407e33da498218686fb61f159391086ac51f1d4.html">2407e33da498218686fb61f159391086ac51f1d4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-01-22 22:45:57 -0600
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-01-23 00:03:01 +0000
+
+add minimum conduit version
+</pre><div class="diff">
+  <p>
+    <b>gitja.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,7 +20,7 @@
+<span class="def">   other-modules:       Index, Env, Repositories, Templates, Types, Paths_gitja
+</span><span class="def">   default-language:    Haskell2010
+</span><span class="def">   build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+</span><span class="sub">-                     , conduit
+</span><span class="add">+                     , conduit &gt;= 1.1.0
+</span><span class="def">                      , bytestring
+</span><span class="def">                      , data-default
+</span><span class="def">                      , dhall
+</span></pre>
+</div></div>
+  </body>
+</html>

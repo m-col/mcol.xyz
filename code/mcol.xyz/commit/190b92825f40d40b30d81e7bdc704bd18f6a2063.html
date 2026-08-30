@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - add privacy policy</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/190b92825f40d40b30d81e7bdc704bd18f6a2063.html">190b92825f40d40b30d81e7bdc704bd18f6a2063</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/05836f648247519baf556b42afa4f612e67b20d1.html">05836f648247519baf556b42afa4f612e67b20d1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-06 00:54:26 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-06 00:54:26 +0100
+
+add privacy policy
+</pre><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -35,6 +35,8 @@
+<span class="def"> AUTHOR_SAVE_AS = &apos;&apos;
+</span><span class="def"> DISPLAY_CATEGORIES_ON_MENU = False
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="add">+# rice layout
+</span><span class="def"> MENUITEMS = (
+</span><span class="def">     (&apos;code&apos;, &apos;/code&apos;),
+</span><span class="def">     (&apos;about&apos;, &apos;/about.html&apos;),
+</span>@@ -47,14 +49,19 @@
+<span class="def">     (&apos;fas fa-rss&apos;, &apos;/rss.xml&apos;),
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="add">+SITESUBTITLE = &quot;A hobbyist&apos;s notes on FOSS, linux toys and privacy tools&quot;
+</span><span class="add">+MENUPADTO = 8
+</span><span class="add">+EXTRAHEAD = &quot;&quot;&quot;&lt;link rel=&quot;stylesheet&quot; href=&quot;/theme/css/fa.css&quot; /&gt;
+</span><span class="add">+    &lt;script async defer src=&quot;/matomo/404.js&quot;&gt;&lt;/script&gt;&quot;&quot;&quot;
+</span><span class="add">+PRIVACYPOLICY = &quot;&quot;&quot;I collect some but very little and 100% anonymous data to get a vague
+</span><span class="add">+sense of what pages are visited, if any, and from what websites visitors come from. That
+</span><span class="add">+is its only use, and its only by me, only on my machine.&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> # minify-fontawesome
+</span><span class="def"> PLUGINS.append(&quot;pelican-minify-fontawesome&quot;)
+</span><span class="def"> MINIFY_FONTAWESOME = &apos;/home/mcol/git/mcol.xyz/fontawesome-free-5.11.2-web&apos;
+</span><span class="def"> 
+</span><span class="sub">-SITESUBTITLE = &quot;A hobbyist&apos;s notes on FOSS, linux toys and privacy tools&quot;
+</span><span class="sub">-MENUPADTO = 8
+</span><span class="sub">-EXTRA_HEAD = &quot;&quot;&quot;&lt;link rel=&quot;stylesheet&quot; href=&quot;/theme/css/fa.css&quot; /&gt;
+</span><span class="sub">-    &lt;script async defer src=&quot;/matomo/404.js&quot;&gt;&lt;/script&gt;&quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> # development settings
+</span><span class="def"> DELETE_OUTPUT_DIRECTORY = True
+</span></pre>
+</div></div>
+  </body>
+</html>

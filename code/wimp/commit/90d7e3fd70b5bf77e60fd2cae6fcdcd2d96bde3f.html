@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - use zoom factor when finding view at a coordinate</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/90d7e3fd70b5bf77e60fd2cae6fcdcd2d96bde3f.html">90d7e3fd70b5bf77e60fd2cae6fcdcd2d96bde3f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/61f846c784e5c7e9eb68da669fe1cbebcebc9a05.html">61f846c784e5c7e9eb68da669fe1cbebcebc9a05</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 22:48:54 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 22:48:54 +0000
+
+use zoom factor when finding view at a coordinate
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -67,9 +67,11 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static struct view *desktop_view_at(
+</span><span class="sub">-    double lx, double ly, struct wlr_surface **surface, double *sx, double *sy
+</span><span class="add">+    double lx, double ly, struct wlr_surface **surface, double *sx, double *sy, double zoom
+</span><span class="def"> ) {
+</span><span class="def">     struct view *view;
+</span><span class="add">+    lx /= zoom;
+</span><span class="add">+    ly /= zoom;
+</span><span class="def">     wl_list_for_each(view, &amp;wimp.current_desk-&gt;views, link) {
+</span><span class="def"> 	if (view_at(view, lx, ly, surface, sx, sy)) {
+</span><span class="def"> 	    return view;
+</span>@@ -92,8 +94,7 @@
+<span class="def"> 	case CURSOR_PASSTHROUGH:
+</span><span class="def"> 	    seat = wimp.seat;
+</span><span class="def"> 	    surface = NULL;
+</span><span class="sub">-	    view = desktop_view_at(wimp.cursor-&gt;x / zoom,
+</span><span class="sub">-		wimp.cursor-&gt;y / zoom, &amp;surface, &amp;sx, &amp;sy);
+</span><span class="add">+	    view = desktop_view_at(wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy, zoom);
+</span><span class="def"> 	    if (!view) {
+</span><span class="def"> 		wlr_xcursor_manager_set_cursor_image(wimp.cursor_manager, &quot;left_ptr&quot;, wimp.cursor);
+</span><span class="def"> 	    }
+</span>@@ -154,7 +155,7 @@
+<span class="def"> 	double sx, sy;
+</span><span class="def"> 	struct wlr_surface *surface;
+</span><span class="def"> 	struct view *view = desktop_view_at(
+</span><span class="sub">-	    wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy
+</span><span class="add">+	    wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy, wimp.current_desk-&gt;zoom
+</span><span class="def"> 	);
+</span><span class="def"> 	focus_view(view, surface);
+</span><span class="def">     }
+</span></pre>
+</div></div>
+  </body>
+</html>

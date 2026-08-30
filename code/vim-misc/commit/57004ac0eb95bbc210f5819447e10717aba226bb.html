@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add keybinding to CtrlPTag</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/57004ac0eb95bbc210f5819447e10717aba226bb.html">57004ac0eb95bbc210f5819447e10717aba226bb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/0ff2f35798ce5690aa4c6f7a8e7577d6d9f7babf.html">0ff2f35798ce5690aa4c6f7a8e7577d6d9f7babf</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2023-10-18 19:23:34 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2023-10-18 19:23:34 +0100
+
+add keybinding to CtrlPTag
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -114,7 +114,6 @@
+<span class="def"> map &lt;Down&gt; j
+</span><span class="def"> map &lt;Up&gt; k
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> &quot; bind scroll to move cursor up and down
+</span><span class="def"> nnoremap &lt;ScrollWheelDown&gt; &lt;Down&gt;
+</span><span class="def"> nnoremap &lt;ScrollWheelUp&gt; &lt;Up&gt;
+</span>@@ -131,6 +130,9 @@
+<span class="def"> &quot; Github copilot
+</span><span class="def"> imap &lt;silent&gt; &lt;S-Tab&gt; &lt;Plug&gt;(copilot-next)
+</span><span class="def"> 
+</span><span class="add">+&quot; CtrlP (in addition to the default Ctrl-p binding)
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;C-[&gt; :CtrlPTag&lt;CR&gt;
+</span><span class="add">+
+</span><span class="def"> &quot; any-jump
+</span><span class="def"> let g:any_jump_disable_default_keybindings = 1
+</span><span class="def"> nnoremap &lt;leader&gt;g :AnyJump&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

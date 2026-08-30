@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Clear keybindings when loading config; ensure all settings are set-able</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/38b12b7c9c25b2970076d21fee8e1a5de6e337b1.html">38b12b7c9c25b2970076d21fee8e1a5de6e337b1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/03e7e6ccdf37a78444abb5a508042a6f615df4e0.html">03e7e6ccdf37a78444abb5a508042a6f615df4e0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-23 00:37:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-23 00:37:06 +0000
+
+Clear keybindings when loading config; ensure all settings are set-able
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -338,6 +338,14 @@
+<span class="def"> 	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def"> 	    if (!strcasecmp(s, &quot;off&quot;))
+</span><span class="def"> 		server-&gt;vt_switching = false;
+</span><span class="add">+	    else if (!strcasecmp(s, &quot;on&quot;))
+</span><span class="add">+		server-&gt;vt_switching = true;
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;scroll_direction&quot;)) {
+</span><span class="add">+	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+	    if (!strcasecmp(s, &quot;natural&quot;))
+</span><span class="add">+		server-&gt;reverse_scrolling = false;
+</span><span class="add">+	    else if (!strcasecmp(s, &quot;reverse&quot;))
+</span><span class="add">+		server-&gt;reverse_scrolling = true;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span>@@ -346,6 +354,15 @@
+<span class="def"> void load_config(struct server *server) {
+</span><span class="def">     FILE *stream;
+</span><span class="def"> 
+</span><span class="add">+    // remove existing keybindings
+</span><span class="add">+    struct binding *kb, *tmp;
+</span><span class="add">+    wl_list_for_each_safe(kb, tmp, &amp;server-&gt;mouse_bindings, link) {
+</span><span class="add">+	free_binding(kb);
+</span><span class="add">+    }
+</span><span class="add">+    wl_list_for_each_safe(kb, tmp, &amp;server-&gt;key_bindings, link) {
+</span><span class="add">+	free_binding(kb);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     // load defaults
+</span><span class="def">     char *buffer = NULL;
+</span><span class="def">     size_t size = 0;
+</span>@@ -359,6 +376,7 @@
+<span class="def">     // load custom configuration file
+</span><span class="def">     if (server-&gt;config_file) {
+</span><span class="def"> 	stream = fopen(server-&gt;config_file, &quot;r&quot;);
+</span><span class="add">+	parse_config(server, stream);
+</span><span class="def"> 	fclose(stream);
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - content/posts/foss/extend_ranger_with_git_bindings.rst</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- content/posts/foss/extend_ranger_with_git_bindings.rst</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> extend ranger file manager with git bindings
+<a href="#l2" class="line" id="l2">      2</a> ============================================
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> :date: 2019-06-02
+<a href="#l5" class="line" id="l5">      5</a> :summary: extend ranger file manager with git bindings
+<a href="#l6" class="line" id="l6">      6</a> :modified: 2020-08-02
+<a href="#l7" class="line" id="l7">      7</a> 
+<a href="#l8" class="line" id="l8">      8</a> This is a small but incredibly useful adjustment to the default configuration
+<a href="#l9" class="line" id="l9">      9</a> that ships with `ranger &lt;https://github.com/ranger/ranger&gt;`_.
+<a href="#l10" class="line" id="l10">     10</a> 
+<a href="#l11" class="line" id="l11">     11</a> If you have never used ranger, it is a fast terminal file manager with a boat
+<a href="#l12" class="line" id="l12">     12</a> load of useful features out of the box. You can likely get it from your
+<a href="#l13" class="line" id="l13">     13</a> distro&apos;s repos.
+<a href="#l14" class="line" id="l14">     14</a> 
+<a href="#l15" class="line" id="l15">     15</a> One of the features it is missing, however, is functional git bindings that you
+<a href="#l16" class="line" id="l16">     16</a> can use to manipulate your local git repositories.
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> On the upside, ranger is highly customisable, so these features can simply be
+<a href="#l19" class="line" id="l19">     19</a> added into the config at :code:`$HOME/.config/ranger/rc.conf:`
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a> .. code-block:: conf
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a>     map bs shell git -c color.status=always status | less -r
+<a href="#l24" class="line" id="l24">     24</a>     map bp shell git push | less -r
+<a href="#l25" class="line" id="l25">     25</a>     map bl shell git pull | less -r
+<a href="#l26" class="line" id="l26">     26</a>     map bd shell git diff --color=always %s | less -r
+<a href="#l27" class="line" id="l27">     27</a>     map bD shell git diff --color=always | less -r
+<a href="#l28" class="line" id="l28">     28</a>     map ba shell git add %s
+<a href="#l29" class="line" id="l29">     29</a>     map bA shell git add -f %s
+<a href="#l30" class="line" id="l30">     30</a>     map bu shell git restore --cached %s
+<a href="#l31" class="line" id="l31">     31</a>     map br shell git restore %s
+<a href="#l32" class="line" id="l32">     32</a>     map bm console shell git commit -m &apos;
+<a href="#l33" class="line" id="l33">     33</a>     map bc console shell git checkout%space
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a> The second column is our keyboard bindings. By default the &apos;b&apos; prefix is
+<a href="#l36" class="line" id="l36">     36</a> unused, so we can stick all git-related commands to this prefix. The third
+<a href="#l37" class="line" id="l37">     37</a> column we either have :code:`shell,` which executes the following text, or
+<a href="#l38" class="line" id="l38">     38</a> :code:`console,` which types out the following text on ranger&apos;s command line.
+<a href="#l39" class="line" id="l39">     39</a> 
+<a href="#l40" class="line" id="l40">     40</a> The first 5 lines pipe output into :code:`less`. If we didn&apos;t do this then
+<a href="#l41" class="line" id="l41">     41</a> ranger would steal the screen again and we wouldn&apos;t see the output from the
+<a href="#l42" class="line" id="l42">     42</a> command. The :code:`-r` option preserves any colour in the output from the git
+<a href="#l43" class="line" id="l43">     43</a> command when presented in less. :code:`git status` is a bit of a weird one; I
+<a href="#l44" class="line" id="l44">     44</a> found that it needed the :code:`-c color.status=always` to output color codes,
+<a href="#l45" class="line" id="l45">     45</a> but this seemed to be inconsistent across git versions.
+<a href="#l46" class="line" id="l46">     46</a> 
+<a href="#l47" class="line" id="l47">     47</a> Some commands contain :code:`%s`; in these lines the current file is
+<a href="#l48" class="line" id="l48">     48</a> substituted, allowing us to interactively move around our repository
+<a href="#l49" class="line" id="l49">     49</a> git-diffing or git-adding individual files as we need. Super useful!
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> The final two lines pre-fill ranger&apos;s command line so you can the continue your
+<a href="#l52" class="line" id="l52">     52</a> commit or checkout command before executing it.
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a> Of course, these are just the bare minimum for integrating git bindings into
+<a href="#l55" class="line" id="l55">     55</a> ranger. Depending on your git workflow requirements you can extend or customise
+<a href="#l56" class="line" id="l56">     56</a> these so you can glide around and play with your repos with ease.
+<a href="#l57" class="line" id="l57">     57</a> 
+<a href="#l58" class="line" id="l58">     58</a> For example we can add a quick shortcut to check out tig for a closer look at
+<a href="#l59" class="line" id="l59">     59</a> the commit history:
+<a href="#l60" class="line" id="l60">     60</a> 
+<a href="#l61" class="line" id="l61">     61</a> .. code-block:: python
+<a href="#l62" class="line" id="l62">     62</a> 
+<a href="#l63" class="line" id="l63">     63</a>     map bt shell tig
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a> Let me know if you use similar bindings or extend these and have found some
+<a href="#l66" class="line" id="l66">     66</a> cool tricks!
+<a href="#l67" class="line" id="l67">     67</a> 
+</pre>
+  </div>
+  </body>
+</html>

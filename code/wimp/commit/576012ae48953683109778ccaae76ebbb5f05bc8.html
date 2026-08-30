@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add pinch gesture bindings with pinch zoom action</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/576012ae48953683109778ccaae76ebbb5f05bc8.html">576012ae48953683109778ccaae76ebbb5f05bc8</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/febede681273cb27d570ce228d4dcda26f44b2d8.html">febede681273cb27d570ce228d4dcda26f44b2d8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 16:21:24 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 16:21:30 +0000
+
+add pinch gesture bindings with pinch zoom action
+
+Closes #4
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -90,7 +90,8 @@
+<span class="def"> bind		m		set_mark
+</span><span class="def"> bind		grave		go_to_mark
+</span><span class="def"> 
+</span><span class="sub">-# Possible mouse bindings: motion, scroll, drag{1,2,3} (+ additional modifiers)
+</span><span class="sub">-bind		scroll		pan_desk_mouse
+</span><span class="sub">-bind	Shift	scroll		zoom_mouse
+</span><span class="add">+# Possible mouse bindings: motion, scroll, pinch, drag{1,2,3} (+ additional modifiers)
+</span><span class="add">+bind		scroll		pan_desk
+</span><span class="add">+bind		pinch		zoom
+</span><span class="add">+bind	Shift	scroll		zoom
+</span><span class="def"> bind		drag1		move_window
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -92,6 +92,8 @@
+<span class="def">     action on_drag1;
+</span><span class="def">     action on_drag2;
+</span><span class="def">     action on_drag3;
+</span><span class="add">+    action on_pinch;
+</span><span class="add">+    action on_pinch_begin;
+</span><span class="def"> 
+</span><span class="def">     bool reverse_scrolling;
+</span><span class="def">     enum cursor_mode cursor_mode;
+</span>@@ -166,6 +168,7 @@
+<span class="def">     enum wlr_keyboard_modifier mods;
+</span><span class="def">     uint32_t key;
+</span><span class="def">     action action;
+</span><span class="add">+    action begin;
+</span><span class="def">     void *data;
+</span><span class="def"> };
+</span><span class="def"> 
+</span>@@ -181,6 +184,7 @@
+<span class="def">     DRAG1 = 3,
+</span><span class="def">     DRAG2 = 4,
+</span><span class="def">     DRAG3 = 5,
+</span><span class="add">+    PINCH = 6,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> struct mark {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -29,6 +29,7 @@
+<span class="def">     .on_drag1 = NULL,
+</span><span class="def">     .on_drag2 = NULL,
+</span><span class="def">     .on_drag3 = NULL,
+</span><span class="add">+    .on_pinch = NULL,
+</span><span class="def">     .can_steal_focus = true,
+</span><span class="def">     .desk_count = 0,
+</span><span class="def">     .mark_waiting = false,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keyboard.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,6 +38,10 @@
+<span class="def"> 		    case DRAG3:
+</span><span class="def"> 			wimp.on_drag3 = kb-&gt;action;
+</span><span class="def"> 			break;
+</span><span class="add">+		    case PINCH:
+</span><span class="add">+			wimp.on_pinch = kb-&gt;action;
+</span><span class="add">+			wimp.on_pinch_begin = kb-&gt;begin;
+</span><span class="add">+			break;
+</span><span class="def"> 		}
+</span><span class="def"> 		wimp.cursor_mode = CURSOR_MOD;
+</span><span class="def"> 		handled = true;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -219,27 +219,40 @@
+<span class="def"> 
+</span><span class="def"> static void on_pinch_end(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_event_pointer_pinch_end *event = data;
+</span><span class="sub">-    wlr_pointer_gestures_v1_send_pinch_end(
+</span><span class="sub">-	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;cancelled
+</span><span class="sub">-    );
+</span><span class="add">+    if (wimp.cursor_mode == CURSOR_PASSTHROUGH) {
+</span><span class="add">+	wlr_pointer_gestures_v1_send_pinch_end(
+</span><span class="add">+	    wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;cancelled
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static void on_pinch_update(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_event_pointer_pinch_update *event = data;
+</span><span class="sub">-    wlr_pointer_gestures_v1_send_pinch_update(
+</span><span class="sub">-	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec,
+</span><span class="sub">-	event-&gt;dx, event-&gt;dy, event-&gt;scale, event-&gt;rotation
+</span><span class="sub">-    );
+</span><span class="add">+    if (wimp.cursor_mode == CURSOR_MOD) {
+</span><span class="add">+	if (wimp.on_pinch) {
+</span><span class="add">+	    wimp.on_pinch(&amp;event-&gt;scale);
+</span><span class="add">+	}
+</span><span class="add">+    } else {
+</span><span class="add">+	wlr_pointer_gestures_v1_send_pinch_update(
+</span><span class="add">+	    wimp.pointer_gestures, wimp.seat, event-&gt;time_msec,
+</span><span class="add">+	    event-&gt;dx, event-&gt;dy, event-&gt;scale, event-&gt;rotation
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static void on_pinch_begin(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_event_pointer_pinch_begin *event = data;
+</span><span class="sub">-    wlr_pointer_gestures_v1_send_pinch_begin(
+</span><span class="sub">-	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;fingers
+</span><span class="sub">-    );
+</span><span class="sub">-
+</span><span class="add">+    if (wimp.cursor_mode == CURSOR_MOD) {
+</span><span class="add">+	if (wimp.on_pinch_begin) {
+</span><span class="add">+	    wimp.on_pinch_begin(NULL);
+</span><span class="add">+	}
+</span><span class="add">+    } else {
+</span><span class="add">+	wlr_pointer_gestures_v1_send_pinch_begin(
+</span><span class="add">+	    wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;fingers
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -79,6 +79,7 @@
+<span class="def">     { &quot;drag1&quot;, DRAG1 },
+</span><span class="def">     { &quot;drag2&quot;, DRAG2 },
+</span><span class="def">     { &quot;drag3&quot;, DRAG3 },
+</span><span class="add">+    { &quot;pinch&quot;, PINCH },
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -150,10 +151,8 @@
+<span class="def">     { &quot;next_desk&quot;, &amp;next_desk, NULL },
+</span><span class="def">     { &quot;prev_desk&quot;, &amp;prev_desk, NULL },
+</span><span class="def">     { &quot;pan_desk&quot;, &amp;pan_desk, &amp;motion_handler },
+</span><span class="sub">-    { &quot;pan_desk_mouse&quot;, &amp;pan_desk, NULL },
+</span><span class="def">     { &quot;reset_zoom&quot;, &amp;reset_zoom, NULL },
+</span><span class="def">     { &quot;zoom&quot;, &amp;zoom, &amp;str_handler },
+</span><span class="sub">-    { &quot;zoom_mouse&quot;, &amp;zoom_mouse, NULL },
+</span><span class="def">     { &quot;set_mark&quot;, &amp;set_mark, NULL },
+</span><span class="def">     { &quot;go_to_mark&quot;, &amp;go_to_mark, NULL },
+</span><span class="def">     { &quot;toggle_fullscreen&quot;, &amp;toggle_fullscreen, NULL },
+</span>@@ -162,21 +161,60 @@
+<span class="def">     { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="sub">-static const int num_actions = sizeof(action_map) / sizeof(action_map[0]);
+</span><span class="add">+
+</span><span class="add">+static struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const action action;
+</span><span class="add">+    const action begin;
+</span><span class="add">+} pinch_map[] = {
+</span><span class="add">+    { &quot;zoom&quot;, &amp;zoom_pinch, &amp;zoom_pinch_begin },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const action action;
+</span><span class="add">+} scroll_map[] = {
+</span><span class="add">+    { &quot;zoom&quot;, &amp;zoom_scroll },
+</span><span class="add">+    { &quot;pan_desk&quot;, &amp;pan_desk },
+</span><span class="add">+};
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static bool assign_action(const char *name, char *data, struct binding *kb) {
+</span><span class="def">     kb-&gt;action = NULL;
+</span><span class="def">     kb-&gt;data = NULL;
+</span><span class="sub">-
+</span><span class="sub">-    for (int i = 0; i &lt; num_actions; i++) {
+</span><span class="sub">-	if (strcmp(action_map[i].name, name) == 0) {
+</span><span class="sub">-	    kb-&gt;action = action_map[i].action;
+</span><span class="sub">-	    if (action_map[i].data_handler != NULL)
+</span><span class="sub">-		action_map[i].data_handler(kb, data);
+</span><span class="sub">-	    return true;
+</span><span class="sub">-	}
+</span><span class="add">+    size_t i;
+</span><span class="add">+
+</span><span class="add">+    switch (kb-&gt;key) {
+</span><span class="add">+	case PINCH:
+</span><span class="add">+	    for (i = 0; i &lt; sizeof(pinch_map) / sizeof(pinch_map[0]); i++) {
+</span><span class="add">+		if (strcmp(pinch_map[i].name, name) == 0) {
+</span><span class="add">+		    kb-&gt;action = pinch_map[i].action;
+</span><span class="add">+		    kb-&gt;begin = pinch_map[i].begin;
+</span><span class="add">+		    return true;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	    break;
+</span><span class="add">+	case SCROLL:
+</span><span class="add">+	    for (i = 0; i &lt; sizeof(scroll_map) / sizeof(scroll_map[0]); i++) {
+</span><span class="add">+		if (strcmp(scroll_map[i].name, name) == 0) {
+</span><span class="add">+		    kb-&gt;action = scroll_map[i].action;
+</span><span class="add">+		    return true;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	    break;
+</span><span class="add">+	default:
+</span><span class="add">+	    for (i = 0; i &lt; sizeof(action_map) / sizeof(action_map[0]); i++) {
+</span><span class="add">+		if (strcmp(action_map[i].name, name) == 0) {
+</span><span class="add">+		    kb-&gt;action = action_map[i].action;
+</span><span class="add">+		    if (action_map[i].data_handler != NULL) {
+</span><span class="add">+			action_map[i].data_handler(kb, data);
+</span><span class="add">+		    }
+</span><span class="add">+		    return true;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="def">     }
+</span><span class="add">+
+</span><span class="def">     return false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,7 +14,9 @@
+<span class="def"> void pan_desk(void *data);
+</span><span class="def"> void reset_zoom(void *data);
+</span><span class="def"> void zoom(void *data);
+</span><span class="sub">-void zoom_mouse(void *data);
+</span><span class="add">+void zoom_scroll(void *data);
+</span><span class="add">+void zoom_pinch(void *data);
+</span><span class="add">+void zoom_pinch_begin(void *data);
+</span><span class="def"> void set_mark(void *data);
+</span><span class="def"> void actually_set_mark(const xkb_keysym_t sym);
+</span><span class="def"> void go_to_mark(void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -188,13 +188,28 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void zoom_mouse(void *data) {
+</span><span class="add">+void zoom_scroll(void *data) {
+</span><span class="def">     struct motion motion = *(struct motion*)data;
+</span><span class="def">     double dz = - motion.dx - motion.dy;
+</span><span class="def">     zoom(&amp;dz);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static double zoom_pinch_initial;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void zoom_pinch(void *data) {
+</span><span class="add">+    double scale = *(double*)data;
+</span><span class="add">+    double dz = 100 * scale * zoom_pinch_initial / wimp.current_desk-&gt;zoom - 100;
+</span><span class="add">+    zoom(&amp;dz);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void zoom_pinch_begin(void *data) {
+</span><span class="add">+    zoom_pinch_initial = wimp.current_desk-&gt;zoom;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void set_mark(void *data) {
+</span><span class="def">     struct mark *mark = calloc(1, sizeof(struct mark));
+</span><span class="def">     struct desk *desk = wimp.current_desk;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Make file contents available at tree entries</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/3d1fcf8e17a60adbb9f46350850773524ac8511c.html">3d1fcf8e17a60adbb9f46350850773524ac8511c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/c74594dbfaed0f2c213eae8ff0fc8d367e049797.html">c74594dbfaed0f2c213eae8ff0fc8d367e049797</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-03 22:40:25 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-03 22:40:25 +0100
+
+Make file contents available at tree entries
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -122,13 +122,20 @@
+<span class="def"> 
+</span><span class="def"> data TreeFile = TreeFile
+</span><span class="def">     { treeFilePath :: TreeFilePath
+</span><span class="sub">-    , treeEntry :: TreeEntry LgRepo
+</span><span class="add">+    , treeFileContents :: Text
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def"> getTree :: CommitOid LgRepo -&gt; ReaderT LgRepo IO [TreeFile]
+</span><span class="def"> getTree commitID = do
+</span><span class="def">     entries &lt;- listTreeEntries =&lt;&lt; lookupTree . commitTree =&lt;&lt; lookupCommit commitID
+</span><span class="sub">-    return $ uncurry TreeFile &lt;$&gt; entries
+</span><span class="add">+    contents &lt;- sequence . fmap (gvalTreeEntry . snd) $ entries
+</span><span class="add">+    return $ zipWith TreeFile (fmap fst entries) contents
+</span><span class="add">+
+</span><span class="add">+gvalTreeEntry :: TreeEntry LgRepo -&gt; ReaderT LgRepo IO Text
+</span><span class="add">+gvalTreeEntry (BlobEntry oid _) = catBlobUtf8 $ oid
+</span><span class="add">+gvalTreeEntry (TreeEntry _) = return &quot;No contents&quot;
+</span><span class="add">+gvalTreeEntry (CommitEntry _) = return &quot;No contents&quot;
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="def"> Here we define how commits can be accessed and represented in Ginger templates.
+</span>@@ -172,6 +179,7 @@
+<span class="def"> treeAsLookup treefile = \case
+</span><span class="def">     &quot;path&quot; -&gt; Just . toGVal . treeFilePath $ treefile
+</span><span class="def">     &quot;href&quot; -&gt; Just . toGVal . flip append &quot;.html&quot; . replace &quot;/&quot; &quot;.&quot; . decodeUtf8 . treeFilePath $ treefile
+</span><span class="add">+    &quot;contents&quot; -&gt; Just . toGVal . treeFileContents $ treefile
+</span><span class="def">     _ -&gt; Nothing
+</span><span class="def"> 
+</span><span class="def"> ----------------------------------------------------------------------------------------
+</span></pre>
+</div></div>
+  </body>
+</html>

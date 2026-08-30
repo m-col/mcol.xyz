@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - plugins/fontawesome_roles/__init__.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- plugins/fontawesome_roles/__init__.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> # -*- coding: utf-8 -*-
+<a href="#l2" class="line" id="l2">      2</a> #
+<a href="#l3" class="line" id="l3">      3</a> # fontawesome_roles
+<a href="#l4" class="line" id="l4">      4</a> #
+<a href="#l5" class="line" id="l5">      5</a> # Registers the :fas:/:far:/:fab: RST roles used in posts to embed inline
+<a href="#l6" class="line" id="l6">      6</a> # Font Awesome icons, e.g. :fas:`envelope` -&gt; &lt;span class=&quot;fas fa-envelope&quot;&gt;.
+<a href="#l7" class="line" id="l7">      7</a> # The icon font/CSS itself is loaded separately (see EXTRAHEAD).
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> from docutils import nodes
+<a href="#l10" class="line" id="l10">     10</a> from docutils.parsers.rst import roles
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> 
+<a href="#l13" class="line" id="l13">     13</a> def rst_span(name, rawtext, text, lineno, inliner, options={}, content=[]):
+<a href="#l14" class="line" id="l14">     14</a>     return [nodes.raw(&quot;&quot;, f&apos;&lt;span class=&quot;{name} fa-{text}&quot;&gt;&lt;/span&gt;&apos;, format=&quot;html&quot;)], []
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a> def register():
+<a href="#l18" class="line" id="l18">     18</a>     roles.register_local_role(&quot;fas&quot;, rst_span)
+<a href="#l19" class="line" id="l19">     19</a>     roles.register_local_role(&quot;far&quot;, rst_span)
+<a href="#l20" class="line" id="l20">     20</a>     roles.register_local_role(&quot;fab&quot;, rst_span)
+<a href="#l21" class="line" id="l21">     21</a> 
+</pre>
+  </div>
+  </body>
+</html>

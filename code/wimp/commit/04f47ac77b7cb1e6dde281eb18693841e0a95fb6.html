@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Don&apos;t fail if fullscreen client requests don&apos;t specify an output</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/04f47ac77b7cb1e6dde281eb18693841e0a95fb6.html">04f47ac77b7cb1e6dde281eb18693841e0a95fb6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/84db95bd6be7604ea9dddb210b1ab3cf172e30c3.html">84db95bd6be7604ea9dddb210b1ab3cf172e30c3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-20 20:16:47 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-20 20:16:47 +0000
+
+Don&apos;t fail if fullscreen client requests don&apos;t specify an output
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -64,6 +64,14 @@
+<span class="def">     if (xdg_surface-&gt;role != WLR_XDG_SURFACE_ROLE_TOPLEVEL)
+</span><span class="def"> 	return;
+</span><span class="def"> 
+</span><span class="add">+    if (!output) {
+</span><span class="add">+	double x = xdg_surface-&gt;geometry.width / 2;
+</span><span class="add">+	double y = xdg_surface-&gt;geometry.height / 2;
+</span><span class="add">+	double lx, ly;
+</span><span class="add">+	wlr_output_layout_closest_point(server-&gt;output_layout, NULL, x, y, &amp;lx, &amp;ly);
+</span><span class="add">+	output = wlr_output_layout_output_at(server-&gt;output_layout, lx, ly);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     server-&gt;current_desk-&gt;fullscreened = xdg_surface;
+</span><span class="def">     server-&gt;current_desk-&gt;fullscreened_saved_geo.width = xdg_surface-&gt;geometry.width;
+</span><span class="def">     server-&gt;current_desk-&gt;fullscreened_saved_geo.height = xdg_surface-&gt;geometry.height;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -196,17 +196,6 @@
+<span class="def">     struct wlr_surface *surface = server-&gt;seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     if (!surface)
+</span><span class="def"> 	return;
+</span><span class="sub">-
+</span><span class="def">     struct wlr_xdg_surface *xdg_surface = wlr_xdg_surface_from_wlr_surface(surface);
+</span><span class="sub">-    double x = xdg_surface-&gt;geometry.width / 2;
+</span><span class="sub">-    double y = xdg_surface-&gt;geometry.height / 2;
+</span><span class="sub">-
+</span><span class="sub">-    struct wlr_output *output = wlr_output_layout_output_at(server-&gt;output_layout, x, y);
+</span><span class="sub">-    if (output == NULL) {
+</span><span class="sub">-	double lx, ly;
+</span><span class="sub">-	wlr_output_layout_closest_point(server-&gt;output_layout, NULL, x, y, &amp;lx, &amp;ly);
+</span><span class="sub">-	output = wlr_output_layout_output_at(server-&gt;output_layout, lx, ly);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    fullscreen_xdg_surface(server, xdg_surface, output);
+</span><span class="add">+    fullscreen_xdg_surface(server, xdg_surface, NULL);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

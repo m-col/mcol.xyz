@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - added filetype files to misc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/890521ffddd642fb4c067e22f945afccf3698a91.html">890521ffddd642fb4c067e22f945afccf3698a91</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/d6a4b2fc18850966a14fd9e33c078989c4119453.html">d6a4b2fc18850966a14fd9e33c078989c4119453</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-11-30 23:19:34 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-11-30 23:19:34 +0000
+
+added filetype files to misc
+</pre><div class="diff">
+  <p>
+    <b>ftplugin/vimwiki.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,52 @@
+<span class="add">+&quot;&quot;&quot;&quot; These commented commands are in vimrc, so ARE active:
+</span><span class="add">+&quot;&quot;&quot; split open index of vimwiki.
+</span><span class="add">+&quot;nmap &lt;Leader&gt;wv :vsp&lt;CR&gt;&lt;Leader&gt;ww
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;&quot; These commented commands are defaukts, so ARE active:
+</span><span class="add">+&quot;&quot;&quot; \ww opens it normally, which is default, in new buffer
+</span><span class="add">+&quot;nmap &lt;Leader&gt;wh Vimwiki2HTML
+</span><span class="add">+&quot;nmap &lt;Leader&gt;whh Vimwiki2HTMLBrowse
+</span><span class="add">+
+</span><span class="add">+&quot; open index wiki in horizontal split	
+</span><span class="add">+nmap &lt;Leader&gt;ws :sp&lt;CR&gt;&lt;Leader&gt;ww
+</span><span class="add">+
+</span><span class="add">+&quot; split follow link
+</span><span class="add">+nmap &lt;Leader&gt;s &lt;Plug&gt;VimwikiSplitLink
+</span><span class="add">+nmap &lt;Leader&gt;v &lt;Plug&gt;VimwikiVSplitLink
+</span><span class="add">+
+</span><span class="add">+&quot; some html shortcuts
+</span><span class="add">+nmap &lt;Leader&gt;b msA&lt;br&gt;&lt;Esc&gt;`s
+</span><span class="add">+nmap &lt;Leader&gt;i msI&lt;i&gt;&lt;Esc&gt;A&lt;/i&gt;&lt;Esc&gt;`s
+</span><span class="add">+nmap &lt;Leader&gt;r mso&lt;hr&gt;&lt;Esc&gt;`s
+</span><span class="add">+nmap &lt;Leader&gt;R msO&lt;hr&gt;&lt;Esc&gt;`s
+</span><span class="add">+
+</span><span class="add">+&quot; go to pages
+</span><span class="add">+nmap &lt;Leader&gt;gp /[[/papers/papers&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+nmap &lt;Leader&gt;gl /[[/topics/learning&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+nmap &lt;Leader&gt;gb /[[/topics/brain&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+nmap &lt;Leader&gt;gd /[[/topics/direction&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+nmap &lt;Leader&gt;gm /[[/topics/muscles&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; save all as HTML
+</span><span class="add">+nmap &lt;Leader&gt;wa :VimwikiAll2HTML&lt;CR&gt;
+</span><span class="add">+nmap &lt;Leader&gt;wah :VimwikiAll2HTML&lt;CR&gt;:Vimwiki2HTMLBrowse&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+&quot; save as HTML and quit
+</span><span class="add">+nmap &lt;Leader&gt;wq :VimwikiAll2HTML&lt;CR&gt;WQ
+</span><span class="add">+
+</span><span class="add">+&quot; follow next link
+</span><span class="add">+nmap g&lt;CR&gt; /[[&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; paste copied bullet pointed link as title
+</span><span class="add">+nmap &lt;Leader&gt;p 0f\|yy&lt;CR&gt;Pdf\|$xx===o&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; open pdf from papers page
+</span><span class="add">+nmap &lt;Leader&gt;o 0f\|lvt]y:let a = substitute(@*, &apos; &apos;, &apos;_&apos;, &apos;g&apos;) \| !qpdfview --unique &quot;~/work/research/papers/&quot; . a . &quot;.pdf&quot; &amp;
+</span><span class="add">+
+</span><span class="add">+&quot; update papers page with new pdf files
+</span><span class="add">+nmap &lt;Leader&gt;u :!vimwiki_add_papers.sh&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+setlocal textwidth=80
+</span><span class="add">+
+</span><span class="add">+
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/sh.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,6 @@
+<span class="add">+setlocal textwidth=79
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot; use vim terminal as vimslime
+</span><span class="add">+&quot;let g:slime_target = &quot;vimterminal&quot;
+</span><span class="add">+&quot;let g:slime_target = &quot;neovim&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/python.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,5 @@
+<span class="add">+setlocal tabstop=4
+</span><span class="add">+setlocal softtabstop=4
+</span><span class="add">+setlocal shiftwidth=4
+</span><span class="add">+setlocal textwidth=79
+</span><span class="add">+setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/netrw.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+map &lt;buffer&gt; h -
+</span><span class="add">+map &lt;buffer&gt; l &lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/help.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+nnoremap &lt;buffer&gt; &lt;BS&gt; :bd&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/h.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+setlocal filetype=c
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/c.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+nnoremap &lt;buffer&gt; &lt;F2&gt; :make!&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

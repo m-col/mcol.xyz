@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tide - all functions now work as intended</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/tide">tide</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/tide">https://github.com/m-col/tide</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/tide/tree.html">Files</a> | <a href="https://mcol.xyz/code/tide/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/tide/file/README.md.html">Readme</a>     | <a href="https://mcol.xyz/code/tide/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/tide/commit/e1136b422dcce741aff8cc23e2789be9e08427ca.html">e1136b422dcce741aff8cc23e2789be9e08427ca</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/tide/commit/b5d89603192ae418629756b29efdc2852b9744bd.html">b5d89603192ae418629756b29efdc2852b9744bd</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-08 23:09:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-08 23:09:06 +0000
+
+all functions now work as intended
+</pre><div class="diff">
+  <p>
+    <b>plugin/tide.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,6 +14,7 @@
+<span class="def">     let l:keys = substitute(l:keys, &quot;;$&quot;, &apos;; &apos;, &apos;g&apos;) &quot;preserve trailing semicolons
+</span><span class="def">     let l:keys = substitute(l:keys, &apos;\&apos;, &apos;\\\\&apos;, &apos;g&apos;) &quot;escape backslashes
+</span><span class="def">     let l:keys = substitute(l:keys, &apos;\&quot;&apos;, &apos;\\\&quot;&apos;, &apos;g&apos;) &quot;escape double quotes
+</span><span class="add">+    let l:keys = substitute(l:keys, &apos;!&apos;, &apos;\!&apos;, &apos;g&apos;) &quot;escape esclamation mark
+</span><span class="def">     call system(g:tmux_cmd . &quot;-l \&quot;&quot; . l:keys . &quot;\&quot;&quot;)
+</span><span class="def"> endfunction
+</span><span class="def"> function! s:TmuxSendEnter()
+</span>@@ -75,9 +76,17 @@
+<span class="def"> 
+</span><span class="def"> &quot; send visual selection
+</span><span class="def"> function! s:TmuxSendVisual()
+</span><span class="sub">-    normal! gv&quot;ay
+</span><span class="sub">-    call TmuxSendKeys(@a)
+</span><span class="sub">-    call s:TmuxSendEnter()
+</span><span class="add">+    let [line_start, column_start] = getpos(&quot;&apos;&lt;&quot;)[1:2]
+</span><span class="add">+    let [line_end, column_end] = getpos(&quot;&apos;&gt;&quot;)[1:2]
+</span><span class="add">+    let lines = getline(line_start, line_end)
+</span><span class="add">+    if len(lines) == 0
+</span><span class="add">+	return &apos;&apos;
+</span><span class="add">+    endif
+</span><span class="add">+    let lines[-1] = lines[-1][: column_end - (&amp;selection == &apos;inclusive&apos; ? 1 : 2)]
+</span><span class="add">+    let lines[0] = lines[0][column_start - 1:]
+</span><span class="add">+    for line in lines
+</span><span class="add">+	call TmuxSendKeysEnter(line)
+</span><span class="add">+    endfor
+</span><span class="def"> endfunction
+</span><span class="def"> 
+</span><span class="def"> &quot; command and plugin mappings
+</span>@@ -89,7 +98,7 @@
+<span class="def"> command! -nargs=0 -complete=command TmuxSendSection call s:TmuxSendSection()
+</span><span class="def"> command! -nargs=0 -complete=command -range TmuxSendLines call s:TmuxSendLines(&lt;line1&gt;, &lt;line2&gt;)
+</span><span class="def"> 
+</span><span class="sub">-xnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendVisual :TmuxSendVisual&lt;CR&gt;
+</span><span class="add">+xnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendVisual :&lt;C-u&gt;TmuxSendVisual&lt;CR&gt;
+</span><span class="def"> nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendParagraph :TmuxSendParagraph&lt;CR&gt;
+</span><span class="def"> nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendLine :TmuxSendLine&lt;CR&gt;
+</span><span class="def"> nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendWord :call TmuxSendKeysEnter(expand(&quot;&lt;cword&gt;&quot;))&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>README.md</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,13 +4,13 @@
+<span class="def"> 
+</span><span class="def"> This can be used to send text from vim to tmux, in two setups:
+</span><span class="def"> 
+</span><span class="sub">-Tmux with one pane receives all text from a non-tmux vim elsewhere, or
+</span><span class="sub">-vim in one tmux pane can send text to the other of two panes.
+</span><span class="add">+Tmux with one pane receiving all text from a non-tmuxed vim elsewhere, or
+</span><span class="add">+vim in one of two tmux panes can send text to the.
+</span><span class="def"> 
+</span><span class="def"> ## default keybindings
+</span><span class="def"> 
+</span><span class="sub">-&lt;F9&gt; send visual selection
+</span><span class="sub">-&lt;F9&gt; send current paragraph
+</span><span class="add">+&lt;F9&gt; send visual selection (visual mode)
+</span><span class="add">+&lt;F9&gt; send current paragraph (normal mode)
+</span><span class="def"> &lt;F8&gt; send current line
+</span><span class="def"> &lt;F7&gt; send word under cursor
+</span><span class="def"> &lt;F4&gt; send section delimited by double comment characters
+</span></pre>
+</div></div>
+  </body>
+</html>

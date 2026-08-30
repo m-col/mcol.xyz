@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sudoku-solver - Init commit with working script</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/sudoku-solver">sudoku-solver</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A small haskell script to solve sudoku puzzles</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/sudoku-solver">https://github.com/m-col/sudoku-solver</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/sudoku-solver/tree.html">Files</a> | <a href="https://mcol.xyz/code/sudoku-solver/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/sudoku-solver/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/161b3ff437125773bcf7acf15f32b1b2edc6ff13.html">161b3ff437125773bcf7acf15f32b1b2edc6ff13</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/.html"></a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-03 12:41:26 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-03 12:41:26 +0100
+
+Init commit with working script
+</pre><div class="diff">
+  <p>
+    <b>sudoku.hs</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,178 @@
+<span class="add">+#!/usr/bin/env runhaskell
+</span><span class="add">+{-
+</span><span class="add">+sudoku-solver script. Copyright Matt Colligan 2022.
+</span><span class="add">+-}
+</span><span class="add">+
+</span><span class="add">+import Control.Applicative (liftA2)
+</span><span class="add">+import Data.Array (Array, Ix, assocs, elems, listArray, (!), (//))
+</span><span class="add">+import Data.Bool (bool)
+</span><span class="add">+import Data.Char (digitToInt)
+</span><span class="add">+import Data.List (nub, sort)
+</span><span class="add">+import Data.Maybe (catMaybes, fromMaybe, isJust, listToMaybe, mapMaybe)
+</span><span class="add">+import System.Environment (getArgs)
+</span><span class="add">+
+</span><span class="add">+import Debug.Trace
+</span><span class="add">+
+</span><span class="add">+puz p = trace (showPuzzle p) p
+</span><span class="add">+
+</span><span class="add">+-- Puzzle #1
+</span><span class="add">+puzzle :: Puzzle
+</span><span class="add">+puzzle =
+</span><span class="add">+    asArray
+</span><span class="add">+        [ ((One, One), Just Five)
+</span><span class="add">+        , ((One, Two), Just Six)
+</span><span class="add">+        , ((One, Four), Just Eight)
+</span><span class="add">+        , ((One, Nine), Just Nine)
+</span><span class="add">+        , ((Two, Three), Just Three)
+</span><span class="add">+        , ((Two, Five), Just Two)
+</span><span class="add">+        , ((Two, Six), Just Six)
+</span><span class="add">+        , ((Two, Eight), Just One)
+</span><span class="add">+        , ((Three, Nine), Just Three)
+</span><span class="add">+        , ((Four, Six), Just Nine)
+</span><span class="add">+        , ((Four, Seven), Just Five)
+</span><span class="add">+        , ((Five, Three), Just Eight)
+</span><span class="add">+        , ((Five, Four), Just Five)
+</span><span class="add">+        , ((Five, Seven), Just One)
+</span><span class="add">+        , ((Six, Three), Just Four)
+</span><span class="add">+        , ((Six, Four), Just Three)
+</span><span class="add">+        , ((Seven, One), Just Three)
+</span><span class="add">+        , ((Seven, Seven), Just Nine)
+</span><span class="add">+        , ((Eight, One), Just Six)
+</span><span class="add">+        , ((Eight, Four), Just Two)
+</span><span class="add">+        , ((Eight, Five), Just One)
+</span><span class="add">+        , ((Eight, Six), Just Four)
+</span><span class="add">+        , ((Nine, Seven), Just Eight)
+</span><span class="add">+        , ((Nine, Nine), Just Four)
+</span><span class="add">+        ]
+</span><span class="add">+
+</span><span class="add">+-- Converts the list of values above into an array of maybe values
+</span><span class="add">+asArray :: [(Index, Maybe Cell)] -&gt; Puzzle
+</span><span class="add">+asArray vals = listArray ((One, One), (Nine, Nine)) (repeat Nothing) // vals
+</span><span class="add">+
+</span><span class="add">+type Puzzle = Array Index (Maybe Cell)
+</span><span class="add">+
+</span><span class="add">+-- This is the set of possible values, rows and columns.
+</span><span class="add">+data Cell = One | Two | Three | Four | Five | Six | Seven | Eight | Nine
+</span><span class="add">+    deriving (Eq, Ord, Enum, Ix, Show)
+</span><span class="add">+
+</span><span class="add">+set :: [Cell]
+</span><span class="add">+set = [One .. Nine]
+</span><span class="add">+
+</span><span class="add">+-- An index into the array is (row, col).
+</span><span class="add">+type Index = (Cell, Cell)
+</span><span class="add">+
+</span><span class="add">+{-
+</span><span class="add">+Test if the indices specified by cartesian product of row and column indices contain the
+</span><span class="add">+values One to Nine, one each, and nothing else.
+</span><span class="add">+-}
+</span><span class="add">+goodSet :: Puzzle -&gt; [Index] -&gt; Bool
+</span><span class="add">+goodSet p = noRepeats . catMaybes . map ((!) p)
+</span><span class="add">+  where
+</span><span class="add">+    noRepeats cs = length cs == length (nub cs)
+</span><span class="add">+
+</span><span class="add">+{-
+</span><span class="add">+Is the given puzzle valid, considering only the cells that do have values?
+</span><span class="add">+
+</span><span class="add">+Possible improvement: don&apos;t test every single row/column/box when making a change.
+</span><span class="add">+-}
+</span><span class="add">+isValid :: Puzzle -&gt; Bool
+</span><span class="add">+isValid p = all (goodSet p) blocks
+</span><span class="add">+
+</span><span class="add">+blocks :: [[Index]]
+</span><span class="add">+blocks = concat [rows, cols, boxes]
+</span><span class="add">+  where
+</span><span class="add">+    rows :: [[Index]]
+</span><span class="add">+    rows = map (\r -&gt; map ((,) r) set) set
+</span><span class="add">+
+</span><span class="add">+    cols :: [[Index]]
+</span><span class="add">+    cols = map (\c -&gt; map (flip (,) c) set) set
+</span><span class="add">+
+</span><span class="add">+    boxes :: [[Index]]
+</span><span class="add">+    boxes = map makeBox [(r, c) | r &lt;- [One, Four, Seven], c &lt;- [One, Four, Seven]]
+</span><span class="add">+
+</span><span class="add">+    makeBox :: Index -&gt; [Index]
+</span><span class="add">+    makeBox (r, c) = [(r, c) | r &lt;- [r .. succ . succ $ r], c &lt;- [c .. succ . succ $ c]]
+</span><span class="add">+
+</span><span class="add">+{-
+</span><span class="add">+Is this puzzle completely filled in with values?
+</span><span class="add">+-}
+</span><span class="add">+isComplete :: Puzzle -&gt; Bool
+</span><span class="add">+isComplete = (==) 81 . length . catMaybes . elems
+</span><span class="add">+
+</span><span class="add">+{-
+</span><span class="add">+Solve the given puzzle!
+</span><span class="add">+-}
+</span><span class="add">+solve :: Puzzle -&gt; Maybe Puzzle
+</span><span class="add">+solve p = go [(p, (One, One), One)] (Just (One, One)) One
+</span><span class="add">+  where
+</span><span class="add">+    {-
+</span><span class="add">+    The first argument here is the stack of steps taken since the beginning. Each
+</span><span class="add">+    element of the list is the new state of the puzzle, and the index + new value
+</span><span class="add">+    inserted to get there. pc was put at pi to make p. The remaining 2 argments are what
+</span><span class="add">+    we are going to be testing this iteration.
+</span><span class="add">+    -}
+</span><span class="add">+    go :: [(Puzzle, Index, Cell)] -&gt; Maybe Index -&gt; Cell -&gt; Maybe Puzzle
+</span><span class="add">+    -- We are finished when the maybe index is Nothing.
+</span><span class="add">+    go ((p, _, _):_) Nothing _ = Just p
+</span><span class="add">+    go pps@((p, pi, pc) : ps) (Just i) c
+</span><span class="add">+        -- This index is already filled - continue.
+</span><span class="add">+        | isJust (p ! i) = go ((puz p, pi, pc):ps) (next i) One
+</span><span class="add">+        -- This index is empty - let&apos;s find a possibly valid value.
+</span><span class="add">+        | otherwise =
+</span><span class="add">+            case getOptions p i c of
+</span><span class="add">+                [] -&gt; Nothing
+</span><span class="add">+                opts -&gt; listToMaybe . mapMaybe (\o -&gt; go ((puz o, i, c):pps) (next i) One) $ opts
+</span><span class="add">+
+</span><span class="add">+    getOptions :: Puzzle -&gt; Index -&gt; Cell -&gt; [Puzzle]
+</span><span class="add">+    getOptions p i c = filter isValid . map (\c -&gt; p // [(i, Just c)]) $ [c .. Nine]
+</span><span class="add">+
+</span><span class="add">+    -- Maybe-get the next Index, left to right, then top to bottom
+</span><span class="add">+    next :: Index -&gt; Maybe Index
+</span><span class="add">+    next (Nine, Nine) = Nothing
+</span><span class="add">+    next (row, Nine) = Just (succ row, One)
+</span><span class="add">+    next (row, col) = Just (row, succ col)
+</span><span class="add">+
+</span><span class="add">+{-
+</span><span class="add">+Graphically represent the puzzle layout.
+</span><span class="add">+-}
+</span><span class="add">+showPuzzle :: Puzzle -&gt; String
+</span><span class="add">+showPuzzle = (++) &quot; &quot; . unwords . map organise . assocs . fmap render
+</span><span class="add">+  where
+</span><span class="add">+    render Nothing = &quot; &quot;
+</span><span class="add">+    render (Just v) = show . (+) 1 . fromEnum $ v
+</span><span class="add">+
+</span><span class="add">+    -- Check out this ugly stuff. It adds bars and newlines to render the puzzle.
+</span><span class="add">+    organise ((_, Three), c) = c ++ &quot; |&quot;
+</span><span class="add">+    organise ((_, Six), c) = c ++ &quot; |&quot;
+</span><span class="add">+    organise ((Three, Nine), c) = c ++ &quot;\n &quot; ++ replicate 21 &apos;-&apos; ++ &quot;\n&quot;
+</span><span class="add">+    organise ((Six, Nine), c) = c ++ &quot;\n &quot; ++ replicate 21 &apos;-&apos; ++ &quot;\n&quot;
+</span><span class="add">+    organise ((_, Nine), c) = c ++ &quot;\n&quot;
+</span><span class="add">+    organise (_, c) = c ++ &quot;&quot;
+</span><span class="add">+
+</span><span class="add">+{-
+</span><span class="add">+Load a puzzle from file.
+</span><span class="add">+-}
+</span><span class="add">+loadPuzzle :: [Char] -&gt; Puzzle
+</span><span class="add">+loadPuzzle = asArray . zip indices . map parse . filter (`elem` chars)
+</span><span class="add">+  where
+</span><span class="add">+    chars = [&apos; &apos;] ++ [&apos;1&apos;..&apos;9&apos;]
+</span><span class="add">+    indices = [(r, c) | r &lt;- set, c &lt;- set]
+</span><span class="add">+
+</span><span class="add">+    parse :: Char -&gt; Maybe Cell
+</span><span class="add">+    parse &apos; &apos; = Nothing
+</span><span class="add">+    parse char = Just . toEnum . subtract 1 . digitToInt $ char
+</span><span class="add">+
+</span><span class="add">+main :: IO ()
+</span><span class="add">+main = do
+</span><span class="add">+    args &lt;- getArgs
+</span><span class="add">+    contents &lt;- readFile $ bool (head args) &quot;puzzle_1.txt&quot; (null args)
+</span><span class="add">+    let puzzle = loadPuzzle contents
+</span><span class="add">+    putStrLn &quot;Puzzle:&quot;
+</span><span class="add">+    putStrLn . showPuzzle $ puzzle
+</span><span class="add">+
+</span><span class="add">+    case solve puzzle of
+</span><span class="add">+        Nothing -&gt; 
+</span><span class="add">+            putStrLn &quot;Failed! Is the puzzle valid?&quot;
+</span><span class="add">+        Just solved -&gt; do
+</span><span class="add">+            putStrLn &quot;Completed:&quot;
+</span><span class="add">+            putStrLn . showPuzzle $ solved
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,8 @@
+<span class="add">+sudoku-solver
+</span><span class="add">+=============
+</span><span class="add">+
+</span><span class="add">+This small Haskell script solves sudoku puzzles. I wrote this as part of a
+</span><span class="add">+programming exercise.
+</span><span class="add">+
+</span><span class="add">+The puzzle in ``puzzle_1.txt`` is in the public domain, and is taken from
+</span><span class="add">+Wikipedia.
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>puzzle_1.txt</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,11 @@
+<span class="add">+53 | 7 |   
+</span><span class="add">+6  |195|   
+</span><span class="add">+ 98|   | 6 
+</span><span class="add">+-----------
+</span><span class="add">+8  | 6 |  3
+</span><span class="add">+4  |8 3|  1
+</span><span class="add">+7  | 2 |  6
+</span><span class="add">+-----------
+</span><span class="add">+ 6 |   |28 
+</span><span class="add">+   |419|  5
+</span><span class="add">+   | 8 | 79
+</span></pre>
+</div></div>
+  </body>
+</html>

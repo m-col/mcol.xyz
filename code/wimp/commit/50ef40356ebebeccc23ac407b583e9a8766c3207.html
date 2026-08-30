@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add damage_mark_indicator</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/50ef40356ebebeccc23ac407b583e9a8766c3207.html">50ef40356ebebeccc23ac407b583e9a8766c3207</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/9247a25c04f3c39825ddc807bb7eb6570f5b5655.html">9247a25c04f3c39825ddc807bb7eb6570f5b5655</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-12 11:16:19 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-12 11:16:19 +0000
+
+add damage_mark_indicator
+</pre><div class="diff">
+  <p>
+    <b>src/output.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,5 +8,6 @@
+<span class="def"> void damage_by_view(struct view *view, bool with_borders);
+</span><span class="def"> void damage_by_lview(struct layer_view *lview);
+</span><span class="def"> void damage_all_outputs();
+</span><span class="add">+void damage_mark_indicator();
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -271,6 +271,24 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void damage_mark_indicator() {
+</span><span class="add">+    struct output *output;
+</span><span class="add">+    struct wlr_box indicator = wimp.mark_indicator.box;
+</span><span class="add">+    int width, height;
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(output, &amp;wimp.outputs, link) {
+</span><span class="add">+	wlr_output_effective_resolution(output-&gt;wlr_output, &amp;width, &amp;height);
+</span><span class="add">+	struct wlr_box geo = {
+</span><span class="add">+	    .x = 0,
+</span><span class="add">+	    .y = height - indicator.height,
+</span><span class="add">+	    .width = indicator.width,
+</span><span class="add">+	    .height = indicator.height,
+</span><span class="add">+	};
+</span><span class="add">+	wlr_output_damage_add_box(output-&gt;wlr_output_damage, &amp;geo);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void on_destroy(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct output *output = wl_container_of(listener, output, destroy_listener);
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,6 +9,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;action.h&quot;
+</span><span class="def"> #include &quot;cursor.h&quot;
+</span><span class="add">+#include &quot;output.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span>@@ -71,12 +72,13 @@
+<span class="def"> 	if (wimp.mark_waiting) {
+</span><span class="def"> 	    struct mark *mark;
+</span><span class="def"> 	    wimp.mark_waiting = false;
+</span><span class="add">+	    damage_mark_indicator();
+</span><span class="def"> 	    xkb_state_key_get_syms(wlr_kb-&gt;xkb_state, keycode, &amp;syms);
+</span><span class="def"> 	    mark = wl_container_of(wimp.marks.next, mark, link);
+</span><span class="sub">-	    if (mark-&gt;key == 0) {
+</span><span class="sub">-		actually_set_mark(syms[0]);
+</span><span class="sub">-	    } else {
+</span><span class="add">+	    if (mark-&gt;key) {
+</span><span class="def"> 		actually_go_to_mark(syms[0]);
+</span><span class="add">+	    } else {
+</span><span class="add">+		actually_set_mark(syms[0]);
+</span><span class="def"> 	    }
+</span><span class="def"> 	    return;
+</span><span class="def"> 	}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -256,9 +256,9 @@
+<span class="def">     mark-&gt;y = desk-&gt;panned_y;
+</span><span class="def">     mark-&gt;zoom = desk-&gt;zoom;
+</span><span class="def">     mark-&gt;key = 0;
+</span><span class="sub">-    wimp.mark_waiting = true;
+</span><span class="def">     wl_list_insert(&amp;wimp.marks, &amp;mark-&gt;link);
+</span><span class="sub">-    damage_all_outputs();
+</span><span class="add">+    wimp.mark_waiting = true;
+</span><span class="add">+    damage_mark_indicator();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -291,20 +291,27 @@
+<span class="def"> 
+</span><span class="def"> void go_to_mark(void *data) {
+</span><span class="def">     wimp.mark_waiting = true;
+</span><span class="add">+    damage_mark_indicator();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void actually_go_to_mark(const xkb_keysym_t sym) {
+</span><span class="def">     struct mark *mark;
+</span><span class="def"> 
+</span><span class="sub">-    if (sym == XKB_KEY_Escape)
+</span><span class="add">+    if (sym == XKB_KEY_Escape) {
+</span><span class="def"> 	return;
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="add">+    bool found = false;
+</span><span class="def">     wl_list_for_each(mark, &amp;wimp.marks, link) {
+</span><span class="def"> 	if (mark-&gt;key == sym) {
+</span><span class="add">+	    found = true;
+</span><span class="def"> 	    break;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+    if (!found) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="def">     unfullscreen();
+</span><span class="def">     struct motion motion = {
+</span></pre>
+</div></div>
+  </body>
+</html>

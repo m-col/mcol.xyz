@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - start/self/plugin/init.lua</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- start/self/plugin/init.lua</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> # neovim lua config
+<a href="#l2" class="line" id="l2">      2</a> 
+<a href="#l3" class="line" id="l3">      3</a> -- set this early so that theming can be set up
+<a href="#l4" class="line" id="l4">      4</a> vim.opt.termguicolors = true
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a> -- Initialize lazy.nvim
+<a href="#l7" class="line" id="l7">      7</a> local lazypath = vim.fn.stdpath(&quot;data&quot;) .. &quot;/lazy/lazy.nvim&quot;
+<a href="#l8" class="line" id="l8">      8</a> if not (vim.uv or vim.loop).fs_stat(lazypath) then
+<a href="#l9" class="line" id="l9">      9</a>   local lazyrepo = &quot;https://github.com/folke/lazy.nvim.git&quot;
+<a href="#l10" class="line" id="l10">     10</a>   local out = vim.fn.system({ &quot;git&quot;, &quot;clone&quot;, &quot;--filter=blob:none&quot;, &quot;--branch=stable&quot;, lazyrepo, lazypath })
+<a href="#l11" class="line" id="l11">     11</a>   if vim.v.shell_error ~= 0 then
+<a href="#l12" class="line" id="l12">     12</a>     vim.api.nvim_echo({
+<a href="#l13" class="line" id="l13">     13</a>       { &quot;Failed to clone lazy.nvim:\n&quot;, &quot;ErrorMsg&quot; },
+<a href="#l14" class="line" id="l14">     14</a>       { out, &quot;WarningMsg&quot; },
+<a href="#l15" class="line" id="l15">     15</a>       { &quot;\nPress any key to exit...&quot; },
+<a href="#l16" class="line" id="l16">     16</a>     }, true, {})
+<a href="#l17" class="line" id="l17">     17</a>     vim.fn.getchar()
+<a href="#l18" class="line" id="l18">     18</a>     os.exit(1)
+<a href="#l19" class="line" id="l19">     19</a>   end
+<a href="#l20" class="line" id="l20">     20</a> end
+<a href="#l21" class="line" id="l21">     21</a> vim.opt.rtp:prepend(lazypath)
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> -- Make sure to setup `mapleader` and `maplocalleader` before
+<a href="#l24" class="line" id="l24">     24</a> -- loading lazy.nvim so that mappings are correct.
+<a href="#l25" class="line" id="l25">     25</a> -- This is also a good place to setup other settings (vim.opt)
+<a href="#l26" class="line" id="l26">     26</a> vim.g.mapleader = &quot; &quot;
+<a href="#l27" class="line" id="l27">     27</a> vim.g.maplocalleader = &quot;\\&quot;
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a> -- Setup lazy.nvim
+<a href="#l30" class="line" id="l30">     30</a> require(&quot;lazy&quot;).setup({
+<a href="#l31" class="line" id="l31">     31</a>   {
+<a href="#l32" class="line" id="l32">     32</a>       &apos;catppuccin/nvim&apos;,
+<a href="#l33" class="line" id="l33">     33</a>       name = &quot;catppuccin&quot;,
+<a href="#l34" class="line" id="l34">     34</a>       lazy = false,
+<a href="#l35" class="line" id="l35">     35</a>       priority = 1000,
+<a href="#l36" class="line" id="l36">     36</a>       init = function()
+<a href="#l37" class="line" id="l37">     37</a>         vim.cmd [[colorscheme catppuccin-mocha]]
+<a href="#l38" class="line" id="l38">     38</a>       end,
+<a href="#l39" class="line" id="l39">     39</a>   },
+<a href="#l40" class="line" id="l40">     40</a>   {
+<a href="#l41" class="line" id="l41">     41</a>     &apos;nvim-lualine/lualine.nvim&apos;,
+<a href="#l42" class="line" id="l42">     42</a>     dependencies = { &apos;nvim-tree/nvim-web-devicons&apos; },
+<a href="#l43" class="line" id="l43">     43</a>     opts = {
+<a href="#l44" class="line" id="l44">     44</a>       options = {
+<a href="#l45" class="line" id="l45">     45</a>         section_separators = &apos;&apos;,
+<a href="#l46" class="line" id="l46">     46</a>         component_separators = &apos;&apos;,
+<a href="#l47" class="line" id="l47">     47</a>         path = 3,
+<a href="#l48" class="line" id="l48">     48</a>       },
+<a href="#l49" class="line" id="l49">     49</a>       sections = {
+<a href="#l50" class="line" id="l50">     50</a>         lualine_a = {&apos;mode&apos;},
+<a href="#l51" class="line" id="l51">     51</a>         lualine_b = {},
+<a href="#l52" class="line" id="l52">     52</a>         lualine_c = {&apos;filename&apos;},
+<a href="#l53" class="line" id="l53">     53</a>         lualine_x = {&apos;encoding&apos;, &apos;fileformat&apos;, &apos;filetype&apos;},
+<a href="#l54" class="line" id="l54">     54</a>         lualine_y = {&apos;progress&apos;},
+<a href="#l55" class="line" id="l55">     55</a>         lualine_z = {&apos;location&apos;}
+<a href="#l56" class="line" id="l56">     56</a>       },
+<a href="#l57" class="line" id="l57">     57</a>     },
+<a href="#l58" class="line" id="l58">     58</a>   },
+<a href="#l59" class="line" id="l59">     59</a> 
+<a href="#l60" class="line" id="l60">     60</a>   {
+<a href="#l61" class="line" id="l61">     61</a>       &apos;Yggdroot/indentLine&apos;,
+<a href="#l62" class="line" id="l62">     62</a>       init = function()
+<a href="#l63" class="line" id="l63">     63</a>         vim.g.indentLine_defaultGroup = &apos;LineNr&apos;
+<a href="#l64" class="line" id="l64">     64</a>         vim.g.indentLine_char_list = {&apos;|&apos;, &apos;¦&apos;, &apos;┆&apos;, &apos;┊&apos;}
+<a href="#l65" class="line" id="l65">     65</a>         vim.g.indentLine_conceallevel = 0
+<a href="#l66" class="line" id="l66">     66</a>       end
+<a href="#l67" class="line" id="l67">     67</a>   },
+<a href="#l68" class="line" id="l68">     68</a> 
+<a href="#l69" class="line" id="l69">     69</a>   { &apos;neovimhaskell/haskell-vim&apos; },
+<a href="#l70" class="line" id="l70">     70</a> 
+<a href="#l71" class="line" id="l71">     71</a>   { &apos;dense-analysis/ale&apos; },
+<a href="#l72" class="line" id="l72">     72</a> 
+<a href="#l73" class="line" id="l73">     73</a>   { 
+<a href="#l74" class="line" id="l74">     74</a>       &apos;hashivim/vim-terraform&apos;,
+<a href="#l75" class="line" id="l75">     75</a>       init = function()
+<a href="#l76" class="line" id="l76">     76</a>         vim.g.terraform_fmt_on_save = 1
+<a href="#l77" class="line" id="l77">     77</a> 	vim.g.terraform_align = 1
+<a href="#l78" class="line" id="l78">     78</a>       end
+<a href="#l79" class="line" id="l79">     79</a>   },
+<a href="#l80" class="line" id="l80">     80</a> 
+<a href="#l81" class="line" id="l81">     81</a>   {
+<a href="#l82" class="line" id="l82">     82</a>     &apos;m-col/buffer-closer.nvim&apos;,
+<a href="#l83" class="line" id="l83">     83</a>     opts = {
+<a href="#l84" class="line" id="l84">     84</a>       close_key = &apos;&lt;BS&gt;&apos;,
+<a href="#l85" class="line" id="l85">     85</a>     },
+<a href="#l86" class="line" id="l86">     86</a>   },
+<a href="#l87" class="line" id="l87">     87</a> 
+<a href="#l88" class="line" id="l88">     88</a>  {
+<a href="#l89" class="line" id="l89">     89</a>     &quot;swaits/zellij-nav.nvim&quot;,
+<a href="#l90" class="line" id="l90">     90</a>     lazy = true,
+<a href="#l91" class="line" id="l91">     91</a>     event = &quot;VeryLazy&quot;,
+<a href="#l92" class="line" id="l92">     92</a>     keys = {
+<a href="#l93" class="line" id="l93">     93</a>         { &quot;&lt;c-h&gt;&quot;, &quot;&lt;cmd&gt;ZellijNavigateLeft&lt;cr&gt;&quot;, { silent = true, desc = &quot;navigate left&quot; } },
+<a href="#l94" class="line" id="l94">     94</a>         { &quot;&lt;c-j&gt;&quot;, &quot;&lt;cmd&gt;ZellijNavigateDown&lt;cr&gt;&quot;, { silent = true, desc = &quot;navigate down&quot; } },
+<a href="#l95" class="line" id="l95">     95</a>         { &quot;&lt;c-k&gt;&quot;, &quot;&lt;cmd&gt;ZellijNavigateUp&lt;cr&gt;&quot;, { silent = true, desc = &quot;navigate up&quot; } },
+<a href="#l96" class="line" id="l96">     96</a>         { &quot;&lt;c-l&gt;&quot;, &quot;&lt;cmd&gt;ZellijNavigateRight&lt;cr&gt;&quot;, { silent = true, desc = &quot;navigate right&quot; } },
+<a href="#l97" class="line" id="l97">     97</a>     },
+<a href="#l98" class="line" id="l98">     98</a>     opts = {},
+<a href="#l99" class="line" id="l99">     99</a>   },
+<a href="#l100" class="line" id="l100">    100</a> 
+<a href="#l101" class="line" id="l101">    101</a>   {
+<a href="#l102" class="line" id="l102">    102</a>     &apos;nvim-telescope/telescope.nvim&apos;,
+<a href="#l103" class="line" id="l103">    103</a>     tag = &apos;0.1.8&apos;,
+<a href="#l104" class="line" id="l104">    104</a>     dependencies = { &apos;nvim-lua/plenary.nvim&apos; },
+<a href="#l105" class="line" id="l105">    105</a>     opts = {
+<a href="#l106" class="line" id="l106">    106</a>       defaults = {
+<a href="#l107" class="line" id="l107">    107</a>         mappings = {
+<a href="#l108" class="line" id="l108">    108</a>         },
+<a href="#l109" class="line" id="l109">    109</a>         preview = false,
+<a href="#l110" class="line" id="l110">    110</a>       },
+<a href="#l111" class="line" id="l111">    111</a>       pickers = {
+<a href="#l112" class="line" id="l112">    112</a>       },
+<a href="#l113" class="line" id="l113">    113</a>       extensions = {
+<a href="#l114" class="line" id="l114">    114</a>       }
+<a href="#l115" class="line" id="l115">    115</a>     },
+<a href="#l116" class="line" id="l116">    116</a>   },
+<a href="#l117" class="line" id="l117">    117</a> 
+<a href="#l118" class="line" id="l118">    118</a>   {
+<a href="#l119" class="line" id="l119">    119</a>       &apos;ctrlpvim/ctrlp.vim&apos;,
+<a href="#l120" class="line" id="l120">    120</a>       init = function()
+<a href="#l121" class="line" id="l121">    121</a>         vim.g.ctrlp_map = &apos;&apos;  -- Disable the default &lt;C-p&gt; mapping
+<a href="#l122" class="line" id="l122">    122</a>       end,
+<a href="#l123" class="line" id="l123">    123</a>   },
+<a href="#l124" class="line" id="l124">    124</a> 
+<a href="#l125" class="line" id="l125">    125</a>   {
+<a href="#l126" class="line" id="l126">    126</a>       &apos;ludovicchabant/vim-gutentags&apos;,
+<a href="#l127" class="line" id="l127">    127</a>   },
+<a href="#l128" class="line" id="l128">    128</a> 
+<a href="#l129" class="line" id="l129">    129</a>   {
+<a href="#l130" class="line" id="l130">    130</a>     &quot;supermaven-inc/supermaven-nvim&quot;,
+<a href="#l131" class="line" id="l131">    131</a>     opts = {
+<a href="#l132" class="line" id="l132">    132</a>       keymaps = {
+<a href="#l133" class="line" id="l133">    133</a>         accept_suggestion = &quot;&lt;Tab&gt;&quot;,
+<a href="#l134" class="line" id="l134">    134</a>         clear_suggestion = &quot;&lt;S-Tab&gt;&quot;,
+<a href="#l135" class="line" id="l135">    135</a>       }
+<a href="#l136" class="line" id="l136">    136</a>     },
+<a href="#l137" class="line" id="l137">    137</a>   },
+<a href="#l138" class="line" id="l138">    138</a> 
+<a href="#l139" class="line" id="l139">    139</a>   --{
+<a href="#l140" class="line" id="l140">    140</a>   --  &quot;yetone/avante.nvim&quot;,
+<a href="#l141" class="line" id="l141">    141</a>   --  event = &quot;VeryLazy&quot;,
+<a href="#l142" class="line" id="l142">    142</a>   --  version = false,
+<a href="#l143" class="line" id="l143">    143</a>   --  opts = {
+<a href="#l144" class="line" id="l144">    144</a>   --    provider = &quot;gemini&quot;,
+<a href="#l145" class="line" id="l145">    145</a>   --    --provider = &quot;claude&quot;,
+<a href="#l146" class="line" id="l146">    146</a>   --  },
+<a href="#l147" class="line" id="l147">    147</a>   --  behaviour = {
+<a href="#l148" class="line" id="l148">    148</a>   --      auto_set_keymaps = false,
+<a href="#l149" class="line" id="l149">    149</a>   --  },
+<a href="#l150" class="line" id="l150">    150</a>   --  --hints = { enabled = false },
+<a href="#l151" class="line" id="l151">    151</a>   --  --windows = {
+<a href="#l152" class="line" id="l152">    152</a>   --  --    sidebar_header = { enabled = false },
+<a href="#l153" class="line" id="l153">    153</a>   --  --},
+<a href="#l154" class="line" id="l154">    154</a>   --  dependencies = {
+<a href="#l155" class="line" id="l155">    155</a>   --    &quot;nvim-treesitter/nvim-treesitter&quot;,
+<a href="#l156" class="line" id="l156">    156</a>   --    &quot;stevearc/dressing.nvim&quot;,
+<a href="#l157" class="line" id="l157">    157</a>   --    &quot;nvim-lua/plenary.nvim&quot;,
+<a href="#l158" class="line" id="l158">    158</a>   --    &quot;MunifTanjim/nui.nvim&quot;,
+<a href="#l159" class="line" id="l159">    159</a>   --    --- The below dependencies are optional,
+<a href="#l160" class="line" id="l160">    160</a>   --    &quot;nvim-telescope/telescope.nvim&quot;, -- for file_selector provider telescope
+<a href="#l161" class="line" id="l161">    161</a>   --    &quot;hrsh7th/nvim-cmp&quot;, -- autocompletion for avante commands and mentions
+<a href="#l162" class="line" id="l162">    162</a>   --    &quot;nvim-tree/nvim-web-devicons&quot;,
+<a href="#l163" class="line" id="l163">    163</a>   --    {
+<a href="#l164" class="line" id="l164">    164</a>   --      -- support for image pasting
+<a href="#l165" class="line" id="l165">    165</a>   --      &quot;HakonHarnes/img-clip.nvim&quot;,
+<a href="#l166" class="line" id="l166">    166</a>   --      event = &quot;VeryLazy&quot;,
+<a href="#l167" class="line" id="l167">    167</a>   --      opts = {
+<a href="#l168" class="line" id="l168">    168</a>   --        default = {
+<a href="#l169" class="line" id="l169">    169</a>   --          embed_image_as_base64 = false,
+<a href="#l170" class="line" id="l170">    170</a>   --          prompt_for_file_name = false,
+<a href="#l171" class="line" id="l171">    171</a>   --          drag_and_drop = {
+<a href="#l172" class="line" id="l172">    172</a>   --            insert_mode = true,
+<a href="#l173" class="line" id="l173">    173</a>   --          },
+<a href="#l174" class="line" id="l174">    174</a>   --        },
+<a href="#l175" class="line" id="l175">    175</a>   --      },
+<a href="#l176" class="line" id="l176">    176</a>   --    },
+<a href="#l177" class="line" id="l177">    177</a>   --    {
+<a href="#l178" class="line" id="l178">    178</a>   --      &apos;MeanderingProgrammer/render-markdown.nvim&apos;,
+<a href="#l179" class="line" id="l179">    179</a>   --      opts = {
+<a href="#l180" class="line" id="l180">    180</a>   --        file_types = { &quot;Avante&quot; },
+<a href="#l181" class="line" id="l181">    181</a>   --      },
+<a href="#l182" class="line" id="l182">    182</a>   --      ft = { &quot;Avante&quot; },
+<a href="#l183" class="line" id="l183">    183</a>   --    },
+<a href="#l184" class="line" id="l184">    184</a>   --  },
+<a href="#l185" class="line" id="l185">    185</a>   --}
+<a href="#l186" class="line" id="l186">    186</a> })
+<a href="#l187" class="line" id="l187">    187</a> 
+<a href="#l188" class="line" id="l188">    188</a> --local colors = require(&quot;catppuccin.palettes&quot;).get_palette(&quot;mocha&quot;)
+<a href="#l189" class="line" id="l189">    189</a> --vim.cmd(&quot;highlight CursorLine gui=reverse&quot;)
+<a href="#l190" class="line" id="l190">    190</a> 
+</pre>
+  </div>
+  </body>
+</html>

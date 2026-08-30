@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tide - don&apos;t suggest commands with no arguments can use arg completion</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/tide">tide</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/tide">https://github.com/m-col/tide</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/tide/tree.html">Files</a> | <a href="https://mcol.xyz/code/tide/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/tide/file/README.md.html">Readme</a>     | <a href="https://mcol.xyz/code/tide/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/tide/commit/689f8d36961aec8221c1018933c90957a4a33372.html">689f8d36961aec8221c1018933c90957a4a33372</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/tide/commit/c52efc7d34ee24287685c336a3903a3537e0115b.html">c52efc7d34ee24287685c336a3903a3537e0115b</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2023-06-17 22:13:29 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2023-06-17 22:13:29 +0100
+
+don&apos;t suggest commands with no arguments can use arg completion
+</pre><div class="diff">
+  <p>
+    <b>plugin/tide.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -115,11 +115,11 @@
+<span class="def"> &quot; command and plugin mappings
+</span><span class="def"> command! -nargs=+ -complete=command TmuxSendKeys call TmuxSendKeys(&lt;q-args&gt;)
+</span><span class="def"> command! -nargs=+ -complete=command TmuxSendKeysEnter call TmuxSendKeysEnter(&lt;q-args&gt;)
+</span><span class="sub">-command! -nargs=0 -complete=command TmuxSendVisual call s:TmuxSendVisual()
+</span><span class="sub">-command! -nargs=0 -complete=command TmuxSendLine call TmuxSendKeys(getline(&quot;.&quot;)) | call s:TmuxSendEnter()
+</span><span class="sub">-command! -nargs=0 -complete=command TmuxSendParagraph call s:TmuxSendParagraph()
+</span><span class="sub">-command! -nargs=0 -complete=command TmuxSendSection call s:TmuxSendSection()
+</span><span class="sub">-command! -nargs=0 -complete=command -range TmuxSendLines call TmuxSendLines(&lt;line1&gt;, &lt;line2&gt;)
+</span><span class="add">+command! -nargs=0 TmuxSendVisual call s:TmuxSendVisual()
+</span><span class="add">+command! -nargs=0 TmuxSendLine call TmuxSendKeys(getline(&quot;.&quot;)) | call s:TmuxSendEnter()
+</span><span class="add">+command! -nargs=0 TmuxSendParagraph call s:TmuxSendParagraph()
+</span><span class="add">+command! -nargs=0 TmuxSendSection call s:TmuxSendSection()
+</span><span class="add">+command! -nargs=0 -range TmuxSendLines call TmuxSendLines(&lt;line1&gt;, &lt;line2&gt;)
+</span><span class="def"> 
+</span><span class="def"> silent! xnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendVisual :&lt;C-u&gt;TmuxSendVisual&lt;CR&gt;
+</span><span class="def"> silent! nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendParagraph :TmuxSendParagraph&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

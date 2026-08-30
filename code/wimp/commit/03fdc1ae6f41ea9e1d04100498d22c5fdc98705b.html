@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - mention wimptool in the readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/03fdc1ae6f41ea9e1d04100498d22c5fdc98705b.html">03fdc1ae6f41ea9e1d04100498d22c5fdc98705b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/6f9aaafc2d92b2db45398ba8cc19000921172d6b.html">6f9aaafc2d92b2db45398ba8cc19000921172d6b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 15:31:12 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 15:31:12 +0000
+
+mention wimptool in the readme
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,9 +26,11 @@
+<span class="def"> WIMP can be called directly from a TTY as ``wimp``. I recommend writing a small
+</span><span class="def"> script to set up the session&apos;s environment and ``exec wimp``.
+</span><span class="def"> 
+</span><span class="sub">-WIMP looks for a configuration file first at ``$XDG_CONFIG_HOME/wimp/config``
+</span><span class="sub">-then ``$HOME/.config/wimp/config``. An example configuration file is provided
+</span><span class="sub">-and also serves as a reference of all possible settings and actions.
+</span><span class="add">+WIMP looks for a startup script first at ``$XDG_CONFIG_HOME/wimp/startup`` then
+</span><span class="add">+``$HOME/.config/wimp/startup``. This script is executed once the compositor has
+</span><span class="add">+started up and can be used to configure wimp via ``wimptool`` and launch any
+</span><span class="add">+startup programs. An example startup script is provided and also serves as a
+</span><span class="add">+reference of all possible options and actions.
+</span><span class="def"> 
+</span><span class="def"> Users migrating from X may find `arewewaylandyet.com
+</span><span class="def"> &lt;https://arewewaylandyet.com/&gt;`_ and `this page
+</span></pre>
+</div></div>
+  </body>
+</html>

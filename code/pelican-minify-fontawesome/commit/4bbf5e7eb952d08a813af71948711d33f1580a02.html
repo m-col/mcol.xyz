@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - Initialise as git repo with almost usable plugin</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/4bbf5e7eb952d08a813af71948711d33f1580a02.html">4bbf5e7eb952d08a813af71948711d33f1580a02</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/.html"></a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-13 21:15:36 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-13 21:15:36 +0100
+
+Initialise as git repo with almost usable plugin
+</pre><div class="diff">
+  <p>
+    <b>minify_fontawesome.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,123 @@
+<span class="add">+# -*- coding: utf-8 -*-
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+minify-fontawesome - A plugin for the pelican static site generator that
+</span><span class="add">+extracts only icons used in your website from fontawesome source files to
+</span><span class="add">+copies them to the output folder to lighten served fontawesome files.
+</span><span class="add">+
+</span><span class="add">+To use, set MINIFY_FONTAWESOME in your pelican config to a locally downloaded
+</span><span class="add">+fontawesome icon folder (e.g. &apos;/home/user/fontawesome-free-5.11.2-web&apos;).
+</span><span class="add">+
+</span><span class="add">+These can be downloaded from https://fontawesome.com/download (the web fonts).
+</span><span class="add">+
+</span><span class="add">+It also requires that fontforge is installed.
+</span><span class="add">+
+</span><span class="add">+This will save the css file into output_path/static/css/fa.css, and fonts into
+</span><span class="add">+output_path/static/webfonts/.
+</span><span class="add">+
+</span><span class="add">+To use it, something like this should be added to html headers:
+</span><span class="add">+    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ SITEURL }}/theme/css/fa.css&quot;/&gt;
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import fontforge as ff
+</span><span class="add">+import os
+</span><span class="add">+from pelican import signals
+</span><span class="add">+import re
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def copy_glyphs(source, dest, css_blocks):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Copy only used icons from the font files into the output folder.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    used_icons = []
+</span><span class="add">+    for block in css_blocks:
+</span><span class="add">+        used_icons.append(re.search(&apos;content:&quot;(.*?)&quot;&apos;, block).group(0))
+</span><span class="add">+
+</span><span class="add">+    return  #TODO
+</span><span class="add">+    for root, dirs, files in os.walk(source):
+</span><span class="add">+        for f in files:
+</span><span class="add">+            if f.endswith(&apos;woff&apos;):
+</span><span class="add">+                font = ff.open(os.path.join(root, f))
+</span><span class="add">+                for icon in used_icons:
+</span><span class="add">+                    if font.findEncodingSlot(icon):
+</span><span class="add">+                        font.selection.select(
+</span><span class="add">+                            (&quot;more&quot;, None),
+</span><span class="add">+                            icon,
+</span><span class="add">+                        )
+</span><span class="add">+                font.copy()
+</span><span class="add">+                new_font = ff.font()
+</span><span class="add">+                new_font.paste()
+</span><span class="add">+                new_font.fontname = font.fontname
+</span><span class="add">+                new_font.generate(os.path.join(dest, f))
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def get_classes(folder):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Gets a list of CSS classes defined in all html files within a folder.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    fa_classes = []
+</span><span class="add">+    all_classes = []
+</span><span class="add">+
+</span><span class="add">+    for root, dirs, files in os.walk(folder):
+</span><span class="add">+        for f in files:
+</span><span class="add">+            if f.endswith(&apos;html&apos;):
+</span><span class="add">+                with open(os.path.join(root, f), &quot;r&quot;) as fd:
+</span><span class="add">+                    matches = re.findall(&apos;class=[\&apos;&quot;](.*?)[\&apos;&quot;]&apos;, fd.read())
+</span><span class="add">+                    if matches:
+</span><span class="add">+                        for match in matches:
+</span><span class="add">+                            all_classes.extend(match.split())
+</span><span class="add">+    
+</span><span class="add">+    for cls in set(all_classes):
+</span><span class="add">+        if cls.startswith(&apos;fa&apos;):
+</span><span class="add">+            fa_classes.append(cls)
+</span><span class="add">+
+</span><span class="add">+    return fa_classes
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def copy_css(output_path, css_file):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Copy css for only used icons over to output folder. Returns the css blocks
+</span><span class="add">+    corresponding to these icons so we know which icons to copy from the font
+</span><span class="add">+    files.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    with open(css_file, &apos;r&apos;) as fd:
+</span><span class="add">+        contents = fd.read()
+</span><span class="add">+
+</span><span class="add">+    base_css = re.sub(&apos;\.fa-[\w-]+:before.*?}&apos;, &apos;&apos;, contents)
+</span><span class="add">+
+</span><span class="add">+    css_blocks = []
+</span><span class="add">+    for cls in get_classes(output_path):
+</span><span class="add">+        match = re.search(f&apos;\.{cls}:before.*?}}&apos;, contents)
+</span><span class="add">+        if match:
+</span><span class="add">+            css_blocks.append(match.group(0))
+</span><span class="add">+
+</span><span class="add">+    css = base_css + &apos;&apos;.join(css_blocks)
+</span><span class="add">+    css_file = os.path.join(output_path, &apos;theme&apos;, &apos;css&apos;, &apos;fa.css&apos;)
+</span><span class="add">+    with open(css_file, &apos;w&apos;) as fd:
+</span><span class="add">+        fd.write(css)
+</span><span class="add">+
+</span><span class="add">+    return css_blocks
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def main(instance):
+</span><span class="add">+    FONT_PATH = instance.settings.get(&apos;MINIFY_FONTAWESOME&apos;, None)
+</span><span class="add">+    if not FONT_PATH or not os.path.isdir(FONT_PATH):
+</span><span class="add">+        return
+</span><span class="add">+
+</span><span class="add">+    output_path = instance.output_path
+</span><span class="add">+    css_file = os.path.join(FONT_PATH, &apos;css&apos;, &apos;all.min.css&apos;)
+</span><span class="add">+
+</span><span class="add">+    css_blocks = copy_css(
+</span><span class="add">+        output_path,
+</span><span class="add">+        css_file,
+</span><span class="add">+    )
+</span><span class="add">+
+</span><span class="add">+    copy_glyphs(
+</span><span class="add">+        os.path.join(FONT_PATH, &apos;webfonts&apos;),
+</span><span class="add">+        os.path.join(output_path, &apos;static&apos;, &apos;webfonts&apos;),
+</span><span class="add">+        css_blocks,
+</span><span class="add">+    )
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def register():
+</span><span class="add">+    signals.finalized.connect(main)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+# -*- coding: utf-8 -*-
+</span><span class="add">+from .minify_fontawesome import *
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,8 @@
+<span class="add">+*.egg-info
+</span><span class="add">+*.pyc
+</span><span class="add">+*.pyo
+</span><span class="add">+.DS_Store
+</span><span class="add">+MANIFEST
+</span><span class="add">+build
+</span><span class="add">+dist
+</span><span class="add">+__pycache__
+</span></pre>
+</div></div>
+  </body>
+</html>

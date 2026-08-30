@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - improve ref table formatting</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/0963258ffce3ee3f5dee287468e605f2970818aa.html">0963258ffce3ee3f5dee287468e605f2970818aa</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/ca65149efd444d8d2f4875112039318731dfcb17.html">ca65149efd444d8d2f4875112039318731dfcb17</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-22 00:18:23 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-22 00:18:23 +0000
+
+improve ref table formatting
+</pre><div class="diff">
+  <p>
+    <b>templates/refs.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -11,11 +11,11 @@
+<span class="def">   &lt;h2&gt;Branches&lt;/h2&gt;
+</span><span class="def">   &lt;table id=&quot;branches&quot;&gt;
+</span><span class="def">     &lt;thead&gt;
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Last commit date&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="def">     &lt;/thead&gt;
+</span><span class="def">     &lt;tbody&gt;
+</span><span class="def">       {% for branch in branches %}
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;{{ branch.name }}&lt;/td&gt;&lt;td&gt;{{ branch.authored }}&lt;/td&gt;&lt;td&gt;{{ branch.title }}&lt;/td&gt;&lt;td&gt;{{ branch.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;{{ branch.name }}&lt;/td&gt;&lt;td&gt;{{ branch.authored[:16] }}&lt;/td&gt;&lt;td&gt;{{ branch.title }}&lt;/td&gt;&lt;td&gt;{{ branch.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="def">       {% endfor %}
+</span><span class="def">     &lt;/tbody&gt;
+</span><span class="def">   &lt;/table&gt;
+</span>@@ -25,11 +25,11 @@
+<span class="def">   &lt;h2&gt;Tags&lt;/h2&gt;
+</span><span class="def">   &lt;table id=&quot;tags&quot;&gt;
+</span><span class="def">     &lt;thead&gt;
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Last commit date&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="def">     &lt;/thead&gt;
+</span><span class="def">     &lt;tbody&gt;
+</span><span class="def">       {% for tag in tags %}
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;{{ tag.name }}&lt;/td&gt;&lt;td&gt;{{ tag.authored }}&lt;/td&gt;&lt;td&gt;{{ tag.title }}&lt;/td&gt;&lt;td&gt;{{ tag.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;{{ tag.name }}&lt;/td&gt;&lt;td&gt;{{ tag.authored[:16] }}&lt;/td&gt;&lt;td&gt;{{ tag.title }}&lt;/td&gt;&lt;td&gt;{{ tag.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="def">       {% endfor %}
+</span><span class="def">     &lt;/tbody&gt;
+</span><span class="def">   &lt;/table&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - commit.diff should be pluralised</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/b25caf27ae76846de1bc4b3bb0d01fe6c677ee90.html">b25caf27ae76846de1bc4b3bb0d01fe6c677ee90</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/de9fb2f434c18bfc32559b70bab8625c6a523273.html">de9fb2f434c18bfc32559b70bab8625c6a523273</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-12-07 01:17:28 +0300
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-12-07 01:17:28 +0300
+
+commit.diff should be pluralised
+</pre><div class="diff">
+  <p>
+    <b>templates/docs/repo/commit.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,7 +13,7 @@
+<span class="def"> {{ commit.message }}
+</span><span class="def"> &lt;/pre&gt;
+</span><span class="def"> 
+</span><span class="sub">-{%- for diff in commit.diff -%}
+</span><span class="add">+{%- for diff in commit.diffs -%}
+</span><span class="def"> &lt;div class=&quot;diff&quot;&gt;
+</span><span class="def">   &lt;p&gt;
+</span><span class="def">     &lt;b&gt;{{ diff.new_file }}&lt;/b&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Types.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -108,7 +108,7 @@
+<span class="def">     &quot;committed&quot; -&gt; Just . toGVal . show . Git.signatureWhen . Git.commitCommitter . commitGit $ commit
+</span><span class="def">     &quot;encoding&quot; -&gt; Just . toGVal . strip . Git.commitEncoding . commitGit $ commit
+</span><span class="def">     &quot;parent&quot; -&gt; toGVal . show . untag &lt;$&gt; (listToMaybe . Git.commitParents . commitGit $ commit)
+</span><span class="sub">-    &quot;diff&quot; -&gt; Just . toGVal . commitDiffs $ commit
+</span><span class="add">+    &quot;diffs&quot; -&gt; Just . toGVal . commitDiffs $ commit
+</span><span class="def">     _ -&gt; Nothing
+</span><span class="def"> 
+</span><span class="def"> {-
+</span></pre>
+</div></div>
+  </body>
+</html>

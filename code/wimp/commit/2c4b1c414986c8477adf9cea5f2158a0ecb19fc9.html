@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - scale fullscreened windows when zoomed</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/2c4b1c414986c8477adf9cea5f2158a0ecb19fc9.html">2c4b1c414986c8477adf9cea5f2158a0ecb19fc9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/5806fe19caf42d2c5c89b4409fb4936d455dc62e.html">5806fe19caf42d2c5c89b4409fb4936d455dc62e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-23 14:00:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-23 14:00:36 +0000
+
+scale fullscreened windows when zoomed
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -81,7 +81,8 @@
+<span class="def">     saved_geo-&gt;width = xdg_surface-&gt;geometry.width;
+</span><span class="def">     saved_geo-&gt;height = xdg_surface-&gt;geometry.height;
+</span><span class="def">     wlr_xdg_toplevel_set_fullscreen(xdg_surface, true);
+</span><span class="sub">-    wlr_xdg_toplevel_set_size(xdg_surface, output-&gt;width, output-&gt;height);
+</span><span class="add">+    double zoom = server-&gt;current_desk-&gt;zoom;
+</span><span class="add">+    wlr_xdg_toplevel_set_size(xdg_surface, output-&gt;width / zoom, output-&gt;height / zoom);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

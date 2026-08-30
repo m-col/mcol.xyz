@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tide - all functions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/tide">tide</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/tide">https://github.com/m-col/tide</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/tide/tree.html">Files</a> | <a href="https://mcol.xyz/code/tide/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/tide/file/README.md.html">Readme</a>     | <a href="https://mcol.xyz/code/tide/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/tide/commit/b5d89603192ae418629756b29efdc2852b9744bd.html">b5d89603192ae418629756b29efdc2852b9744bd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/tide/commit/feae4c0f2a53e8ceb131e8d982e1d33d45e8dfe3.html">feae4c0f2a53e8ceb131e8d982e1d33d45e8dfe3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-08 12:10:47 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-08 12:10:47 +0000
+
+all functions
+</pre><div class="diff">
+  <p>
+    <b>plugin/tide.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,105 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; tide: tmux IDE
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; command to prefix text
+</span><span class="add">+if !exists(&quot;g:tmux_cmd&quot;)
+</span><span class="add">+    let g:tmux_cmd = &quot;tmux send -t .+ &quot;
+</span><span class="add">+endif
+</span><span class="add">+
+</span><span class="add">+&quot; main send keys function
+</span><span class="add">+function! TmuxSendKeys(keys)
+</span><span class="add">+    let l:keys = substitute(a:keys, &apos;^[\ ]*&apos;, &apos;&apos;, &apos;g&apos;) &quot;strip leading whitespace
+</span><span class="add">+    let l:keys = substitute(l:keys, &apos;	&apos;, &apos;    &apos;, &apos;g&apos;) &quot;make tabs spaces
+</span><span class="add">+    let l:keys = substitute(l:keys, &quot;;$&quot;, &apos;; &apos;, &apos;g&apos;) &quot;preserve trailing semicolons
+</span><span class="add">+    let l:keys = substitute(l:keys, &apos;\&apos;, &apos;\\\\&apos;, &apos;g&apos;) &quot;escape backslashes
+</span><span class="add">+    let l:keys = substitute(l:keys, &apos;\&quot;&apos;, &apos;\\\&quot;&apos;, &apos;g&apos;) &quot;escape double quotes
+</span><span class="add">+    call system(g:tmux_cmd . &quot;-l \&quot;&quot; . l:keys . &quot;\&quot;&quot;)
+</span><span class="add">+endfunction
+</span><span class="add">+function! s:TmuxSendEnter()
+</span><span class="add">+    call system(g:tmux_cmd . &quot;C-m&quot;)
+</span><span class="add">+endfunction
+</span><span class="add">+function! TmuxSendKeysEnter(keys)
+</span><span class="add">+    call TmuxSendKeys(a:keys)
+</span><span class="add">+    call s:TmuxSendEnter()
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+&quot; send region between two lines
+</span><span class="add">+function! s:TmuxSendLines(top, bottom)
+</span><span class="add">+    if a:top &gt; a:bottom
+</span><span class="add">+	call TmuxSendKeys(getline(a:top))
+</span><span class="add">+	call s:TmuxSendEnter()
+</span><span class="add">+    else
+</span><span class="add">+	for l:line in range(a:top, a:bottom)
+</span><span class="add">+	    call TmuxSendKeysEnter(getline(l:line))
+</span><span class="add">+	endfor
+</span><span class="add">+    endif
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+&quot; send current paragraph
+</span><span class="add">+function! s:TmuxSendParagraph()
+</span><span class="add">+    let l:top = search(&apos;^[\ ]*$\|\%^?&apos;, &apos;cbnW&apos;)
+</span><span class="add">+    if l:top != 1
+</span><span class="add">+	let l:top = l:top + 1
+</span><span class="add">+    endif
+</span><span class="add">+    let l:bottom = search(&apos;^[\ ]*$\|\%$&apos;, &apos;nW&apos;)
+</span><span class="add">+    if l:bottom != line(&quot;$&quot;)
+</span><span class="add">+	let l:bottom = l:bottom - 1
+</span><span class="add">+    endif
+</span><span class="add">+    call s:TmuxSendLines(l:top, l:bottom)
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+&quot; send current section delimited by double comments
+</span><span class="add">+function! s:TmuxSendSection()
+</span><span class="add">+    let g:com = split(&amp;comments, &quot;,&quot;)
+</span><span class="add">+    let g:scom = substitute(g:com[0], &quot;^.*:&quot;, &apos;&apos;, &apos;&apos;)
+</span><span class="add">+    for g:i in g:com
+</span><span class="add">+	let g:ncom = substitute(g:i, &quot;^.*:&quot;, &apos;&apos;, &apos;&apos;)
+</span><span class="add">+	if len(g:ncom) &lt; len(g:scom)
+</span><span class="add">+	    let g:scom = g:ncom
+</span><span class="add">+	endif
+</span><span class="add">+    endfor
+</span><span class="add">+    let g:tcom = g:scom . g:scom
+</span><span class="add">+    let g:top = search(g:tcom . &apos;\|\%^?&apos;, &apos;cbnW&apos;)
+</span><span class="add">+    let g:bottom = search(g:tcom . &apos;\|\%$&apos;, &apos;nW&apos;)
+</span><span class="add">+    if g:bottom &lt;= g:top
+</span><span class="add">+	let g:bottom = line(&apos;$&apos;)
+</span><span class="add">+    elseif g:bottom != line(&apos;$&apos;)
+</span><span class="add">+	let g:bottom = g:bottom - 1
+</span><span class="add">+    endif
+</span><span class="add">+    if g:top == 0
+</span><span class="add">+	let g:top = 1
+</span><span class="add">+    endif
+</span><span class="add">+    call s:TmuxSendLines(g:top, g:bottom)
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+&quot; send visual selection
+</span><span class="add">+function! s:TmuxSendVisual()
+</span><span class="add">+    normal! gv&quot;ay
+</span><span class="add">+    call TmuxSendKeys(@a)
+</span><span class="add">+    call s:TmuxSendEnter()
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+&quot; command and plugin mappings
+</span><span class="add">+command! -nargs=+ -complete=command TmuxSendKeys call TmuxSendKeys(&lt;q-args&gt;)
+</span><span class="add">+command! -nargs=+ -complete=command TmuxSendKeysEnter call TmuxSendKeysEnter(&lt;q-args&gt;)
+</span><span class="add">+command! -nargs=0 -complete=command TmuxSendVisual call s:TmuxSendVisual()
+</span><span class="add">+command! -nargs=0 -complete=command TmuxSendLine call TmuxSendKeys(getline(&quot;.&quot;)) | call s:TmuxSendEnter()
+</span><span class="add">+command! -nargs=0 -complete=command TmuxSendParagraph call s:TmuxSendParagraph()
+</span><span class="add">+command! -nargs=0 -complete=command TmuxSendSection call s:TmuxSendSection()
+</span><span class="add">+command! -nargs=0 -complete=command -range TmuxSendLines call s:TmuxSendLines(&lt;line1&gt;, &lt;line2&gt;)
+</span><span class="add">+
+</span><span class="add">+xnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendVisual :TmuxSendVisual&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendParagraph :TmuxSendParagraph&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendLine :TmuxSendLine&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendWord :call TmuxSendKeysEnter(expand(&quot;&lt;cword&gt;&quot;))&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendSection :TmuxSendSection&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; default keybindings
+</span><span class="add">+if !exists(&quot;g:tide_no_default_keys&quot;)
+</span><span class="add">+    xmap &lt;unique&gt; &lt;F9&gt; &lt;Plug&gt;TmuxSendVisual
+</span><span class="add">+    nmap &lt;unique&gt; &lt;silent&gt; &lt;F9&gt; &lt;Plug&gt;TmuxSendParagraph
+</span><span class="add">+    nmap &lt;unique&gt; &lt;silent&gt; &lt;F8&gt; &lt;Plug&gt;TmuxSendLine
+</span><span class="add">+    nmap &lt;unique&gt; &lt;silent&gt; &lt;F7&gt; &lt;Plug&gt;TmuxSendWord
+</span><span class="add">+    nmap &lt;unique&gt; &lt;silent&gt; &lt;F4&gt; &lt;Plug&gt;TmuxSendSection
+</span><span class="add">+endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>README.md</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,2 +1,16 @@
+<span class="def"> # tide
+</span><span class="add">+
+</span><span class="def"> Tmux IDE for vim
+</span><span class="add">+
+</span><span class="add">+This can be used to send text from vim to tmux, in two setups:
+</span><span class="add">+
+</span><span class="add">+Tmux with one pane receives all text from a non-tmux vim elsewhere, or
+</span><span class="add">+vim in one tmux pane can send text to the other of two panes.
+</span><span class="add">+
+</span><span class="add">+## default keybindings
+</span><span class="add">+
+</span><span class="add">+&lt;F9&gt; send visual selection
+</span><span class="add">+&lt;F9&gt; send current paragraph
+</span><span class="add">+&lt;F8&gt; send current line
+</span><span class="add">+&lt;F7&gt; send word under cursor
+</span><span class="add">+&lt;F4&gt; send section delimited by double comment characters
+</span></pre>
+</div></div>
+  </body>
+</html>

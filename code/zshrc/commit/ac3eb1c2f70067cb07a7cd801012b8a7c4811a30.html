@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - update history</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/ac3eb1c2f70067cb07a7cd801012b8a7c4811a30.html">ac3eb1c2f70067cb07a7cd801012b8a7c4811a30</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/212011d950b57d69483a84e9c21b4409cfbe4abb.html">212011d950b57d69483a84e9c21b4409cfbe4abb</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-02-09 18:36:05 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-02-09 18:36:05 +0000
+
+update history
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,8 +24,8 @@
+<span class="def"> 
+</span><span class="def"> # zsh history
+</span><span class="def"> HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span><span class="sub">-HISTSIZE=2000
+</span><span class="sub">-SAVEHIST=1000
+</span><span class="add">+HISTSIZE=8000
+</span><span class="add">+SAVEHIST=4000
+</span><span class="def"> setopt SHARE_HISTORY
+</span><span class="def"> setopt HIST_IGNORE_ALL_DUPS
+</span><span class="def"> setopt HIST_REDUCE_BLANKS
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,7 +4,7 @@
+<span class="def"> 
+</span><span class="def"> # use last browsed directory automatically with ranger
+</span><span class="def"> ranger-cd() { 
+</span><span class="sub">-    tempfile=&quot;$(mktemp -t tmp.XXXXXX)&quot;
+</span><span class="add">+    tempfile=&quot;$(mktemp -t ranger.XXXXXX)&quot;
+</span><span class="def">     if [[ -f $HOME/.local/bin/ranger ]]
+</span><span class="def">     then
+</span><span class="def"> 	$HOME/.local/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -80,7 +80,7 @@
+<span class="def"> alias gg=&apos;cd $HOME/git; l&apos;
+</span><span class="def"> alias gb=&apos;cd $HOME/.config/bin; ls&apos;
+</span><span class="def"> alias ge=&apos;cd /etc&apos;
+</span><span class="sub">-alias gv=&apos;cd $HOME/.vim/bundle; ranger&apos;
+</span><span class="add">+alias gv=&apos;cd $HOME/.vim/bundle/vim-misc&apos;
+</span><span class="def"> alias gvm=&apos;cd $HOME/.vim/bundle/vim-misc; ra&apos;
+</span><span class="def"> alias gz=&apos;cd $HOME/.zsh; l&apos;
+</span><span class="def"> alias gR=&apos;cd $HOME/reach&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

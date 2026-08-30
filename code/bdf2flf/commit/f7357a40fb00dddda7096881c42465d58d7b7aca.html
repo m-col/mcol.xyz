@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bdf2flf - add basic start to main code</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/bdf2flf">bdf2flf</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Convert BDF bitmap fonts to flf fonts for figlet</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/bdf2flf">https://github.com/m-col/bdf2flf</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/bdf2flf/tree.html">Files</a> | <a href="https://mcol.xyz/code/bdf2flf/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/bdf2flf/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/bdf2flf/commit/f7357a40fb00dddda7096881c42465d58d7b7aca.html">f7357a40fb00dddda7096881c42465d58d7b7aca</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/bdf2flf/commit/d1895b15e40a0c1acd115a983c750986b28d2b3e.html">d1895b15e40a0c1acd115a983c750986b28d2b3e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-25 18:57:01 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-25 18:57:01 +0000
+
+add basic start to main code
+</pre><div class="diff">
+  <p>
+    <b>bdf2flf.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,26 @@
+<span class="add">+#include &lt;stdio.h&gt;
+</span><span class="add">+#include &lt;stdlib.h&gt;
+</span><span class="add">+
+</span><span class="add">+#define PROGNAME &quot;bdf2flf&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void bdf2flf(FILE * in, FILE * out)
+</span><span class="add">+{
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+int main(int argc, char *argv[])
+</span><span class="add">+{
+</span><span class="add">+    if (argc &gt; 1) {
+</span><span class="add">+	printf(
+</span><span class="add">+	    PROGNAME &quot;&lt; font.bdf &gt; font.flf\n&quot;
+</span><span class="add">+	    &quot;bdf data is read from stdin and figlet font data is output to stdout.\n&quot;
+</span><span class="add">+	);
+</span><span class="add">+	exit(EXIT_SUCCESS);
+</span><span class="add">+    }
+</span><span class="add">+    
+</span><span class="add">+    bdf2flf(stdin, stdout);
+</span><span class="add">+
+</span><span class="add">+    (void)(argv);  // shush the compiler
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

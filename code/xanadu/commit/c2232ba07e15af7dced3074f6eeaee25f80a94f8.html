@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Use mimeopen in example usage instead of xdg-open as it is better</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/c2232ba07e15af7dced3074f6eeaee25f80a94f8.html">c2232ba07e15af7dced3074f6eeaee25f80a94f8</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/5517908258d3881242da9d2d58a8562151e8b7a8.html">5517908258d3881242da9d2d58a8562151e8b7a8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-22 17:17:36 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-22 17:17:36 +0100
+
+Use mimeopen in example usage instead of xdg-open as it is better
+</pre><div class="diff">
+  <p>
+    <b>README.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,8 +20,9 @@
+<span class="def"> path of activated items to the standard output stream. This makes it easy to
+</span><span class="def"> use better-suited tools to figure out what to do.
+</span><span class="def"> 
+</span><span class="sub">-For example, this will delegate item handling to the useful ``xdg-open`` script
+</span><span class="sub">-packaged by many unix distributions, and folder handling to ``thunar``:
+</span><span class="add">+For example, this will delegate item handling to the useful ``mimeopen`` script
+</span><span class="add">+packaged by many unix distributions (&quot;perl-file-mimeinfo&quot; on Arch Linux), and
+</span><span class="add">+folder handling to ``thunar``:
+</span><span class="def"> 
+</span><span class="def"> .. code-block:: sh
+</span><span class="def">    xanadu | while read item
+</span>@@ -30,7 +31,7 @@
+<span class="def">        then
+</span><span class="def">            thunar &quot;$item&quot;
+</span><span class="def">        else
+</span><span class="sub">-           xdg-open $item
+</span><span class="add">+           mimeopen $item
+</span><span class="def">         fi
+</span><span class="def">    done
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

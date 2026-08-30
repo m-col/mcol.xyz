@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - store current desk as server member to avoid per-frame calculation</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/377d16183feafb4dddcc1392519dde7a84fdbab2.html">377d16183feafb4dddcc1392519dde7a84fdbab2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/4e3d98c5b487213aae97f4e701a3f391018cfe9e.html">4e3d98c5b487213aae97f4e701a3f391018cfe9e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-07 23:43:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-07 23:43:52 +0000
+
+store current desk as server member to avoid per-frame calculation
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -30,6 +30,7 @@
+<span class="def">     struct wl_listener new_xdg_surface_listener;
+</span><span class="def">     struct wl_list views;
+</span><span class="def">     struct wl_list desks;
+</span><span class="add">+    struct desk *current_desk;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -127,7 +127,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static int desk_index = 0;
+</span><span class="add">+static int num_desks = 0;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void add_desk(struct server *server) {
+</span>@@ -135,8 +135,8 @@
+<span class="def">     wl_list_insert(server-&gt;desks.prev, &amp;desk-&gt;link);
+</span><span class="def">     desk-&gt;server = server;
+</span><span class="def">     assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="sub">-    desk-&gt;index = desk_index;
+</span><span class="sub">-    desk_index++;
+</span><span class="add">+    desk-&gt;index = num_desks;
+</span><span class="add">+    num_desks++;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -147,16 +147,24 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void next_desk(struct server *server) {
+</span><span class="sub">-    struct wl_list *current = server-&gt;desks.next;
+</span><span class="sub">-    wl_list_remove(current);
+</span><span class="sub">-    wl_list_insert(server-&gt;desks.prev, current);
+</span><span class="add">+    struct desk *desk;
+</span><span class="add">+    if (server-&gt;current_desk-&gt;index + 1 == num_desks) {
+</span><span class="add">+	desk = wl_container_of(server-&gt;desks.next, desk, link);
+</span><span class="add">+    } else {
+</span><span class="add">+	desk = wl_container_of(server-&gt;current_desk-&gt;link.next, desk, link);
+</span><span class="add">+    }
+</span><span class="add">+    server-&gt;current_desk = desk;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void prev_desk(struct server *server) {
+</span><span class="sub">-    struct wl_list *prev = server-&gt;desks.prev;
+</span><span class="sub">-    wl_list_remove(prev);
+</span><span class="sub">-    wl_list_insert(&amp;server-&gt;desks, prev);
+</span><span class="add">+    struct desk *desk;
+</span><span class="add">+    if (server-&gt;current_desk-&gt;index == 0) {
+</span><span class="add">+	desk = wl_container_of(server-&gt;desks.prev, desk, link);
+</span><span class="add">+    } else {
+</span><span class="add">+	desk = wl_container_of(server-&gt;current_desk-&gt;link.prev, desk, link);
+</span><span class="add">+    }
+</span><span class="add">+    server-&gt;current_desk = desk;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -60,8 +60,7 @@
+<span class="def">     wlr_output_effective_resolution(output-&gt;wlr_output, &amp;width, &amp;height);
+</span><span class="def">     wlr_renderer_begin(renderer, width, height);
+</span><span class="def"> 
+</span><span class="sub">-    struct desk *desk = wl_container_of(output-&gt;server-&gt;desks.next, desk, link);
+</span><span class="sub">-    wlr_renderer_clear(renderer, desk-&gt;background);
+</span><span class="add">+    wlr_renderer_clear(renderer, output-&gt;server-&gt;current_desk-&gt;background);
+</span><span class="def"> 
+</span><span class="def">     struct view *view;
+</span><span class="def">     wl_list_for_each_reverse(view, &amp;output-&gt;server-&gt;views, link) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -35,6 +35,8 @@
+<span class="def"> 
+</span><span class="def"> static void set_defaults(struct server *server) {
+</span><span class="def">     add_desk(server);
+</span><span class="add">+    server-&gt;current_desk =
+</span><span class="add">+	wl_container_of(server-&gt;desks.prev, server-&gt;current_desk, link);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

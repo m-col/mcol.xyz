@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - update blogroll</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/3bd4f6b9d8fbfe4a4cc3aee476440b09366c77ae.html">3bd4f6b9d8fbfe4a4cc3aee476440b09366c77ae</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/bfd7cacad74d3d17d2d4bc9b2d44e30d78ec18c2.html">bfd7cacad74d3d17d2d4bc9b2d44e30d78ec18c2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-31 00:18:26 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-31 00:18:26 +0100
+
+update blogroll
+</pre><div class="diff">
+  <p>
+    <b>blogroll.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,24 +8,12 @@
+<span class="def"> BLOGROLL = []
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="sub">-    &quot;Freddy&apos;s Ramblings&quot;,
+</span><span class="sub">-    &quot;https://write.privacytools.io/freddy&quot;,
+</span><span class="sub">-    &quot;write.privacytools.io/freddy&quot;,
+</span><span class="sub">-])
+</span><span class="sub">-
+</span><span class="sub">-BLOGROLL.append([
+</span><span class="def">     &quot;Nduli&apos;s World&quot;,
+</span><span class="def">     &quot;https://jnduli.co.ke&quot;,
+</span><span class="def">     &quot;jnduli.co.ke&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="sub">-    &quot;Jonathan Borichevskiy&apos;s Up and to the Right&quot;,
+</span><span class="sub">-    &quot;https://jborichevskiy.com&quot;,
+</span><span class="sub">-    &quot;jborichevskiy.com&quot;,
+</span><span class="sub">-])
+</span><span class="sub">-
+</span><span class="sub">-BLOGROLL.append([
+</span><span class="def">     &quot;Daniel&apos;s CodeSections&quot;,
+</span><span class="def">     &quot;https://www.codesections.com&quot;,
+</span><span class="def">     &quot;codesections.com&quot;,
+</span>@@ -50,12 +38,6 @@
+<span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="sub">-    &quot;Addy&quot;,
+</span><span class="sub">-    &quot;https://addy-dclxvi.github.io&quot;,
+</span><span class="sub">-    &quot;addy-dclxvi.github.io&quot;,
+</span><span class="sub">-])
+</span><span class="sub">-
+</span><span class="sub">-BLOGROLL.append([
+</span><span class="def">     &quot;Alejandro&quot;,
+</span><span class="def">     &quot;https://baez.link&quot;,
+</span><span class="def">     &quot;baez.link&quot;,
+</span>@@ -74,15 +56,15 @@
+<span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="sub">-    &quot;Set of Principles&quot;,
+</span><span class="sub">-    &quot;https://setofprinciples.com&quot;,
+</span><span class="sub">-    &quot;setofprinciples.com&quot;,
+</span><span class="sub">-])
+</span><span class="sub">-
+</span><span class="sub">-BLOGROLL.append([
+</span><span class="def">     &quot;TyChi&quot;,
+</span><span class="def">     &quot;https://musings.tychi.me/&quot;,
+</span><span class="def">     &quot;musings.tychi.me&quot;,
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="add">+BLOGROLL.append([
+</span><span class="add">+    &quot;Matt Parsons&apos; Overcoming Software&quot;,
+</span><span class="add">+    &quot;https://www.parsonsmatt.org/&quot;,
+</span><span class="add">+    &quot;www.parsonsmatt.org&quot;,
+</span><span class="add">+])
+</span><span class="add">+
+</span><span class="def"> random.shuffle(BLOGROLL)
+</span></pre>
+</div></div>
+  </body>
+</html>

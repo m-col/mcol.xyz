@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add commit diffs to other example templates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/c7bad829ec6c390d0ba0594e4a96d523b6023d8b.html">c7bad829ec6c390d0ba0594e4a96d523b6023d8b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/0332d3c6a33a38aed478ef97f1055a7020b491f7.html">0332d3c6a33a38aed478ef97f1055a7020b491f7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-12-07 01:50:51 +0300
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-12-07 01:50:51 +0300
+
+Add commit diffs to other example templates
+</pre><div class="diff">
+  <p>
+    <b>templates/stagit/style.css</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -167,3 +167,11 @@
+<span class="def"> 
+</span><span class="def"> .gh, .gp, .cs, .gu, .ne, .cs
+</span><span class="def"> { font-weight: bold }
+</span><span class="add">+
+</span><span class="add">+.diff .add {
+</span><span class="add">+    color: #0a0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.diff .sub {
+</span><span class="add">+    color: #a00;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>templates/stagit/repo/commit.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,5 +17,30 @@
+<span class="def"> 
+</span><span class="def"> {{ commit.message }}
+</span><span class="def"> &lt;/pre&gt;
+</span><span class="add">+
+</span><span class="add">+{%- for diff in commit.diffs -%}
+</span><span class="add">+&lt;div class=&quot;diff&quot;&gt;
+</span><span class="add">+  &lt;p&gt;
+</span><span class="add">+    &lt;b&gt;{{ diff.new_file }}&lt;/b&gt;
+</span><span class="add">+    &lt;span class=&quot;status&quot;&gt;{{ diff.status }}&lt;/span&gt;
+</span><span class="add">+  &lt;/p&gt;
+</span><span class="add">+
+</span><span class="add">+  {% if diff.newfile != diff.oldfile %}
+</span><span class="add">+  &lt;p&gt;Renamed from {{ diff.old_file }}&lt;/p&gt;
+</span><span class="add">+  {% endif %}
+</span><span class="add">+
+</span><span class="add">+  {%- for hunk in diff.hunks -%}
+</span><span class="add">+  {{ hunk.header }}
+</span><span class="add">+
+</span><span class="add">+  &lt;pre&gt;
+</span><span class="add">+    {%- for line in hunk.lines -%}
+</span><span class="add">+      &lt;span class=&quot;{{ line.class }}&quot;&gt;{{ line.text }}&lt;/span&gt;
+</span><span class="add">+    {%- endfor -%}
+</span><span class="add">+  &lt;/pre&gt;
+</span><span class="add">+
+</span><span class="add">+  {%- endfor -%}
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{%- endfor -%}
+</span><span class="add">+
+</span><span class="def"> &lt;/div&gt;
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>templates/base/style.css</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,3 +21,11 @@
+<span class="def"> #clone {
+</span><span class="def">     float: right;
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+.diff .add {
+</span><span class="add">+    color: #0a0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.diff .sub {
+</span><span class="add">+    color: #a00;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>templates/base/repo/commit.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,4 +12,29 @@
+<span class="def"> 
+</span><span class="def"> {{ commit.message }}
+</span><span class="def"> &lt;/pre&gt;
+</span><span class="add">+
+</span><span class="add">+{%- for diff in commit.diffs -%}
+</span><span class="add">+&lt;div class=&quot;diff&quot;&gt;
+</span><span class="add">+  &lt;p&gt;
+</span><span class="add">+    &lt;b&gt;{{ diff.new_file }}&lt;/b&gt;
+</span><span class="add">+    &lt;span class=&quot;status&quot;&gt;{{ diff.status }}&lt;/span&gt;
+</span><span class="add">+  &lt;/p&gt;
+</span><span class="add">+
+</span><span class="add">+  {% if diff.newfile != diff.oldfile %}
+</span><span class="add">+  &lt;p&gt;Renamed from {{ diff.old_file }}&lt;/p&gt;
+</span><span class="add">+  {% endif %}
+</span><span class="add">+
+</span><span class="add">+  {%- for hunk in diff.hunks -%}
+</span><span class="add">+  {{ hunk.header }}
+</span><span class="add">+
+</span><span class="add">+  &lt;pre&gt;
+</span><span class="add">+    {%- for line in hunk.lines -%}
+</span><span class="add">+      &lt;span class=&quot;{{ line.class }}&quot;&gt;{{ line.text }}&lt;/span&gt;
+</span><span class="add">+    {%- endfor -%}
+</span><span class="add">+  &lt;/pre&gt;
+</span><span class="add">+
+</span><span class="add">+  {%- endfor -%}
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{%- endfor -%}
+</span><span class="add">+
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div></div>
+  </body>
+</html>

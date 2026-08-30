@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - restore tests, and clean up test files</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/982da1b9be002de5e4bd94f07f7ec62ddd2bc91a.html">982da1b9be002de5e4bd94f07f7ec62ddd2bc91a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/60624582faf0e7f09b24b548a87b2cebd38d61e4.html">60624582faf0e7f09b24b548a87b2cebd38d61e4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-26 21:43:05 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-26 21:43:05 +0000
+
+restore tests, and clean up test files
+</pre><div class="diff">
+  <p>
+    <b>test/test.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,9 +15,7 @@
+<span class="def"> 
+</span><span class="def"> &apos;
+</span><span class="def"> 
+</span><span class="sub">-exit 0
+</span><span class="sub">-
+</span><span class="sub">-set -ue
+</span><span class="add">+set -u
+</span><span class="def"> 
+</span><span class="def"> if [[ $(basename &quot;$PWD&quot;) != gitserve ]]
+</span><span class="def"> then
+</span>@@ -28,6 +26,7 @@
+<span class="def"> let errors=&quot;0&quot; &quot;1&quot;
+</span><span class="def"> EXPECTED=&quot;test/expected&quot;
+</span><span class="def"> RESULT=&quot;test/result&quot;
+</span><span class="add">+rm -fr &quot;$RESULT&quot;
+</span><span class="def"> 
+</span><span class="def"> declare -a TESTS
+</span><span class="def"> TESTS=(
+</span>@@ -40,8 +39,12 @@
+<span class="def">     &quot;gitserve/file/test.templates.style.css.html&quot;
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="sub">-rm -rf &quot;$RESULT&quot;
+</span><span class="sub">-stack run -- -c test/config.dhall -q
+</span><span class="add">+finish() {
+</span><span class="add">+    rm -r &quot;$RESULT&quot;
+</span><span class="add">+    exit $1
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+stack run -- -c test/config.dhall -q || finish 1
+</span><span class="def"> 
+</span><span class="def"> for test in &quot;${TESTS[@]}&quot;
+</span><span class="def"> do
+</span>@@ -60,10 +63,10 @@
+<span class="def"> case &quot;$errors&quot; in
+</span><span class="def">     0)
+</span><span class="def"> 	echo &quot;All good!&quot;
+</span><span class="sub">-	exit 0
+</span><span class="add">+	finish 0
+</span><span class="def"> 	;;
+</span><span class="def">     *)
+</span><span class="def"> 	echo &quot;Had this many errors: $errors&quot;
+</span><span class="sub">-	exit $errors
+</span><span class="add">+	finish $errors
+</span><span class="def"> 	;;
+</span><span class="def"> esac
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/templates/repo/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,8 +10,8 @@
+<span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: (skipped)
+</span><span class="sub">-    branches[0].name: (skipped)
+</span><span class="add">+branches: {{ branches }}
+</span><span class="add">+    branches[0].name: {{ branches[0].name }}
+</span><span class="def"> readme.path: {{ readme.path }}
+</span><span class="def"> license.path: {{ license.path }}
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/templates/repo/file.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,8 +22,8 @@
+<span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: (skipped)
+</span><span class="sub">-    branches[0].name: (skipped)
+</span><span class="add">+branches: {{ branches }}
+</span><span class="add">+    branches[0].name: {{ branches[0].name }}
+</span><span class="def"> readme.path: {{ readme.path }}
+</span><span class="def"> license.path: {{ license.path }}
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/gitserve/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,7 @@
+<span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: (skipped)
+</span><span class="sub">-    branches[0].name: (skipped)
+</span><span class="add">+branches: master
+</span><span class="add">+    branches[0].name: master
+</span><span class="def"> readme.path: README.rst
+</span><span class="def"> license.path: LICENSE
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/gitserve/file/test.templates.style.css.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,7 @@
+<span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: (skipped)
+</span><span class="sub">-    branches[0].name: (skipped)
+</span><span class="add">+branches: master
+</span><span class="add">+    branches[0].name: master
+</span><span class="def"> readme.path: README.rst
+</span><span class="def"> license.path: LICENSE
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/gitserve/file/test.templates.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,7 @@
+<span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: (skipped)
+</span><span class="sub">-    branches[0].name: (skipped)
+</span><span class="add">+branches: master
+</span><span class="add">+    branches[0].name: master
+</span><span class="def"> readme.path: README.rst
+</span><span class="def"> license.path: LICENSE
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - stack.yaml</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- stack.yaml</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> resolver: lts-19.5
+<a href="#l2" class="line" id="l2">      2</a> 
+<a href="#l3" class="line" id="l3">      3</a> extra-deps:
+<a href="#l4" class="line" id="l4">      4</a> - ginger-0.10.4.0@sha256:7ca26896395fda951443ed3bba5f24fd6036c44167d424e744d1e0c8c6b138fd,3855
+<a href="#l5" class="line" id="l5">      5</a> - url: https://github.com/m-col/gitlib/archive/1fb5d534e22d7aa6be858bb7b2075cd60c0606d8.tar.gz
+<a href="#l6" class="line" id="l6">      6</a>   subdirs:
+<a href="#l7" class="line" id="l7">      7</a>     - gitlib
+<a href="#l8" class="line" id="l8">      8</a>     - gitlib-libgit2
+<a href="#l9" class="line" id="l9">      9</a> 
+<a href="#l10" class="line" id="l10">     10</a> ghc-options:
+<a href="#l11" class="line" id="l11">     11</a>   &quot;gitja&quot;: -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+<a href="#l12" class="line" id="l12">     12</a>     -Wincomplete-record-updates -Wredundant-constraints -Wpartial-fields
+<a href="#l13" class="line" id="l13">     13</a>     -Wmissing-deriving-strategies -Wunused-packages -fno-warn-unused-do-bind
+<a href="#l14" class="line" id="l14">     14</a>     -fno-warn-orphans
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> rebuild-ghc-options: true
+<a href="#l17" class="line" id="l17">     17</a> allow-newer: false
+<a href="#l18" class="line" id="l18">     18</a> 
+</pre>
+  </div>
+  </body>
+</html>

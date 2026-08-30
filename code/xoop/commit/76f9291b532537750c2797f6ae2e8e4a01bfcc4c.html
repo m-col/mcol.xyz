@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - set window type to dock and request to be in all desktops</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/76f9291b532537750c2797f6ae2e8e4a01bfcc4c.html">76f9291b532537750c2797f6ae2e8e4a01bfcc4c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/37ff3e3a4f1995c70f4aa6e19229dd145bab0f08.html">37ff3e3a4f1995c70f4aa6e19229dd145bab0f08</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-20 11:22:36 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-20 11:22:36 +0100
+
+set window type to dock and request to be in all desktops
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -36,19 +36,34 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void set_window_type(xcb_window_t wid) {
+</span><span class="sub">-    xcb_intern_atom_cookie_t cookie1, cookie2;
+</span><span class="sub">-    xcb_intern_atom_reply_t *reply1, *reply2;
+</span><span class="sub">-
+</span><span class="sub">-    cookie1 = xcb_intern_atom(conn, 0, 19, &quot;_NET_WM_WINDOW_TYPE&quot;);
+</span><span class="sub">-    reply1 = xcb_intern_atom_reply(conn, cookie1, NULL);
+</span><span class="sub">-    cookie2 = xcb_intern_atom(conn, 0, 32, &quot;_NET_WM_WINDOW_TYPE_NOTIFICATION&quot;);
+</span><span class="sub">-    reply2 = xcb_intern_atom_reply(conn, cookie2, NULL);
+</span><span class="add">+    xcb_intern_atom_reply_t *reply1, *reply2, *reply3;
+</span><span class="def"> 
+</span><span class="add">+    reply1 = xcb_intern_atom_reply(
+</span><span class="add">+	conn,
+</span><span class="add">+	xcb_intern_atom(conn, 0, 19, &quot;_NET_WM_WINDOW_TYPE&quot;),
+</span><span class="add">+	NULL
+</span><span class="add">+    );
+</span><span class="add">+    reply2 = xcb_intern_atom_reply(
+</span><span class="add">+	conn,
+</span><span class="add">+	xcb_intern_atom(conn, 0, 24, &quot;_NET_WM_WINDOW_TYPE_DOCK&quot;),
+</span><span class="add">+	NULL
+</span><span class="add">+    );
+</span><span class="def">     xcb_change_property(
+</span><span class="def"> 	conn, XCB_PROP_MODE_REPLACE, wid, reply1-&gt;atom, XCB_ATOM_ATOM, 32, 1, &amp;reply2-&gt;atom
+</span><span class="def">     );
+</span><span class="add">+
+</span><span class="add">+    reply3 = xcb_intern_atom_reply(
+</span><span class="add">+        conn,
+</span><span class="add">+        xcb_intern_atom(conn, 0, 15, &quot;_NET_WM_DESKTOP&quot;),
+</span><span class="add">+        NULL
+</span><span class="add">+    );
+</span><span class="add">+    xcb_change_property(
+</span><span class="add">+        conn, XCB_PROP_MODE_REPLACE, wid, reply3-&gt;atom, XCB_ATOM_INTEGER, 1, 1, (uint32_t []){ 0xFFFFFFFF }
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="def">     free(reply1);
+</span><span class="def">     free(reply2);
+</span><span class="add">+    free(reply3);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

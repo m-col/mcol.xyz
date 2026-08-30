@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - minify_fontawesome.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- minify_fontawesome.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> # -*- coding: utf-8 -*-
+<a href="#l2" class="line" id="l2">      2</a> #
+<a href="#l3" class="line" id="l3">      3</a> # pelican-minify-fontawesome
+<a href="#l4" class="line" id="l4">      4</a> #
+<a href="#l5" class="line" id="l5">      5</a> # Copyright (C) 2019 mcol@posteo.net
+<a href="#l6" class="line" id="l6">      6</a> #
+<a href="#l7" class="line" id="l7">      7</a> # This program is free software: you can redistribute it and/or modify
+<a href="#l8" class="line" id="l8">      8</a> # it under the terms of the GNU General Public License as published by
+<a href="#l9" class="line" id="l9">      9</a> # the Free Software Foundation, either version 3 of the License, or
+<a href="#l10" class="line" id="l10">     10</a> # (at your option) any later version.
+<a href="#l11" class="line" id="l11">     11</a> #
+<a href="#l12" class="line" id="l12">     12</a> # This program is distributed in the hope that it will be useful,
+<a href="#l13" class="line" id="l13">     13</a> # but WITHOUT ANY WARRANTY; without even the implied warranty of
+<a href="#l14" class="line" id="l14">     14</a> # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<a href="#l15" class="line" id="l15">     15</a> # GNU General Public License for more details.
+<a href="#l16" class="line" id="l16">     16</a> #
+<a href="#l17" class="line" id="l17">     17</a> # You should have received a copy of the GNU General Public License
+<a href="#l18" class="line" id="l18">     18</a> # along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<a href="#l19" class="line" id="l19">     19</a> 
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a> import fontforge
+<a href="#l22" class="line" id="l22">     22</a> import os
+<a href="#l23" class="line" id="l23">     23</a> import re
+<a href="#l24" class="line" id="l24">     24</a> 
+<a href="#l25" class="line" id="l25">     25</a> from docutils import nodes
+<a href="#l26" class="line" id="l26">     26</a> from docutils.parsers.rst import roles
+<a href="#l27" class="line" id="l27">     27</a> from pelican import signals
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a> 
+<a href="#l30" class="line" id="l30">     30</a> def copy_glyphs(source, dest, css_blocks):
+<a href="#l31" class="line" id="l31">     31</a>     &quot;&quot;&quot;
+<a href="#l32" class="line" id="l32">     32</a>     Copy only used icons from the font files into the output folder.
+<a href="#l33" class="line" id="l33">     33</a>     &quot;&quot;&quot;
+<a href="#l34" class="line" id="l34">     34</a>     icons = []
+<a href="#l35" class="line" id="l35">     35</a>     for block in css_blocks:
+<a href="#l36" class="line" id="l36">     36</a>         match = re.findall(&apos;\.fa-(.*?):&apos;, block)
+<a href="#l37" class="line" id="l37">     37</a>         icons.append(match[0])
+<a href="#l38" class="line" id="l38">     38</a> 
+<a href="#l39" class="line" id="l39">     39</a>     if not os.path.isdir(dest):
+<a href="#l40" class="line" id="l40">     40</a>         os.mkdir(dest)
+<a href="#l41" class="line" id="l41">     41</a>     for root, dirs, files in os.walk(source):
+<a href="#l42" class="line" id="l42">     42</a>         for f in files:
+<a href="#l43" class="line" id="l43">     43</a>             if f.endswith(&apos;woff&apos;):
+<a href="#l44" class="line" id="l44">     44</a>                 font = fontforge.open(os.path.join(root, f))
+<a href="#l45" class="line" id="l45">     45</a> 
+<a href="#l46" class="line" id="l46">     46</a>                 selected = False
+<a href="#l47" class="line" id="l47">     47</a>                 for icon in icons:
+<a href="#l48" class="line" id="l48">     48</a>                     try:
+<a href="#l49" class="line" id="l49">     49</a>                         font.selection.select((&quot;more&quot;,), icon)
+<a href="#l50" class="line" id="l50">     50</a>                         selected = True
+<a href="#l51" class="line" id="l51">     51</a>                     except ValueError:
+<a href="#l52" class="line" id="l52">     52</a>                         pass
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a>                 if selected:
+<a href="#l55" class="line" id="l55">     55</a>                     font.selection.invert()
+<a href="#l56" class="line" id="l56">     56</a>                     font.clear()
+<a href="#l57" class="line" id="l57">     57</a>                     font.generate(os.path.join(dest, f))
+<a href="#l58" class="line" id="l58">     58</a>                 font.close()
+<a href="#l59" class="line" id="l59">     59</a> 
+<a href="#l60" class="line" id="l60">     60</a>     print(f&apos;Font Awesome icons incorporated: {icons}&apos;)
+<a href="#l61" class="line" id="l61">     61</a> 
+<a href="#l62" class="line" id="l62">     62</a> def get_classes(folder, extra_icons):
+<a href="#l63" class="line" id="l63">     63</a>     &quot;&quot;&quot;
+<a href="#l64" class="line" id="l64">     64</a>     Gets a list of font awesome CSS classes defined in all html files within a
+<a href="#l65" class="line" id="l65">     65</a>     folder i.e. those beginning with &apos;fa&apos;.
+<a href="#l66" class="line" id="l66">     66</a>     &quot;&quot;&quot;
+<a href="#l67" class="line" id="l67">     67</a>     fa_classes = extra_icons if extra_icons else []
+<a href="#l68" class="line" id="l68">     68</a>     all_classes = []
+<a href="#l69" class="line" id="l69">     69</a> 
+<a href="#l70" class="line" id="l70">     70</a>     for root, dirs, files in os.walk(folder):
+<a href="#l71" class="line" id="l71">     71</a>         for f in files:
+<a href="#l72" class="line" id="l72">     72</a>             if f.endswith(&apos;html&apos;):
+<a href="#l73" class="line" id="l73">     73</a>                 with open(os.path.join(root, f), &quot;r&quot;) as fd:
+<a href="#l74" class="line" id="l74">     74</a>                     matches = re.findall(&apos;class=[\&apos;&quot;](.*?)[\&apos;&quot;]&apos;, fd.read())
+<a href="#l75" class="line" id="l75">     75</a>                     if matches:
+<a href="#l76" class="line" id="l76">     76</a>                         for match in matches:
+<a href="#l77" class="line" id="l77">     77</a>                             all_classes.extend(match.split())
+<a href="#l78" class="line" id="l78">     78</a> 
+<a href="#l79" class="line" id="l79">     79</a>     for cls in set(all_classes):
+<a href="#l80" class="line" id="l80">     80</a>         if cls.startswith(&apos;fa&apos;):
+<a href="#l81" class="line" id="l81">     81</a>             fa_classes.append(cls)
+<a href="#l82" class="line" id="l82">     82</a> 
+<a href="#l83" class="line" id="l83">     83</a>     return fa_classes
+<a href="#l84" class="line" id="l84">     84</a> 
+<a href="#l85" class="line" id="l85">     85</a> 
+<a href="#l86" class="line" id="l86">     86</a> def copy_css(output_path, css_file, extra_icons):
+<a href="#l87" class="line" id="l87">     87</a>     &quot;&quot;&quot;
+<a href="#l88" class="line" id="l88">     88</a>     Copy css for only used icons over to output folder. Returns the css blocks
+<a href="#l89" class="line" id="l89">     89</a>     corresponding to these icons so we know which icons to copy from the font
+<a href="#l90" class="line" id="l90">     90</a>     files.
+<a href="#l91" class="line" id="l91">     91</a>     &quot;&quot;&quot;
+<a href="#l92" class="line" id="l92">     92</a>     with open(css_file, &apos;r&apos;) as fd:
+<a href="#l93" class="line" id="l93">     93</a>         contents = fd.read()
+<a href="#l94" class="line" id="l94">     94</a> 
+<a href="#l95" class="line" id="l95">     95</a>     base_css = re.sub(&apos;\.fa-[\w-]+:before.*?}&apos;, &apos;&apos;, contents)
+<a href="#l96" class="line" id="l96">     96</a>     for string in [&apos;brands-400&apos;, &apos;regular-400&apos;, &apos;solid-900&apos;]:
+<a href="#l97" class="line" id="l97">     97</a>         base_css = re.sub(
+<a href="#l98" class="line" id="l98">     98</a>             f&apos;src:url\(\.\./webfonts/fa-{string}\.eot\).*?\}}&apos;,
+<a href="#l99" class="line" id="l99">     99</a>             f&apos;src:url(../webfonts/fa-{string}.woff) format(&quot;woff&quot;)}}&apos;,
+<a href="#l100" class="line" id="l100">    100</a>             base_css
+<a href="#l101" class="line" id="l101">    101</a>         )
+<a href="#l102" class="line" id="l102">    102</a> 
+<a href="#l103" class="line" id="l103">    103</a>     css_blocks = []
+<a href="#l104" class="line" id="l104">    104</a>     for cls in get_classes(output_path, extra_icons):
+<a href="#l105" class="line" id="l105">    105</a>         match = re.search(f&apos;\.{cls}:before.*?}}&apos;, contents)
+<a href="#l106" class="line" id="l106">    106</a>         if match:
+<a href="#l107" class="line" id="l107">    107</a>             css_blocks.append(match.group(0))
+<a href="#l108" class="line" id="l108">    108</a> 
+<a href="#l109" class="line" id="l109">    109</a>     css = base_css + &apos;&apos;.join(css_blocks)
+<a href="#l110" class="line" id="l110">    110</a>     css_file = os.path.join(output_path, &apos;theme&apos;, &apos;css&apos;, &apos;fa.css&apos;)
+<a href="#l111" class="line" id="l111">    111</a>     with open(css_file, &apos;w&apos;) as fd:
+<a href="#l112" class="line" id="l112">    112</a>         fd.write(css)
+<a href="#l113" class="line" id="l113">    113</a> 
+<a href="#l114" class="line" id="l114">    114</a>     return css_blocks
+<a href="#l115" class="line" id="l115">    115</a> 
+<a href="#l116" class="line" id="l116">    116</a> 
+<a href="#l117" class="line" id="l117">    117</a> def output_font(instance):
+<a href="#l118" class="line" id="l118">    118</a>     &quot;&quot;&quot;
+<a href="#l119" class="line" id="l119">    119</a>     Main function that identifies used icons and copies their CSS and font
+<a href="#l120" class="line" id="l120">    120</a>     definitions into the output folder.
+<a href="#l121" class="line" id="l121">    121</a>     &quot;&quot;&quot;
+<a href="#l122" class="line" id="l122">    122</a>     FONT_PATH = instance.settings.get(&apos;MINIFY_FONTAWESOME&apos;, None)
+<a href="#l123" class="line" id="l123">    123</a>     if not FONT_PATH or not os.path.isdir(FONT_PATH):
+<a href="#l124" class="line" id="l124">    124</a>         return
+<a href="#l125" class="line" id="l125">    125</a> 
+<a href="#l126" class="line" id="l126">    126</a>     output_path = instance.output_path
+<a href="#l127" class="line" id="l127">    127</a>     css_file = os.path.join(FONT_PATH, &apos;css&apos;, &apos;all.min.css&apos;)
+<a href="#l128" class="line" id="l128">    128</a> 
+<a href="#l129" class="line" id="l129">    129</a>     css_blocks = copy_css(
+<a href="#l130" class="line" id="l130">    130</a>         output_path,
+<a href="#l131" class="line" id="l131">    131</a>         css_file,
+<a href="#l132" class="line" id="l132">    132</a>         instance.settings.get(&apos;FONTAWESOME_EXTRA&apos;, None)
+<a href="#l133" class="line" id="l133">    133</a>     )
+<a href="#l134" class="line" id="l134">    134</a> 
+<a href="#l135" class="line" id="l135">    135</a>     copy_glyphs(
+<a href="#l136" class="line" id="l136">    136</a>         os.path.join(FONT_PATH, &apos;webfonts&apos;),
+<a href="#l137" class="line" id="l137">    137</a>         os.path.join(output_path, &apos;theme&apos;, &apos;webfonts&apos;),
+<a href="#l138" class="line" id="l138">    138</a>         css_blocks,
+<a href="#l139" class="line" id="l139">    139</a>     )
+<a href="#l140" class="line" id="l140">    140</a> 
+<a href="#l141" class="line" id="l141">    141</a> 
+<a href="#l142" class="line" id="l142">    142</a> def rst_span(name, rawtext, text, lineno, inliner, options={}, content=[]):
+<a href="#l143" class="line" id="l143">    143</a>     &quot;&quot;&quot;
+<a href="#l144" class="line" id="l144">    144</a>     A RST role that replaces inline glyphs e.g. :fas:`cat` with the appropriate
+<a href="#l145" class="line" id="l145">    145</a>     HTML span tag.
+<a href="#l146" class="line" id="l146">    146</a>     &quot;&quot;&quot;
+<a href="#l147" class="line" id="l147">    147</a>     return [nodes.raw(&apos;&apos;, f&apos;&lt;span class=&quot;{name} fa-{text}&quot;&gt;&lt;/span&gt;&apos;, format=&apos;html&apos;)], []
+<a href="#l148" class="line" id="l148">    148</a> 
+<a href="#l149" class="line" id="l149">    149</a> 
+<a href="#l150" class="line" id="l150">    150</a> def register():
+<a href="#l151" class="line" id="l151">    151</a>     # Register main program
+<a href="#l152" class="line" id="l152">    152</a>     signals.finalized.connect(output_font)
+<a href="#l153" class="line" id="l153">    153</a> 
+<a href="#l154" class="line" id="l154">    154</a>     # Register font awesome RST roles
+<a href="#l155" class="line" id="l155">    155</a>     roles.register_local_role(&apos;fas&apos;, rst_span)
+<a href="#l156" class="line" id="l156">    156</a>     roles.register_local_role(&apos;far&apos;, rst_span)
+<a href="#l157" class="line" id="l157">    157</a>     roles.register_local_role(&apos;fab&apos;, rst_span)
+<a href="#l158" class="line" id="l158">    158</a> 
+</pre>
+  </div>
+  </body>
+</html>

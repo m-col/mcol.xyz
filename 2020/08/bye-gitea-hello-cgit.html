@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / bye gitea, hello cgit</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2020/08/bye-gitea-hello-cgit.html>bye gitea, hello cgit</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>After a few months of running a <a class="reference external" href="https://gitea.io">gitea</a> instance on my website, the headache of
+putting up with it's sluggishness became too strong and I needed to replace it
+with something less heavy.</p>
+<p>Before I had set up gitea, I read briefly about <a class="reference external" href="https://git.zx2c4.com/cgit">cgit</a> and, although it
+certainly looked attractive as a minimal, functional git server, gitea swayed
+me with the (long ongoing) discussion about federation between gitea instances.
+Federation between instances (and between gitea and gitlab instances, which has
+also been brought up) would be a real game-changer in the code-forge world. I
+don't deny that the practicality of github's interface has huge advantages;
+bringing that interface along with the graphical pull request and CI toolbox
+into the fediverse will definitely be a great thing to see. However this
+discussion has so far yielded very little, so despite my crossed fingers it is
+not currently a feature.</p>
+<p>Without federation in sight, I was using gitea as a single-user github
+substitute. The problem here is that these services are by design multi-user.
+For a single-user instance, pull requests and profile pages become redundant,
+all webpages and URLs concerning my repositories had to include my username,
+and very little of this can be compromised on. I appear to not be the only one
+expressing these woes - Jake Bauer has talked about his similar migration from
+gitea to cgit on <a class="reference external" href="https://www.paritybit.ca/blog/switching-to-cgit">paritybit.ca</a>.</p>
+<p>Moving to cgit was similar in experience to a well-made desktop program: a
+simple runtime config, a comprehensive man page, and a straight forward way to
+run it. After setting up the standard way (i.e. following the <a class="reference external" href="https://wiki.archlinux.org/index.php/cgit">arch wiki
+page</a>) and giving the manual a once-over, it just needed some tweaks to the
+default CSS.</p>
+<p>The most striking improvement has the page-loading time, particularly after
+cgit has built up it's cache.</p>
+<p>On the index page, cgit can order repositories by age which is nice - however
+the dates all seemed to say the same thing. cgit seemed to be getting it's
+timestamps from the filesystem directly, so running this inside each repository
+was enough to change the timestamps on each file in a repository to that of the
+latest commit:</p>
+<div class="highlight"><pre><span></span>find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-execdir<span class="w"> </span>touch<span class="w"> </span>-md<span class="w"> </span><span class="s2">&quot;`git log -1 --pretty=format:&quot;</span>%ad<span class="s2">&quot; --date=iso`&quot;</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+</pre></div>
+<p>I also wanted to set up write access, so that I can git push over HTTP as I do
+when pulling. cgit doesn't actually support this feature; this is with good
+reason, as git itself provides the means to do this using <a class="reference external" href="https://git-scm.com/docs/git-http-backend">git-http-backend</a>.
+This can be used by an nginx server by adding a new location block as a sibling
+to the one proxying requests to cgit. In case this is of use to anyone else who
+uses cgit, here are my current read and write nginx location blocks:</p>
+<div class="highlight"><pre><span></span><span class="c1"># This block normally passes read requests to cgit</span>
+location<span class="w"> </span>~<span class="w"> </span>^/code<span class="o">(</span>?:/<span class="o">(</span>.*<span class="o">))</span>?$<span class="w"> </span><span class="o">{</span>
+
+<span class="w">    </span><span class="c1"># These if statements redirect write requests to the block below</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">(</span><span class="nv">$arg_service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>git-receive-pack<span class="o">)</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span>rewrite<span class="w"> </span>/code/<span class="o">(</span>.*<span class="o">)</span><span class="w"> </span>/git-write/<span class="nv">$1</span><span class="w"> </span>last<span class="p">;</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">(</span><span class="nv">$uri</span><span class="w"> </span>~<span class="w"> </span>^/code/.*/git-receive-pack$<span class="o">)</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span>rewrite<span class="w"> </span>/code/<span class="o">(</span>.*<span class="o">)</span><span class="w"> </span>/git-write/<span class="nv">$1</span><span class="w"> </span>last<span class="p">;</span>
+<span class="w">    </span><span class="o">}</span>
+
+<span class="w">    </span>include<span class="w">                 </span>fastcgi_params<span class="p">;</span>
+<span class="w">    </span>fastcgi_param<span class="w">           </span>SCRIPT_FILENAME<span class="w"> </span>/usr/lib/cgit/cgit.cgi<span class="p">;</span>
+<span class="w">    </span>fastcgi_split_path_info<span class="w"> </span>^<span class="o">(</span>/code/?<span class="o">)(</span>.+<span class="o">)</span>$<span class="p">;</span>
+<span class="w">    </span>fastcgi_param<span class="w">           </span>PATH_INFO<span class="w">       </span><span class="nv">$fastcgi_path_info</span><span class="p">;</span>
+<span class="w">    </span>fastcgi_param<span class="w">           </span>QUERY_STRING<span class="w">    </span><span class="nv">$args</span><span class="p">;</span>
+<span class="w">    </span>fastcgi_param<span class="w">           </span>HTTP_HOST<span class="w">       </span><span class="nv">$server_name</span><span class="p">;</span>
+<span class="w">    </span>fastcgi_pass<span class="w">            </span>unix:/run/fcgiwrap.socket<span class="p">;</span>
+<span class="o">}</span>
+
+<span class="c1"># This block passes authenticated write requests to git-http-backend</span>
+location<span class="w"> </span>~<span class="w"> </span>/git-write/<span class="o">(</span>.*<span class="o">)</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>internal<span class="p">;</span>
+<span class="w">    </span>auth_basic_user_file<span class="w">    </span>/etc/nginx/htaccess/git<span class="p">;</span>
+<span class="w">    </span>fastcgi_pass<span class="w">            </span>unix:/run/fcgiwrap.socket<span class="p">;</span>
+<span class="w">    </span>include<span class="w">                 </span>fastcgi_params<span class="p">;</span>
+<span class="w">    </span>fastcgi_param<span class="w">           </span>SCRIPT_FILENAME<span class="w"> </span>/usr/lib/git-core/git-http-backend<span class="p">;</span>
+<span class="w">    </span>fastcgi_param<span class="w">           </span>GIT_HTTP_EXPORT_ALL<span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+<span class="w">    </span>fastcgi_param<span class="w">           </span>GIT_PROJECT_ROOT<span class="w"> </span>/var/git<span class="p">;</span>
+<span class="w">    </span>fastcgi_param<span class="w">           </span>PATH_INFO<span class="w"> </span>/<span class="nv">$1</span><span class="p">;</span>
+<span class="w">    </span>fastcgi_param<span class="w">           </span>REMOTE_USER<span class="w"> </span><span class="nv">$remote_user</span><span class="p">;</span>
+<span class="w">    </span>client_max_body_size<span class="w"> </span><span class="m">0</span><span class="p">;</span>
+<span class="o">}</span>
+</pre></div>
+<p>With this setup, I can use <code>git push</code> and it will let me update the
+remote repository after prompting for the username and password stored in
+<code>/etc/nginx/htaccess/git</code>.</p>
+<p>So far I am loving cgit for what it is: a way to organise, view and display my
+projects without any unneeded features, and importantly without the need to go
+into the web interface to modify any repo information, as repo metadata is
+stored inside it's folder on the server.</p>
+<p>I'm surprised I don't see more people using cgit, though I expect that as time
+goes on and federation in code-forges becomes more of a thing that these more
+sophisticated platforms will become more popular. Until then, I'm very pleased
+with cgit.</p>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2020-08-02T00:00:00+00:00">2020-08-02</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

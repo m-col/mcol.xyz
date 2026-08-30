@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Clearly define template targets with Target type</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/d6bf4e85560006fe1ff289db1d6923c194bfbcd9.html">d6bf4e85560006fe1ff289db1d6923c194bfbcd9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/9231c16355a66cdd5a9dfad94c9f7d61ecaaef35.html">9231c16355a66cdd5a9dfad94c9f7d61ecaaef35</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-30 23:46:09 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-30 23:46:09 +0100
+
+Clearly define template targets with Target type
+</pre><div class="diff">
+  <p>
+    <b>templates/tree.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,7 +14,7 @@
+<span class="def">     &lt;p&gt;{{- description }}&lt;/p&gt;
+</span><span class="def">     &lt;p&gt;git clone {{ host }}/{{- name }}&lt;/p&gt;
+</span><span class="def">     {% for file in tree %}
+</span><span class="sub">-		&lt;p&gt;&lt;a href=&quot;{{ host }}/{{ name }}/files/{{ file.href }}&quot;&gt;{{- file.path }}&lt;/a&gt;&lt;/p&gt;
+</span><span class="add">+		&lt;p&gt;&lt;a href=&quot;{{ host }}/{{ name }}/file/{{ file.href }}&quot;&gt;{{- file.path }}&lt;/a&gt;&lt;/p&gt;
+</span><span class="def">     {% endfor %}
+</span><span class="def">   &lt;/body&gt;
+</span><span class="def"> &lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>templates/log.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,7 +14,7 @@
+<span class="def">     &lt;p&gt;{{- description }}&lt;/p&gt;
+</span><span class="def">     &lt;p&gt;git clone {{ host }}/{{- name }}&lt;/p&gt;
+</span><span class="def">     {% for commit in commits[:50] %}
+</span><span class="sub">-    &lt;p&gt;&lt;b&gt;&lt;a href=&quot;{{ host }}/{{ name }}/commits/{{ commit.id }}.html&quot;&gt;{{ commit.id[:7] }}&lt;/a&gt;&lt;/b&gt; {{ commit.title }}&lt;/p&gt;
+</span><span class="add">+    &lt;p&gt;&lt;b&gt;&lt;a href=&quot;{{ host }}/{{ name }}/commit/{{ commit.id }}.html&quot;&gt;{{ commit.id[:7] }}&lt;/a&gt;&lt;/b&gt; {{ commit.title }}&lt;/p&gt;
+</span><span class="def">     {% endfor %}
+</span><span class="def">   &lt;/body&gt;
+</span><span class="def"> &lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> {-# Language FlexibleInstances #-}  -- Needed for `instance ToGVal`
+</span><span class="def"> {-# Language MultiParamTypeClasses #-}  -- Needed for `instance ToGVal`
+</span><span class="def"> {-# Language InstanceSigs #-}  -- Needed for toGVal type signature
+</span><span class="add">+{-# Language FlexibleContexts #-}  -- Needed for the Target class type constraints
+</span><span class="def"> 
+</span><span class="def"> module Repositories (
+</span><span class="def">     run
+</span>@@ -77,8 +78,8 @@
+<span class="def">             -- Run the generator --
+</span><span class="def">             let scope = package env name description commits tree
+</span><span class="def">             liftIO . mapM (generate output scope) $ envTemplates env
+</span><span class="sub">-            liftIO . mapM (generateCommit output scope $ envCommitTemplate env) $ commits
+</span><span class="sub">-            liftIO . mapM (generateFile output scope $ envFileTemplate env) $ tree
+</span><span class="add">+            liftIO . mapM (genTarget output scope $ envCommitTemplate env) $ commits
+</span><span class="add">+            liftIO . mapM (genTarget output scope $ envFileTemplate env) $ tree
+</span><span class="def">             return ()
+</span><span class="def"> 
+</span><span class="def"> {-
+</span>@@ -224,34 +225,29 @@
+<span class="def"> 
+</span><span class="def"> ----------------------------------------------------------------------------------------
+</span><span class="def"> 
+</span><span class="sub">-generateCommit
+</span><span class="sub">-    :: FilePath
+</span><span class="sub">-    -&gt; HashMap.HashMap Text (GVal (Run SourcePos IO Html))
+</span><span class="sub">-    -&gt; Maybe Template
+</span><span class="sub">-    -&gt; Commit LgRepo
+</span><span class="sub">-    -&gt; IO ()
+</span><span class="sub">-generateCommit _ _ Nothing _ = return ()
+</span><span class="sub">-generateCommit output scope (Just template) commit = do
+</span><span class="sub">-    let hash = unpack . renderObjOid . commitOid $ commit
+</span><span class="sub">-    let template&apos; = template { templatePath = hash ++ &quot;.html&quot; }
+</span><span class="sub">-    let scope&apos; = scope &lt;&gt; HashMap.fromList [(&quot;commit&quot;, toGVal commit)]
+</span><span class="sub">-    liftIO $ createDirectoryIfMissing True (output &lt;/&gt; &quot;commits&quot;)
+</span><span class="sub">-    generate (output &lt;/&gt; &quot;commits&quot;) scope&apos; template&apos;
+</span><span class="sub">-    return ()
+</span><span class="add">+class ToGVal (Run SourcePos IO Html) a =&gt; Target a where
+</span><span class="add">+    identify :: a -&gt; String
+</span><span class="add">+    category :: a -&gt; FilePath
+</span><span class="add">+
+</span><span class="add">+instance Target (Commit LgRepo) where
+</span><span class="add">+    identify = unpack . renderObjOid . commitOid 
+</span><span class="add">+    category = const &quot;commit&quot;
+</span><span class="def"> 
+</span><span class="sub">--- TODO: DRY
+</span><span class="add">+instance Target (TreeFile) where
+</span><span class="add">+    identify = unpack . replace &quot;/&quot; &quot;.&quot; . decodeUtf8 . treeFilePath
+</span><span class="add">+    category = const &quot;file&quot;
+</span><span class="def"> 
+</span><span class="sub">-generateFile
+</span><span class="sub">-    :: FilePath
+</span><span class="add">+genTarget
+</span><span class="add">+    :: Target a
+</span><span class="add">+    =&gt; FilePath
+</span><span class="def">     -&gt; HashMap.HashMap Text (GVal (Run SourcePos IO Html))
+</span><span class="def">     -&gt; Maybe Template
+</span><span class="sub">-    -&gt; TreeFile
+</span><span class="add">+    -&gt; a
+</span><span class="def">     -&gt; IO ()
+</span><span class="sub">-generateFile _ _ Nothing _ = return ()
+</span><span class="sub">-generateFile output scope (Just template) file = do
+</span><span class="sub">-    let path = unpack . replace &quot;/&quot; &quot;.&quot; . decodeUtf8 . treeFilePath $ file
+</span><span class="sub">-    let template&apos; = template { templatePath = path ++ &quot;.html&quot; }
+</span><span class="sub">-    let scope&apos; = scope &lt;&gt; HashMap.fromList [(&quot;file&quot;, toGVal file)]
+</span><span class="sub">-    liftIO $ createDirectoryIfMissing True (output &lt;/&gt; &quot;files&quot;)
+</span><span class="sub">-    generate (output &lt;/&gt; &quot;files&quot;) scope&apos; template&apos;
+</span><span class="add">+genTarget _ _ Nothing _ = return ()
+</span><span class="add">+genTarget output scope (Just template) target = do
+</span><span class="add">+    let template&apos; = template { templatePath = identify target ++ &quot;.html&quot; }
+</span><span class="add">+    let scope&apos; = scope &lt;&gt; HashMap.fromList [(pack . category $ target, toGVal target)]
+</span><span class="add">+    liftIO $ createDirectoryIfMissing True (output &lt;/&gt; category target)
+</span><span class="add">+    generate (output &lt;/&gt; category target) scope&apos; template&apos;
+</span><span class="def">     return ()
+</span></pre>
+</div></div>
+  </body>
+</html>

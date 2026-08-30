@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add server-side IPC handler</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/633817107890cb3ad744e06cd3d687d7b5dc5e40.html">633817107890cb3ad744e06cd3d687d7b5dc5e40</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/edef67e308b9c5d968c60c80458f65900d0ec5a0.html">edef67e308b9c5d968c60c80458f65900d0ec5a0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-15 00:05:28 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-15 00:05:28 +0000
+
+add server-side IPC handler
+</pre><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,6 +13,7 @@
+<span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;main.h&quot;
+</span><span class="def"> #include &quot;input.h&quot;
+</span><span class="add">+#include &quot;ipc.h&quot;
+</span><span class="def"> #include &quot;layer_shell.h&quot;
+</span><span class="def"> #include &quot;log.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span>@@ -148,6 +149,12 @@
+<span class="def">     wlr_renderer_init_wl_display(wimp.renderer, wimp.display);
+</span><span class="def">     wlr_compositor_create(wimp.display, wimp.renderer);
+</span><span class="def"> 
+</span><span class="add">+    const char *socket = wl_display_add_socket_auto(wimp.display);
+</span><span class="add">+    if (!socket) {
+</span><span class="add">+	wlr_log(WLR_INFO, &quot;Could not create socket: %s.&quot;, socket);
+</span><span class="add">+	return EXIT_FAILURE;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     // initialise
+</span><span class="def">     wl_list_init(&amp;wimp.desks);
+</span><span class="def">     wl_list_init(&amp;wimp.key_bindings);
+</span>@@ -166,19 +173,19 @@
+<span class="def">     set_up_layer_shell();
+</span><span class="def"> 
+</span><span class="def">     // start
+</span><span class="sub">-    const char *socket = wl_display_add_socket_auto(wimp.display);
+</span><span class="sub">-    if (!socket || !wlr_backend_start(wimp.backend)) {
+</span><span class="add">+    if (!start_ipc(socket) || !wlr_backend_start(wimp.backend)) {
+</span><span class="def"> 	shutdown();
+</span><span class="def"> 	return EXIT_FAILURE;
+</span><span class="def">     }
+</span><span class="def">     setenv(&quot;WAYLAND_DISPLAY&quot;, socket, true);
+</span><span class="sub">-    wlr_log(WLR_INFO, &quot;Starting with WAYLAND_DISPLAY=%s&quot;, socket);
+</span><span class="def">     schedule_auto_start();
+</span><span class="def">     centre_cursor();
+</span><span class="add">+    wlr_log(WLR_INFO, &quot;Starting with WAYLAND_DISPLAY=%s.&quot;, socket);
+</span><span class="def">     wl_display_run(wimp.display);
+</span><span class="def"> 
+</span><span class="def">     // stop
+</span><span class="def">     wl_display_destroy_clients(wimp.display);
+</span><span class="add">+    close_ipc(socket);
+</span><span class="def">     shutdown();
+</span><span class="def">     return EXIT_SUCCESS;
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,9 @@
+<span class="add">+#ifndef WIMP_IPC_H
+</span><span class="add">+#define WIMP_IPC_H
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+void close_ipc(const char *display);
+</span><span class="add">+bool start_ipc(const char *display);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,64 @@
+<span class="add">+#include &lt;sys/socket.h&gt;
+</span><span class="add">+#include &lt;sys/un.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;config.h&quot;
+</span><span class="add">+#include &quot;ipc.h&quot;
+</span><span class="add">+
+</span><span class="add">+#define SOCKET_PATH &quot;/tmp/wimpy-sock-%s&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void close_ipc(const char *display) {
+</span><span class="add">+    char path[1024];
+</span><span class="add">+    snprintf(path, sizeof(path), SOCKET_PATH, display);
+</span><span class="add">+    unlink(path);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static int dispatch(int sock, unsigned int mask, void *data) {
+</span><span class="add">+    char buffer[1024];
+</span><span class="add">+
+</span><span class="add">+    if (mask &amp; WL_EVENT_READABLE) {
+</span><span class="add">+	int fd = accept(sock, NULL, NULL);
+</span><span class="add">+	if (fd == -1) {
+</span><span class="add">+	    wlr_log(WLR_ERROR, &quot;Failed accept connection from client.&quot;);
+</span><span class="add">+	    return 0;
+</span><span class="add">+	}
+</span><span class="add">+	ssize_t len = recv(fd, buffer, sizeof(buffer) - 1, 0);
+</span><span class="add">+	if (len &gt; 0) {
+</span><span class="add">+	    buffer[len] = &apos;\0&apos;;
+</span><span class="add">+	    parse_message(buffer, len);
+</span><span class="add">+	}
+</span><span class="add">+	close(fd);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool start_ipc(const char *display) {
+</span><span class="add">+    int sock;
+</span><span class="add">+    if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Failed to create IPC socket.&quot;);
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct sockaddr_un addr;
+</span><span class="add">+    snprintf(addr.sun_path, sizeof(addr.sun_path), SOCKET_PATH, display);
+</span><span class="add">+    addr.sun_family = AF_UNIX;
+</span><span class="add">+
+</span><span class="add">+    if (bind(sock, (struct sockaddr *) &amp;addr, sizeof(addr)) == -1) {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Failed to bind IPC socket.&quot;);
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (listen(sock, SOMAXCONN) == -1) {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Failed to listen on IPC socket.&quot;);
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct wl_event_loop *event_loop = wl_display_get_event_loop(wimp.display);
+</span><span class="add">+    wl_event_loop_add_fd(event_loop, sock, WL_EVENT_READABLE, &amp;dispatch, NULL);
+</span><span class="add">+
+</span><span class="add">+    return true;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,7 @@
+<span class="def"> 
+</span><span class="def"> void assign_colour(char *hex, float dest[4]);
+</span><span class="def"> void schedule_auto_start();
+</span><span class="add">+void parse_message(char *buffer, ssize_t len);
+</span><span class="def"> void load_config();
+</span><span class="def"> void locate_config();
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -526,6 +526,11 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void parse_message(char *buffer, ssize_t len) {
+</span><span class="add">+    printf(&quot;msg: %s\n&quot;, buffer);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void parse_config(FILE *stream) {
+</span><span class="def">     char *s;
+</span><span class="def">     char linebuf[1024];
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Make sure focus falls to the right window when unfocussing</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/0cf9a850c1dbf81466a1b77c9f55610de567320d.html">0cf9a850c1dbf81466a1b77c9f55610de567320d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/cfe0ae65c9382212efcc9efb1b03ca4f0e78adda.html">cfe0ae65c9382212efcc9efb1b03ca4f0e78adda</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-06 22:55:29 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-06 22:56:22 +0000
+
+Make sure focus falls to the right window when unfocussing
+
+Fixes focus errors when switching desks and toggle scratchpads.
+Fixes #24
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -51,7 +51,6 @@
+<span class="def">     struct wl_list desks;
+</span><span class="def">     int desk_count;
+</span><span class="def">     struct desk *current_desk;
+</span><span class="sub">-    bool can_steal_focus;
+</span><span class="def">     struct wl_list marks;
+</span><span class="def">     bool mark_waiting;
+</span><span class="def">     struct mark_indicator mark_indicator;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,6 +18,7 @@
+<span class="def"> 
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface) {
+</span><span class="def">     if (view == NULL) {
+</span><span class="add">+	wlr_seat_keyboard_notify_clear_focus(wimp.seat);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="def">     struct wlr_seat *seat = wimp.seat;
+</span>@@ -135,28 +136,39 @@
+<span class="def"> 	scratchpad-&gt;is_mapped = true;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    if (wimp.can_steal_focus) {
+</span><span class="sub">-	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="sub">-    }
+</span><span class="add">+    focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> static void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, unmap_listener);
+</span><span class="add">+    struct scratchpad *scratchpad;
+</span><span class="def"> 
+</span><span class="def">     if (view-&gt;is_scratchpad) {
+</span><span class="sub">-	struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="add">+	scratchpad = scratchpad_from_view(view);
+</span><span class="def"> 	scratchpad-&gt;is_mapped = false;
+</span><span class="def">     } else {
+</span><span class="def"> 	wl_list_remove(&amp;view-&gt;link);
+</span><span class="def"> 	wl_list_insert(wimp.current_desk-&gt;views.prev, &amp;view-&gt;link);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    if (wimp.can_steal_focus) {
+</span><span class="sub">-	if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="sub">-	    struct view *next_view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="sub">-	    focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="add">+    if (view-&gt;surface-&gt;surface != wimp.seat-&gt;keyboard_state.focused_surface) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (scratchpad-&gt;is_mapped) {
+</span><span class="add">+	    focus_view(scratchpad-&gt;view, scratchpad-&gt;view-&gt;surface-&gt;surface);
+</span><span class="add">+	    return;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+
+</span><span class="add">+    if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="add">+	view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="add">+	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+	return;
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    focus_view(NULL, NULL);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -31,7 +31,6 @@
+<span class="def">     .on_drag2 = NULL,
+</span><span class="def">     .on_drag3 = NULL,
+</span><span class="def">     .on_pinch = NULL,
+</span><span class="sub">-    .can_steal_focus = true,
+</span><span class="def">     .desk_count = 0,
+</span><span class="def">     .mark_waiting = false,
+</span><span class="def">     .mark_indicator.box.width = 25,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,6 @@
+<span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;scratchpad.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span>@@ -52,22 +53,29 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void set_desk(struct desk *desk) {
+</span><span class="sub">-    struct view *view;
+</span><span class="sub">-    if (desk != wimp.current_desk) {
+</span><span class="sub">-	wimp.can_steal_focus = false;
+</span><span class="sub">-	wl_list_for_each(view, &amp;wimp.current_desk-&gt;views, link) {
+</span><span class="sub">-	    unmap_view(view);
+</span><span class="sub">-	}
+</span><span class="sub">-	wimp.current_desk = desk;
+</span><span class="sub">-	wl_list_for_each(view, &amp;wimp.current_desk-&gt;views, link) {
+</span><span class="sub">-	    map_view(view);
+</span><span class="sub">-	}
+</span><span class="sub">-	wimp.can_steal_focus = true;
+</span><span class="sub">-	if (!wl_list_empty(&amp;desk-&gt;views)) {
+</span><span class="sub">-	    view = wl_container_of(desk-&gt;views.next, view, link);
+</span><span class="sub">-	    focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+    if (desk == wimp.current_desk) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    wimp.current_desk = desk;
+</span><span class="add">+
+</span><span class="add">+    // If a scratchpad is focussed, keep it focussed.
+</span><span class="add">+    struct scratchpad *scratchpad;
+</span><span class="add">+    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (scratchpad-&gt;view &amp;&amp; scratchpad-&gt;is_mapped) {
+</span><span class="add">+	    if (scratchpad-&gt;view-&gt;surface-&gt;surface == wimp.seat-&gt;keyboard_state.focused_surface) {
+</span><span class="add">+		return;
+</span><span class="add">+	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+
+</span><span class="add">+    // Otherwise focus the next view on the new desktop if there is one.
+</span><span class="add">+    if (wl_list_empty(&amp;desk-&gt;views)) {
+</span><span class="add">+	focus_view(NULL, NULL);
+</span><span class="add">+    } else {
+</span><span class="add">+	struct view *view = wl_container_of(desk-&gt;views.next, view, link);
+</span><span class="add">+	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -83,13 +91,10 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void view_to_desk(struct view *view, int index) {
+</span><span class="sub">-    wimp.can_steal_focus = false;
+</span><span class="def">     struct desk *desk = desk_from_index(index);
+</span><span class="def">     if (desk) {
+</span><span class="def"> 	wl_list_remove(&amp;view-&gt;link);
+</span><span class="sub">-	desk == wimp.current_desk ? map_view(view) : unmap_view(view);
+</span><span class="def"> 	wl_list_insert(&amp;desk-&gt;views, &amp;view-&gt;link);
+</span><span class="sub">-	wimp.can_steal_focus = true;
+</span><span class="def"> 	if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="def"> 	    struct view *next_view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="def"> 	    focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span></pre>
+</div></div>
+  </body>
+</html>

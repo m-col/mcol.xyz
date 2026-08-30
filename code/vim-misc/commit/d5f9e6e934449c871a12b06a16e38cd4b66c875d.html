@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - updated vimwiki ftplugin</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/d5f9e6e934449c871a12b06a16e38cd4b66c875d.html">d5f9e6e934449c871a12b06a16e38cd4b66c875d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/792da2d1f8c345337af41f36552612f21e35dfd3.html">792da2d1f8c345337af41f36552612f21e35dfd3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 10:22:58 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 10:22:58 +0000
+
+updated vimwiki ftplugin
+</pre><div class="diff">
+  <p>
+    <b>ftplugin/vimwiki.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,41 +8,33 @@
+<span class="def"> &quot;nmap &lt;Leader&gt;whh Vimwiki2HTMLBrowse
+</span><span class="def"> 
+</span><span class="def"> &quot; open index wiki in horizontal split	
+</span><span class="sub">-nmap &lt;Leader&gt;ws :sp&lt;CR&gt;&lt;Leader&gt;ww
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;ws :sp&lt;CR&gt;&lt;Leader&gt;ww
+</span><span class="def"> 
+</span><span class="sub">-&quot; split follow link
+</span><span class="sub">-nmap &lt;Leader&gt;s &lt;Plug&gt;VimwikiSplitLink
+</span><span class="sub">-nmap &lt;Leader&gt;v &lt;Plug&gt;VimwikiVSplitLink
+</span><span class="sub">-
+</span><span class="sub">-&quot; some html shortcuts
+</span><span class="sub">-nmap &lt;Leader&gt;b msA&lt;br&gt;&lt;Esc&gt;`s
+</span><span class="sub">-nmap &lt;Leader&gt;i msI&lt;i&gt;&lt;Esc&gt;A&lt;/i&gt;&lt;Esc&gt;`s
+</span><span class="sub">-nmap &lt;Leader&gt;r mso&lt;hr&gt;&lt;Esc&gt;`s
+</span><span class="sub">-nmap &lt;Leader&gt;R msO&lt;hr&gt;&lt;Esc&gt;`s
+</span><span class="sub">-
+</span><span class="sub">-&quot; go to pages
+</span><span class="sub">-nmap &lt;Leader&gt;gp /[[/papers/papers&lt;CR&gt;&lt;CR&gt;
+</span><span class="sub">-nmap &lt;Leader&gt;gl /[[/topics/learning&lt;CR&gt;&lt;CR&gt;
+</span><span class="sub">-nmap &lt;Leader&gt;gb /[[/topics/brain&lt;CR&gt;&lt;CR&gt;
+</span><span class="sub">-nmap &lt;Leader&gt;gd /[[/topics/direction&lt;CR&gt;&lt;CR&gt;
+</span><span class="sub">-nmap &lt;Leader&gt;gm /[[/topics/muscles&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+&quot; go to papers page
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;gp /[[/papers/papers&lt;CR&gt;&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; save all as HTML
+</span><span class="sub">-nmap &lt;Leader&gt;wa :VimwikiAll2HTML&lt;CR&gt;
+</span><span class="sub">-nmap &lt;Leader&gt;wah :VimwikiAll2HTML&lt;CR&gt;:Vimwiki2HTMLBrowse&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;wa :VimwikiAll2HTML&lt;CR&gt;
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;wah :VimwikiAll2HTML&lt;CR&gt;:Vimwiki2HTMLBrowse&lt;CR&gt;&lt;CR&gt;
+</span><span class="def"> &quot; save as HTML and quit
+</span><span class="sub">-nmap &lt;Leader&gt;wq :VimwikiAll2HTML&lt;CR&gt;WQ
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;wq :VimwikiAll2HTML&lt;CR&gt;:wq&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; follow next link
+</span><span class="sub">-nmap g&lt;CR&gt; /[[&lt;CR&gt;&lt;CR&gt;
+</span><span class="add">+nmap &lt;buffer&gt; g&lt;CR&gt; /[[&lt;CR&gt;&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; paste copied bullet pointed link as title
+</span><span class="sub">-nmap &lt;Leader&gt;p 0f\|yy&lt;CR&gt;Pdf\|$xx===o&lt;CR&gt;
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;p 0f\|yy&lt;CR&gt;Pdf\|$xx===o&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; open pdf from papers page
+</span><span class="sub">-nmap &lt;Leader&gt;o 0f\|lvt]y:let a = substitute(@*, &apos; &apos;, &apos;_&apos;, &apos;g&apos;) \| !qpdfview --unique &quot;~/work/research/papers/&quot; . a . &quot;.pdf&quot; &amp;
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;o 0f\|lvt]y:let a = substitute(@*, &apos; &apos;, &apos;_&apos;, &apos;g&apos;) \| !qpdfview --unique &quot;~/work/research/papers/&quot; . a . &quot;.pdf&quot; &amp;
+</span><span class="def"> 
+</span><span class="def"> &quot; update papers page with new pdf files
+</span><span class="sub">-nmap &lt;Leader&gt;u :!vimwiki_add_papers.sh&lt;CR&gt;
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;u :!vimwiki_add_papers.sh&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; run goyo
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;g :Goyo&lt;CR&gt;
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="sub">-setlocal textwidth=80
+</span><span class="add">+setlocal wrap
+</span><span class="add">+setlocal linebreak
+</span><span class="add">+setlocal breakindent
+</span></pre>
+</div></div>
+  </body>
+</html>

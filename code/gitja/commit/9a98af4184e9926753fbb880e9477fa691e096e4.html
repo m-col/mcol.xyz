@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - add test for index scope</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/9a98af4184e9926753fbb880e9477fa691e096e4.html">9a98af4184e9926753fbb880e9477fa691e096e4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/649de38e8ede60b0c57b33531b9c2bacc098b7e1.html">649de38e8ede60b0c57b33531b9c2bacc098b7e1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-26 00:55:22 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-26 00:55:22 +0000
+
+add test for index scope
+</pre><div class="diff">
+  <p>
+    <b>test/test.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -29,6 +29,7 @@
+<span class="def"> 
+</span><span class="def"> declare -a TESTS
+</span><span class="def"> TESTS=(
+</span><span class="add">+    &quot;index.html&quot;
+</span><span class="def">     &quot;gitserve/commit/0292014748caae952bbc8dd6225680d83c0a5135.html&quot;
+</span><span class="def">     &quot;gitserve/file/test.templates.style.css.html&quot;
+</span><span class="def"> )
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/templates/title.html.include</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,3 +2,5 @@
+<span class="def"> {#- This file should not appear in the outputfolder. -#}
+</span><span class="def"> 
+</span><span class="def"> {% block title %}{% endblock %}
+</span><span class="add">+
+</span><span class="add">+{% block body %}{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/templates/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,5 @@
+<span class="def"> {% extends &quot;title.html.include&quot; %}
+</span><span class="def"> {%- block title -%}{{ host }}{%- endblock -%}
+</span><span class="sub">-
+</span><span class="def"> {% block body %}
+</span><span class="sub">-index
+</span><span class="add">+{{ repositories }}
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/index.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+https://github.com/m-col/gitserve
+</span><span class="add">+gitserve
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/gitserve/file/test.templates.style.css.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1,2 @@
+<span class="sub">-test/templates/style.css</span><span class="def">
+
+\ No newline at end of file
+</span><span class="add">+test/templates/style.css
+</span><span class="add">+file
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/gitserve/commit/0292014748caae952bbc8dd6225680d83c0a5135.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1,2 @@
+<span class="def"> 0292014748caae952bbc8dd6225680d83c0a5135
+</span><span class="add">+commit
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Types.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -50,19 +50,22 @@
+<span class="def">     toGVal :: Repo -&gt; GVal m
+</span><span class="def">     toGVal repo =
+</span><span class="def">         def
+</span><span class="sub">-            { asHtml = html . pack . show . dirname . repositoryPath $ repo
+</span><span class="add">+            { asHtml = html . pack . init . showNoQuote . dirname . repositoryPath $ repo
+</span><span class="def">             , asText = pack . show . dirname . repositoryPath $ repo
+</span><span class="def">             , asLookup = Just . repoAsLookup $ repo
+</span><span class="def">             }
+</span><span class="def"> 
+</span><span class="def"> repoAsLookup :: Repo -&gt; Text -&gt; Maybe (GVal m)
+</span><span class="def"> repoAsLookup repo = \case
+</span><span class="sub">-    &quot;name&quot; -&gt; Just . toGVal . dirname . repositoryPath $ repo
+</span><span class="add">+    &quot;name&quot; -&gt; Just . toGVal . init . showNoQuote . dirname . repositoryPath $ repo
+</span><span class="def">     &quot;description&quot; -&gt; Just . toGVal . repositoryDescription $ repo
+</span><span class="def">     &quot;head&quot; -&gt; Just . toGVal . repositoryHead $ repo
+</span><span class="def">     &quot;updated&quot; -&gt; toGVal . show . signatureWhen . commitCommitter &lt;$&gt; repositoryHead repo
+</span><span class="def">     _ -&gt; Nothing
+</span><span class="def"> 
+</span><span class="add">+showNoQuote :: Show a =&gt; a -&gt; String
+</span><span class="add">+showNoQuote = tail . init . show
+</span><span class="add">+
+</span><span class="def"> {-
+</span><span class="def"> GVal implementation for `Git.Commit r`, allowing commits to be rendered in Ginger
+</span><span class="def"> templates.
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add drag mouse handlers for better moving</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/2fcc7729953ee50d8d1769b38b8a589d80e65e09.html">2fcc7729953ee50d8d1769b38b8a589d80e65e09</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/5517e33716b4e0a49c0f7a7c0b800f89538dfe90.html">5517e33716b4e0a49c0f7a7c0b800f89538dfe90</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-28 11:54:00 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-28 11:54:00 +0000
+
+add drag mouse handlers for better moving
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -80,10 +80,10 @@
+<span class="def"> bind		m		set_mark
+</span><span class="def"> bind		grave		go_to_mark
+</span><span class="def"> 
+</span><span class="sub">-# Possible mouse bindings: motion, scroll (+ additional modifiers)
+</span><span class="add">+# Possible mouse bindings: motion, scroll, drag{1,2,3} (+ additional modifiers)
+</span><span class="def"> bind		scroll		pan_desk_mouse
+</span><span class="def"> bind	Shift	scroll		zoom_mouse
+</span><span class="sub">-bind		motion		move_window
+</span><span class="add">+bind		drag1		move_window
+</span><span class="def"> 
+</span><span class="def"> # Scroll direction. Can be one of: natural, reverse
+</span><span class="def"> #scroll_direction natural
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -78,8 +78,13 @@
+<span class="def">     enum wlr_keyboard_modifier mod;
+</span><span class="def">     struct wl_list key_bindings;
+</span><span class="def">     struct wl_list mouse_bindings;
+</span><span class="add">+
+</span><span class="def">     action on_mouse_motion;
+</span><span class="def">     action on_mouse_scroll;
+</span><span class="add">+    action on_drag1;
+</span><span class="add">+    action on_drag2;
+</span><span class="add">+    action on_drag3;
+</span><span class="add">+
+</span><span class="def">     bool reverse_scrolling;
+</span><span class="def">     enum cursor_mode cursor_mode;
+</span><span class="def">     struct view *grabbed_view;
+</span>@@ -165,6 +170,9 @@
+<span class="def"> enum mouse_keys {
+</span><span class="def">     MOTION = 1,
+</span><span class="def">     SCROLL = 2,
+</span><span class="add">+    DRAG1 = 3,
+</span><span class="add">+    DRAG2 = 4,
+</span><span class="add">+    DRAG3 = 5,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> struct mark {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -27,6 +27,9 @@
+<span class="def">     .mark_waiting = false,
+</span><span class="def">     .on_mouse_motion = NULL,
+</span><span class="def">     .on_mouse_scroll = NULL,
+</span><span class="add">+    .on_drag1 = NULL,
+</span><span class="add">+    .on_drag2 = NULL,
+</span><span class="add">+    .on_drag3 = NULL,
+</span><span class="def">     .can_steal_focus = true,
+</span><span class="def">     .desk_count = 0,
+</span><span class="def">     .mark_indicator.box.width = 25,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keyboard.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,6 +16,7 @@
+<span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="add">+    bool handled;
+</span><span class="def">     struct binding *kb;
+</span><span class="def">     if ((modifiers &amp; wimp.mod)) {
+</span><span class="def"> 	modifiers &amp;= ~wimp.mod;
+</span>@@ -28,14 +29,25 @@
+<span class="def"> 		    case SCROLL:
+</span><span class="def"> 			wimp.on_mouse_scroll = kb-&gt;action;
+</span><span class="def"> 			break;
+</span><span class="add">+		    case DRAG1:
+</span><span class="add">+			wimp.on_drag1 = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="add">+		    case DRAG2:
+</span><span class="add">+			wimp.on_drag2 = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="add">+		    case DRAG3:
+</span><span class="add">+			wimp.on_drag3 = kb-&gt;action;
+</span><span class="add">+			break;
+</span><span class="def"> 		}
+</span><span class="def"> 		wimp.cursor_mode = CURSOR_MOD;
+</span><span class="sub">-		return;
+</span><span class="add">+		handled = true;
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="add">+    if (!handled){
+</span><span class="add">+	wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,5 @@
+<span class="def"> #include &lt;inttypes.h&gt;
+</span><span class="add">+#include &lt;linux/input-event-codes.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_cursor.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xcursor_manager.h&gt;
+</span>@@ -150,7 +151,32 @@
+<span class="def">     wlr_seat_pointer_notify_button(wimp.seat, event-&gt;time_msec, event-&gt;button, event-&gt;state);
+</span><span class="def"> 
+</span><span class="def">     if (event-&gt;state == WLR_BUTTON_RELEASED) {
+</span><span class="add">+	if (wimp.cursor_mode == CURSOR_MOD) {
+</span><span class="add">+	    wimp.on_mouse_motion = NULL;
+</span><span class="add">+	    struct binding *kb;
+</span><span class="add">+	    wl_list_for_each(kb, &amp;wimp.mouse_bindings, link) {
+</span><span class="add">+		if (kb-&gt;key == MOTION) {
+</span><span class="add">+		    wimp.on_mouse_motion = kb-&gt;action;
+</span><span class="add">+		    break;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="def"> 	wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="add">+
+</span><span class="add">+    } else if (wimp.cursor_mode == CURSOR_MOD) {
+</span><span class="add">+	switch (event-&gt;button) {
+</span><span class="add">+	    case BTN_LEFT:
+</span><span class="add">+		wimp.on_mouse_motion = wimp.on_drag1;
+</span><span class="add">+		break;
+</span><span class="add">+	    case BTN_MIDDLE:
+</span><span class="add">+		wimp.on_mouse_motion = wimp.on_drag2;
+</span><span class="add">+		break;
+</span><span class="add">+	    case BTN_RIGHT:
+</span><span class="add">+		wimp.on_mouse_motion = wimp.on_drag3;
+</span><span class="add">+		break;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def">     } else {
+</span><span class="def"> 	double sx, sy;
+</span><span class="def"> 	struct wlr_surface *surface;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -67,6 +67,9 @@
+<span class="def"> static struct value_map mouse_keys[] = {
+</span><span class="def">     { &quot;motion&quot;, MOTION },
+</span><span class="def">     { &quot;scroll&quot;, SCROLL },
+</span><span class="add">+    { &quot;drag1&quot;, DRAG1 },
+</span><span class="add">+    { &quot;drag2&quot;, DRAG2 },
+</span><span class="add">+    { &quot;drag3&quot;, DRAG3 },
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

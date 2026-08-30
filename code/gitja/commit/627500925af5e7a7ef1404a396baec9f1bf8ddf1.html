@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - rewrite github action with stack + caching + test</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/627500925af5e7a7ef1404a396baec9f1bf8ddf1.html">627500925af5e7a7ef1404a396baec9f1bf8ddf1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/cbe90184d7b84718bd299e4f181a47f026400736.html">cbe90184d7b84718bd299e4f181a47f026400736</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-25 21:00:45 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-25 21:00:45 +0000
+
+rewrite github action with stack + caching + test
+</pre><div class="diff">
+  <p>
+    <b>.github/workflows/haskell.yml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,4 @@
+<span class="sub">-name: Haskell CI
+</span><span class="add">+name: CI
+</span><span class="def"> 
+</span><span class="def"> on:
+</span><span class="def">   push:
+</span>@@ -12,29 +12,19 @@
+<span class="def">     runs-on: ubuntu-latest
+</span><span class="def"> 
+</span><span class="def">     steps:
+</span><span class="sub">-    - uses: actions/checkout@v2
+</span><span class="sub">-    - uses: actions/setup-haskell@v1
+</span><span class="sub">-      with:
+</span><span class="sub">-        ghc-version: &apos;8.10.3&apos;
+</span><span class="sub">-        cabal-version: &apos;3.2&apos;
+</span><span class="sub">-
+</span><span class="sub">-    - name: Cache
+</span><span class="sub">-      uses: actions/cache@v1
+</span><span class="add">+    - uses: actions/checkout@v1
+</span><span class="add">+    - uses: mstksg/setup-stack@v2
+</span><span class="add">+    - uses: actions/cache@v1
+</span><span class="def">       env:
+</span><span class="sub">-        cache-name: cache-cabal
+</span><span class="add">+        cache-name: cache-stack-modules
+</span><span class="def">       with:
+</span><span class="sub">-        path: ~/.cabal
+</span><span class="sub">-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles(&apos;**/*.cabal&apos;) }}-${{ hashFiles(&apos;**/cabal.project&apos;) }}
+</span><span class="sub">-        restore-keys: |
+</span><span class="sub">-          ${{ runner.os }}-build-${{ env.cache-name }}-
+</span><span class="sub">-          ${{ runner.os }}-build-
+</span><span class="sub">-          ${{ runner.os }}-
+</span><span class="add">+        path: /home/runner/.stack/
+</span><span class="add">+        key: ${{ hashFiles(&apos;**/stack.yaml.lock&apos;) }}
+</span><span class="add">+      
+</span><span class="add">+    - name: Build
+</span><span class="add">+      run: |
+</span><span class="add">+        stack build
+</span><span class="def"> 
+</span><span class="sub">-    - name: Install dependencies
+</span><span class="add">+    - name: Test
+</span><span class="def">       run: |
+</span><span class="sub">-        cabal update
+</span><span class="sub">-        cabal build --only-dependencies --enable-tests --enable-benchmarks
+</span><span class="sub">-    - name: Build
+</span><span class="sub">-      run: cabal build --enable-tests --enable-benchmarks all
+</span><span class="sub">-    - name: Run tests
+</span><span class="sub">-      run: cabal test all
+</span><span class="add">+        bash test/test.sh
+</span></pre>
+</div></div>
+  </body>
+</html>

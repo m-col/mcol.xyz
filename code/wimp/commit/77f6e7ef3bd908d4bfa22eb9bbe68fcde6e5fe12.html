@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - expose some more actions to cli interface</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/77f6e7ef3bd908d4bfa22eb9bbe68fcde6e5fe12.html">77f6e7ef3bd908d4bfa22eb9bbe68fcde6e5fe12</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/ac4924acc98af2c9be02975cbb269a3ac7d7fec4.html">ac4924acc98af2c9be02975cbb269a3ac7d7fec4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 22:22:11 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 22:22:11 +0000
+
+expose some more actions to cli interface
+</pre><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,75 @@
+<span class="def">     char *s;
+</span><span class="def">     bool handled = false;
+</span><span class="def"> 
+</span><span class="sub">-    if (!strcasecmp(message, &quot;to_region&quot;)) {
+</span><span class="add">+    if (!strcasecmp(message, &quot;terminate&quot;)) {
+</span><span class="add">+	handled = true;
+</span><span class="add">+	terminate(NULL);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (!strcasecmp(message, &quot;exec&quot;)) {
+</span><span class="add">+	handled = true;
+</span><span class="add">+	if ((s = strtok(NULL, &quot;\n\r&quot;))) {
+</span><span class="add">+	    exec_command(s);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (!strcasecmp(message, &quot;change_vt&quot;)) {
+</span><span class="add">+	handled = true;
+</span><span class="add">+	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	    int vt = strtod(s, NULL);
+</span><span class="add">+	    if (vt &amp;&amp; 0 &lt; vt &amp;&amp; vt &lt;= 12) {
+</span><span class="add">+		change_vt(&amp;vt);
+</span><span class="add">+	    } else {
+</span><span class="add">+		sprintf(response, &quot;Expected a number from 1 to 12&quot;);
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (!strcasecmp(message, &quot;close_window&quot;)) {
+</span><span class="add">+	handled = true;
+</span><span class="add">+	close_window(NULL);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (!strcasecmp(message, &quot;move_window&quot;)) {
+</span><span class="add">+	handled = true;
+</span><span class="add">+	char *x, *y;
+</span><span class="add">+	if (
+</span><span class="add">+	    (x = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; (y = strtok(NULL, &quot; \t\n\r&quot;))
+</span><span class="add">+	    &amp;&amp; is_number_perc(x) &amp;&amp; is_number_perc(y)
+</span><span class="add">+	    &amp;&amp; (is_number(x) == is_number(y))
+</span><span class="add">+	) {
+</span><span class="add">+	    struct motion motion;
+</span><span class="add">+	    if (is_number(x)) {
+</span><span class="add">+		motion.dx = atoi(x);
+</span><span class="add">+		motion.dy = atoi(y);
+</span><span class="add">+		motion.is_percentage = false;
+</span><span class="add">+		move_window(&amp;motion);
+</span><span class="add">+	    } else {
+</span><span class="add">+		if ((x = strtok(x, &quot;%&quot;)) &amp;&amp; (y = strtok(y, &quot;%&quot;))) {
+</span><span class="add">+		    motion.dx = atoi(x);
+</span><span class="add">+		    motion.dy = atoi(y);
+</span><span class="add">+		    motion.is_percentage = true;
+</span><span class="add">+		    move_window(&amp;motion);
+</span><span class="add">+		} else {
+</span><span class="add">+		    sprintf(response, &quot;Expected args in the form of &apos;x y&apos; or &apos;x%% y%%&apos;&quot;);
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	} else {
+</span><span class="add">+	    sprintf(response, &quot;Expected args in the form of &apos;x y&apos; or &apos;x%% y%%&apos;&quot;);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (!strcasecmp(message, &quot;focus_in_direction&quot;)) {
+</span><span class="add">+	handled = true;
+</span><span class="add">+	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	    struct wlr_box box;
+</span><span class="add">+	    if (wlr_box_from_str(s, &amp;box)) {
+</span><span class="add">+		to_region(&amp;box);
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (!strcasecmp(message, &quot;to_region&quot;)) {
+</span><span class="def"> 	handled = true;
+</span><span class="def"> 	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="def"> 	    struct wlr_box box;
+</span>@@ -51,7 +119,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void change_vt(void *data) {
+</span><span class="sub">-    unsigned vt = *(unsigned*)data;
+</span><span class="add">+    unsigned vt = *(unsigned *)data;
+</span><span class="def">     struct wlr_session *session = wlr_backend_get_session(wimp.backend);
+</span><span class="def">     wlr_session_change_vt(session, vt);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

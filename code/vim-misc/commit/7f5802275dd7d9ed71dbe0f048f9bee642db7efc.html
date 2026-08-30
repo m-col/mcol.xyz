@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - added readme so i know how to install; removed tmux copying keybindings which dont work without X</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/7f5802275dd7d9ed71dbe0f048f9bee642db7efc.html">7f5802275dd7d9ed71dbe0f048f9bee642db7efc</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/fde255c4abfd6b0139e686811b7eafe52ebafbce.html">fde255c4abfd6b0139e686811b7eafe52ebafbce</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-15 11:25:46 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-15 11:25:46 +0000
+
+added readme so i know how to install; removed tmux copying keybindings which dont work without X
+</pre><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,10 +20,10 @@
+<span class="def"> set -g base-index 1
+</span><span class="def"> 
+</span><span class="def"> # Vim bindings in copy-mode
+</span><span class="sub">-bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel &quot;xclip -i -sel clip &gt; /dev/null&quot;
+</span><span class="sub">-bind-key p run &quot;xclip -o -sel clip | tmux load-buffer - ; tmux paste-buffer&quot;
+</span><span class="sub">-bind-key -T copy-mode-vi &apos;v&apos; send -X begin-selection
+</span><span class="sub">-bind-key -T copy-mode-vi &apos;y&apos; send -X copy-selection
+</span><span class="add">+#bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel &quot;xclip -i -sel clip &gt; /dev/null&quot;
+</span><span class="add">+#bind-key p run &quot;xclip -o -sel clip | tmux load-buffer - ; tmux paste-buffer&quot;
+</span><span class="add">+#bind-key -T copy-mode-vi &apos;v&apos; send -X begin-selection
+</span><span class="add">+#bind-key -T copy-mode-vi &apos;y&apos; send -X copy-selection
+</span><span class="def"> 
+</span><span class="def"> # status bar
+</span><span class="def"> #setw -g window-status-current-attr bold
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.md</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+install beside [vundle](https://github.com/VundleVim/Vundle.vim)
+</span></pre>
+</div></div>
+  </body>
+</html>

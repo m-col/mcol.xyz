@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - update theme with nvim</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/ac7a591e6eb55db845ca81e1ac1fa0ee2d17556c.html">ac7a591e6eb55db845ca81e1ac1fa0ee2d17556c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/b28bab83882adbba11441a443d284d28d4af18db.html">b28bab83882adbba11441a443d284d28d4af18db</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2024-07-05 15:38:17 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2024-07-05 15:38:17 +0100
+
+update theme with nvim
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/theme.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,63 +2,63 @@
+<span class="def"> &quot; Ricing                                                           &quot;
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="sub">-&quot; statusline
+</span><span class="sub">-set laststatus=2			    &quot; always show status bar
+</span><span class="sub">-set statusline =
+</span><span class="sub">-if $USER == &apos;root&apos;
+</span><span class="sub">-    let hostname = hostname()
+</span><span class="sub">-    exec &apos;set statusline +=%7*\ &apos; . $USER . &apos;@&apos; . hostname . &apos;\ %*&apos;
+</span><span class="sub">-endif
+</span><span class="sub">-if ! empty($TMUX)
+</span><span class="sub">-    set statusline +=%6*%*
+</span><span class="sub">-endif
+</span><span class="add">+&quot;&quot; statusline
+</span><span class="add">+&quot;set laststatus=2			    &quot; always show status bar
+</span><span class="add">+&quot;set statusline =
+</span><span class="add">+&quot;if $USER == &apos;root&apos;
+</span><span class="add">+&quot;    let hostname = hostname()
+</span><span class="add">+&quot;    exec &apos;set statusline +=%7*\ &apos; . $USER . &apos;@&apos; . hostname . &apos;\ %*&apos;
+</span><span class="add">+&quot;endif
+</span><span class="add">+&quot;if ! empty($TMUX)
+</span><span class="add">+&quot;    set statusline +=%6*%*
+</span><span class="add">+&quot;endif
+</span><span class="def"> 
+</span><span class="sub">-set statusline +=%1*\ \ %&lt;%F\ \ %*	    &quot; full path
+</span><span class="sub">-set statusline +=%2*\ \ %y%*                &quot; file type
+</span><span class="sub">-set statusline +=%2*\ %m\ %*                &quot; modified flag
+</span><span class="sub">-set statusline +=%3*%{noscrollbar#statusline(12,&apos;\ &apos;,&apos;-&apos;)}
+</span><span class="sub">-set statusline +=%4*%=%*		    &quot; centre padding
+</span><span class="sub">-set statusline +=%5*\ \ %l\ /\ %L\ \ %*	    &quot; current / total lines
+</span><span class="sub">-set statusline +=%1*\ %n\ %*		    &quot; buffer number 
+</span><span class="add">+&quot;set statusline +=%1*\ \ %&lt;%F\ \ %*	    &quot; full path
+</span><span class="add">+&quot;set statusline +=%2*\ \ %y%*                &quot; file type
+</span><span class="add">+&quot;set statusline +=%2*\ %m\ %*                &quot; modified flag
+</span><span class="add">+&quot;set statusline +=%3*%{noscrollbar#statusline(12,&apos;\ &apos;,&apos;-&apos;)}
+</span><span class="add">+&quot;set statusline +=%4*%=%*		    &quot; centre padding
+</span><span class="add">+&quot;set statusline +=%5*\ \ %l\ /\ %L\ \ %*	    &quot; current / total lines
+</span><span class="add">+&quot;set statusline +=%1*\ %n\ %*		    &quot; buffer number 
+</span><span class="def"> 
+</span><span class="sub">-hi User1 ctermfg=0 ctermbg=5 cterm=none
+</span><span class="sub">-hi User2 ctermfg=0 ctermbg=4 cterm=none
+</span><span class="sub">-hi User3 ctermfg=0 ctermbg=14 cterm=none
+</span><span class="sub">-hi User4 ctermfg=0 ctermbg=2 cterm=none
+</span><span class="sub">-hi User5 ctermfg=0 ctermbg=3 cterm=none
+</span><span class="sub">-hi User6 ctermfg=3 ctermbg=5 cterm=none
+</span><span class="sub">-hi User7 ctermfg=0 ctermbg=9 cterm=none
+</span><span class="add">+&quot;hi User1 ctermfg=0 ctermbg=5 cterm=none
+</span><span class="add">+&quot;hi User2 ctermfg=0 ctermbg=4 cterm=none
+</span><span class="add">+&quot;hi User3 ctermfg=0 ctermbg=14 cterm=none
+</span><span class="add">+&quot;hi User4 ctermfg=0 ctermbg=2 cterm=none
+</span><span class="add">+&quot;hi User5 ctermfg=0 ctermbg=3 cterm=none
+</span><span class="add">+&quot;hi User6 ctermfg=3 ctermbg=5 cterm=none
+</span><span class="add">+&quot;hi User7 ctermfg=0 ctermbg=9 cterm=none
+</span><span class="def"> 
+</span><span class="sub">-&quot; tab bar
+</span><span class="sub">-hi TabLineFill ctermfg=0 ctermbg=1
+</span><span class="sub">-hi TabLine ctermfg=0 ctermbg=13
+</span><span class="sub">-hi TabLineSel ctermfg=0 ctermbg=12
+</span><span class="sub">-hi Title ctermfg=0 ctermbg=12
+</span><span class="add">+&quot;&quot; tab bar
+</span><span class="add">+&quot;hi TabLineFill ctermfg=0 ctermbg=1
+</span><span class="add">+&quot;hi TabLine ctermfg=0 ctermbg=13
+</span><span class="add">+&quot;hi TabLineSel ctermfg=0 ctermbg=12
+</span><span class="add">+&quot;hi Title ctermfg=0 ctermbg=12
+</span><span class="def"> 
+</span><span class="sub">-&quot; vimdiff  &quot; commented out as it was disrupting git gutter
+</span><span class="sub">-&quot;hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="sub">-&quot;hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="sub">-&quot;hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="sub">-&quot;hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="add">+&quot;&quot; vimdiff  &quot; commented out as it was disrupting git gutter
+</span><span class="add">+&quot;&quot;hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="add">+&quot;&quot;hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="add">+&quot;&quot;hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="add">+&quot;&quot;hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="def"> 
+</span><span class="sub">-&quot; folds
+</span><span class="sub">-hi Folded ctermbg=8 ctermfg=4 cterm=none
+</span><span class="add">+&quot;&quot; folds
+</span><span class="add">+&quot;hi Folded ctermbg=8 ctermfg=4 cterm=none
+</span><span class="def"> 
+</span><span class="sub">-&quot; visual mode highlighting
+</span><span class="sub">-hi Visual ctermbg=7 ctermfg=0
+</span><span class="add">+&quot;&quot; visual mode highlighting
+</span><span class="add">+&quot;hi Visual ctermbg=7 ctermfg=0
+</span><span class="def"> 
+</span><span class="sub">-&quot; title highlighting needs changing so that text doesn&apos;t go invisible due to cursor line
+</span><span class="sub">-hi Title ctermfg=3 ctermbg=0
+</span><span class="add">+&quot;&quot; title highlighting needs changing so that text doesn&apos;t go invisible due to cursor line
+</span><span class="add">+&quot;hi Title ctermfg=3 ctermbg=0
+</span><span class="def"> 
+</span><span class="sub">-&quot; matched brackets
+</span><span class="sub">-hi MatchParen ctermfg=7 cterm=underline ctermbg=0 
+</span><span class="add">+&quot;&quot; matched brackets
+</span><span class="add">+&quot;hi MatchParen ctermfg=7 cterm=underline ctermbg=0 
+</span><span class="def"> 
+</span><span class="sub">-&quot; github copilot
+</span><span class="sub">-hi CopilotSuggestion ctermfg=4
+</span><span class="add">+&quot;&quot; github copilot
+</span><span class="add">+&quot;hi CopilotSuggestion ctermfg=4
+</span><span class="def"> 
+</span><span class="def"> &quot; line numbers
+</span><span class="def"> set number relativenumber
+</span><span class="sub">-hi LineNr ctermfg=5
+</span><span class="add">+&quot;hi LineNr ctermfg=5
+</span><span class="def"> 
+</span><span class="def"> &quot; highlight cursor line
+</span><span class="def"> highlight CursorLine ctermbg=8 cterm=bold
+</span>@@ -68,14 +68,17 @@
+<span class="def">     au WinLeave * setlocal nocursorline
+</span><span class="def"> augroup END
+</span><span class="def"> 
+</span><span class="sub">-&quot; change cursor shape in insert mode
+</span><span class="sub">-let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="sub">-let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="sub">-augroup myCmds
+</span><span class="sub">-    au!
+</span><span class="sub">-    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="sub">-augroup END
+</span><span class="add">+&quot;&quot; change cursor shape in insert mode
+</span><span class="add">+&quot;let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="add">+&quot;let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="add">+&quot;augroup myCmds
+</span><span class="add">+&quot;    au!
+</span><span class="add">+&quot;    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="add">+&quot;augroup END
+</span><span class="add">+
+</span><span class="add">+&quot;&quot; character for split barrier
+</span><span class="add">+&quot;set fillchars=vert:\ 
+</span><span class="add">+&quot;hi VertSplit cterm=bold term=bold ctermbg=12
+</span><span class="def"> 
+</span><span class="sub">-&quot; character for split barrier
+</span><span class="sub">-set fillchars=vert:\ 
+</span><span class="sub">-hi VertSplit cterm=bold term=bold ctermbg=12
+</span><span class="add">+&quot; neovim stuff
+</span><span class="add">+colorscheme catppuccin-macchiato
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,2 +1,7 @@
+<span class="add">+# neovim lua config
+</span><span class="def"> 
+</span><span class="def"> require(&quot;supermaven-nvim&quot;).setup({})
+</span><span class="add">+
+</span><span class="add">+require(&apos;lualine&apos;).setup({
+</span><span class="add">+    options = { section_separators = &apos;&apos;, component_separators = &apos;&apos; }
+</span><span class="add">+})
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/lualine.nvim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+Subproject commit 0a5a66803c7407767b799067986b4dc3036e1983
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/catppuccin</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+Subproject commit 31fcfb02c47952d5c75aec893b93b2878abe5fbb
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitmodules</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -25,3 +25,9 @@
+<span class="def"> [submodule &quot;start/supermaven-nvim&quot;]
+</span><span class="def"> 	path = start/supermaven-nvim
+</span><span class="def"> 	url = https://github.com/supermaven-inc/supermaven-nvim
+</span><span class="add">+[submodule &quot;start/catppuccin&quot;]
+</span><span class="add">+	path = start/catppuccin
+</span><span class="add">+	url = https://github.com/catppuccin/nvim
+</span><span class="add">+[submodule &quot;start/lualine.nvim&quot;]
+</span><span class="add">+	path = start/lualine.nvim
+</span><span class="add">+	url = https://github.com/nvim-lualine/lualine.nvim
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - update startup apps</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/e5ef861b6569bd91e0711744c3d9dd65fb8eb793.html">e5ef861b6569bd91e0711744c3d9dd65fb8eb793</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/a748058605dce847cfab5c90b1186a9877388128.html">a748058605dce847cfab5c90b1186a9877388128</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-10-10 20:55:46 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-10-10 20:55:46 +0100
+
+update startup apps
+</pre><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,14 +26,15 @@
+<span class="def">     kanshi &amp;&gt;&gt; ~/.local/share/qtile/qtile.log &amp;
+</span><span class="def">     wlsunset &amp;
+</span><span class="def">     swayidle &amp;
+</span><span class="add">+    swaync &amp;
+</span><span class="def">     mpDris2 &amp;
+</span><span class="def">     sway-mpris-idle-inhibit &amp;
+</span><span class="def">     playerctld daemon &amp;
+</span><span class="sub">-    kdeconnect-indicator &amp;
+</span><span class="add">+    #kdeconnect-indicator &amp;
+</span><span class="def"> 
+</span><span class="def">     # Startup programs
+</span><span class="sub">-    run_if_new firefox &amp;
+</span><span class="sub">-    run_if_new geary &amp;
+</span><span class="add">+    #run_if_new firefox &amp;
+</span><span class="add">+    #run_if_new geary &amp;
+</span><span class="def"> 
+</span><span class="def">     # Notify me if any systemd services failed
+</span><span class="def">     check_systemd &amp;
+</span></pre>
+</div></div>
+  </body>
+</html>

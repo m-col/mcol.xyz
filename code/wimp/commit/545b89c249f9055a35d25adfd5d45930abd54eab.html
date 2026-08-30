@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - correctly clean protocol files</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/545b89c249f9055a35d25adfd5d45930abd54eab.html">545b89c249f9055a35d25adfd5d45930abd54eab</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/aeb3bc8dcd5f789cc5d0b0283f509e9b5bd4f81b.html">aeb3bc8dcd5f789cc5d0b0283f509e9b5bd4f81b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-26 12:54:56 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-26 12:54:56 +0000
+
+correctly clean protocol files
+</pre><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -28,7 +28,7 @@
+<span class="def"> 	@$(WAYLAND_SCANNER) private-code protocols/wlr-layer-shell-unstable-v1.xml $@.c
+</span><span class="def"> 
+</span><span class="def"> clean:
+</span><span class="sub">-	rm -f ${OUT} xdg-shell-protocol.h xdg-shell-protocol.c ${OBJECTS}
+</span><span class="add">+	rm -f ${OUT} *-protocol.h *-protocol.c ${OBJECTS}
+</span><span class="def"> 
+</span><span class="def"> install:
+</span><span class="def"> 	mkdir -p &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

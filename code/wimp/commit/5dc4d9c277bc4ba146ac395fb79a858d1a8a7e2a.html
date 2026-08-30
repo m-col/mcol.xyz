@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Use DRM_FORMAT for texture pixel format</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/5dc4d9c277bc4ba146ac395fb79a858d1a8a7e2a.html">5dc4d9c277bc4ba146ac395fb79a858d1a8a7e2a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/e2c2b84258cb437359d23be220f41160e5eba435.html">e2c2b84258cb437359d23be220f41160e5eba435</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-04-23 00:46:52 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-04-23 00:46:52 +0100
+
+Use DRM_FORMAT for texture pixel format
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,5 @@
+<span class="def"> #include &lt;cairo/cairo.h&gt;
+</span><span class="add">+#include &lt;drm_fourcc.h&gt;
+</span><span class="def"> #include &lt;stdio.h&gt;
+</span><span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="def"> #include &lt;string.h&gt;
+</span>@@ -68,7 +69,7 @@
+<span class="def">     cairo_paint(cr);
+</span><span class="def"> 
+</span><span class="def">     wallpaper-&gt;texture = wlr_texture_from_pixels(
+</span><span class="sub">-	wimp.renderer, WL_SHM_FORMAT_ARGB8888, stride, wallpaper-&gt;width,
+</span><span class="add">+	wimp.renderer, DRM_FORMAT_ARGB8888, stride, wallpaper-&gt;width,
+</span><span class="def"> 	wallpaper-&gt;height, cairo_image_surface_get_data(canvas)
+</span><span class="def">     );
+</span><span class="def">     desk-&gt;wallpaper = wallpaper;
+</span></pre>
+</div></div>
+  </body>
+</html>

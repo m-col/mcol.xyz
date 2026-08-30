@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Drop css-html-js-minify</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/22557eccf7398111543f8429a47f168886ab9107.html">22557eccf7398111543f8429a47f168886ab9107</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/7117836d264d9b2789629ba207ce2ce5a3e62ec3.html">7117836d264d9b2789629ba207ce2ce5a3e62ec3</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 16:23:34 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 16:23:34 +0000
+
+Drop css-html-js-minify
+
+It only minified the build output and wasn&apos;t resolving anyway (it
+expected the legacy pelican-plugins collection, not the pip package of
+the same name), silently logging an error on every publish build. Site
+looks and works the same without it, just unminified.
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_017Q252PHwe4uGEP1eLj3RPU
+</pre><div class="diff">
+  <p>
+    <b>uv.lock</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,15 +24,6 @@
+<span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> [[package]]
+</span><span class="sub">-name = &quot;css-html-js-minify&quot;
+</span><span class="sub">-version = &quot;2.5.5&quot;
+</span><span class="sub">-source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="sub">-sdist = { url = &quot;https://files.pythonhosted.org/packages/75/61/f52e5225abe8e36ed5396e5ae3074df5f4ef994b540e9b4fd55a39b03cfd/css-html-js-minify-2.5.5.zip&quot;, hash = &quot;sha256:4a9f11f7e0496f5284d12111f3ba4ff5ff2023d12f15d195c9c48bd97013746c&quot;, size = 33156, upload-time = &quot;2018-04-14T15:10:29.53Z&quot; }
+</span><span class="sub">-wheels = [
+</span><span class="sub">-    { url = &quot;https://files.pythonhosted.org/packages/e8/21/1260081a2c67105a3bd0f8692ff3c80b5f0cb5fe9f3f8fd4a990f17b8a39/css_html_js_minify-2.5.5-py2.py3-none-any.whl&quot;, hash = &quot;sha256:3da9d35ac0db8ca648c1b543e0e801d7ca0bab9e6bfd8418fee59d5ae001727a&quot;, size = 40527, upload-time = &quot;2018-04-14T15:10:26.667Z&quot; },
+</span><span class="sub">-]
+</span><span class="sub">-
+</span><span class="sub">-[[package]]
+</span><span class="def"> name = &quot;docutils&quot;
+</span><span class="def"> version = &quot;0.23&quot;
+</span><span class="def"> source = { registry = &quot;https://pypi.org/simple&quot; }
+</span>@@ -121,7 +112,6 @@
+<span class="def"> version = &quot;0.1.0&quot;
+</span><span class="def"> source = { virtual = &quot;.&quot; }
+</span><span class="def"> dependencies = [
+</span><span class="sub">-    { name = &quot;css-html-js-minify&quot; },
+</span><span class="def">     { name = &quot;docutils&quot; },
+</span><span class="def">     { name = &quot;pelican&quot; },
+</span><span class="def">     { name = &quot;pygments&quot; },
+</span>@@ -129,7 +119,6 @@
+<span class="def"> 
+</span><span class="def"> [package.metadata]
+</span><span class="def"> requires-dist = [
+</span><span class="sub">-    { name = &quot;css-html-js-minify&quot;, specifier = &quot;&gt;=2.5.5&quot; },
+</span><span class="def">     { name = &quot;docutils&quot;, specifier = &quot;&gt;=0.23&quot; },
+</span><span class="def">     { name = &quot;pelican&quot;, specifier = &quot;&gt;=4.12.0&quot; },
+</span><span class="def">     { name = &quot;pygments&quot;, specifier = &quot;&gt;=2.19.2&quot; },
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>pyproject.toml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,7 +4,6 @@
+<span class="def"> description = &quot;Source for the mcol.xyz blog, built with Pelican&quot;
+</span><span class="def"> requires-python = &quot;&gt;=3.14&quot;
+</span><span class="def"> dependencies = [
+</span><span class="sub">-    &quot;css-html-js-minify&gt;=2.5.5&quot;,
+</span><span class="def">     &quot;docutils&gt;=0.23&quot;,
+</span><span class="def">     &quot;pelican&gt;=4.12.0&quot;,
+</span><span class="def">     &quot;pygments&gt;=2.19.2&quot;,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>publishconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,6 +9,3 @@
+<span class="def"> 
+</span><span class="def"> FEED_ATOM = &quot;rss.xml&quot;
+</span><span class="def"> FEED_DOMAIN = SITEURL
+</span><span class="sub">-
+</span><span class="sub">-# css-html-js-minify
+</span><span class="sub">-PLUGINS.append(&quot;css-html-js-minify&quot;)
+</span></pre>
+</div></div>
+  </body>
+</html>

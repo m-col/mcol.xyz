@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - add note about hard-refreshing in readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/1684403ccb9cbc01613ffb460f47460f1b7b3600.html">1684403ccb9cbc01613ffb460f47460f1b7b3600</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/0c43efc7263d5227b78b965c8c2f3af9cccad8f2.html">0c43efc7263d5227b78b965c8c2f3af9cccad8f2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-20 21:26:00 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-20 21:26:00 +0100
+
+add note about hard-refreshing in readme
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,4 +44,13 @@
+<span class="def">    Here is a regular icon :far:`meh-rolling-eyes`
+</span><span class="def">    Here is a brand icon :fab:`github`
+</span><span class="def"> 
+</span><span class="add">+Troubleshooting
+</span><span class="add">+---------------
+</span><span class="add">+
+</span><span class="add">+If you are writing using the local devserver and new fonts are not showing in
+</span><span class="add">+your draft, your browser has likely cached an older version of the generated
+</span><span class="add">+font. Many browsers have a way to force a refresh of all requests, including
+</span><span class="add">+fonts, which will fix this. In Firefox this is Ctrl-F5 instead of just F5 to
+</span><span class="add">+refresh.
+</span><span class="add">+
+</span><span class="def"> This plugin has only been tested with fontawesome-free-5.11.2-web so far.
+</span></pre>
+</div></div>
+  </body>
+</html>

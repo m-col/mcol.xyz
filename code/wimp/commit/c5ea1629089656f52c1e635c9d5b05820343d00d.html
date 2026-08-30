@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - print error message when bind command fails</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/c5ea1629089656f52c1e635c9d5b05820343d00d.html">c5ea1629089656f52c1e635c9d5b05820343d00d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/43f91dbc14ea3aca770855084a249abe5d0327c7.html">43f91dbc14ea3aca770855084a249abe5d0327c7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-24 23:13:44 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-24 23:13:44 +0000
+
+print error message when bind command fails
+</pre><div class="diff">
+  <p>
+    <b>src/keybind.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -60,7 +60,6 @@
+<span class="def"> 
+</span><span class="def"> static bool str_handler(struct binding *kb, char *data) {
+</span><span class="def">     if (!data) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;Command requires arguments.&quot;);
+</span><span class="def"> 	return false;
+</span><span class="def">     }
+</span><span class="def">     if (is_number(data)) {
+</span>@@ -77,18 +76,18 @@
+<span class="def"> static bool motion_handler(struct binding *kb, char *data) {
+</span><span class="def">     char *s;
+</span><span class="def">     if (!data) {
+</span><span class="sub">-	goto err;
+</span><span class="add">+	return false;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="def">     if (!is_number(s) || !data) {
+</span><span class="sub">-	goto err;
+</span><span class="add">+	return false;
+</span><span class="def">     }
+</span><span class="def">     int x = atoi(s);
+</span><span class="def"> 
+</span><span class="def">     s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def">     if (!is_number(s)) {
+</span><span class="sub">-	goto err;
+</span><span class="add">+	return false;
+</span><span class="def">     }
+</span><span class="def">     int y = atoi(s);
+</span><span class="def"> 
+</span>@@ -100,10 +99,6 @@
+<span class="def">     kb-&gt;data = calloc(1, sizeof(struct motion));
+</span><span class="def">     *(struct motion *)(kb-&gt;data) = motion;
+</span><span class="def">     return true;
+</span><span class="sub">-
+</span><span class="sub">-err:
+</span><span class="sub">-    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="sub">-    return false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -168,16 +163,16 @@
+<span class="def">     char *geo, *command;
+</span><span class="def">     struct wlr_box box;
+</span><span class="def">     if (!data) {
+</span><span class="sub">-	goto err;
+</span><span class="add">+	return false;
+</span><span class="def">     }
+</span><span class="def">     if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	goto err;
+</span><span class="add">+	return false;
+</span><span class="def">     }
+</span><span class="def">     if (!(command = strtok(NULL, &quot;\n\r&quot;))) {
+</span><span class="sub">-	goto err;
+</span><span class="add">+	return false;
+</span><span class="def">     }
+</span><span class="def">     if (!wlr_box_from_str(geo, &amp;box)) {
+</span><span class="sub">-	goto err;
+</span><span class="add">+	return false;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     struct scratchpad *scratchpad = calloc(1, sizeof(struct scratchpad));
+</span>@@ -192,27 +187,20 @@
+<span class="def">     *(int *)(kb-&gt;data) = _scratchpad_id;
+</span><span class="def">     _scratchpad_id++;
+</span><span class="def">     return true;
+</span><span class="sub">-
+</span><span class="sub">-err:
+</span><span class="sub">-    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="sub">-    return false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static bool box_handler(struct binding *kb, char *data) {
+</span><span class="def">     char *geo;
+</span><span class="def">     if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	goto err;
+</span><span class="add">+	return false;
+</span><span class="def">     }
+</span><span class="def">     struct wlr_box *box = calloc(1, sizeof(struct wlr_box));
+</span><span class="def">     if (!wlr_box_from_str(geo, box)) {
+</span><span class="sub">-	goto err;
+</span><span class="add">+	return false;
+</span><span class="def">     }
+</span><span class="def">     kb-&gt;data = box;
+</span><span class="def">     return true;
+</span><span class="sub">-err:
+</span><span class="sub">-    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="sub">-    return false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -260,7 +248,7 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool assign_action(const char *name, char *data, struct binding *kb) {
+</span><span class="add">+static bool assign_action(const char *name, char *data, struct binding *kb, char * response) {
+</span><span class="def">     kb-&gt;action = NULL;
+</span><span class="def">     kb-&gt;data = NULL;
+</span><span class="def">     size_t i;
+</span>@@ -289,6 +277,7 @@
+<span class="def"> 		    kb-&gt;action = action_map[i].action;
+</span><span class="def"> 		    if (action_map[i].data_handler != NULL) {
+</span><span class="def"> 			if (!action_map[i].data_handler(kb, data)){
+</span><span class="add">+			    sprintf(response, &quot;Command malformed/incomplete.&quot;);
+</span><span class="def"> 			    return false;
+</span><span class="def"> 			}
+</span><span class="def"> 		    }
+</span>@@ -349,10 +338,10 @@
+<span class="def">     // action
+</span><span class="def">     s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def">     if (!s) {
+</span><span class="sub">-	sprintf(response,  &quot;Command malformed/incompleted.&quot;);
+</span><span class="add">+	sprintf(response,  &quot;Command malformed/incomplete.&quot;);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="sub">-    if (!assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb)) {
+</span><span class="add">+    if (!assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb, response)) {
+</span><span class="def"> 	free(kb);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span></pre>
+</div></div>
+  </body>
+</html>

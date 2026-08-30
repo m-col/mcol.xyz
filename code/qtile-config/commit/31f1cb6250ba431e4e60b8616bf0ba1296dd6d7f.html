@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - lazy.change_vt -&gt; lazy.core.change_vt</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/31f1cb6250ba431e4e60b8616bf0ba1296dd6d7f.html">31f1cb6250ba431e4e60b8616bf0ba1296dd6d7f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/4fff6c32381e6fcab7e3f10507ad1f23329be689.html">4fff6c32381e6fcab7e3f10507ad1f23329be689</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-12 19:00:10 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-12 19:00:10 +0100
+
+lazy.change_vt -&gt; lazy.core.change_vt
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,12 +20,12 @@
+<span class="def"> 
+</span><span class="def"> # Keys to change VT
+</span><span class="def"> keys_backend.extend([
+</span><span class="sub">-    ([mod], &apos;F1&apos;,     lazy.change_vt(1),    &quot;Change to VT 1&quot;),
+</span><span class="sub">-    ([mod], &apos;F2&apos;,     lazy.change_vt(2),    &quot;Change to VT 2&quot;),
+</span><span class="sub">-    ([mod], &apos;F3&apos;,     lazy.change_vt(3),    &quot;Change to VT 3&quot;),
+</span><span class="sub">-    ([mod], &apos;F4&apos;,     lazy.change_vt(4),    &quot;Change to VT 4&quot;),
+</span><span class="sub">-    ([mod], &apos;F5&apos;,     lazy.change_vt(5),    &quot;Change to VT 5&quot;),
+</span><span class="sub">-    ([mod], &apos;F6&apos;,     lazy.change_vt(6),    &quot;Change to VT 6&quot;),
+</span><span class="add">+    ([mod], &apos;F1&apos;,     lazy.core.change_vt(1),    &quot;Change to VT 1&quot;),
+</span><span class="add">+    ([mod], &apos;F2&apos;,     lazy.core.change_vt(2),    &quot;Change to VT 2&quot;),
+</span><span class="add">+    ([mod], &apos;F3&apos;,     lazy.core.change_vt(3),    &quot;Change to VT 3&quot;),
+</span><span class="add">+    ([mod], &apos;F4&apos;,     lazy.core.change_vt(4),    &quot;Change to VT 4&quot;),
+</span><span class="add">+    ([mod], &apos;F5&apos;,     lazy.core.change_vt(5),    &quot;Change to VT 5&quot;),
+</span><span class="add">+    ([mod], &apos;F6&apos;,     lazy.core.change_vt(6),    &quot;Change to VT 6&quot;),
+</span><span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - pan_to_view: only damage when panning required</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/9247a25c04f3c39825ddc807bb7eb6570f5b5655.html">9247a25c04f3c39825ddc807bb7eb6570f5b5655</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/764d9cf329b641a2da4924235ac2d719ba8b3b35.html">764d9cf329b641a2da4924235ac2d719ba8b3b35</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-12 10:49:49 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-12 10:49:49 +0000
+
+pan_to_view: only damage when panning required
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -149,19 +149,25 @@
+<span class="def"> 	.is_percentage = false,
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="add">+    int panning = 2;
+</span><span class="def">     if (x &lt; 0) {
+</span><span class="def"> 	motion.dx = x * zoom;
+</span><span class="def">     } else if (x + width &gt; extents-&gt;width / zoom) {
+</span><span class="def"> 	motion.dx = (x + width) * zoom - extents-&gt;width;
+</span><span class="add">+    } else {
+</span><span class="add">+	panning -= 1;
+</span><span class="def">     }
+</span><span class="def">     if (y &lt; 0) {
+</span><span class="def"> 	motion.dy = y * zoom;
+</span><span class="def">     } else if (y + height &gt; extents-&gt;height / zoom) {
+</span><span class="def"> 	motion.dy = (y + height) * zoom - extents-&gt;height;
+</span><span class="add">+    } else {
+</span><span class="add">+	panning -= 1;
+</span><span class="add">+    }
+</span><span class="add">+    if (panning) {
+</span><span class="add">+	pan_desk(&amp;motion);
+</span><span class="add">+	damage_all_outputs();
+</span><span class="def">     }
+</span><span class="sub">-    pan_desk(&amp;motion);
+</span><span class="sub">-
+</span><span class="sub">-    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

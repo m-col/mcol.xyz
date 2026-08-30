@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add tex ftplugin and texdoc handler</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/0cbaaeb5c7c29b8f03b0a05834c7ab184d6b081a.html">0cbaaeb5c7c29b8f03b0a05834c7ab184d6b081a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/aa4184319f65332a24a4ba667e5eb21c73fabd7b.html">aa4184319f65332a24a4ba667e5eb21c73fabd7b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-05-21 19:54:09 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-05-21 19:54:09 +0100
+
+add tex ftplugin and texdoc handler
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -134,3 +134,14 @@
+<span class="def">     set title titlestring=%{progname}\ [%{v:servername}]\ [%n]\ %F
+</span><span class="def"> endif
+</span><span class="def"> if &amp;term =~ &apos;^screen&apos; &amp;&amp; !has(&apos;nvim&apos;) | exe &quot;set t_ts=\e]2; t_fs=\7&quot; | endif
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+let g:vimtex_doc_handlers = [&apos;Texdoc&apos;]
+</span><span class="add">+function! Texdoc(context)
+</span><span class="add">+    call vimtex#doc#make_selection(a:context)
+</span><span class="add">+    if !empty(a:context.selected)
+</span><span class="add">+	execute &apos;!texdoc&apos; a:context.selected &apos;&amp;&apos;
+</span><span class="add">+    endif
+</span><span class="add">+    return 1
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/tex.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,9 @@
+<span class="add">+setlocal tabstop=4
+</span><span class="add">+setlocal softtabstop=4
+</span><span class="add">+setlocal shiftwidth=4
+</span><span class="add">+setlocal textwidth=79
+</span><span class="add">+setlocal expandtab
+</span><span class="add">+
+</span><span class="add">+nnoremap K :VimtexDocPackage&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;localleader&gt;lw :exe &apos;cexpr system(&quot;texcount &apos; . expand(&apos;%&apos;) . &apos;&quot;)&apos;&lt;CR&gt;:copen&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

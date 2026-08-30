@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - trying new vim-tmux navigation without plugin</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/a843684fd262a0ad465cada132c7f27cd809fd68.html">a843684fd262a0ad465cada132c7f27cd809fd68</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/a76d4fc2550bb8b105753ef0ddf84dd2ca5c9f29.html">a76d4fc2550bb8b105753ef0ddf84dd2ca5c9f29</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-03-12 23:02:43 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-03-12 23:02:43 +0000
+
+trying new vim-tmux navigation without plugin
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,7 +26,7 @@
+<span class="def"> Plugin &apos;junegunn/goyo.vim&apos;
+</span><span class="def"> Plugin &apos;mcolligan/vim-misc&apos;		    &quot; my vimrc and misc functions 
+</span><span class="def"> Plugin &apos;mcolligan/tide&apos;			    &quot; tmux ide
+</span><span class="sub">-Plugin &apos;christoomey/vim-tmux-navigator&apos;	    &quot; navigate vim and tmux splits seamlessly
+</span><span class="add">+&quot;Plugin &apos;christoomey/vim-tmux-navigator&apos;	    &quot; navigate vim and tmux splits seamlessly
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span><span class="def"> filetype plugin indent on		    &quot; required
+</span>@@ -114,3 +114,9 @@
+<span class="def"> 
+</span><span class="def"> &quot; session saving
+</span><span class="def"> let g:vimlab_session = &quot;~/.vim/sessions/matlab-session.vim&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; Intelligently navigate tmux panes and Vim splits using the same keys.
+</span><span class="add">+&quot; See https://sunaku.github.io/tmux-select-pane.html for documentation.
+</span><span class="add">+let progname = substitute($VIM, &apos;.*[/\\]&apos;, &apos;&apos;, &apos;&apos;)
+</span><span class="add">+set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
+</span><span class="add">+if &amp;term =~ &apos;^screen&apos; &amp;&amp; !has(&apos;nvim&apos;) | exe &quot;set t_ts=\e]2; t_fs=\7&quot; | endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,11 +7,10 @@
+<span class="def"> 
+</span><span class="def"> # bindings
+</span><span class="def"> bind r source-file ~/.tmux.conf
+</span><span class="sub">-#bind-key C-a last-window
+</span><span class="sub">-bind-key | split-window -hb \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="sub">-#bind-key -n C-d kill-pane \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="def"> bind C-l send-keys &apos;C-l&apos;
+</span><span class="def"> bind C-a send-keys &apos;C-a&apos;
+</span><span class="add">+bind-key | split-window -hb \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="add">+set-hook -g pane-exited &apos;run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;&apos;
+</span><span class="def"> 
+</span><span class="def"> # general settings
+</span><span class="def"> set -g default-terminal &quot;rxvt-unicode-256color&quot;
+</span>@@ -41,17 +40,88 @@
+<span class="def"> #setw -g window-status-format &apos; #I#[fg=colour7]:#[fg=colour8]#W#[fg=colour7]#F &apos;
+</span><span class="def"> set -g status off
+</span><span class="def"> 
+</span><span class="sub">-# Smart pane switching with awareness of Vim splits.
+</span><span class="sub">-# See: https://github.com/christoomey/vim-tmux-navigator
+</span><span class="sub">-is_vim=&quot;ps -o state= -o comm= -t &apos;#{pane_tty}&apos; \
+</span><span class="sub">-    | grep -iqE &apos;^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$&apos;&quot;
+</span><span class="sub">-bind-key -n C-h if-shell &quot;$is_vim&quot; &quot;send-keys C-h&quot;  &quot;select-pane -L&quot;
+</span><span class="sub">-bind-key -n C-j if-shell &quot;$is_vim&quot; &quot;send-keys C-j&quot;  &quot;select-pane -D&quot;
+</span><span class="sub">-bind-key -n C-k if-shell &quot;$is_vim&quot; &quot;send-keys C-k&quot;  &quot;select-pane -U&quot;
+</span><span class="sub">-bind-key -n C-l if-shell &quot;$is_vim&quot; &quot;send-keys C-l&quot;  &quot;select-pane -R&quot;
+</span><span class="sub">-bind-key -n C-\ if-shell &quot;$is_vim&quot; &quot;send-keys C-\\&quot; &quot;select-pane -l&quot;
+</span><span class="sub">-bind-key -T copy-mode-vi C-h select-pane -L
+</span><span class="sub">-bind-key -T copy-mode-vi C-j select-pane -D
+</span><span class="sub">-bind-key -T copy-mode-vi C-k select-pane -U
+</span><span class="sub">-bind-key -T copy-mode-vi C-l select-pane -R
+</span><span class="sub">-bind-key -T copy-mode-vi C-\ select-pane -l
+</span><span class="add">+## Smart pane switching with awareness of Vim splits.
+</span><span class="add">+## See: https://github.com/christoomey/vim-tmux-navigator
+</span><span class="add">+#is_vim=&quot;ps -o state= -o comm= -t &apos;#{pane_tty}&apos; \
+</span><span class="add">+#    | grep -iqE &apos;^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$&apos;&quot;
+</span><span class="add">+#bind-key -n C-h if-shell &quot;$is_vim&quot; &quot;send-keys C-h&quot;  &quot;select-pane -L&quot;
+</span><span class="add">+#bind-key -n C-j if-shell &quot;$is_vim&quot; &quot;send-keys C-j&quot;  &quot;select-pane -D&quot;
+</span><span class="add">+#bind-key -n C-k if-shell &quot;$is_vim&quot; &quot;send-keys C-k&quot;  &quot;select-pane -U&quot;
+</span><span class="add">+#bind-key -n C-l if-shell &quot;$is_vim&quot; &quot;send-keys C-l&quot;  &quot;select-pane -R&quot;
+</span><span class="add">+#bind-key -n C-\ if-shell &quot;$is_vim&quot; &quot;send-keys C-\\&quot; &quot;select-pane -l&quot;
+</span><span class="add">+#bind-key -T copy-mode-vi C-h select-pane -L
+</span><span class="add">+#bind-key -T copy-mode-vi C-j select-pane -D
+</span><span class="add">+#bind-key -T copy-mode-vi C-k select-pane -U
+</span><span class="add">+#bind-key -T copy-mode-vi C-l select-pane -R
+</span><span class="add">+#bind-key -T copy-mode-vi C-\ select-pane -l
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Intelligently navigate tmux panes and Vim splits using the same keys.
+</span><span class="add">+# See https://sunaku.github.io/tmux-select-pane.html for documentation.
+</span><span class="add">+#
+</span><span class="add">+#      +-------------+------------+-----------------------------+
+</span><span class="add">+#      | inside Vim? | is Zoomed? | Action taken by key binding |
+</span><span class="add">+#      +-------------+------------+-----------------------------+
+</span><span class="add">+#      | No          | No         | Focus directional tmux pane |
+</span><span class="add">+#      | No          | Yes        | Nothing: ignore key binding |
+</span><span class="add">+#      | Yes         | No         | Seamlessly focus Vim / tmux |
+</span><span class="add">+#      | Yes         | Yes        | Focus directional Vim split |
+</span><span class="add">+#      +-------------+------------+-----------------------------+
+</span><span class="add">+#
+</span><span class="add">+vim_navigation_timeout=0.05 # number of seconds we give Vim to navigate
+</span><span class="add">+navigate=&apos;                                                             \
+</span><span class="add">+  pane_is_zoomed() {                                                   \
+</span><span class="add">+    test #{window_zoomed_flag} -eq 1;                                  \
+</span><span class="add">+  };                                                                   \
+</span><span class="add">+  pane_title_changed() {                                               \
+</span><span class="add">+    test &quot;#{pane_title}&quot; != &quot;$(tmux display -p &quot;##{pane_title}&quot;)&quot;;     \
+</span><span class="add">+  };                                                                   \
+</span><span class="add">+  command_is_vim() {                                                   \
+</span><span class="add">+    case &quot;${1%% *}&quot; in                                                 \
+</span><span class="add">+      (vi|?vi|vim*|?vim*|view|?view|vi??*) true ;;                     \
+</span><span class="add">+      (*) false ;;                                                     \
+</span><span class="add">+    esac;                                                              \
+</span><span class="add">+  };                                                                   \
+</span><span class="add">+  pane_contains_vim() {                                                \
+</span><span class="add">+    case &quot;#{=3:pane_current_command}&quot; in                               \
+</span><span class="add">+      (ssh|sh) command_is_vim &quot;#{=5:pane_title}&quot; ;;                    \
+</span><span class="add">+      (*) command_is_vim &quot;#{=5:pane_current_command}&quot; ;;               \
+</span><span class="add">+    esac;                                                              \
+</span><span class="add">+  };                                                                   \
+</span><span class="add">+  pane_contains_neovim_terminal() {                                    \
+</span><span class="add">+    test &quot;#{=12:pane_title}&quot; = &quot;nvim term://&quot;;                         \
+</span><span class="add">+  };                                                                   \
+</span><span class="add">+  navigate() {                                                         \
+</span><span class="add">+    tmux_navigation_command=$1;                                        \
+</span><span class="add">+    vim_navigation_command=$2;                                         \
+</span><span class="add">+    vim_navigation_only_if=${3:-true};                                 \
+</span><span class="add">+    if pane_contains_vim &amp;&amp; eval &quot;$vim_navigation_only_if&quot;; then       \
+</span><span class="add">+      if pane_contains_neovim_terminal; then                           \
+</span><span class="add">+        tmux send-keys C-\\ C-n;                                       \
+</span><span class="add">+      fi;                                                              \
+</span><span class="add">+      eval &quot;$vim_navigation_command&quot;;                                  \
+</span><span class="add">+      if ! pane_is_zoomed; then                                        \
+</span><span class="add">+        sleep $vim_navigation_timeout; : wait for Vim to change title; \
+</span><span class="add">+        if ! pane_title_changed; then                                  \
+</span><span class="add">+          eval &quot;$tmux_navigation_command&quot;;                             \
+</span><span class="add">+        fi;                                                            \
+</span><span class="add">+      fi;                                                              \
+</span><span class="add">+    elif ! pane_is_zoomed; then                                        \
+</span><span class="add">+      eval &quot;$tmux_navigation_command&quot;;                                 \
+</span><span class="add">+    fi;                                                                \
+</span><span class="add">+  };                                                                   \
+</span><span class="add">+navigate &apos;
+</span><span class="add">+navigate_left=&quot; $navigate &apos;tmux select-pane -L&apos;  &apos;tmux send-keys C-w h&apos;&quot;
+</span><span class="add">+navigate_down=&quot; $navigate &apos;tmux select-pane -D&apos;  &apos;tmux send-keys C-w j&apos;&quot;
+</span><span class="add">+navigate_up=&quot;   $navigate &apos;tmux select-pane -U&apos;  &apos;tmux send-keys C-w k&apos;&quot;
+</span><span class="add">+navigate_right=&quot;$navigate &apos;tmux select-pane -R&apos;  &apos;tmux send-keys C-w l&apos;&quot;
+</span><span class="add">+navigate_back=&quot; $navigate &apos;tmux select-pane -l || tmux select-pane -t1&apos;\
+</span><span class="add">+                          &apos;tmux send-keys C-w p&apos;                       \
+</span><span class="add">+                          &apos;pane_is_zoomed&apos;                             &quot;
+</span><span class="add">+
+</span><span class="add">+# QWERTY keys - comment these out if you don&apos;t use QWERTY layout!
+</span><span class="add">+bind-key -n C-h run-shell -b &quot;$navigate_left&quot;
+</span><span class="add">+bind-key -n C-j run-shell -b &quot;$navigate_down&quot;
+</span><span class="add">+bind-key -n C-k run-shell -b &quot;$navigate_up&quot;
+</span><span class="add">+bind-key -n C-l run-shell -b &quot;$navigate_right&quot;
+</span><span class="add">+bind-key -n C-\ run-shell -b &quot;$navigate_back&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

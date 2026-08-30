@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add some typescript stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/c402c8596f8bd4fd64132a1f51baf96307dad88d.html">c402c8596f8bd4fd64132a1f51baf96307dad88d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/9240356896da86708d9d362fd044c82b38a3343e.html">9240356896da86708d9d362fd044c82b38a3343e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2025-05-08 18:07:52 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-05-13 17:03:29 +0100
+
+add some typescript stuff
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -80,6 +80,7 @@
+<span class="def"> let g:ale_linters = {
+</span><span class="def"> \   &apos;haskell&apos;: [&apos;hlint&apos;],
+</span><span class="def"> \   &apos;python&apos;: [&apos;flake8&apos;, &apos;pyright&apos;, &apos;ruff&apos;],
+</span><span class="add">+\   &apos;typescriptreact&apos;: [&apos;tsserver&apos;, &apos;eslint&apos;],
+</span><span class="def"> \}
+</span><span class="def"> &quot; Don&apos;t show errors in virtual text or signs column; rely on echoed message instead
+</span><span class="def"> let g:ale_virtualtext_cursor = 0
+</span>@@ -88,6 +89,7 @@
+<span class="def"> let g:ale_fixers = {
+</span><span class="def"> \   &apos;haskell&apos;: [&apos;ormolu&apos;],
+</span><span class="def"> \   &apos;python&apos;: [&apos;black&apos;, &apos;ruff&apos;],
+</span><span class="add">+\   &apos;typescriptreact&apos;: [&apos;eslint&apos;],
+</span><span class="def"> \}
+</span><span class="def"> &quot;\   &apos;markdown&apos;: [&apos;prettier&apos;],
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -130,20 +130,10 @@
+<span class="def"> &quot; ALE find references
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-i&gt; &lt;Plug&gt;(ale_find_references)
+</span><span class="def"> 
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-]&gt; &lt;Plug&gt;(ale_go_to_definition)
+</span><span class="add">+
+</span><span class="def"> &quot; CtrlP (in addition to the default Ctrl-p binding)
+</span><span class="def"> nnoremap &lt;silent&gt; &lt;C-o&gt; :CtrlPTag&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> &quot; blamer
+</span><span class="def"> nnoremap &lt;A-b&gt; :BlamerToggle&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="sub">-&quot; add python breakpoint: vim function that checks for &apos;breakpoint&apos; in the current line and removes this line if it exists, otherwise adds a new line on this line with breakpoint() on it
+</span><span class="sub">-function! Breakpoint()
+</span><span class="sub">-    let l:line = getline(&apos;.&apos;)
+</span><span class="sub">-    if match(l:line, &apos;breakpoint&apos;) != -1
+</span><span class="sub">-	execute &apos;normal! dd&apos;
+</span><span class="sub">-    else
+</span><span class="sub">-	execute &apos;normal! Obreakpoint()&apos;
+</span><span class="sub">-    endif
+</span><span class="sub">-endfunction
+</span><span class="sub">-nnoremap &lt;C-b&gt; :call Breakpoint()&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/ftplugin/typescriptreact.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,4 @@
+<span class="add">+setlocal tabstop=2
+</span><span class="add">+setlocal softtabstop=2
+</span><span class="add">+setlocal shiftwidth=2
+</span><span class="add">+setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/ftplugin/typescript.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,4 @@
+<span class="add">+setlocal tabstop=2
+</span><span class="add">+setlocal softtabstop=2
+</span><span class="add">+setlocal shiftwidth=2
+</span><span class="add">+setlocal expandtab
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/ftplugin/python.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,3 +3,14 @@
+<span class="def"> setlocal shiftwidth=4
+</span><span class="def"> setlocal textwidth=88
+</span><span class="def"> setlocal expandtab
+</span><span class="add">+
+</span><span class="add">+&quot; add python breakpoint: vim function that checks for &apos;breakpoint&apos; in the current line and removes this line if it exists, otherwise adds a new line on this line with breakpoint() on it
+</span><span class="add">+function! Breakpoint()
+</span><span class="add">+    let l:line = getline(&apos;.&apos;)
+</span><span class="add">+    if match(l:line, &apos;breakpoint&apos;) != -1
+</span><span class="add">+	execute &apos;normal! dd&apos;
+</span><span class="add">+    else
+</span><span class="add">+	execute &apos;normal! Obreakpoint()&apos;
+</span><span class="add">+    endif
+</span><span class="add">+endfunction
+</span><span class="add">+nnoremap &lt;C-b&gt; :call Breakpoint()&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

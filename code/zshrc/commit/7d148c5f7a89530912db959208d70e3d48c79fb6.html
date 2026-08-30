@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/7d148c5f7a89530912db959208d70e3d48c79fb6.html">7d148c5f7a89530912db959208d70e3d48c79fb6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/37f63c7c0c290903a256673f3bb0fdba3c0c58f2.html">37f63c7c0c290903a256673f3bb0fdba3c0c58f2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-18 18:01:28 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-18 18:01:28 +0000
+
+updates
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -69,3 +69,5 @@
+<span class="def"> export RANGER_LOAD_DEFAULT_RC=FALSE
+</span><span class="def"> 
+</span><span class="def"> export PYTHONPATH=$HOME/git/reach
+</span><span class="add">+export XKB_DEFAULT_OPTIONS=caps:swapescape,altwin:swap_alt_win
+</span><span class="add">+export XKB_DEFAULT_LAYOUT=gb
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -85,7 +85,7 @@
+<span class="def"> # * urxvt-full:
+</span><span class="def"> #   The same as urxvt but utilizing not only the preview pane but the
+</span><span class="def"> #   whole terminal window.
+</span><span class="sub">-set preview_images_method ueberzug
+</span><span class="add">+set preview_images_method w3m
+</span><span class="def"> 
+</span><span class="def"> # Use a unicode &quot;...&quot; character to mark cut-off filenames?
+</span><span class="def"> set unicode_ellipsis true
+</span>@@ -609,9 +609,9 @@
+<span class="def"> 
+</span><span class="def"> # rotate image
+</span><span class="def"> map r noop
+</span><span class="sub">-map r1 shell mogrify -rotate 90 %s
+</span><span class="sub">-map r2 shell mogrify -rotate 180 %s
+</span><span class="sub">-map r3 shell mogrify -rotate 270 %s
+</span><span class="add">+map r1 shell convert %s -rotate 90 %s
+</span><span class="add">+map r2 shell convert %s -rotate 180 %s
+</span><span class="add">+map r3 shell convert %s -rotate 270 %s
+</span><span class="def"> 
+</span><span class="def"> # drag files
+</span><span class="def"> #map &lt;C-d&gt; shell dragon-drag-and-drop -a -x %p &amp;&gt; /dev/null &amp;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,6 +12,7 @@
+<span class="def"> alias _=&apos;sudo&apos;
+</span><span class="def"> alias grep=&apos;grep --exclude-dir=&quot;__pycache__&quot;&apos;
+</span><span class="def"> alias p=&apos;ps aux  | grep -v grep | grep -i&apos;
+</span><span class="add">+alias import=&apos;echo you forgot to enter python&apos;
+</span><span class="def"> 
+</span><span class="def"> # systemd
+</span><span class="def"> alias sc=&apos;systemctl&apos;
+</span>@@ -49,6 +50,7 @@
+<span class="def"> # git
+</span><span class="def"> alias gs=&apos;git status&apos;
+</span><span class="def"> alias ad=&apos;git add&apos;
+</span><span class="add">+alias co=&apos;git commit&apos;
+</span><span class="def"> alias cm=&apos;git commit -m&apos;
+</span><span class="def"> alias psh=&apos;git push&apos;
+</span><span class="def"> alias fe=&apos;git fetch &amp;&amp; git status&apos;
+</span>@@ -58,10 +60,13 @@
+<span class="def"> alias brs=&apos;git branch -v&apos;
+</span><span class="def"> alias ch=&apos;git checkout&apos;
+</span><span class="def"> alias dif=&apos;git diff&apos;
+</span><span class="sub">-alias difs=&apos;git diff --staged&apos;
+</span><span class="add">+alias dic=&apos;git diff --cached&apos;
+</span><span class="def"> alias cl=&apos;git clone&apos;
+</span><span class="def"> alias chp=&apos;git cherry-pick&apos;
+</span><span class="def"> alias rs=&apos;git restore&apos;
+</span><span class="add">+alias st=&apos;git stash&apos;
+</span><span class="add">+alias stl=&apos;git stash list&apos;
+</span><span class="add">+alias stp=&apos;git stash pop&apos;
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span>@@ -77,13 +82,12 @@
+<span class="def"> alias modrc=&apos;vim $HOME/.config/ranger/rc.conf&apos;
+</span><span class="def"> 
+</span><span class="def"> # shortcuts
+</span><span class="sub">-alias gc=&apos;cd $HOME/.config; l&apos;
+</span><span class="sub">-alias gh=&apos;cd $HOME; ls&apos;
+</span><span class="add">+alias gc=&apos;cd $HOME/.config&apos;
+</span><span class="def"> alias gd=&apos;cd $HOME/documents&apos;
+</span><span class="def"> alias gD=&apos;cd $HOME/Downloads&apos;
+</span><span class="sub">-alias gDe=&apos;cd $HOME/Desktop&apos;
+</span><span class="add">+alias gde=&apos;cd $HOME/desktop&apos;
+</span><span class="def"> alias gg=&apos;cd $HOME/git; l&apos;
+</span><span class="sub">-alias gb=&apos;cd $HOME/.config/bin; ls&apos;
+</span><span class="add">+alias gb=&apos;cd $HOME/.config/bin&apos;
+</span><span class="def"> alias ge=&apos;cd /etc&apos;
+</span><span class="def"> alias gv=&apos;cd $HOME/.vim/bundle/vim-misc&apos;
+</span><span class="def"> alias gvm=&apos;cd $HOME/.vim/bundle/vim-misc; ra&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - remove unnecessary things from prompt</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/b89cb00a74bb9f50860c38f8cbd2debf049e4665.html">b89cb00a74bb9f50860c38f8cbd2debf049e4665</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/509eee66954a58c8db4a370e6f57220d8360d707.html">509eee66954a58c8db4a370e6f57220d8360d707</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-07-28 20:55:49 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-07-28 20:55:49 +0100
+
+remove unnecessary things from prompt
+</pre><div class="diff">
+  <p>
+    <b>oh-my-zsh/theme-and-appearance.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -46,10 +46,4 @@
+<span class="def"> [[ -n &quot;$WINDOW&quot; ]] &amp;&amp; SCREEN_NO=&quot;%B$WINDOW%b &quot; || SCREEN_NO=&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> # Apply theming defaults
+</span><span class="sub">-PS1=&quot;%n@%m:%~%# &quot;
+</span><span class="sub">-
+</span><span class="sub">-# git theming default: Variables for theming the git info prompt
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_PREFIX=&quot;git:(&quot;         # Prefix at the very beginning of the prompt, before the branch name
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;)&quot;             # At the very end of the prompt
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_DIRTY=&quot;*&quot;              # Text to display if the branch is dirty
+</span><span class="sub">-ZSH_THEME_GIT_PROMPT_CLEAN=&quot;&quot;               # Text to display if the branch is clean
+</span><span class="add">+#PS1=&quot;%n@%m:%~%# &quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add Popups and notification to the readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/13f6111f66171a485a383f7c6418a6f7abd9bc79.html">13f6111f66171a485a383f7c6418a6f7abd9bc79</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/b14c222453b9544e03d7fec2fc1b59842474bec5.html">b14c222453b9544e03d7fec2fc1b59842474bec5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-25 17:54:25 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-25 17:54:25 +0000
+
+add Popups and notification to the readme
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,8 +10,11 @@
+<span class="def">     - Avoiding extra dependencies.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+Bases
+</span><span class="add">+-----
+</span><span class="add">+
+</span><span class="def"> Notifiers
+</span><span class="sub">----------
+</span><span class="add">+`````````
+</span><span class="def"> 
+</span><span class="def"> :code:`Notifier`-based plugins expose methods that trigger notifications, with
+</span><span class="def"> the purpose of being bound to keys.
+</span>@@ -35,6 +38,14 @@
+<span class="def"> :code:`qtools.Notifier` in :code:`qtools/__init__.py`.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+Popups
+</span><span class="add">+``````
+</span><span class="add">+
+</span><span class="add">+The :code:`Popup` class can be used to create and control popup windows, such
+</span><span class="add">+as tooltips or notifications. For an example see the :code:`notification`
+</span><span class="add">+plugin.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> Plugin list
+</span><span class="def"> -----------
+</span><span class="def"> 
+</span>@@ -45,6 +56,8 @@
+<span class="def"> 
+</span><span class="def"> backlight       Notifier that controls backlight level
+</span><span class="def"> 
+</span><span class="add">+notification    A fully functional notification server
+</span><span class="add">+
+</span><span class="def"> mpc             Notifier that controls MPD
+</span><span class="def"> 
+</span><span class="def"> xresources      Load X resources into Qtile config
+</span></pre>
+</div></div>
+  </body>
+</html>

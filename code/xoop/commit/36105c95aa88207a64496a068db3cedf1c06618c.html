@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - remove old testing imports</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/36105c95aa88207a64496a068db3cedf1c06618c.html">36105c95aa88207a64496a068db3cedf1c06618c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/f4f89cda663f9cc2a3effc6237e5b724f5a9d67a.html">f4f89cda663f9cc2a3effc6237e5b724f5a9d67a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-18 20:58:39 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-18 20:58:39 +0100
+
+remove old testing imports
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,9 +1,10 @@
+<span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="sub">-#include &lt;stdio.h&gt;
+</span><span class="sub">-#include &lt;string.h&gt;
+</span><span class="def"> #include &lt;xcb/xcb.h&gt;
+</span><span class="def"> #include &lt;xcb/shape.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#ifdef DEBUG
+</span><span class="add">+#include &lt;stdio.h&gt;
+</span><span class="add">+#endif
+</span><span class="def"> 
+</span><span class="def"> char *CLASS = &quot;xoop&quot;;
+</span><span class="def"> xcb_connection_t    *conn;
+</span></pre>
+</div></div>
+  </body>
+</html>

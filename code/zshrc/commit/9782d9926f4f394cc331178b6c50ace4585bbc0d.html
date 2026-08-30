@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - git stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/9782d9926f4f394cc331178b6c50ace4585bbc0d.html">9782d9926f4f394cc331178b6c50ace4585bbc0d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/e9fbfb6eaaaaedb227840f772b4121401618efa0.html">e9fbfb6eaaaaedb227840f772b4121401618efa0</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2025-12-06 11:44:28 +0000
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2025-12-06 11:44:28 +0000
+
+git stuff
+</pre><div class="diff">
+  <p>
+    <b>git-worktrees.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,85 @@
+<span class="add">+# Add a worktree - creates branch from main if it doesn&apos;t exist
+</span><span class="add">+gw() {
+</span><span class="add">+    local input=&quot;$1&quot;
+</span><span class="add">+    if [[ -z &quot;$input&quot; ]]; then
+</span><span class="add">+	git worktree list
+</span><span class="add">+        return 1
+</span><span class="add">+    fi
+</span><span class="add">+
+</span><span class="add">+    local branch=&quot;${input##origin/}&quot;
+</span><span class="add">+    local folder=&quot;${branch//\//-}&quot;
+</span><span class="add">+    local target=&quot;../$folder&quot;
+</span><span class="add">+
+</span><span class="add">+    # Check if worktree already exists
+</span><span class="add">+    if [[ -d &quot;$target&quot; ]]; then
+</span><span class="add">+        cd &quot;$target&quot;
+</span><span class="add">+        return
+</span><span class="add">+    fi
+</span><span class="add">+    
+</span><span class="add">+    # Check if branch exists locally
+</span><span class="add">+    if git show-ref --verify --quiet &quot;refs/heads/$branch&quot;; then
+</span><span class="add">+        git worktree add &quot;$target&quot; &quot;$branch&quot; &amp;&amp; cd &quot;$target&quot;
+</span><span class="add">+        return
+</span><span class="add">+    fi
+</span><span class="add">+    
+</span><span class="add">+    # Try fetching from remote
+</span><span class="add">+    if git fetch origin &quot;$branch&quot; 2&gt;/dev/null &amp;&amp; \
+</span><span class="add">+       git worktree add &quot;$target&quot; &quot;$branch&quot; 2&gt;/dev/null; then
+</span><span class="add">+        cd &quot;$target&quot;
+</span><span class="add">+        return
+</span><span class="add">+    fi
+</span><span class="add">+    
+</span><span class="add">+    # Branch doesn&apos;t exist - create from main
+</span><span class="add">+    echo &quot;Branch &apos;$branch&apos; not found, creating from main...&quot;
+</span><span class="add">+    git fetch origin main:main 2&gt;/dev/null || git fetch origin main
+</span><span class="add">+    git worktree add -b &quot;$branch&quot; &quot;$target&quot; main &amp;&amp; cd &quot;$target&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Remove a worktree
+</span><span class="add">+gwr() {
+</span><span class="add">+    local target=&quot;${1:-$(basename &quot;$PWD&quot;)}&quot;
+</span><span class="add">+
+</span><span class="add">+    if [[ &quot;$target&quot; == &quot;main&quot; ]]; then
+</span><span class="add">+        echo &quot;Refusing to remove main worktree&quot;
+</span><span class="add">+        return 1
+</span><span class="add">+    fi
+</span><span class="add">+
+</span><span class="add">+    local branch
+</span><span class="add">+    if [[ -z &quot;$1&quot; ]]; then
+</span><span class="add">+        # Current directory - get branch before leaving
+</span><span class="add">+        branch=$(git branch --show-current)
+</span><span class="add">+        cd ../main &amp;&amp; git worktree remove &quot;../$target&quot; &amp;&amp; git branch -D &quot;$branch&quot;
+</span><span class="add">+    else
+</span><span class="add">+        # Named worktree - get its branch first
+</span><span class="add">+        branch=$(git -C &quot;../$target&quot; branch --show-current 2&gt;/dev/null)
+</span><span class="add">+        git worktree remove &quot;../$target&quot; &amp;&amp; [[ -n &quot;$branch&quot; ]] &amp;&amp; git branch -D &quot;$branch&quot;
+</span><span class="add">+    fi
+</span><span class="add">+    git worktree list
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Interactive branch selection with fzf
+</span><span class="add">+gwf() {
+</span><span class="add">+    local branch=$(git branch -a --sort=-committerdate | \
+</span><span class="add">+        grep -v HEAD | \
+</span><span class="add">+        sed &apos;s/^[* ]*//&apos; | \
+</span><span class="add">+        sed &apos;s#remotes/origin/##&apos; | \
+</span><span class="add">+        awk &apos;!seen[$0]++&apos; | \
+</span><span class="add">+        fzf --height 40% --reverse --preview &apos;git log --oneline -10 {}&apos;)
+</span><span class="add">+    [[ -n &quot;$branch&quot; ]] &amp;&amp; gwt &quot;$branch&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Completions
+</span><span class="add">+_gw_branches() {
+</span><span class="add">+    local branches
+</span><span class="add">+    branches=(${(f)&quot;$(git branch 2&gt;/dev/null | sed &apos;s/^[* ]*//&apos; | sed &apos;s/^[+ ]*//&apos;)&quot;})
+</span><span class="add">+    _describe &apos;branch&apos; branches
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+_gwr_worktrees() {
+</span><span class="add">+    local worktrees
+</span><span class="add">+    worktrees=(${(f)&quot;$(git worktree list --porcelain 2&gt;/dev/null | grep &apos;^worktree&apos; | awk &apos;{print $2}&apos; | xargs -n1 basename)&quot;})
+</span><span class="add">+    _describe &apos;worktree&apos; worktrees
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+compdef _gw_branches gw
+</span><span class="add">+compdef _gwr_worktrees gwr
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -37,7 +37,7 @@
+<span class="def">     alias copy=pbcopy
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="sub">-alias grep=&apos;grep --exclude-dir=__pycache__ --exclude-dir=.terraform --exclude-dir=.git --exclude-dir=.tox --exclude-dir=tags --exclude-dir=.eggs --exclude-dir=.mypy_cache&apos;
+</span><span class="add">+alias grep=&apos;grep --exclude-dir=__pycache__ --exclude-dir=.terraform --exclude-dir=.git --exclude-dir=.venv --exclude-dir=.tox --exclude-dir=tags --exclude-dir=.eggs --exclude-dir=.mypy_cache&apos;
+</span><span class="def"> 
+</span><span class="def"> # systemd
+</span><span class="def"> alias sc=&apos;systemctl&apos;
+</span>@@ -74,6 +74,7 @@
+<span class="def"> alias ta=&apos;tmux attach&apos;
+</span><span class="def"> 
+</span><span class="def"> # git
+</span><span class="add">+alias g=&apos;gita&apos;
+</span><span class="def"> alias gs=&apos;git status&apos;
+</span><span class="def"> alias ad=&apos;git add&apos;
+</span><span class="def"> alias adp=&apos;git add --patch&apos;
+</span>@@ -116,28 +117,40 @@
+<span class="def"> lg() { git log -${1:-1}; }
+</span><span class="def"> lgo()  { git log --oneline -${1:-1}; }
+</span><span class="def"> alias lgc=&quot;git log -1 | head -1 | awk &apos;{print \$2}&apos; | copy -n&quot;
+</span><span class="sub">-newbr() {
+</span><span class="sub">-    branches=$(br | wc -l)
+</span><span class="sub">-    if (( branches != 2 ))
+</span><span class="sub">-    then
+</span><span class="sub">-	echo &quot;$branches branches, can&apos;t continue&quot;
+</span><span class="sub">-	return 0
+</span><span class="sub">-    fi
+</span><span class="sub">-    new_name=&quot;$1&quot;
+</span><span class="sub">-    if [[ -z &quot;$new_name&quot; ]]
+</span><span class="sub">-    then
+</span><span class="sub">-	echo &quot;no name given, pass in a name&quot;
+</span><span class="sub">-	return 0
+</span><span class="sub">-    fi
+</span><span class="sub">-    ch main
+</span><span class="sub">-    br -D $(git branch --format=&apos;%(refname:short)&apos; | grep -v main)
+</span><span class="sub">-    pl
+</span><span class="sub">-    ch -b matt/$new_name
+</span><span class="sub">-    echo
+</span><span class="sub">-    br
+</span><span class="sub">-    echo
+</span><span class="sub">-    gs
+</span><span class="sub">-}
+</span><span class="add">+#newbr() {
+</span><span class="add">+#    branches=$(br | wc -l)
+</span><span class="add">+#    if (( branches != 2 ))
+</span><span class="add">+#    then
+</span><span class="add">+#	echo &quot;$branches branches, can&apos;t continue&quot;
+</span><span class="add">+#	return 0
+</span><span class="add">+#    fi
+</span><span class="add">+#    new_name=&quot;$1&quot;
+</span><span class="add">+#    if [[ -z &quot;$new_name&quot; ]]
+</span><span class="add">+#    then
+</span><span class="add">+#	echo &quot;no name given, pass in a name&quot;
+</span><span class="add">+#	return 0
+</span><span class="add">+#    fi
+</span><span class="add">+#    ch main
+</span><span class="add">+#    br -D $(git branch --format=&apos;%(refname:short)&apos; | grep -v main)
+</span><span class="add">+#    pl
+</span><span class="add">+#    ch -b matt/$new_name
+</span><span class="add">+#    echo
+</span><span class="add">+#    br
+</span><span class="add">+#    echo
+</span><span class="add">+#    gs
+</span><span class="add">+#}
+</span><span class="add">+#nobr() {
+</span><span class="add">+#    branches=$(br | wc -l)
+</span><span class="add">+#    if (( branches == 1 ))
+</span><span class="add">+#    then
+</span><span class="add">+#	return 0
+</span><span class="add">+#    fi
+</span><span class="add">+#    ch main
+</span><span class="add">+#    br -D $(git branch --format=&apos;%(refname:short)&apos; | grep -v main)
+</span><span class="add">+#    pl
+</span><span class="add">+#    gs
+</span><span class="add">+#}
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> pdif() {
+</span><span class="def">     git diff --name-only --diff-filter=${1:-M}
+</span>@@ -156,6 +169,10 @@
+<span class="def">       --jq &apos;.[] | [.repository.name, &quot;#\(.number)&quot;, .title, .url] | @tsv&apos;) \
+</span><span class="def">       | column -t -s $&apos;\t&apos;
+</span><span class="def"> }
+</span><span class="add">+pshpr() {
+</span><span class="add">+    psh &amp;&amp; gh pr create --fill
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

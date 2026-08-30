@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - claude</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/6d6187f43d6aadd5600a52567b5f70c14051e6f9.html">6d6187f43d6aadd5600a52567b5f70c14051e6f9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/7ff9f2ee0aac54eef2720853a2d2f116bbfb687e.html">7ff9f2ee0aac54eef2720853a2d2f116bbfb687e</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2026-04-29 12:40:06 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2026-04-29 12:40:06 +0100
+
+claude
+</pre><div class="diff">
+  <p>
+    <b>zsh-autosuggestions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,7 +12,7 @@
+<span class="def"> ZSH_AUTOSUGGEST_ORIGINAL_WIDGET_PREFIX=autosuggest-orig-
+</span><span class="def"> 
+</span><span class="def"> #ZSH_AUTOSUGGEST_STRATEGY=default
+</span><span class="sub">-ZSH_AUTOSUGGEST_STRATEGY=match_prev_cmd
+</span><span class="add">+ZSH_AUTOSUGGEST_STRATEGY=(claude match_prev_cmd)
+</span><span class="def"> 
+</span><span class="def"> # Widgets that clear the suggestion
+</span><span class="def"> ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>fzf.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,9 +20,25 @@
+<span class="def">     _fzf-file-widget () {
+</span><span class="def"> 	INIT_BUFFER=&quot;$LBUFFER&quot;
+</span><span class="def"> 	[[ -z &quot;$INIT_BUFFER&quot; ]] &amp;&amp; LBUFFER=&quot;vim &quot;
+</span><span class="sub">-	fzf-file-widget
+</span><span class="sub">-	if [[ $? -eq 0 ]]
+</span><span class="sub">-	then
+</span><span class="add">+
+</span><span class="add">+	local suffix=&quot;&quot;
+</span><span class="add">+	[[ -n &quot;$CLAUDE_CONTEXT_ID&quot; ]] &amp;&amp; suffix=&quot;.$CLAUDE_CONTEXT_ID&quot;
+</span><span class="add">+	local context_file=&quot;$HOME/.local/share/claude/context-files${suffix}&quot;
+</span><span class="add">+	local selected
+</span><span class="add">+	selected=$({
+</span><span class="add">+	    if [[ -f &quot;$context_file&quot; ]]; then
+</span><span class="add">+		local f rel
+</span><span class="add">+		while IFS= read -r f; do
+</span><span class="add">+		    [[ -f &quot;$f&quot; ]] || continue
+</span><span class="add">+		    rel=&quot;${f#$PWD/}&quot;
+</span><span class="add">+		    echo &quot;$rel&quot;
+</span><span class="add">+		done &lt; &lt;(tail -r &quot;$context_file&quot;)
+</span><span class="add">+	    fi
+</span><span class="add">+	    fd --type f --strip-cwd-prefix 2&gt;/dev/null
+</span><span class="add">+	} | awk &apos;!seen[$0]++&apos; | fzf)
+</span><span class="add">+
+</span><span class="add">+	if [[ -n &quot;$selected&quot; ]]; then
+</span><span class="add">+	    LBUFFER=&quot;${LBUFFER}${(q)selected}&quot;
+</span><span class="def"> 	    zle accept-line
+</span><span class="def"> 	else
+</span><span class="def"> 	    LBUFFER=&quot;$INIT_BUFFER&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

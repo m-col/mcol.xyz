@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - set up passthrough pointer gestures</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/febede681273cb27d570ce228d4dcda26f44b2d8.html">febede681273cb27d570ce228d4dcda26f44b2d8</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/5115ea02d3142ecb53cee64b436944858ec2f129.html">5115ea02d3142ecb53cee64b436944858ec2f129</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 12:11:50 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 12:11:50 +0000
+
+set up passthrough pointer gestures
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -70,6 +70,13 @@
+<span class="def">     struct wl_listener cursor_button_listener;
+</span><span class="def">     struct wl_listener cursor_axis_listener;
+</span><span class="def">     struct wl_listener cursor_frame_listener;
+</span><span class="add">+    struct wlr_pointer_gestures_v1 *pointer_gestures;
+</span><span class="add">+    struct wl_listener pinch_begin_listener;
+</span><span class="add">+    struct wl_listener pinch_update_listener;
+</span><span class="add">+    struct wl_listener pinch_end_listener;
+</span><span class="add">+    struct wl_listener swipe_begin_listener;
+</span><span class="add">+    struct wl_listener swipe_update_listener;
+</span><span class="add">+    struct wl_listener swipe_end_listener;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_seat *seat;
+</span><span class="def">     struct wl_listener new_input_listener;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,7 @@
+<span class="def"> #include &lt;linux/input-event-codes.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_cursor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_pointer_gestures_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xcursor_manager.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;action.h&quot;
+</span>@@ -216,25 +217,84 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void on_pinch_end(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_event_pointer_pinch_end *event = data;
+</span><span class="add">+    wlr_pointer_gestures_v1_send_pinch_end(
+</span><span class="add">+	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;cancelled
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_pinch_update(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_event_pointer_pinch_update *event = data;
+</span><span class="add">+    wlr_pointer_gestures_v1_send_pinch_update(
+</span><span class="add">+	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec,
+</span><span class="add">+	event-&gt;dx, event-&gt;dy, event-&gt;scale, event-&gt;rotation
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_pinch_begin(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_event_pointer_pinch_begin *event = data;
+</span><span class="add">+    wlr_pointer_gestures_v1_send_pinch_begin(
+</span><span class="add">+	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;fingers
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_swipe_end(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_event_pointer_swipe_end *event = data;
+</span><span class="add">+    wlr_pointer_gestures_v1_send_swipe_end(
+</span><span class="add">+	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;cancelled
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_swipe_update(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_event_pointer_swipe_update *event = data;
+</span><span class="add">+    wlr_pointer_gestures_v1_send_swipe_update(
+</span><span class="add">+	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;dx, event-&gt;dy
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_swipe_begin(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_event_pointer_swipe_begin *event = data;
+</span><span class="add">+    wlr_pointer_gestures_v1_send_swipe_begin(
+</span><span class="add">+	wimp.pointer_gestures, wimp.seat, event-&gt;time_msec, event-&gt;fingers
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void set_up_cursor() {
+</span><span class="def">     wimp.cursor = wlr_cursor_create();
+</span><span class="def">     wlr_cursor_attach_output_layout(wimp.cursor, wimp.output_layout);
+</span><span class="def">     wimp.cursor_manager = wlr_xcursor_manager_create(NULL, 24);
+</span><span class="def">     wlr_xcursor_manager_load(wimp.cursor_manager, 1);
+</span><span class="def"> 
+</span><span class="add">+    wimp.cursor_axis_listener.notify = on_cursor_axis;
+</span><span class="add">+    wimp.cursor_frame_listener.notify = on_cursor_frame;
+</span><span class="add">+    wimp.cursor_button_listener.notify = on_cursor_button;
+</span><span class="def">     wimp.cursor_motion_listener.notify = on_cursor_motion;
+</span><span class="sub">-    wl_signal_add(&amp;wimp.cursor-&gt;events.motion, &amp;wimp.cursor_motion_listener);
+</span><span class="sub">-
+</span><span class="def">     wimp.cursor_motion_absolute_listener.notify = on_cursor_motion_absolute;
+</span><span class="sub">-    wl_signal_add(&amp;wimp.cursor-&gt;events.motion_absolute,
+</span><span class="sub">-	&amp;wimp.cursor_motion_absolute_listener);
+</span><span class="sub">-
+</span><span class="sub">-    wimp.cursor_button_listener.notify = on_cursor_button;
+</span><span class="sub">-    wl_signal_add(&amp;wimp.cursor-&gt;events.button, &amp;wimp.cursor_button_listener);
+</span><span class="sub">-
+</span><span class="sub">-    wimp.cursor_axis_listener.notify = on_cursor_axis;
+</span><span class="def">     wl_signal_add(&amp;wimp.cursor-&gt;events.axis, &amp;wimp.cursor_axis_listener);
+</span><span class="sub">-
+</span><span class="sub">-    wimp.cursor_frame_listener.notify = on_cursor_frame;
+</span><span class="def">     wl_signal_add(&amp;wimp.cursor-&gt;events.frame, &amp;wimp.cursor_frame_listener);
+</span><span class="add">+    wl_signal_add(&amp;wimp.cursor-&gt;events.button, &amp;wimp.cursor_button_listener);
+</span><span class="add">+    wl_signal_add(&amp;wimp.cursor-&gt;events.motion, &amp;wimp.cursor_motion_listener);
+</span><span class="add">+    wl_signal_add(&amp;wimp.cursor-&gt;events.motion_absolute, &amp;wimp.cursor_motion_absolute_listener);
+</span><span class="add">+
+</span><span class="add">+    wimp.pointer_gestures = wlr_pointer_gestures_v1_create(wimp.display);
+</span><span class="add">+    wimp.pinch_end_listener.notify = on_pinch_end;
+</span><span class="add">+    wimp.pinch_begin_listener.notify = on_pinch_begin;
+</span><span class="add">+    wimp.pinch_update_listener.notify = on_pinch_update;
+</span><span class="add">+    wl_signal_add(&amp;wimp.cursor-&gt;events.pinch_end, &amp;wimp.pinch_end_listener);
+</span><span class="add">+    wl_signal_add(&amp;wimp.cursor-&gt;events.pinch_begin, &amp;wimp.pinch_begin_listener);
+</span><span class="add">+    wl_signal_add(&amp;wimp.cursor-&gt;events.pinch_update, &amp;wimp.pinch_update_listener);
+</span><span class="add">+    wimp.swipe_end_listener.notify = on_swipe_end;
+</span><span class="add">+    wimp.swipe_begin_listener.notify = on_swipe_begin;
+</span><span class="add">+    wimp.swipe_update_listener.notify = on_swipe_update;
+</span><span class="add">+    wl_signal_add(&amp;wimp.cursor-&gt;events.swipe_end, &amp;wimp.swipe_end_listener);
+</span><span class="add">+    wl_signal_add(&amp;wimp.cursor-&gt;events.swipe_begin, &amp;wimp.swipe_begin_listener);
+</span><span class="add">+    wl_signal_add(&amp;wimp.cursor-&gt;events.swipe_update, &amp;wimp.swipe_update_listener);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

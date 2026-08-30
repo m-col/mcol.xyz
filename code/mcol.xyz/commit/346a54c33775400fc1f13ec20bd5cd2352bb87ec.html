@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Use full clones for every repo gitja processes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/346a54c33775400fc1f13ec20bd5cd2352bb87ec.html">346a54c33775400fc1f13ec20bd5cd2352bb87ec</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/175c65235ffe3673e26a078ff52036560fe388e1.html">175c65235ffe3673e26a078ff52036560fe388e1</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 19:28:00 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 19:28:00 +0000
+
+Use full clones for every repo gitja processes
+
+Deploy failed with:
+  gitja: BackendError &quot;Could not lookup a71abc9ffbe3c7acb8092561daf4f1454499a2d7: Object not found - failed to find pack entry&quot;
+
+gitja walks each repo&apos;s full commit history unconditionally, but libgit2
+(which it uses via gitlib/hlibgit2) doesn&apos;t respect git&apos;s shallow-clone
+boundary the way native git does, so it tries to dereference a parent
+commit that a shallow clone never actually fetched. Every checkout gitja
+touches needs full history: the main mcol.xyz checkout (was the default
+1-commit shallow fetch), the gitja checkout used to build the binary
+(same repo also appears in the /code repo list), and the sibling repos
+(were `--depth 100`).
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_012RfZTyHvxLyVp4yaWmNvhN
+</pre><div class="diff">
+  <p>
+    <b>.github/workflows/deploy.yaml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,6 +19,12 @@
+<span class="def">     runs-on: ubuntu-latest
+</span><span class="def">     steps:
+</span><span class="def">       - uses: actions/checkout@v4
+</span><span class="add">+        with:
+</span><span class="add">+          # gitja walks each repo&apos;s full commit history, and libgit2 (which
+</span><span class="add">+          # gitja uses) doesn&apos;t handle git&apos;s shallow-clone boundary the way
+</span><span class="add">+          # native git does - a shallow fetch here makes it error out
+</span><span class="add">+          # trying to look up commits that were never downloaded.
+</span><span class="add">+          fetch-depth: 0
+</span><span class="def"> 
+</span><span class="def">       - name: Install uv
+</span><span class="def">         uses: astral-sh/setup-uv@v4
+</span>@@ -39,6 +45,7 @@
+<span class="def">         with:
+</span><span class="def">           repository: m-col/gitja
+</span><span class="def">           path: gitja-src
+</span><span class="add">+          fetch-depth: 0
+</span><span class="def"> 
+</span><span class="def">       - uses: actions/cache@v5
+</span><span class="def">         with:
+</span>@@ -69,7 +76,8 @@
+<span class="def">               # already checked out to build the gitja binary itself).
+</span><span class="def">               mcol.xyz | gitja) continue ;;
+</span><span class="def">             esac
+</span><span class="sub">-            git clone --depth 100 &quot;https://github.com/m-col/$repo&quot; &quot;$repo&quot;
+</span><span class="add">+            # Full clone, not shallow - see the fetch-depth comment above.
+</span><span class="add">+            git clone &quot;https://github.com/m-col/$repo&quot; &quot;$repo&quot;
+</span><span class="def">           done
+</span><span class="def"> 
+</span><span class="def">       - name: Write repo descriptions
+</span></pre>
+</div></div>
+  </body>
+</html>

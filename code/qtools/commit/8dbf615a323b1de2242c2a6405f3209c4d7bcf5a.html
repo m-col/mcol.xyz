@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - fix timeout and config setting</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/8dbf615a323b1de2242c2a6405f3209c4d7bcf5a.html">8dbf615a323b1de2242c2a6405f3209c4d7bcf5a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/a199c440605e99bebad2262a7903ba220579d2d2.html">a199c440605e99bebad2262a7903ba220579d2d2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-11 11:45:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-11 11:45:36 +0000
+
+fix timeout and config setting
+</pre><div class="diff">
+  <p>
+    <b>mpc/mpc.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -30,8 +30,7 @@
+<span class="def">             self.client.connect()
+</span><span class="def">         except ConnectionError:
+</span><span class="def">             pass
+</span><span class="sub">-        self.update(func(self))
+</span><span class="sub">-        self.show()
+</span><span class="add">+        self.show(func(self))
+</span><span class="def">         self.client.disconnect()
+</span><span class="def">     return _inner
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>amixer/amixer.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,6 +22,7 @@
+<span class="def"> 
+</span><span class="def"> class Volume(Notifier):
+</span><span class="def">     defaults = [
+</span><span class="add">+        (&apos;summary&apos;, &apos;Volume&apos;, &apos;Notification summary.&apos;),
+</span><span class="def">         (&apos;mixer&apos;, &apos;Master&apos;, &apos;ALSA mixer to control.&apos;),
+</span><span class="def">         (&apos;interval&apos;, 5, &apos;Percentage interval to change volume by.&apos;),
+</span><span class="def">     ]
+</span>@@ -62,6 +63,8 @@
+<span class="def"> 
+</span><span class="def">         if len(stdout) == 5:
+</span><span class="def">             volume = int(stdout[4].decode().split()[3][1:-2])
+</span><span class="sub">-        elif len(stdout) == 6:
+</span><span class="add">+        elif len(stdout) == 7:
+</span><span class="def">             volume = int(stdout[5].decode().split()[4][1:-2])
+</span><span class="add">+        else:
+</span><span class="add">+            logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="def">         return volume
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>__init__.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -28,9 +28,12 @@
+<span class="def">             Notifier._is_initted = True
+</span><span class="def">             Notify.init(&apos;Qtile&apos;)
+</span><span class="def"> 
+</span><span class="sub">-        Configurable.__init__(self)
+</span><span class="add">+        Configurable.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Notifier.defaults)
+</span><span class="sub">-        self._notifier = None
+</span><span class="add">+        self.notifier = Notify.Notification.new(
+</span><span class="add">+            config.get(&apos;summary&apos;, &apos;Notifier&apos;), &apos;&apos;
+</span><span class="add">+        )
+</span><span class="add">+        self.timeout = config.get(&apos;timeout&apos;, -1)
+</span><span class="def"> 
+</span><span class="def">     def __getattr__(self, name):
+</span><span class="def">         &quot;&quot;&quot;
+</span>@@ -42,21 +45,19 @@
+<span class="def">         return Configurable.__getattr__(self, name)
+</span><span class="def"> 
+</span><span class="def">     @property
+</span><span class="sub">-    def notifier(self):
+</span><span class="sub">-        if self._notifier is None:
+</span><span class="sub">-            self._notifier = Notify.Notification.new(self.summary, &apos;&apos;)
+</span><span class="sub">-            self._notifier.set_timeout(self.timeout)
+</span><span class="sub">-        return self._notifier
+</span><span class="add">+    def timeout(self):
+</span><span class="add">+        return self._timeout
+</span><span class="def"> 
+</span><span class="sub">-    def set_timeout(self, timeout):
+</span><span class="sub">-        self.notifier.set_timeout(timeout)
+</span><span class="sub">-        self.timeout = timeout
+</span><span class="add">+    @timeout.setter
+</span><span class="add">+    def timeout(self, value):
+</span><span class="add">+        self.notifier.set_timeout(value)
+</span><span class="add">+        self._timeout = value
+</span><span class="def"> 
+</span><span class="sub">-    def show(self):
+</span><span class="add">+    def show(self, body):
+</span><span class="add">+        if not isinstance(body, str):
+</span><span class="add">+            body = str(body)
+</span><span class="add">+        self.notifier.update(self.summary, body)
+</span><span class="def">         self.notifier.show()
+</span><span class="def"> 
+</span><span class="def">     def hide(self):
+</span><span class="def">         self.notifier.hide()
+</span><span class="sub">-
+</span><span class="sub">-    def update(self, body):
+</span><span class="sub">-        self.notifier.update(self.summary, body)
+</span></pre>
+</div></div>
+  </body>
+</html>

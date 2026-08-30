@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - src/parse.c</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- src/parse.c</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> #include &lt;wlr/types/wlr_box.h&gt;
+<a href="#l2" class="line" id="l2">      2</a> 
+<a href="#l3" class="line" id="l3">      3</a> #include &quot;parse.h&quot;
+<a href="#l4" class="line" id="l4">      4</a> #include &quot;types.h&quot;
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a> /* To get the length of these arrays we need to calculate that before passing
+<a href="#l8" class="line" id="l8">      8</a>  * them to the getter so the macro in the header hides this. */
+<a href="#l9" class="line" id="l9">      9</a> int _get(struct dict *values, const int len, const char *name) {
+<a href="#l10" class="line" id="l10">     10</a>     for (int i = 0; i &lt; len; i++) {
+<a href="#l11" class="line" id="l11">     11</a> 	if (strcasecmp(values[i].name, name) == 0)
+<a href="#l12" class="line" id="l12">     12</a> 	    return values[i].value;
+<a href="#l13" class="line" id="l13">     13</a>     }
+<a href="#l14" class="line" id="l14">     14</a>     return 0;
+<a href="#l15" class="line" id="l15">     15</a> }
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> static bool wlr_box_from_str(char* str, struct wlr_box *box) {
+<a href="#l19" class="line" id="l19">     19</a>     // turns e.g. 1920x1800+500+500 into a wlr_box
+<a href="#l20" class="line" id="l20">     20</a>     char *w, *h, *x, *y;
+<a href="#l21" class="line" id="l21">     21</a>     if (str) {
+<a href="#l22" class="line" id="l22">     22</a> 	if ((w = strtok(str, &quot;x&quot;)) &amp;&amp; is_number_perc(w)) {
+<a href="#l23" class="line" id="l23">     23</a> 	    if ((h = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(h)) {
+<a href="#l24" class="line" id="l24">     24</a> 		if ((x = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(x)) {
+<a href="#l25" class="line" id="l25">     25</a> 		    if ((y = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number_perc(y)) {
+<a href="#l26" class="line" id="l26">     26</a> 			if (is_number(w)) {
+<a href="#l27" class="line" id="l27">     27</a> 			    box-&gt;width = atoi(w);
+<a href="#l28" class="line" id="l28">     28</a> 			} else {
+<a href="#l29" class="line" id="l29">     29</a> 			    if ((w = strtok(w, &quot;%&quot;))) {
+<a href="#l30" class="line" id="l30">     30</a> 				box-&gt;width = - atoi(w);
+<a href="#l31" class="line" id="l31">     31</a> 			    } else {
+<a href="#l32" class="line" id="l32">     32</a> 				return false;
+<a href="#l33" class="line" id="l33">     33</a> 			    }
+<a href="#l34" class="line" id="l34">     34</a> 			}
+<a href="#l35" class="line" id="l35">     35</a> 			if (is_number(h)) {
+<a href="#l36" class="line" id="l36">     36</a> 			    box-&gt;height = atoi(h);
+<a href="#l37" class="line" id="l37">     37</a> 			} else {
+<a href="#l38" class="line" id="l38">     38</a> 			    if ((h = strtok(h, &quot;%&quot;))) {
+<a href="#l39" class="line" id="l39">     39</a> 				box-&gt;height = - atoi(h);
+<a href="#l40" class="line" id="l40">     40</a> 			    } else {
+<a href="#l41" class="line" id="l41">     41</a> 				return false;
+<a href="#l42" class="line" id="l42">     42</a> 			    }
+<a href="#l43" class="line" id="l43">     43</a> 			}
+<a href="#l44" class="line" id="l44">     44</a> 			if (is_number(x)) {
+<a href="#l45" class="line" id="l45">     45</a> 			    box-&gt;x = atoi(x);
+<a href="#l46" class="line" id="l46">     46</a> 			} else {
+<a href="#l47" class="line" id="l47">     47</a> 			    if ((x = strtok(x, &quot;%&quot;))) {
+<a href="#l48" class="line" id="l48">     48</a> 				box-&gt;x = - atoi(x);
+<a href="#l49" class="line" id="l49">     49</a> 			    } else {
+<a href="#l50" class="line" id="l50">     50</a> 				return false;
+<a href="#l51" class="line" id="l51">     51</a> 			    }
+<a href="#l52" class="line" id="l52">     52</a> 			}
+<a href="#l53" class="line" id="l53">     53</a> 			if (is_number(y)) {
+<a href="#l54" class="line" id="l54">     54</a> 			    box-&gt;y = atoi(y);
+<a href="#l55" class="line" id="l55">     55</a> 			} else {
+<a href="#l56" class="line" id="l56">     56</a> 			    if ((y = strtok(y, &quot;%&quot;))) {
+<a href="#l57" class="line" id="l57">     57</a> 				box-&gt;y = - atoi(y);
+<a href="#l58" class="line" id="l58">     58</a> 			    } else {
+<a href="#l59" class="line" id="l59">     59</a> 				return false;
+<a href="#l60" class="line" id="l60">     60</a> 			    }
+<a href="#l61" class="line" id="l61">     61</a> 			}
+<a href="#l62" class="line" id="l62">     62</a> 			return true;
+<a href="#l63" class="line" id="l63">     63</a> 		    }
+<a href="#l64" class="line" id="l64">     64</a> 		}
+<a href="#l65" class="line" id="l65">     65</a> 	    }
+<a href="#l66" class="line" id="l66">     66</a> 	}
+<a href="#l67" class="line" id="l67">     67</a>     }
+<a href="#l68" class="line" id="l68">     68</a>     return false;
+<a href="#l69" class="line" id="l69">     69</a> }
+<a href="#l70" class="line" id="l70">     70</a> 
+<a href="#l71" class="line" id="l71">     71</a> 
+<a href="#l72" class="line" id="l72">     72</a> static struct dict dirs[] = {
+<a href="#l73" class="line" id="l73">     73</a>     { &quot;up&quot;, UP },
+<a href="#l74" class="line" id="l74">     74</a>     { &quot;right&quot;, RIGHT },
+<a href="#l75" class="line" id="l75">     75</a>     { &quot;down&quot;, DOWN },
+<a href="#l76" class="line" id="l76">     76</a>     { &quot;left&quot;, LEFT },
+<a href="#l77" class="line" id="l77">     77</a> };
+<a href="#l78" class="line" id="l78">     78</a> 
+<a href="#l79" class="line" id="l79">     79</a> 
+<a href="#l80" class="line" id="l80">     80</a> bool dir_handler(void **data, char *args) {
+<a href="#l81" class="line" id="l81">     81</a>     *data = calloc(1, sizeof(enum direction));
+<a href="#l82" class="line" id="l82">     82</a>     *(enum direction *)(*data) = get(dirs, strtok(args, &quot; \t\n\r&quot;));
+<a href="#l83" class="line" id="l83">     83</a>     return true;
+<a href="#l84" class="line" id="l84">     84</a> }
+<a href="#l85" class="line" id="l85">     85</a> 
+<a href="#l86" class="line" id="l86">     86</a> 
+<a href="#l87" class="line" id="l87">     87</a> bool str_handler(void **data, char *args) {
+<a href="#l88" class="line" id="l88">     88</a>     if (!args) {
+<a href="#l89" class="line" id="l89">     89</a> 	return false;
+<a href="#l90" class="line" id="l90">     90</a>     }
+<a href="#l91" class="line" id="l91">     91</a>     if (is_number(args)) {
+<a href="#l92" class="line" id="l92">     92</a> 	*data = calloc(1, sizeof(double));
+<a href="#l93" class="line" id="l93">     93</a> 	*(double *)(*data) = strtod(args, NULL);
+<a href="#l94" class="line" id="l94">     94</a>     } else {
+<a href="#l95" class="line" id="l95">     95</a> 	*data = calloc(strlen(args), sizeof(char));
+<a href="#l96" class="line" id="l96">     96</a> 	strncpy(*data, args, strlen(args));
+<a href="#l97" class="line" id="l97">     97</a>     }
+<a href="#l98" class="line" id="l98">     98</a>     return true;
+<a href="#l99" class="line" id="l99">     99</a> }
+<a href="#l100" class="line" id="l100">    100</a> 
+<a href="#l101" class="line" id="l101">    101</a> 
+<a href="#l102" class="line" id="l102">    102</a> bool motion_handler(void **data, char *args) {
+<a href="#l103" class="line" id="l103">    103</a>     char *s;
+<a href="#l104" class="line" id="l104">    104</a>     if (!args) {
+<a href="#l105" class="line" id="l105">    105</a> 	return false;
+<a href="#l106" class="line" id="l106">    106</a>     }
+<a href="#l107" class="line" id="l107">    107</a> 
+<a href="#l108" class="line" id="l108">    108</a>     s = strtok(args, &quot; \t\n\r&quot;);
+<a href="#l109" class="line" id="l109">    109</a>     if (!is_number(s) || !args) {
+<a href="#l110" class="line" id="l110">    110</a> 	return false;
+<a href="#l111" class="line" id="l111">    111</a>     }
+<a href="#l112" class="line" id="l112">    112</a>     int x = atoi(s);
+<a href="#l113" class="line" id="l113">    113</a> 
+<a href="#l114" class="line" id="l114">    114</a>     s = strtok(NULL, &quot; \t\n\r&quot;);
+<a href="#l115" class="line" id="l115">    115</a>     if (!is_number(s)) {
+<a href="#l116" class="line" id="l116">    116</a> 	return false;
+<a href="#l117" class="line" id="l117">    117</a>     }
+<a href="#l118" class="line" id="l118">    118</a>     int y = atoi(s);
+<a href="#l119" class="line" id="l119">    119</a> 
+<a href="#l120" class="line" id="l120">    120</a>     struct motion motion = {
+<a href="#l121" class="line" id="l121">    121</a> 	.dx = x,
+<a href="#l122" class="line" id="l122">    122</a> 	.dy = y,
+<a href="#l123" class="line" id="l123">    123</a> 	.is_percentage = true,
+<a href="#l124" class="line" id="l124">    124</a>     };
+<a href="#l125" class="line" id="l125">    125</a>     *data = calloc(1, sizeof(struct motion));
+<a href="#l126" class="line" id="l126">    126</a>     *(struct motion *)(*data) = motion;
+<a href="#l127" class="line" id="l127">    127</a>     return true;
+<a href="#l128" class="line" id="l128">    128</a> }
+<a href="#l129" class="line" id="l129">    129</a> 
+<a href="#l130" class="line" id="l130">    130</a> 
+<a href="#l131" class="line" id="l131">    131</a> static int _scratchpad_id = 0;
+<a href="#l132" class="line" id="l132">    132</a> 
+<a href="#l133" class="line" id="l133">    133</a> 
+<a href="#l134" class="line" id="l134">    134</a> bool scratchpad_handler(void **data, char *args) {
+<a href="#l135" class="line" id="l135">    135</a>     char *geo, *command;
+<a href="#l136" class="line" id="l136">    136</a>     struct wlr_box box;
+<a href="#l137" class="line" id="l137">    137</a>     if (!args) {
+<a href="#l138" class="line" id="l138">    138</a> 	return false;
+<a href="#l139" class="line" id="l139">    139</a>     }
+<a href="#l140" class="line" id="l140">    140</a>     if (!(geo = strtok(args, &quot; \t\n\r&quot;))) {
+<a href="#l141" class="line" id="l141">    141</a> 	return false;
+<a href="#l142" class="line" id="l142">    142</a>     }
+<a href="#l143" class="line" id="l143">    143</a>     if (!(command = strtok(NULL, &quot;\n\r&quot;))) {
+<a href="#l144" class="line" id="l144">    144</a> 	return false;
+<a href="#l145" class="line" id="l145">    145</a>     }
+<a href="#l146" class="line" id="l146">    146</a>     if (!wlr_box_from_str(geo, &amp;box)) {
+<a href="#l147" class="line" id="l147">    147</a> 	return false;
+<a href="#l148" class="line" id="l148">    148</a>     }
+<a href="#l149" class="line" id="l149">    149</a> 
+<a href="#l150" class="line" id="l150">    150</a>     struct scratchpad *scratchpad = calloc(1, sizeof(struct scratchpad));
+<a href="#l151" class="line" id="l151">    151</a>     wl_list_insert(wimp.scratchpads.prev, &amp;scratchpad-&gt;link);
+<a href="#l152" class="line" id="l152">    152</a>     scratchpad-&gt;command = strdup(command);
+<a href="#l153" class="line" id="l153">    153</a>     scratchpad-&gt;id = _scratchpad_id;
+<a href="#l154" class="line" id="l154">    154</a>     scratchpad-&gt;is_mapped = false;
+<a href="#l155" class="line" id="l155">    155</a>     scratchpad-&gt;view = NULL;
+<a href="#l156" class="line" id="l156">    156</a>     scratchpad-&gt;geo = box;
+<a href="#l157" class="line" id="l157">    157</a> 
+<a href="#l158" class="line" id="l158">    158</a>     *data = calloc(1, sizeof(int));
+<a href="#l159" class="line" id="l159">    159</a>     *(int *)(*data) = _scratchpad_id;
+<a href="#l160" class="line" id="l160">    160</a>     _scratchpad_id++;
+<a href="#l161" class="line" id="l161">    161</a>     return true;
+<a href="#l162" class="line" id="l162">    162</a> }
+<a href="#l163" class="line" id="l163">    163</a> 
+<a href="#l164" class="line" id="l164">    164</a> 
+<a href="#l165" class="line" id="l165">    165</a> bool box_handler(void **data, char *args) {
+<a href="#l166" class="line" id="l166">    166</a>     char *geo;
+<a href="#l167" class="line" id="l167">    167</a>     if (!(geo = strtok(args, &quot; \t\n\r&quot;))) {
+<a href="#l168" class="line" id="l168">    168</a> 	return false;
+<a href="#l169" class="line" id="l169">    169</a>     }
+<a href="#l170" class="line" id="l170">    170</a>     *data = calloc(1, sizeof(struct wlr_box));
+<a href="#l171" class="line" id="l171">    171</a>     if (!wlr_box_from_str(geo, *data)) {
+<a href="#l172" class="line" id="l172">    172</a> 	free(*data);
+<a href="#l173" class="line" id="l173">    173</a> 	return false;
+<a href="#l174" class="line" id="l174">    174</a>     }
+<a href="#l175" class="line" id="l175">    175</a>     return true;
+<a href="#l176" class="line" id="l176">    176</a> }
+<a href="#l177" class="line" id="l177">    177</a> 
+</pre>
+  </div>
+  </body>
+</html>

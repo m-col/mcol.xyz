@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - neaten shutting down code</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/18acb95ca302afdfd22c33864d52a291864e9b88.html">18acb95ca302afdfd22c33864d52a291864e9b88</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/8b14987d7db761c042a50177541cdadd774b8a03.html">8b14987d7db761c042a50177541cdadd774b8a03</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-26 21:19:18 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-26 21:20:39 +0000
+
+neaten shutting down code
+</pre><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -45,7 +45,7 @@
+<span class="def"> ;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void free_stuff() {
+</span><span class="add">+static void shutdown() {
+</span><span class="def">     free(wimp.config_directory);
+</span><span class="def">     free(wimp.config_file);
+</span><span class="def"> 
+</span>@@ -99,6 +99,9 @@
+<span class="def"> 	wl_list_remove(&amp;mark-&gt;link);
+</span><span class="def"> 	free(mark);
+</span><span class="def">     };
+</span><span class="add">+
+</span><span class="add">+    wlr_backend_destroy(wimp.backend);
+</span><span class="add">+    wl_display_destroy(wimp.display);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -159,17 +162,10 @@
+<span class="def"> 
+</span><span class="def">     // start
+</span><span class="def">     const char *socket = wl_display_add_socket_auto(wimp.display);
+</span><span class="sub">-    if (!socket) {
+</span><span class="sub">-	wlr_backend_destroy(wimp.backend);
+</span><span class="sub">-	wl_display_destroy(wimp.display);
+</span><span class="add">+    if (!socket || !wlr_backend_start(wimp.backend)) {
+</span><span class="add">+	shutdown();
+</span><span class="def"> 	return EXIT_FAILURE;
+</span><span class="def">     }
+</span><span class="sub">-    if (!wlr_backend_start(wimp.backend)) {
+</span><span class="sub">-	free_stuff();
+</span><span class="sub">-	wlr_backend_destroy(wimp.backend);
+</span><span class="sub">-	wl_display_destroy(wimp.display);
+</span><span class="sub">-	return 1;
+</span><span class="sub">-    }
+</span><span class="def">     setenv(&quot;WAYLAND_DISPLAY&quot;, socket, true);
+</span><span class="def">     wlr_log(WLR_INFO, &quot;Starting with WAYLAND_DISPLAY=%s&quot;, socket);
+</span><span class="def">     schedule_auto_start();
+</span>@@ -177,8 +173,6 @@
+<span class="def"> 
+</span><span class="def">     // stop
+</span><span class="def">     wl_display_destroy_clients(wimp.display);
+</span><span class="sub">-    free_stuff();
+</span><span class="sub">-    wlr_backend_destroy(wimp.backend);
+</span><span class="sub">-    wl_display_destroy(wimp.display);
+</span><span class="add">+    shutdown();
+</span><span class="def">     return EXIT_SUCCESS;
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

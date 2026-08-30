@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Use shift level 0 key syms for custom key bindings</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/5517e33716b4e0a49c0f7a7c0b800f89538dfe90.html">5517e33716b4e0a49c0f7a7c0b800f89538dfe90</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/f46a74c68fb081dd3b6cd04fdcc782a914e75d5b.html">f46a74c68fb081dd3b6cd04fdcc782a914e75d5b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-27 22:40:20 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-27 22:40:20 +0000
+
+Use shift level 0 key syms for custom key bindings
+
+fixes #1
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -51,10 +51,10 @@
+<span class="def"> bind		f		toggle_fullscreen
+</span><span class="def"> 
+</span><span class="def"> # These give the focussed window half of the screen
+</span><span class="sub">-bind	Shift	J		halfimize down
+</span><span class="sub">-bind	Shift	K		halfimize up
+</span><span class="sub">-bind	Shift	H		halfimize left
+</span><span class="sub">-bind	Shift	L		halfimize right
+</span><span class="add">+bind	Shift	j		halfimize down
+</span><span class="add">+bind	Shift	k		halfimize up
+</span><span class="add">+bind	Shift	h		halfimize left
+</span><span class="add">+bind	Shift	l		halfimize right
+</span><span class="def"> 
+</span><span class="def"> # And these act on desks
+</span><span class="def"> bind		Tab		next_desk
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keyboard.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -40,21 +40,18 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static void on_key(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    struct keyboard *keyboard = wl_container_of(listener, keyboard, key_listener);
+</span><span class="def">     struct wlr_event_keyboard_key *event = data;
+</span><span class="sub">-    struct wlr_seat *seat = wimp.seat;
+</span><span class="sub">-
+</span><span class="sub">-    const xkb_keysym_t *syms;
+</span><span class="sub">-    int nsyms = xkb_state_key_get_syms(
+</span><span class="sub">-	keyboard-&gt;device-&gt;keyboard-&gt;xkb_state,
+</span><span class="sub">-	event-&gt;keycode + 8,
+</span><span class="sub">-	&amp;syms
+</span><span class="sub">-    );
+</span><span class="def"> 
+</span><span class="def">     if (event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="add">+	const xkb_keysym_t *syms;
+</span><span class="add">+	xkb_keycode_t keycode = event-&gt;keycode + 8;
+</span><span class="add">+	struct keyboard *keyboard = wl_container_of(listener, keyboard, key_listener);
+</span><span class="add">+	struct wlr_keyboard *wlr_kb = keyboard-&gt;device-&gt;keyboard;
+</span><span class="add">+
+</span><span class="def"> 	if (wimp.mark_waiting) {
+</span><span class="sub">-	    wimp.mark_waiting = false;
+</span><span class="def"> 	    struct mark *mark;
+</span><span class="add">+	    wimp.mark_waiting = false;
+</span><span class="add">+	    xkb_state_key_get_syms(wlr_kb-&gt;xkb_state, keycode, &amp;syms);
+</span><span class="def"> 	    mark = wl_container_of(wimp.marks.next, mark, link);
+</span><span class="def"> 	    if (mark-&gt;key == 0) {
+</span><span class="def"> 		actually_set_mark(syms[0]);
+</span>@@ -67,6 +64,11 @@
+<span class="def"> 	uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="def"> 	struct binding *kb;
+</span><span class="def"> 	if ((modifiers &amp; wimp.mod)) {
+</span><span class="add">+	    xkb_layout_index_t layout_index = xkb_state_key_get_layout(wlr_kb-&gt;xkb_state, keycode);
+</span><span class="add">+	    int nsyms = xkb_keymap_key_get_syms_by_level(
+</span><span class="add">+		wlr_kb-&gt;keymap, keycode, layout_index, 0, &amp;syms
+</span><span class="add">+	    );
+</span><span class="add">+
+</span><span class="def"> 	    modifiers &amp;= ~wimp.mod;
+</span><span class="def"> 	    for (int i = 0; i &lt; nsyms; i++) {
+</span><span class="def"> 		wl_list_for_each(kb, &amp;wimp.key_bindings, link) {
+</span>@@ -81,7 +83,7 @@
+<span class="def"> 
+</span><span class="def">     // forward to client
+</span><span class="def">     wlr_seat_keyboard_notify_key(
+</span><span class="sub">-	seat, event-&gt;time_msec, event-&gt;keycode, event-&gt;state
+</span><span class="add">+	wimp.seat, event-&gt;time_msec, event-&gt;keycode, event-&gt;state
+</span><span class="def">     );
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

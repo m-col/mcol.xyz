@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Init with basic project skeleton</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/721004d5550c40cc7d544d5889d1e9e740e9e843.html">721004d5550c40cc7d544d5889d1e9e740e9e843</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/.html"></a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-04 00:11:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-04 00:11:36 +0000
+
+Init with basic project skeleton
+
+Compilable starting point with file structure and makefile.
+</pre><div class="diff">
+  <p>
+    <b>src/output.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,15 @@
+<span class="add">+#pragma once
+</span><span class="add">+#include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;deskwm.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+struct output {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    struct server *server;
+</span><span class="add">+    struct wlr_output *wlr_output;
+</span><span class="add">+    struct wl_listener frame_listener;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_new_output(struct wl_listener *listener, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,26 @@
+<span class="add">+#include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;output.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_new_output(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct server *server = wl_container_of(listener, server, new_output_listener);
+</span><span class="add">+    struct wlr_output *wlr_output = data;
+</span><span class="add">+
+</span><span class="add">+    if (!wl_list_empty(&amp;wlr_output-&gt;modes)) {
+</span><span class="add">+	struct wlr_output_mode *mode = wlr_output_preferred_mode(wlr_output);
+</span><span class="add">+	wlr_output_set_mode(wlr_output, mode);
+</span><span class="add">+	wlr_output_enable(wlr_output, true);
+</span><span class="add">+	if (!wlr_output_commit(wlr_output)) {
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct output *output = calloc(1, sizeof(struct output));
+</span><span class="add">+    output-&gt;wlr_output = wlr_output;
+</span><span class="add">+    output-&gt;server = server;
+</span><span class="add">+    output-&gt;frame_listener.notify = on_frame;
+</span><span class="add">+    wl_signal_add(&amp;wlr_output-&gt;events.frame, &amp;output-&gt;frame_listener);
+</span><span class="add">+    wl_list_insert(&amp;server-&gt;outputs, &amp;output-&gt;link);
+</span><span class="add">+    wlr_output_layout_add_auto(server-&gt;output_layout, wlr_output);
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,49 @@
+<span class="add">+#pragma once
+</span><span class="add">+
+</span><span class="add">+#include &lt;stdlib.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="add">+#include &lt;wlr/backend.h&gt;
+</span><span class="add">+#include &lt;wlr/render/wlr_renderer.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="add">+#include &lt;wlr/util/log.h&gt;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+struct server {
+</span><span class="add">+    struct wl_display *display;
+</span><span class="add">+    struct wlr_backend *backend;
+</span><span class="add">+    struct wlr_renderer *renderer;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_output_layout *output_layout;
+</span><span class="add">+    struct wl_list outputs;
+</span><span class="add">+    struct wl_listener new_output_listener;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_xdg_shell *shell;
+</span><span class="add">+    struct wl_listener new_xdg_surface_listener;
+</span><span class="add">+    struct wl_list views;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+struct view {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    struct server *server;
+</span><span class="add">+    struct wlr_xdg_surface *surface;
+</span><span class="add">+    struct wl_listener map;
+</span><span class="add">+    struct wl_listener unmap;
+</span><span class="add">+    struct wl_listener destroy;
+</span><span class="add">+    struct wl_listener request_move;
+</span><span class="add">+    struct wl_listener request_resize;
+</span><span class="add">+    bool is_mapped;
+</span><span class="add">+    int x, y;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_frame(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_new_output(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_map(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_unmap(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_surface_destroy(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_request_move(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_request_resize(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_new_xdg_surface(struct wl_listener *listener, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,113 @@
+<span class="add">+#include &lt;stdlib.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="add">+#include &lt;wlr/backend.h&gt;
+</span><span class="add">+#include &lt;wlr/render/wlr_renderer.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="add">+#include &lt;wlr/util/log.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;deskwm.h&quot;
+</span><span class="add">+#include &quot;output.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_frame(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_map(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_surface_destroy(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_request_move(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_request_resize(struct wl_listener *listener, void *data) {
+</span><span class="add">+    return;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_new_xdg_surface(struct wl_listener *listener, void *data) {
+</span><span class="add">+	struct server *server = wl_container_of(listener, server, new_xdg_surface_listener);
+</span><span class="add">+	struct wlr_xdg_surface *surface = data;
+</span><span class="add">+	if (surface-&gt;role != WLR_XDG_SURFACE_ROLE_TOPLEVEL) {
+</span><span class="add">+		return;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	struct view *view = calloc(1, sizeof(struct view));
+</span><span class="add">+	view-&gt;server = server;
+</span><span class="add">+	view-&gt;surface = surface;
+</span><span class="add">+
+</span><span class="add">+	view-&gt;map.notify = on_map;
+</span><span class="add">+	wl_signal_add(&amp;surface-&gt;events.map, &amp;view-&gt;map);
+</span><span class="add">+	view-&gt;unmap.notify = on_unmap;
+</span><span class="add">+	wl_signal_add(&amp;surface-&gt;events.unmap, &amp;view-&gt;unmap);
+</span><span class="add">+	view-&gt;destroy.notify = on_surface_destroy;
+</span><span class="add">+	wl_signal_add(&amp;surface-&gt;events.destroy, &amp;view-&gt;destroy);
+</span><span class="add">+
+</span><span class="add">+	struct wlr_xdg_toplevel *toplevel = surface-&gt;toplevel;
+</span><span class="add">+	view-&gt;request_move.notify = on_request_move;
+</span><span class="add">+	wl_signal_add(&amp;toplevel-&gt;events.request_move, &amp;view-&gt;request_move);
+</span><span class="add">+	view-&gt;request_resize.notify = on_request_resize;
+</span><span class="add">+	wl_signal_add(&amp;toplevel-&gt;events.request_resize, &amp;view-&gt;request_resize);
+</span><span class="add">+
+</span><span class="add">+	wl_list_insert(&amp;server-&gt;views, &amp;view-&gt;link);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+int main(int argc, char *argv[]) {
+</span><span class="add">+    wlr_log_init(WLR_ERROR, NULL);
+</span><span class="add">+
+</span><span class="add">+    int opt;
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;d&quot;)) != -1) {
+</span><span class="add">+        switch (opt) {
+</span><span class="add">+	    case &apos;d&apos;:
+</span><span class="add">+		wlr_log_init(WLR_DEBUG, NULL);
+</span><span class="add">+        }
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // create compositor
+</span><span class="add">+    struct server server;
+</span><span class="add">+    server.display = wl_display_create();
+</span><span class="add">+    server.backend = wlr_backend_autocreate(server.display, NULL);
+</span><span class="add">+    server.renderer = wlr_backend_get_renderer(server.backend);
+</span><span class="add">+    wlr_renderer_init_wl_display(server.renderer, server.display);
+</span><span class="add">+    wlr_compositor_create(server.display, server.renderer);
+</span><span class="add">+
+</span><span class="add">+    // set up outputs
+</span><span class="add">+    server.output_layout = wlr_output_layout_create();
+</span><span class="add">+    wl_list_init(&amp;server.outputs);
+</span><span class="add">+    server.new_output_listener.notify = on_new_output;
+</span><span class="add">+    wl_signal_add(&amp;server.backend-&gt;events.new_output, &amp;server.new_output_listener);
+</span><span class="add">+
+</span><span class="add">+    // set up shell
+</span><span class="add">+    wl_list_init(&amp;server.views);
+</span><span class="add">+    server.shell = wlr_xdg_shell_create(server.display);
+</span><span class="add">+    server.new_xdg_surface_listener.notify = on_new_xdg_surface;
+</span><span class="add">+    wl_signal_add(&amp;server.shell-&gt;events.new_surface, &amp;server.new_xdg_surface_listener);
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+    // begin session
+</span><span class="add">+    wl_display_run(server.display);
+</span><span class="add">+
+</span><span class="add">+    // shutdown
+</span><span class="add">+    wlr_backend_destroy(server.backend);
+</span><span class="add">+    wl_display_destroy(server.display);
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,29 @@
+<span class="add">+OUT	= deskwm
+</span><span class="add">+SOURCES	= $(wildcard src/*.c)
+</span><span class="add">+OBJECTS	= $(SOURCES:.c=.o)
+</span><span class="add">+CFLAGS  += -g -I. -DWLR_USE_UNSTABLE
+</span><span class="add">+#CFLAGS  += -g -I. -DWLR_USE_UNSTABLE -Wall -Wextra -pedantic
+</span><span class="add">+LDFLAGS	+= $(shell pkg-config --cflags --libs wlroots) \
+</span><span class="add">+	    $(shell pkg-config --cflags --libs wayland-server) \
+</span><span class="add">+	    $(shell pkg-config --cflags --libs xkbcommon)
+</span><span class="add">+
+</span><span class="add">+${OUT}: xdg-shell-protocol.h xdg-shell-protocol.c ${OBJECTS}
+</span><span class="add">+	@$(CC) -o ${OUT} $(OBJECTS) $(LDFLAGS)
+</span><span class="add">+
+</span><span class="add">+%.o: %.c %.h
+</span><span class="add">+	@$(CC) $(CFLAGS) -c -o $@ $&lt; ${LDFLAGS}
+</span><span class="add">+
+</span><span class="add">+WAYLAND_PROTOCOLS=$(shell pkg-config --variable=pkgdatadir wayland-protocols)
+</span><span class="add">+WAYLAND_SCANNER=$(shell pkg-config --variable=wayland_scanner wayland-scanner)
+</span><span class="add">+
+</span><span class="add">+xdg-shell-protocol.h:
+</span><span class="add">+	@$(WAYLAND_SCANNER) server-header $(WAYLAND_PROTOCOLS)/stable/xdg-shell/xdg-shell.xml $@
+</span><span class="add">+
+</span><span class="add">+xdg-shell-protocol.c: xdg-shell-protocol.h
+</span><span class="add">+	@$(WAYLAND_SCANNER) private-code $(WAYLAND_PROTOCOLS)/stable/xdg-shell/xdg-shell.xml $@
+</span><span class="add">+
+</span><span class="add">+clean:
+</span><span class="add">+	rm -f ${OUT} xdg-shell-protocol.h xdg-shell-protocol.c ${OBJECTS}
+</span><span class="add">+
+</span><span class="add">+.DEFAULT_GOAL=${OUT}
+</span><span class="add">+.PHONY: clean
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,4 @@
+<span class="add">+deskwm
+</span><span class="add">+src/*.o
+</span><span class="add">+*-protocol.c
+</span><span class="add">+*-protocol.h
+</span></pre>
+</div></div>
+  </body>
+</html>

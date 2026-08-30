@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - habit tracker: old change i cant remember what it fixed</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/9c4c4d72c82d704fee6b3aa0dcd176f5471dd280.html">9c4c4d72c82d704fee6b3aa0dcd176f5471dd280</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/63243929c7468d0bf5bd8d0850920dead38e65ad.html">63243929c7468d0bf5bd8d0850920dead38e65ad</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-09-04 22:43:49 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-09-04 22:43:49 +0100
+
+habit tracker: old change i cant remember what it fixed
+</pre><div class="diff">
+  <p>
+    <b>qtools/widget/habit_tracker.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -64,9 +64,11 @@
+<span class="def">     def __init__(self, **config):
+</span><span class="def">         base._Widget.__init__(self, bar.CALCULATED, **config)
+</span><span class="def">         self.add_defaults(HabitTracker.defaults)
+</span><span class="sub">-        self._chain = self._load_chain()
+</span><span class="add">+        self._chain = None
+</span><span class="def">         self._block_size = 0
+</span><span class="def"> 
+</span><span class="add">+        self._load_chain()
+</span><span class="add">+
+</span><span class="def">         if not hasattr(self, &quot;draw_{0}&quot;.format(self.style)):
+</span><span class="def">             logger.warning(&quot;HabitTracker style &apos;{0}&apos; invalid.&quot;.format(self.style))
+</span><span class="def">             self.style = &quot;chain&quot;
+</span>@@ -79,14 +81,15 @@
+<span class="def">             self.mouse_callbacks.update({&apos;Button3&apos;: self.cmd_decrement})
+</span><span class="def"> 
+</span><span class="def">     def _load_chain(self):
+</span><span class="sub">-        if not os.path.isfile(self.chain_file):
+</span><span class="sub">-            return 0
+</span><span class="sub">-        with open(self.chain_file, &apos;r&apos;) as fd:
+</span><span class="sub">-            cache = json.load(fd)
+</span><span class="sub">-            if self.habit not in cache.keys():
+</span><span class="sub">-                return 0
+</span><span class="sub">-            start_date = datetime.strptime(cache.get(self.habit), &quot;%Y-%m-%d&quot;)
+</span><span class="sub">-            return (datetime.now() - start_date).days
+</span><span class="add">+        if os.path.isfile(self.chain_file):
+</span><span class="add">+            with open(self.chain_file, &apos;r&apos;) as fd:
+</span><span class="add">+                cache = json.load(fd)
+</span><span class="add">+            if self.habit in cache.keys():
+</span><span class="add">+                start_date = datetime.strptime(cache.get(self.habit), &quot;%Y-%m-%d&quot;)
+</span><span class="add">+                self._chain = (datetime.now() - start_date).days
+</span><span class="add">+                return
+</span><span class="add">+        self._chain = 0
+</span><span class="add">+        self._save_chain()
+</span><span class="def"> 
+</span><span class="def">     def _save_chain(self):
+</span><span class="def">         cache = {}
+</span></pre>
+</div></div>
+  </body>
+</html>

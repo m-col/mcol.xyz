@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Add scratchpad windows</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/c15fc8a82f5e3d8ad28f1d46156473ff80cd2475.html">c15fc8a82f5e3d8ad28f1d46156473ff80cd2475</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/d4ae291eac1e78e2cd6dfa79a52ee0995957757e.html">d4ae291eac1e78e2cd6dfa79a52ee0995957757e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-04 21:55:20 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-04 21:55:20 +0000
+
+Add scratchpad windows
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -85,6 +85,9 @@
+<span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="def"> bind		Return		exec gnome-terminal
+</span><span class="def"> 
+</span><span class="add">+# And replace with &apos;exec&apos; with &apos;scratchpad&apos; and its window will be sticky
+</span><span class="add">+bind	Ctrl	e		scratchpad footclient mutt
+</span><span class="add">+
+</span><span class="def"> # These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="def"> # pressed, waits for the next key press and uses that as the &apos;mark&apos;, e.g.
+</span><span class="def"> # hitting &apos;mod + m&apos; then &apos;a&apos; will save the current position, then hitting &apos;mod
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -106,8 +106,10 @@
+<span class="def">     struct wlr_box grab_geobox;
+</span><span class="def">     uint32_t resize_edges;
+</span><span class="def">     double zoom_min, zoom_max;
+</span><span class="sub">-
+</span><span class="def">     bool vt_switching;
+</span><span class="add">+
+</span><span class="add">+    struct wl_list scratchpads;
+</span><span class="add">+    pid_t scratchpad_waiting;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> extern struct wimp wimp;
+</span>@@ -122,6 +124,7 @@
+<span class="def">     struct wl_listener request_resize_listener;
+</span><span class="def">     struct wl_listener request_fullscreen_listener;
+</span><span class="def">     double x, y;
+</span><span class="add">+    bool is_scratchpad;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> struct output {
+</span>@@ -208,4 +211,13 @@
+<span class="def">     LEFT = 1 &lt;&lt; 3,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+struct scratchpad {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    char *command;
+</span><span class="add">+    int id;
+</span><span class="add">+    pid_t pid;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    bool is_mapped;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,19 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static struct scratchpad *scratchpad_from_view(struct view *view) {
+</span><span class="add">+    struct scratchpad *scratchpad;
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (view == scratchpad-&gt;view) {
+</span><span class="add">+	    return scratchpad;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    return NULL;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void unmap_view(struct view *view) {
+</span><span class="def">     wl_signal_emit(&amp;view-&gt;surface-&gt;events.unmap, view);
+</span><span class="def"> }
+</span>@@ -31,10 +44,19 @@
+<span class="def"> 	wlr_xdg_toplevel_set_activated(previous, false);
+</span><span class="def">     }
+</span><span class="def">     struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat);
+</span><span class="sub">-    /* Move the view to the front */
+</span><span class="sub">-    wl_list_remove(&amp;view-&gt;link);
+</span><span class="sub">-    wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+</span><span class="sub">-    /* Activate the new surface */
+</span><span class="add">+
+</span><span class="add">+    if (view-&gt;is_scratchpad) {
+</span><span class="add">+	struct scratchpad *scratchpad;
+</span><span class="add">+	wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	    if (scratchpad-&gt;view == view) {
+</span><span class="add">+		scratchpad-&gt;is_mapped = true;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    } else {
+</span><span class="add">+	wl_list_remove(&amp;view-&gt;link);
+</span><span class="add">+	wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     wlr_xdg_toplevel_set_activated(view-&gt;surface, true);
+</span><span class="def">     wlr_seat_keyboard_notify_enter(
+</span><span class="def"> 	seat, view-&gt;surface-&gt;surface, keyboard-&gt;keycodes,
+</span>@@ -122,17 +144,33 @@
+<span class="def"> 
+</span><span class="def"> static void on_map(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, map_listener);
+</span><span class="sub">-    if (wimp.can_steal_focus)
+</span><span class="add">+
+</span><span class="add">+    if (view-&gt;is_scratchpad) {
+</span><span class="add">+	struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="add">+	scratchpad-&gt;is_mapped = true;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (wimp.can_steal_focus) {
+</span><span class="def"> 	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> static void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, unmap_listener);
+</span><span class="sub">-    if (wimp.can_steal_focus) {
+</span><span class="add">+
+</span><span class="add">+    if (view-&gt;is_scratchpad) {
+</span><span class="add">+	struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="add">+	scratchpad-&gt;is_mapped = false;
+</span><span class="add">+    } else {
+</span><span class="def"> 	wl_list_remove(&amp;view-&gt;link);
+</span><span class="def"> 	wl_list_insert(wimp.current_desk-&gt;views.prev, &amp;view-&gt;link);
+</span><span class="sub">-	struct view *next_view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="sub">-	focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (wimp.can_steal_focus) {
+</span><span class="add">+	if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="add">+	    struct view *next_view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="add">+	    focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -142,7 +180,15 @@
+<span class="def">     if (wimp.current_desk-&gt;fullscreened == view-&gt;surface) {
+</span><span class="def"> 	wimp.current_desk-&gt;fullscreened = NULL;
+</span><span class="def">     }
+</span><span class="sub">-    wl_list_remove(&amp;view-&gt;link);
+</span><span class="add">+
+</span><span class="add">+    if (view-&gt;is_scratchpad) {
+</span><span class="add">+	struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="add">+	scratchpad-&gt;is_mapped = false;
+</span><span class="add">+	scratchpad-&gt;view = NULL;
+</span><span class="add">+    } else {
+</span><span class="add">+	wl_list_remove(&amp;view-&gt;link);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     free(view);
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -215,6 +261,23 @@
+<span class="def">     view-&gt;request_fullscreen_listener.notify = on_request_fullscreen;
+</span><span class="def">     wl_signal_add(&amp;toplevel-&gt;events.request_fullscreen, &amp;view-&gt;request_fullscreen_listener);
+</span><span class="def"> 
+</span><span class="add">+    if (wimp.scratchpad_waiting) {
+</span><span class="add">+	pid_t pid;
+</span><span class="add">+	wl_client_get_credentials(surface-&gt;client-&gt;client, &amp;pid, NULL, NULL);
+</span><span class="add">+	struct scratchpad *scratchpad;
+</span><span class="add">+	wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	    if (scratchpad-&gt;pid == pid) {
+</span><span class="add">+		scratchpad-&gt;view = view;
+</span><span class="add">+		view-&gt;is_scratchpad = true;
+</span><span class="add">+		view-&gt;x = 50;
+</span><span class="add">+		view-&gt;y = 50;
+</span><span class="add">+		map_view(view);
+</span><span class="add">+		return;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    view-&gt;is_scratchpad = false;
+</span><span class="def">     view-&gt;x = wimp.current_desk-&gt;border_width;
+</span><span class="def">     view-&gt;y = wimp.current_desk-&gt;border_width;
+</span><span class="def">     wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -140,7 +140,7 @@
+<span class="def"> 
+</span><span class="def">     // paint clients
+</span><span class="def">     struct view *view;
+</span><span class="sub">-    struct view *focussed = wl_container_of(wimp.current_desk-&gt;views.next, focussed, link);
+</span><span class="add">+    struct wlr_surface *focussed = wimp.seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="def">     wl_list_for_each_reverse(view, &amp;desk-&gt;views, link) {
+</span><span class="def"> 	rdata.x = view-&gt;x - ox / zoom;
+</span>@@ -154,14 +154,27 @@
+<span class="def"> 	}
+</span><span class="def"> 	rdata.x = view-&gt;x + ox;
+</span><span class="def"> 	rdata.y = view-&gt;y + oy;
+</span><span class="sub">-	rdata.is_focussed = (view == focussed);
+</span><span class="add">+	rdata.is_focussed = (view-&gt;surface-&gt;surface == focussed);
+</span><span class="def"> 	rdata.bordered = view-&gt;surface-&gt;surface;
+</span><span class="def"> 	wlr_xdg_surface_for_each_surface(view-&gt;surface, render_surface, &amp;rdata);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    rdata.zoom = 1;
+</span><span class="add">+
+</span><span class="add">+    struct scratchpad *scratchpad;
+</span><span class="add">+    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (scratchpad-&gt;is_mapped) {
+</span><span class="add">+	    view = scratchpad-&gt;view;
+</span><span class="add">+	    rdata.x = view-&gt;x;
+</span><span class="add">+	    rdata.y = view-&gt;y;
+</span><span class="add">+	    rdata.is_focussed = (view-&gt;surface-&gt;surface == focussed);
+</span><span class="add">+	    rdata.bordered = view-&gt;surface-&gt;surface;
+</span><span class="add">+	    wlr_xdg_surface_for_each_surface(view-&gt;surface, render_surface, &amp;rdata);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     rdata.bordered = NULL;
+</span><span class="def">     rdata.is_focussed = false;
+</span><span class="sub">-    rdata.zoom = 1;
+</span><span class="def"> 
+</span><span class="def">     // paint top and overlay layers
+</span><span class="def">     wl_list_for_each(lview, &amp;output-&gt;layer_views[ZWLR_LAYER_SHELL_V1_LAYER_TOP], link) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -37,6 +37,7 @@
+<span class="def">     .mark_indicator.box.height = 25,
+</span><span class="def">     .mark_indicator.box.x = 0,
+</span><span class="def">     .mark_indicator.box.y = 0,
+</span><span class="add">+    .scratchpad_waiting = false,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -116,6 +117,14 @@
+<span class="def"> 	free(output);
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="add">+    struct scratchpad *scratchpad, *tscratchpad;
+</span><span class="add">+    wl_list_for_each_safe(scratchpad, tscratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	wl_list_remove(&amp;scratchpad-&gt;link);
+</span><span class="add">+	free(scratchpad-&gt;view);
+</span><span class="add">+	free(scratchpad-&gt;command);
+</span><span class="add">+	free(scratchpad);
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="def">     struct keyboard *keyboard, *tkeyboard;
+</span><span class="def">     wl_list_for_each_safe(keyboard, tkeyboard, &amp;wimp.keyboards, link) {
+</span><span class="def"> 	wl_list_remove(&amp;keyboard-&gt;link);
+</span>@@ -182,6 +191,7 @@
+<span class="def">     wl_list_init(&amp;wimp.key_bindings);
+</span><span class="def">     wl_list_init(&amp;wimp.mouse_bindings);
+</span><span class="def">     wl_list_init(&amp;wimp.marks);
+</span><span class="add">+    wl_list_init(&amp;wimp.scratchpads);
+</span><span class="def"> 
+</span><span class="def">     // configure
+</span><span class="def">     locate_config();
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -75,6 +75,24 @@
+<span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    // scratchpads
+</span><span class="add">+    struct scratchpad *scratchpad;
+</span><span class="add">+    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (scratchpad-&gt;is_mapped) {
+</span><span class="add">+	    view = scratchpad-&gt;view;
+</span><span class="add">+	    tsurface = wlr_xdg_surface_surface_at(
+</span><span class="add">+		view-&gt;surface, x - view-&gt;x, y - view-&gt;y, &amp;tsx, &amp;tsy
+</span><span class="add">+	    );
+</span><span class="add">+	    if (tsurface) {
+</span><span class="add">+		*sx = tsx;
+</span><span class="add">+		*sy = tsy;
+</span><span class="add">+		*surface = tsurface;
+</span><span class="add">+		*is_layer = false;
+</span><span class="add">+		return view;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     // clients
+</span><span class="def">     double zx = x / wimp.current_desk-&gt;zoom;
+</span><span class="def">     double zy = y / wimp.current_desk-&gt;zoom;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -138,6 +138,26 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static int scratchpad_id = 0;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void scratchpad_handler(struct binding *kb, char *data) {
+</span><span class="add">+    if (!data) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+    struct scratchpad *scratchpad = calloc(1, sizeof(struct scratchpad));
+</span><span class="add">+    wl_list_insert(wimp.scratchpads.prev, &amp;scratchpad-&gt;link);
+</span><span class="add">+    scratchpad-&gt;command = strdup(data);
+</span><span class="add">+    scratchpad-&gt;id = scratchpad_id;
+</span><span class="add">+    scratchpad-&gt;view = NULL;
+</span><span class="add">+    scratchpad-&gt;is_mapped = false;
+</span><span class="add">+
+</span><span class="add">+    kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="add">+    *(int *)(kb-&gt;data) = scratchpad_id;
+</span><span class="add">+    scratchpad_id++;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static struct {
+</span><span class="def">     const char *name;
+</span><span class="def">     const action action;
+</span>@@ -160,6 +180,7 @@
+<span class="def">     { &quot;maximize&quot;, &amp;maximize, NULL },
+</span><span class="def">     { &quot;reload_config&quot;, &amp;reload_config, NULL },
+</span><span class="def">     { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="add">+    { &quot;scratchpad&quot;, &amp;scratchpad, &amp;scratchpad_handler },
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,5 +26,6 @@
+<span class="def"> void maximize(void *data);
+</span><span class="def"> void reload_config(void *data);
+</span><span class="def"> void send_to_desk(void *data);
+</span><span class="add">+void scratchpad(void *data);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,7 +23,7 @@
+<span class="def"> 	    exit(EXIT_FAILURE);
+</span><span class="def"> 	}
+</span><span class="def">     } else if (pid &lt; 0) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;Failed to execute: %s&quot;, data);
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Failed to fork for exec command.&quot;);
+</span><span class="def">     } else {
+</span><span class="def"> 	wlr_log(WLR_DEBUG, &quot;Executing: %s&quot;, data);
+</span><span class="def">     }
+</span>@@ -400,3 +400,37 @@
+<span class="def">     unfullscreen();
+</span><span class="def">     view_to_desk(view, index);
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void scratchpad(void *data) {
+</span><span class="add">+    int id = *(int *)data;
+</span><span class="add">+    struct scratchpad *scratchpad;
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (scratchpad-&gt;id == id) {
+</span><span class="add">+	    break;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (scratchpad-&gt;view) {
+</span><span class="add">+	if (scratchpad-&gt;is_mapped) {
+</span><span class="add">+	    unmap_view(scratchpad-&gt;view);
+</span><span class="add">+	} else {
+</span><span class="add">+	    map_view(scratchpad-&gt;view);
+</span><span class="add">+	}
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    wimp.scratchpad_waiting = true;
+</span><span class="add">+
+</span><span class="add">+    scratchpad-&gt;pid = fork();
+</span><span class="add">+    if (scratchpad-&gt;pid == 0) {
+</span><span class="add">+	execl(&quot;/bin/sh&quot;, &quot;/bin/sh&quot;, &quot;-c&quot;, scratchpad-&gt;command, (void *)NULL);
+</span><span class="add">+	exit(EXIT_FAILURE);
+</span><span class="add">+    } else if (scratchpad-&gt;pid &lt; 0) {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Failed to fork for scratchpad.&quot;);
+</span><span class="add">+	wimp.scratchpad_waiting = false;
+</span><span class="add">+    } else {
+</span><span class="add">+	wlr_log(WLR_DEBUG, &quot;Launching scratchpad: %s&quot;, scratchpad-&gt;command);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

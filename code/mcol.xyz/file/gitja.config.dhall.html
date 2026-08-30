@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - gitja/config.dhall</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- gitja/config.dhall</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> -- gitja config for generating the /code section of mcol.xyz.
+<a href="#l2" class="line" id="l2">      2</a> --
+<a href="#l3" class="line" id="l3">      3</a> -- This expects to be run from the mcol.xyz repo root, with the repos below
+<a href="#l4" class="line" id="l4">      4</a> -- checked out as sibling directories of that checkout (see
+<a href="#l5" class="line" id="l5">      5</a> -- .github/workflows/deploy.yaml, which parses `repos` out of this file via
+<a href="#l6" class="line" id="l6">      6</a> -- dhall-to-json to know which repos to clone), mirroring gitja&apos;s own CI
+<a href="#l7" class="line" id="l7">      7</a> -- setup. Paths here are resolved relative to the working directory gitja
+<a href="#l8" class="line" id="l8">      8</a> -- is invoked from, not relative to this file.
+<a href="#l9" class="line" id="l9">      9</a> 
+<a href="#l10" class="line" id="l10">     10</a> let repos = &quot;..&quot;
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> let folders =
+<a href="#l13" class="line" id="l13">     13</a>     [ &quot;${repos}/bdf2flf&quot;
+<a href="#l14" class="line" id="l14">     14</a>     , &quot;${repos}/gitja&quot;
+<a href="#l15" class="line" id="l15">     15</a>     , &quot;${repos}/mcol.xyz&quot;
+<a href="#l16" class="line" id="l16">     16</a>     , &quot;${repos}/mini-theme&quot;
+<a href="#l17" class="line" id="l17">     17</a>     , &quot;${repos}/mkinitcpio-welcome&quot;
+<a href="#l18" class="line" id="l18">     18</a>     , &quot;${repos}/pelican-microfeed&quot;
+<a href="#l19" class="line" id="l19">     19</a>     , &quot;${repos}/pelican-minify-fontawesome&quot;
+<a href="#l20" class="line" id="l20">     20</a>     , &quot;${repos}/qtile-config&quot;
+<a href="#l21" class="line" id="l21">     21</a>     , &quot;${repos}/qtools&quot;
+<a href="#l22" class="line" id="l22">     22</a>     , &quot;${repos}/sudoku-solver&quot;
+<a href="#l23" class="line" id="l23">     23</a>     , &quot;${repos}/tide&quot;
+<a href="#l24" class="line" id="l24">     24</a>     , &quot;${repos}/vim-misc&quot;
+<a href="#l25" class="line" id="l25">     25</a>     , &quot;${repos}/wimp&quot;
+<a href="#l26" class="line" id="l26">     26</a>     , &quot;${repos}/xanadu&quot;
+<a href="#l27" class="line" id="l27">     27</a>     , &quot;${repos}/xoop&quot;
+<a href="#l28" class="line" id="l28">     28</a>     , &quot;${repos}/zshrc&quot;
+<a href="#l29" class="line" id="l29">     29</a>     ]
+<a href="#l30" class="line" id="l30">     30</a> 
+<a href="#l31" class="line" id="l31">     31</a> let config =
+<a href="#l32" class="line" id="l32">     32</a>     { repos = folders
+<a href="#l33" class="line" id="l33">     33</a>     , scan = False
+<a href="#l34" class="line" id="l34">     34</a>     , template = &quot;./gitja/template&quot;
+<a href="#l35" class="line" id="l35">     35</a>     , output = &quot;./gitja/output&quot;
+<a href="#l36" class="line" id="l36">     36</a>     , host = &quot;https://mcol.xyz&quot;
+<a href="#l37" class="line" id="l37">     37</a>     }
+<a href="#l38" class="line" id="l38">     38</a> 
+<a href="#l39" class="line" id="l39">     39</a> in config
+<a href="#l40" class="line" id="l40">     40</a> 
+</pre>
+  </div>
+  </body>
+</html>

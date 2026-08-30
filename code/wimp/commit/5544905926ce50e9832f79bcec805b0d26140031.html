@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - implement desk zooming, bind to M-m and M-n</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/5544905926ce50e9832f79bcec805b0d26140031.html">5544905926ce50e9832f79bcec805b0d26140031</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/2ccab78c3deaed07f7642a92f86be29d684b5435.html">2ccab78c3deaed07f7642a92f86be29d684b5435</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-11 22:37:47 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-11 22:38:04 +0000
+
+implement desk zooming, bind to M-m and M-n
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,7 @@
+<span class="def"> #include &lt;wlr/util/edges.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="add">+#include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,6 +17,7 @@
+<span class="def">     struct wlr_renderer *renderer;
+</span><span class="def">     struct view *view;
+</span><span class="def">     struct timespec *when;
+</span><span class="add">+    double zoom;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> void render_surface(
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -34,10 +34,10 @@
+<span class="def"> 
+</span><span class="def">     // scale for HiDPI
+</span><span class="def">     struct wlr_box box = {
+</span><span class="sub">-	.x = x * output-&gt;scale,
+</span><span class="sub">-	.y = y * output-&gt;scale,
+</span><span class="sub">-	.width = surface-&gt;current.width * output-&gt;scale,
+</span><span class="sub">-	.height = surface-&gt;current.height * output-&gt;scale,
+</span><span class="add">+	.x = x * output-&gt;scale * rdata-&gt;zoom,
+</span><span class="add">+	.y = y * output-&gt;scale * rdata-&gt;zoom,
+</span><span class="add">+	.width = surface-&gt;current.width * output-&gt;scale * rdata-&gt;zoom,
+</span><span class="add">+	.height = surface-&gt;current.height * output-&gt;scale * rdata-&gt;zoom,
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="def">     // this is where any rendering magic might happen
+</span>@@ -87,6 +87,7 @@
+<span class="def"> 	    .view = view,
+</span><span class="def"> 	    .renderer = renderer,
+</span><span class="def"> 	    .when = &amp;now,
+</span><span class="add">+	    .zoom = desk-&gt;zoom,
+</span><span class="def"> 	};
+</span><span class="def"> 	wlr_xdg_surface_for_each_surface(
+</span><span class="def"> 	    view-&gt;surface, render_surface, &amp;rdata
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -128,6 +128,8 @@
+<span class="def"> 	    break;
+</span><span class="def"> 
+</span><span class="def"> 	case CURSOR_PAN:
+</span><span class="add">+	    dx /= server-&gt;current_desk-&gt;zoom;
+</span><span class="add">+	    dy /= server-&gt;current_desk-&gt;zoom;
+</span><span class="def"> 	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="def"> 		view-&gt;x += dx;
+</span><span class="def"> 		view-&gt;y += dy;
+</span>@@ -191,6 +193,9 @@
+<span class="def"> 	server-&gt;seat, event-&gt;time_msec, event-&gt;orientation, event-&gt;delta,
+</span><span class="def"> 	event-&gt;delta_discrete, event-&gt;source
+</span><span class="def">     );
+</span><span class="add">+    if (server-&gt;cursor_mode == CURSOR_PAN) {
+</span><span class="add">+	zoom_desk(server-&gt;current_desk, event-&gt;delta);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -241,6 +246,14 @@
+<span class="def"> 	save_pan(server-&gt;current_desk);
+</span><span class="def"> 	break;
+</span><span class="def"> 
+</span><span class="add">+    case XKB_KEY_M:
+</span><span class="add">+	zoom_desk(server-&gt;current_desk, -1);
+</span><span class="add">+	break;
+</span><span class="add">+
+</span><span class="add">+    case XKB_KEY_N:
+</span><span class="add">+	zoom_desk(server-&gt;current_desk, 1);
+</span><span class="add">+	break;
+</span><span class="add">+
+</span><span class="def">     default:
+</span><span class="def"> 	return false;
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,6 +9,7 @@
+<span class="def"> void prev_desk(struct server *server);
+</span><span class="def"> void reset_pan(struct desk *desk);
+</span><span class="def"> void save_pan(struct desk *desk);
+</span><span class="add">+void zoom_desk(struct desk *desk, int dir);
+</span><span class="def"> 
+</span><span class="def"> struct wallpaper {
+</span><span class="def">     struct wlr_texture *texture;
+</span>@@ -23,6 +24,7 @@
+<span class="def">     struct wallpaper *wallpaper;
+</span><span class="def">     double panned_x, panned_y;
+</span><span class="def">     int index;
+</span><span class="add">+    double zoom;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,6 +15,7 @@
+<span class="def">     assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="def">     desk-&gt;wallpaper = NULL;
+</span><span class="def">     desk-&gt;index = num_desks;
+</span><span class="add">+    desk-&gt;zoom = 1;
+</span><span class="def">     num_desks++;
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -66,9 +67,17 @@
+<span class="def"> 	view-&gt;y -= desk-&gt;panned_y;
+</span><span class="def">     }
+</span><span class="def">     desk-&gt;panned_x = desk-&gt;panned_y = 0;
+</span><span class="add">+    desk-&gt;zoom = 1;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void save_pan(struct desk *desk) {
+</span><span class="def">     desk-&gt;panned_x = desk-&gt;panned_y = 0;
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void zoom_desk(struct desk *desk, int dir) {
+</span><span class="add">+    /* dir &gt; 0 ? zoom in : zoom out */
+</span><span class="add">+    double f = dir &gt; 0 ? 1.015 : 1/1.015;
+</span><span class="add">+    desk-&gt;zoom *= f;
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

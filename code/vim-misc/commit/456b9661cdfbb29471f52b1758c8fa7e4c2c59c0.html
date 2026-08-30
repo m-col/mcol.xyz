@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add root@hostname indicator to status line when run as root user</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/456b9661cdfbb29471f52b1758c8fa7e4c2c59c0.html">456b9661cdfbb29471f52b1758c8fa7e4c2c59c0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/0dcd1a9d6e7f2ea6d34e4919a8b0b66b2a7250e1.html">0dcd1a9d6e7f2ea6d34e4919a8b0b66b2a7250e1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-26 20:47:34 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-26 20:47:34 +0000
+
+add root@hostname indicator to status line when run as root user
+</pre><div class="diff">
+  <p>
+    <b>plugin/theme.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,10 @@
+<span class="def"> &quot; statusline
+</span><span class="def"> set laststatus=2			    &quot; always show status bar
+</span><span class="def"> set statusline =
+</span><span class="add">+if $USER == &apos;root&apos;
+</span><span class="add">+    let hostname = hostname()
+</span><span class="add">+    exec &apos;set statusline +=%7*\ &apos; . $USER . &apos;@&apos; . hostname . &apos;\ %*&apos;
+</span><span class="add">+endif
+</span><span class="def"> if ! empty($TMUX)
+</span><span class="def">     set statusline +=%6*%*
+</span><span class="def"> endif
+</span>@@ -20,6 +24,7 @@
+<span class="def"> hi User4 ctermfg=0 ctermbg=2 cterm=none 
+</span><span class="def"> hi User5 ctermfg=0 ctermbg=3 cterm=none 
+</span><span class="def"> hi User6 ctermfg=3 ctermbg=5 cterm=none 
+</span><span class="add">+hi User7 ctermfg=0 ctermbg=9 cterm=none
+</span><span class="def"> 
+</span><span class="def"> &quot; tab bar
+</span><span class="def"> hi TabLineFill ctermfg=0 ctermbg=1
+</span></pre>
+</div></div>
+  </body>
+</html>

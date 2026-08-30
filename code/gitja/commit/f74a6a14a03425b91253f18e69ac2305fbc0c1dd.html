@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Skip the last-commit-exists check when passing -f</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/f74a6a14a03425b91253f18e69ac2305fbc0c1dd.html">f74a6a14a03425b91253f18e69ac2305fbc0c1dd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/1ede5298d8d06bcaff650918a0f8574e5eb029b4.html">1ede5298d8d06bcaff650918a0f8574e5eb029b4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-12-05 00:28:40 +0300
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-12-05 00:28:40 +0300
+
+Skip the last-commit-exists check when passing -f
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -109,7 +109,7 @@
+<span class="def">                 liftIO . D.doesFileExist $
+</span><span class="def">                     toFilePath output FP.&lt;/&gt; &quot;commit&quot; FP.&lt;/&gt; show commitID &lt;&gt; &quot;.html&quot;
+</span><span class="def"> 
+</span><span class="sub">-            unless exists $ do
+</span><span class="add">+            when (not exists || envForce env) $ do
+</span><span class="def">                 -- Collect variables available to the ginger templates --
+</span><span class="def">                 commits &lt;- getCommits gitHead
+</span><span class="def">                 tree &lt;- getTree gitHead
+</span></pre>
+</div></div>
+  </body>
+</html>

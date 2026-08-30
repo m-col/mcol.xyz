@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - group cmd_toscreen explicitly toggle</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/565ff6dedd29e15159b484cba0b0c12be0ffbfa0.html">565ff6dedd29e15159b484cba0b0c12be0ffbfa0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/6e555d5f4eefced84eb9fbabb22ec2615aac0816.html">6e555d5f4eefced84eb9fbabb22ec2615aac0816</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-13 13:11:10 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-13 13:11:10 +0000
+
+group cmd_toscreen explicitly toggle
+</pre><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -46,18 +46,18 @@
+<span class="def">     &quot;&quot;&quot;
+</span><span class="def">     def _inner(qtile: Qtile) -&gt; None:
+</span><span class="def">         if len(qtile.screens) == 1:
+</span><span class="sub">-            qtile.groups_map[name].cmd_toscreen()
+</span><span class="add">+            qtile.groups_map[name].cmd_toscreen(toggle=True)
+</span><span class="def">             return
+</span><span class="def"> 
+</span><span class="def">         old = qtile.current_screen.group.name
+</span><span class="def">         if name in &apos;123&apos;:
+</span><span class="def">             qtile.focus_screen(0)
+</span><span class="def">             if old in &apos;123&apos; or qtile.current_screen.group.name != name:
+</span><span class="sub">-                qtile.groups_map[name].cmd_toscreen()
+</span><span class="add">+                qtile.groups_map[name].cmd_toscreen(toggle=True)
+</span><span class="def">         else:
+</span><span class="def">             qtile.focus_screen(1)
+</span><span class="def">             if old in &apos;qwe&apos; or qtile.current_screen.group.name != name:
+</span><span class="sub">-                qtile.groups_map[name].cmd_toscreen()
+</span><span class="add">+                qtile.groups_map[name].cmd_toscreen(toggle=True)
+</span><span class="def"> 
+</span><span class="def">     return _inner
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

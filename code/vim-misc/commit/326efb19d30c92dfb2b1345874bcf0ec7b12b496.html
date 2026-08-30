@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - moved vimrc to vim-misc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/326efb19d30c92dfb2b1345874bcf0ec7b12b496.html">326efb19d30c92dfb2b1345874bcf0ec7b12b496</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/890521ffddd642fb4c067e22f945afccf3698a91.html">890521ffddd642fb4c067e22f945afccf3698a91</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-11-30 23:28:07 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-11-30 23:28:07 +0000
+
+moved vimrc to vim-misc
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,264 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot;                          _                                       &quot;
+</span><span class="add">+&quot;                         (_)                                      &quot;
+</span><span class="add">+&quot;                   __   ___ _ __ ___  _ __ ___                    &quot;
+</span><span class="add">+&quot;                   \ \ / / | &apos;_ ` _ \| &apos;__/ __|                   &quot;
+</span><span class="add">+&quot;                    \ V /| | | | | | | | | (__                    &quot;
+</span><span class="add">+&quot;                     \_/ |_|_| |_| |_|_|  \___|                   &quot;
+</span><span class="add">+&quot;                                                                  &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Plugins                                                          &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+set nocompatible		    &quot; be iMproved, required
+</span><span class="add">+filetype off			    &quot; required
+</span><span class="add">+set rtp+=~/.vim/bundle/Vundle.vim   &quot; required
+</span><span class="add">+call vundle#begin()
+</span><span class="add">+
+</span><span class="add">+Plugin &apos;VundleVim/Vundle.vim&apos;	&quot; required
+</span><span class="add">+&quot;Plugin &apos;ervandew/supertab&apos;	&quot; better tab completion
+</span><span class="add">+Plugin &apos;jpalardy/vim-slime&apos;	&quot; send text to IDE and execute
+</span><span class="add">+Plugin &apos;vimwiki/vimwiki&apos;	&quot; vimwiki
+</span><span class="add">+Plugin &apos;mcolligan/vimlab&apos;	&quot; vimlab
+</span><span class="add">+Plugin &apos;mcolligan/vim-misc&apos;	&quot; misc functions
+</span><span class="add">+
+</span><span class="add">+call vundle#end()            &quot; required
+</span><span class="add">+filetype plugin indent on    &quot; required
+</span><span class="add">+&quot;
+</span><span class="add">+&quot; Brief help
+</span><span class="add">+&quot; :PluginList       - lists configured plugins
+</span><span class="add">+&quot; :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+</span><span class="add">+&quot; :PluginSearch foo - searches for foo; append `!` to refresh local cache
+</span><span class="add">+&quot; :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+</span><span class="add">+&quot; see :h vundle for more details or wiki for FAQ
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; General settings                                                 &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+set hidden			&quot; allow opening new buffers without saving first
+</span><span class="add">+set lazyredraw			&quot; dont update screen during macros/scripts
+</span><span class="add">+&quot;set showmatch			&quot; Highlight matching brace
+</span><span class="add">+set hlsearch			&quot; Highlight all search results - toggled by &lt;Leader&gt;h
+</span><span class="add">+set smartcase			&quot; searches ignore case only if all lower case
+</span><span class="add">+set incsearch			&quot; Searches for strings while typing search term
+</span><span class="add">+set gdefault			&quot; use global by default for substitutions
+</span><span class="add">+
+</span><span class="add">+set shiftwidth=4		&quot; Default number of auto-indent spaces
+</span><span class="add">+set autoindent			&quot; Auto-indent new lines
+</span><span class="add">+set smartindent			&quot; Enable smart-indent
+</span><span class="add">+set smarttab			&quot; shiftwidth tab at start of line, otherwise softtabstop width tab
+</span><span class="add">+set softtabstop=4		&quot; Number of spaces per tab
+</span><span class="add">+set linebreak			&quot; Allow backspacing over indention, line breaks and insertion start
+</span><span class="add">+set backspace=indent,eol,start	&quot; Backspace behaviour
+</span><span class="add">+set formatoptions+=j		&quot; Delete comment characters when joining lines.
+</span><span class="add">+autocmd FileType * setlocal formatoptions-=cro    &quot; disable autocommenting
+</span><span class="add">+
+</span><span class="add">+set undolevels=100		&quot; Number of undo levels
+</span><span class="add">+set dir^=~/.cache/vim/swap//	&quot; where to store swapfiles
+</span><span class="add">+set backupdir=~/.cache/vim	&quot; where to store backups
+</span><span class="add">+
+</span><span class="add">+set splitbelow			&quot; default new sp window goes below
+</span><span class="add">+set splitright			&quot; default new vsp window goes right
+</span><span class="add">+set scrolloff=15		&quot; keep x lines at top and bottom visible when scrolling
+</span><span class="add">+autocmd VimResized * wincmd =	&quot; keep splits equal size when resizing window
+</span><span class="add">+
+</span><span class="add">+syntax on			&quot; enable syntax highlighting
+</span><span class="add">+set mouse=a			&quot; enable mouse
+</span><span class="add">+set t_Co=16			&quot; use the 16 terminal colours
+</span><span class="add">+
+</span><span class="add">+set sessionoptions-=options	&quot; do not store global and local values in a session
+</span><span class="add">+
+</span><span class="add">+set wildmenu			&quot; enable wildmenu for tab completion of commands
+</span><span class="add">+set wildmode=longest:list,full	&quot; format wildmenu to expand and scroll with tab
+</span><span class="add">+
+</span><span class="add">+packadd! matchit		&quot; needed for matlab indentation functionality
+</span><span class="add">+
+</span><span class="add">+set autochdir			&quot; cwd to current file
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Ricing                                                           &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; statusline
+</span><span class="add">+set laststatus=2			    &quot; always show status bar
+</span><span class="add">+set statusline =
+</span><span class="add">+set statusline +=%1*\ \ %&lt;%F\ \ %*	    &quot; full path
+</span><span class="add">+set statusline +=%2*\ \ %y%*                &quot; file type
+</span><span class="add">+set statusline +=%2*\ %m\ %*                &quot; modified flag
+</span><span class="add">+set statusline +=%3*%=%*		    &quot; centre padding
+</span><span class="add">+set statusline +=%4*\ \ %l\ /\ %L\ \ %*	    &quot; current / total lines
+</span><span class="add">+set statusline +=%5*\ %n\ %*		    &quot; buffer number
+</span><span class="add">+
+</span><span class="add">+hi User1 ctermfg=0 ctermbg=5 cterm=none 
+</span><span class="add">+hi User2 ctermfg=0 ctermbg=4 cterm=none 
+</span><span class="add">+hi User3 ctermfg=0 ctermbg=14 cterm=none 
+</span><span class="add">+hi User4 ctermfg=0 ctermbg=2 cterm=none 
+</span><span class="add">+hi User5 ctermfg=0 ctermbg=3 cterm=none 
+</span><span class="add">+
+</span><span class="add">+&quot; vimdiff
+</span><span class="add">+hi DiffAdd      cterm=none ctermfg=0 ctermbg=2
+</span><span class="add">+hi DiffChange   cterm=none ctermfg=0 ctermbg=4
+</span><span class="add">+hi DiffText     cterm=none ctermfg=0 ctermbg=6
+</span><span class="add">+hi DiffDelete   cterm=bold ctermfg=0 ctermbg=1
+</span><span class="add">+
+</span><span class="add">+&quot; folds
+</span><span class="add">+hi Folded ctermbg=8 ctermfg=4 cterm=none
+</span><span class="add">+
+</span><span class="add">+&quot; visual mode highlighting
+</span><span class="add">+hi Visual ctermbg=7 ctermfg=0
+</span><span class="add">+
+</span><span class="add">+&quot; matched brackets
+</span><span class="add">+hi MatchParen ctermfg=7 cterm=underline ctermbg=0 
+</span><span class="add">+
+</span><span class="add">+&quot; line numbers
+</span><span class="add">+set number relativenumber
+</span><span class="add">+hi LineNr ctermfg=5
+</span><span class="add">+
+</span><span class="add">+&quot; highlight cursor line
+</span><span class="add">+highlight CursorLine ctermbg=8 cterm=bold
+</span><span class="add">+augroup CursorLine
+</span><span class="add">+    au!
+</span><span class="add">+    au VimEnter,WinEnter,BufWinEnter * setlocal  cursorline
+</span><span class="add">+    au WinLeave * setlocal nocursorline
+</span><span class="add">+augroup END
+</span><span class="add">+
+</span><span class="add">+&quot; change cursor shape in insert mode
+</span><span class="add">+let &amp;t_SI = &quot;\e[4 q&quot; &quot;underscore
+</span><span class="add">+let &amp;t_EI = &quot;\e[2 q&quot; &quot;block
+</span><span class="add">+augroup myCmds
+</span><span class="add">+    au!
+</span><span class="add">+    autocmd VimEnter * silent !echo -ne &quot;\e[2 q&quot;
+</span><span class="add">+augroup END
+</span><span class="add">+
+</span><span class="add">+&quot; character for line in split
+</span><span class="add">+set fillchars=vert:\|    
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Global keybindings                                               &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; reload current buffer
+</span><span class="add">+&quot;nnoremap &lt;C-l&gt; :e&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; toggle fold
+</span><span class="add">+nnoremap &lt;space&gt; za
+</span><span class="add">+
+</span><span class="add">+&quot; buffer navigation
+</span><span class="add">+nnoremap &lt;leader&gt;b :ls&lt;CR&gt;:b&lt;space&gt;
+</span><span class="add">+nnoremap &lt;Leader&gt;v :ls&lt;CR&gt;:vert sb&lt;space&gt;
+</span><span class="add">+nnoremap &lt;Leader&gt;j :bnext&lt;CR&gt; 
+</span><span class="add">+nnoremap &lt;Leader&gt;k :bprevious&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;BS&gt; :bdelete&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;Leader&gt;&lt;BS&gt; :w&lt;CR&gt;:bdelete&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; move between tabs
+</span><span class="add">+nnoremap &lt;Leader&gt;n gT
+</span><span class="add">+nnoremap &lt;Leader&gt;m gt
+</span><span class="add">+
+</span><span class="add">+&quot; indent selection
+</span><span class="add">+vnoremap &lt; &lt;gv
+</span><span class="add">+vnoremap &gt; &gt;gv
+</span><span class="add">+
+</span><span class="add">+&quot; quitting and writing shortcuts
+</span><span class="add">+nnoremap Q &lt;nop&gt;
+</span><span class="add">+nnoremap QQ :q&lt;CR&gt;
+</span><span class="add">+nnoremap !Q :q!&lt;CR&gt;
+</span><span class="add">+nnoremap QW :wq&lt;CR&gt;
+</span><span class="add">+nnoremap :Q :q
+</span><span class="add">+nnoremap :W :w
+</span><span class="add">+
+</span><span class="add">+&quot; yank to end of line
+</span><span class="add">+nnoremap Y y$
+</span><span class="add">+
+</span><span class="add">+&quot; copy and paste system clipboard
+</span><span class="add">+nnoremap &lt;C-p&gt; &quot;+p
+</span><span class="add">+nnoremap &lt;C-y&gt; &quot;+y
+</span><span class="add">+nnoremap &lt;C-y&gt;&lt;C-y&gt; ms0v$&quot;+y`s
+</span><span class="add">+vnoremap &lt;C-p&gt; &quot;+p
+</span><span class="add">+vnoremap &lt;C-y&gt; &quot;+y
+</span><span class="add">+&quot;next one needs fixing:
+</span><span class="add">+&quot;inoremap &lt;C-p&gt; &lt;Esc&gt;&quot;+p
+</span><span class="add">+inoremap &lt;C-y&gt; &lt;Esc&gt;&quot;+y
+</span><span class="add">+
+</span><span class="add">+&quot; save read-only file with sudo trick
+</span><span class="add">+cnoremap w!! w !sudo tee &gt; /dev/null %
+</span><span class="add">+
+</span><span class="add">+&quot; move between split views
+</span><span class="add">+nnoremap &lt;C-H&gt; &lt;C-W&gt;&lt;C-H&gt;
+</span><span class="add">+nnoremap &lt;C-J&gt; &lt;C-W&gt;&lt;C-J&gt;
+</span><span class="add">+nnoremap &lt;C-K&gt; &lt;C-W&gt;&lt;C-K&gt;
+</span><span class="add">+nnoremap &lt;C-L&gt; &lt;C-W&gt;&lt;C-L&gt;
+</span><span class="add">+inoremap &lt;C-H&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-H&gt;
+</span><span class="add">+inoremap &lt;C-J&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-J&gt;
+</span><span class="add">+inoremap &lt;C-K&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-K&gt;
+</span><span class="add">+inoremap &lt;C-L&gt; &lt;Esc&gt;&lt;C-W&gt;&lt;C-L&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; move to start or end of line more easily
+</span><span class="add">+nnoremap H 0
+</span><span class="add">+nnoremap L $
+</span><span class="add">+vnoremap H 0
+</span><span class="add">+vnoremap L g_
+</span><span class="add">+
+</span><span class="add">+&quot; resize splits
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Up&gt; :res -1&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Down&gt; :res +1&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Left&gt; :vertical resize -5&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;silent&gt; &lt;Right&gt; :vertical resize +5&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; toggle search highlight
+</span><span class="add">+nnoremap &lt;Leader&gt;h :set hlsearch!&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; shortcuts to open files
+</span><span class="add">+cnoremap modrc e ~/.vimrc&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Misc                                                             &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; restore last line in opened file
+</span><span class="add">+:au BufReadPost *
+</span><span class="add">+	    \ if line(&quot;&apos;\&quot;&quot;) &gt; 1 &amp;&amp; line(&quot;&apos;\&quot;&quot;) &lt;= line(&quot;$&quot;) &amp;&amp; &amp;ft !~# &apos;commit&apos;
+</span><span class="add">+	    \ |   exe &quot;normal! g`\&quot;&quot;
+</span><span class="add">+	    \ | endif
+</span><span class="add">+
+</span><span class="add">+&quot; set wiki path
+</span><span class="add">+let g:vimwiki_list = [{&apos;path&apos;: &apos;~/work/research/research.wiki/&apos;, &apos;path_html&apos;: &apos;~/work/research/research.wiki.html/&apos;}]
+</span><span class="add">+
+</span><span class="add">+&quot; netrw
+</span><span class="add">+nmap &lt;C-n&gt; :Explore&lt;CR&gt;
+</span><span class="add">+nmap &lt;C-t&gt; :Texplore&lt;CR&gt;
+</span><span class="add">+let g:netrw_sort_sequence=&apos;[\/]$&apos;
+</span><span class="add">+
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; vimlab setup
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; vim-slime 
+</span><span class="add">+let g:slime_target = &quot;tmux&quot;
+</span><span class="add">+let g:slime_dont_ask_default = 1
+</span><span class="add">+let g:slime_default_config = {&quot;socket_name&quot;: &quot;default&quot;, &quot;target_pane&quot;: &quot;1&quot;}
+</span><span class="add">+let g:slime_paste_file = &quot;/tmp/slime_paste&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; mlint code checking 
+</span><span class="add">+if hostname() == &quot;zenbook&quot;
+</span><span class="add">+    let g:mlint_path_to_mlint = &quot;/home/mlv/applications/MATLAB/R2018b/bin/glnxa64/mlint&quot;
+</span><span class="add">+else
+</span><span class="add">+    let g:mlint_path_to_mlint = &quot;to be filled in later&quot;
+</span><span class="add">+endif
+</span><span class="add">+let g:mlint_hover = 1
+</span><span class="add">+
+</span><span class="add">+&quot; session saving
+</span><span class="add">+let g:vimlab_session = &quot;~/.cache/vim/sessions/matlab-session.vim&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; I am using this for debugging
+</span><span class="add">+cmap test echo synIDattr(synIDtrans(synID(line(&quot;.&quot;), col(&quot;.&quot;), 0)), &quot;name&quot;)&lt;CR&gt;
+</span><span class="add">+
+</span></pre>
+</div></div>
+  </body>
+</html>

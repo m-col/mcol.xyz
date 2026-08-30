@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add example config</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/4f880650a6d5708556b03cc0657a699acf6b09f6.html">4f880650a6d5708556b03cc0657a699acf6b09f6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/007fd523267378b2d6afeda885ba959be180c852.html">007fd523267378b2d6afeda885ba959be180c852</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-10 23:43:54 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-10 23:43:54 +0000
+
+add example config
+</pre><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,24 @@
+<span class="add">+#
+</span><span class="add">+#    █           █                 
+</span><span class="add">+#    █           █                 
+</span><span class="add">+# ████ ████ ████ █  █ █   █ █████  
+</span><span class="add">+# █  █ █  █ █    █  █ █   █ █ █ █  
+</span><span class="add">+# █  █ ████ ████ ███  █ █ █ █ █ █  
+</span><span class="add">+# █  █ █       █ █  █ █ █ █ █   █  
+</span><span class="add">+# ████ ████ ████ █  █ █████ █   █  
+</span><span class="add">+#
+</span><span class="add">+# example deskwm configuration file
+</span><span class="add">+#
+</span><span class="add">+# All possible options are described here. Lines that start with &apos;#&apos; are
+</span><span class="add">+# ignored.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+## Configure desks
+</span><span class="add">+# Commands until a further desk is added pertain to desk 1.
+</span><span class="add">+
+</span><span class="add">+# This can be a path to a png image, or a colour in the form #rrggbb.
+</span><span class="add">+background ~/pattern.png
+</span><span class="add">+
+</span><span class="add">+# This adds another desk. Following commands will apply to this desk.
+</span><span class="add">+add_desk
+</span><span class="add">+background #f9f9fb
+</span></pre>
+</div></div>
+  </body>
+</html>

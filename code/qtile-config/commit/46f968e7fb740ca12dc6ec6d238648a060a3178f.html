@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - update borders</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/46f968e7fb740ca12dc6ec6d238648a060a3178f.html">46f968e7fb740ca12dc6ec6d238648a060a3178f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/565ff6dedd29e15159b484cba0b0c12be0ffbfa0.html">565ff6dedd29e15159b484cba0b0c12be0ffbfa0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-14 12:28:31 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-14 12:28:31 +0000
+
+update borders
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -180,8 +180,8 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Layouts
+</span><span class="sub">-border_focus = [colours[13], colours[5]]
+</span><span class="sub">-border_normal = background
+</span><span class="add">+border_focus = [colours[5]]
+</span><span class="add">+border_normal = &apos;001122&apos;
+</span><span class="def"> 
+</span><span class="def"> #import qtools.borders
+</span><span class="def"> #qtools.borders.enable(&apos;cde&apos;)
+</span>@@ -192,7 +192,7 @@
+<span class="def"> layouts = [
+</span><span class="def">     layout.Columns(
+</span><span class="def">         insert_position=1,
+</span><span class="sub">-        border_width=12,
+</span><span class="add">+        border_width=3,
+</span><span class="def">         border_focus=border_focus,
+</span><span class="def">         border_normal=border_normal,
+</span><span class="def">         border_on_single=True,
+</span>@@ -205,7 +205,7 @@
+<span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> floating_layout = layout.Floating(
+</span><span class="sub">-    border_width=bw,
+</span><span class="add">+    border_width=3,
+</span><span class="def">     border_focus=border_focus,
+</span><span class="def">     border_normal=border_normal,
+</span><span class="def">     corner_radius=cw,
+</span>@@ -474,6 +474,9 @@
+<span class="def">     bell_style=&apos;visual&apos;,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="add">+bar_border_width = 2
+</span><span class="add">+bar_border_color = &apos;334455&apos;
+</span><span class="add">+
+</span><span class="def"> screens = [
+</span><span class="def">     Screen(
+</span><span class="def">         bottom=bar.Bar(
+</span>@@ -486,6 +489,8 @@
+<span class="def">             ],
+</span><span class="def">             28,
+</span><span class="def">             background=background,
+</span><span class="add">+            border_width=[bar_border_width, 0, bar_border_width, 1],
+</span><span class="add">+            border_color=[bar_border_color, &apos;000000&apos;, bar_border_color, &apos;000000&apos;],
+</span><span class="def">         ),
+</span><span class="def">         top=bar.Gap(outer_gaps),
+</span><span class="def">         left=bar.Gap(outer_gaps),
+</span></pre>
+</div></div>
+  </body>
+</html>

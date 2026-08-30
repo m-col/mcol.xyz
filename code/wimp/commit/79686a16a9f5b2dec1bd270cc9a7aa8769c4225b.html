@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - update example config with scratchpad geometry</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/79686a16a9f5b2dec1bd270cc9a7aa8769c4225b.html">79686a16a9f5b2dec1bd270cc9a7aa8769c4225b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/eed3b6da3c36e7fab2bd17a89567ecfbebca6fc4.html">eed3b6da3c36e7fab2bd17a89567ecfbebca6fc4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-06 14:28:18 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-06 14:28:18 +0000
+
+update example config with scratchpad geometry
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -85,8 +85,11 @@
+<span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="def"> bind		Return		exec gnome-terminal
+</span><span class="def"> 
+</span><span class="sub">-# And replace with &apos;exec&apos; with &apos;scratchpad&apos; and its window will be sticky
+</span><span class="sub">-bind	Ctrl	e		scratchpad footclient mutt
+</span><span class="add">+# We can execute windows as scratchpads with a fixed geometry like this, where
+</span><span class="add">+# the geometry is specified as &lt;width&gt;x&lt;height&gt;+&lt;x&gt;+&lt;y&gt;
+</span><span class="add">+bind	Ctrl	e		scratchpad 1000x800+20+20 footclient mutt
+</span><span class="add">+# A percentage of the used output can also be requested:
+</span><span class="add">+bind	Ctrl	t		scratchpad 50%+50%+0+0 footclient tmux
+</span><span class="def"> 
+</span><span class="def"> # These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="def"> # pressed, waits for the next key press and uses that as the &apos;mark&apos;, e.g.
+</span></pre>
+</div></div>
+  </body>
+</html>

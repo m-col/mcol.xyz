@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/10faa94003a8d34cf56937c77242abc24711448a.html">10faa94003a8d34cf56937c77242abc24711448a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/1b155cf8cffcfd8c4540e441a6676fb9b24c99cd.html">1b155cf8cffcfd8c4540e441a6676fb9b24c99cd</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2025-05-13 22:47:41 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2025-05-13 22:47:41 +0100
+
+stuff
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -83,6 +83,7 @@
+<span class="def"> \   &apos;python&apos;: [&apos;flake8&apos;, &apos;pyright&apos;, &apos;ruff&apos;],
+</span><span class="def"> \   &apos;typescriptreact&apos;: [&apos;tsserver&apos;, &apos;eslint&apos;],
+</span><span class="def"> \   &apos;typescript&apos;: [&apos;tsserver&apos;, &apos;eslint&apos;],
+</span><span class="add">+\   &apos;rust&apos;: [&apos;analyzer&apos;],
+</span><span class="def"> \}
+</span><span class="def"> &quot; Don&apos;t show errors in virtual text or signs column; rely on echoed message instead
+</span><span class="def"> let g:ale_virtualtext_cursor = 0
+</span>@@ -93,6 +94,7 @@
+<span class="def"> \   &apos;python&apos;: [&apos;black&apos;, &apos;ruff&apos;],
+</span><span class="def"> \   &apos;typescriptreact&apos;: [&apos;eslint&apos;],
+</span><span class="def"> \   &apos;typescript&apos;: [&apos;eslint&apos;],
+</span><span class="add">+\   &apos;rust&apos;: [&apos;rustfmt&apos;],
+</span><span class="def"> \}
+</span><span class="def"> &quot;\   &apos;markdown&apos;: [&apos;prettier&apos;],
+</span><span class="def"> let g:ale_echo_cursor = 1
+</span>@@ -107,3 +109,6 @@
+<span class="def"> let g:blamer_show_in_insert_modes = 0
+</span><span class="def"> let g:blamer_date_format = &apos;%d/%m/%y&apos;
+</span><span class="def"> highlight Blamer guifg=lightgrey
+</span><span class="add">+
+</span><span class="add">+&quot; used by Ctrl-P, likely among other things
+</span><span class="add">+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,node_modules,target,.mypy_cache
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - set minimum window dimensions and do not go over when resizing</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/e0f847b4502a2b5c1a7dd393abefb971ec1f1442.html">e0f847b4502a2b5c1a7dd393abefb971ec1f1442</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/bf5d6ef2c18fb19462ba87adafcf85fd3eec3ade.html">bf5d6ef2c18fb19462ba87adafcf85fd3eec3ade</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-13 15:20:53 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-13 15:20:53 +0000
+
+set minimum window dimensions and do not go over when resizing
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -281,6 +281,26 @@
+<span class="def"> 
+</span><span class="def"> static void on_cursor_motion(struct wl_listener *listener, void *data){
+</span><span class="def">     struct wlr_event_pointer_motion *event = data;
+</span><span class="add">+    if (wimp.grabbed_view) {
+</span><span class="add">+	if (wimp.resize_edges &amp; WLR_EDGE_TOP) {
+</span><span class="add">+	    if (wimp.grabbed_view-&gt;surface-&gt;geometry.height &lt;= CORNER &amp;&amp; event-&gt;delta_y &gt; 0) {
+</span><span class="add">+		event-&gt;delta_y = 0;
+</span><span class="add">+	    }
+</span><span class="add">+	} else if (wimp.resize_edges &amp; WLR_EDGE_BOTTOM) {
+</span><span class="add">+	    if (wimp.grabbed_view-&gt;surface-&gt;geometry.height &lt;= CORNER &amp;&amp; event-&gt;delta_y &lt; 0) {
+</span><span class="add">+		event-&gt;delta_y = 0;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+	if (wimp.resize_edges &amp; WLR_EDGE_LEFT) {
+</span><span class="add">+	    if (wimp.grabbed_view-&gt;surface-&gt;geometry.width &lt;= CORNER &amp;&amp; event-&gt;delta_x &gt; 0) {
+</span><span class="add">+		event-&gt;delta_x = 0;
+</span><span class="add">+	    }
+</span><span class="add">+	} else if (wimp.resize_edges &amp; WLR_EDGE_RIGHT) {
+</span><span class="add">+	    if (wimp.grabbed_view-&gt;surface-&gt;geometry.width &lt;= CORNER &amp;&amp; event-&gt;delta_x &lt; 0) {
+</span><span class="add">+		event-&gt;delta_x = 0;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="def">     wlr_cursor_move(wimp.cursor, event-&gt;device, event-&gt;delta_x, event-&gt;delta_y);
+</span><span class="def">     process_cursor_motion(event-&gt;time_msec, event-&gt;delta_x, event-&gt;delta_y);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

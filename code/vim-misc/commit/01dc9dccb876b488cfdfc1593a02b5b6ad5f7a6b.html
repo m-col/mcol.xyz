@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - github -&gt; mcol.xyz</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/01dc9dccb876b488cfdfc1593a02b5b6ad5f7a6b.html">01dc9dccb876b488cfdfc1593a02b5b6ad5f7a6b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/ce1ef037deb5fa9addf94ff7447cf988cf97034c.html">ce1ef037deb5fa9addf94ff7447cf988cf97034c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-25 00:52:22 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-25 00:52:22 +0100
+
+github -&gt; mcol.xyz
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,13 +23,13 @@
+<span class="def"> if stridx(hostname(), &quot;book&quot;) != -1
+</span><span class="def">     &quot;Plugin &apos;vimwiki/vimwiki&apos;		    &quot; vimwiki
+</span><span class="def">     Plugin &apos;gu-fan/riv.vim&apos;
+</span><span class="sub">-    Plugin &apos;m-col/vimlab&apos;		    &quot; vimlab
+</span><span class="add">+    Plugin &apos;https://mcol.xyz/code/vimlab&apos;   &quot; vimlab
+</span><span class="def">     Plugin &apos;lervag/vimtex&apos;		    &quot; vimtex
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="sub">-Plugin &apos;m-col/vim-misc&apos;			    &quot; my vimrc and misc functions 
+</span><span class="add">+Plugin &apos;https://mcol.xyz/code/vim-misc&apos;	    &quot; my vimrc and misc functions 
+</span><span class="add">+Plugin &apos;https://mcol.xyz/code/tide&apos;	    &quot; tmux ide 
+</span><span class="def"> Plugin &apos;airblade/vim-gitgutter&apos;		    &quot; gitgutter
+</span><span class="sub">-Plugin &apos;m-col/tide&apos;			    &quot; tmux ide
+</span><span class="def"> Plugin &apos;terryma/vim-multiple-cursors&apos;	    &quot; multicursor
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span>@@ -139,3 +139,5 @@
+<span class="def"> let g:multi_cursor_prev_key            = &apos;&lt;C-p&gt;&apos;
+</span><span class="def"> let g:multi_cursor_skip_key            = &apos;&lt;C-x&gt;&apos;
+</span><span class="def"> let g:multi_cursor_quit_key            = &apos;&lt;Esc&gt;&apos;
+</span><span class="add">+
+</span><span class="add">+set ff=unix
+</span></pre>
+</div></div>
+  </body>
+</html>

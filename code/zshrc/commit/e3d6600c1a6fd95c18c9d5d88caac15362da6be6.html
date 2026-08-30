@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - updates from work mac</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/e3d6600c1a6fd95c18c9d5d88caac15362da6be6.html">e3d6600c1a6fd95c18c9d5d88caac15362da6be6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/84aff2e11393ee261481bb3bfdf5b765748d40d2.html">84aff2e11393ee261481bb3bfdf5b765748d40d2</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2023-06-18 00:12:13 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2023-06-18 00:12:13 +0100
+
+updates from work mac
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,6 +16,8 @@
+<span class="def">     export IS_TMUX=false
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="add">+export IS_DOCKER=${IS_DOCKER:-false}
+</span><span class="add">+
+</span><span class="def"> # zsh settings
+</span><span class="def"> local ZSH=&quot;$HOME/.zsh&quot;
+</span><span class="def"> HYPHEN_INSENSITIVE=&quot;true&quot;
+</span>@@ -75,6 +77,3 @@
+<span class="def">     z $DO2
+</span><span class="def">     unset DO2
+</span><span class="def"> fi
+</span><span class="sub">-
+</span><span class="sub">-# Init PYENV for interactive shell
+</span><span class="sub">-eval &quot;$(pyenv init -)&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -125,7 +125,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-if $IS_SSH
+</span><span class="add">+if $IS_SSH || $IS_DOCKER
+</span><span class="def"> then
+</span><span class="def">     tmux_following_colour=green
+</span><span class="def"> elif [[ $EUID -eq 0 ]]
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,13 +3,14 @@
+<span class="def"> #
+</span><span class="def"> 
+</span><span class="def"> # use last browsed directory automatically with ranger
+</span><span class="add">+_ranger=`which ranger`
+</span><span class="def"> ranger-cd() { 
+</span><span class="def">     tempfile=&quot;$(mktemp -t ranger.XXXXXX)&quot;
+</span><span class="def">     if [[ -f $HOME/.local/bin/ranger ]]
+</span><span class="def">     then
+</span><span class="def"> 	$HOME/.local/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="def">     else
+</span><span class="sub">-	/usr/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="add">+	$_ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="def">     fi
+</span><span class="def">     test -f &quot;$tempfile&quot; &amp;&amp;
+</span><span class="def"> 	if [ &quot;$(cat -- &quot;$tempfile&quot;)&quot; != &quot;$(echo -n `pwd`)&quot; ]; then
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>docker-completion.plugin.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,41 @@
+<span class="add">+# Copyright 2020 Christian Fritz &lt;mail at chr-fritz dot de&gt;
+</span><span class="add">+#
+</span><span class="add">+# Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+</span><span class="add">+# you may not use this file except in compliance with the License.
+</span><span class="add">+# You may obtain a copy of the License at
+</span><span class="add">+#
+</span><span class="add">+#     http://www.apache.org/licenses/LICENSE-2.0
+</span><span class="add">+#
+</span><span class="add">+# Unless required by applicable law or agreed to in writing, software
+</span><span class="add">+# distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+</span><span class="add">+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+</span><span class="add">+# See the License for the specific language governing permissions and
+</span><span class="add">+# limitations under the License.
+</span><span class="add">+
+</span><span class="add">+# Adds the given file to the zsh variable fpath.
+</span><span class="add">+# Before adding it, it checks if the file exists.
+</span><span class="add">+__dockerCompletion_linkIfNeeded() {
+</span><span class="add">+    local file=$1
+</span><span class="add">+    local target=&quot;/usr/local/share/zsh/site-functions/$2&quot;
+</span><span class="add">+    if [[ -f &quot;${file}&quot; &amp;&amp; ! -e &quot;${target}&quot; ]]; then
+</span><span class="add">+        ln -s &quot;${file}&quot; &quot;${target}&quot;
+</span><span class="add">+    fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Get the base path of the Docker for Mac installation.
+</span><span class="add">+# It assumes that the completions are relative to the real path of the docker command.
+</span><span class="add">+# This is the normal case for all Docker for Mac installations.
+</span><span class="add">+__dockerCompletion_basePath() {
+</span><span class="add">+    docker_loc=$(which docker)
+</span><span class="add">+    dirname $(dirname ${docker_loc:A})
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Registers the docker completions from the Docker for Mac installation.
+</span><span class="add">+__dockerCompletion_registerCompletion(){
+</span><span class="add">+    basePath=&quot;$(__dockerCompletion_basePath)&quot;
+</span><span class="add">+    __dockerCompletion_linkIfNeeded &quot;${basePath}/etc/docker.zsh-completion&quot; &quot;_docker&quot;
+</span><span class="add">+    __dockerCompletion_linkIfNeeded &quot;${basePath}/etc/docker-machine.zsh-completion&quot; &quot;_docker-machine&quot;
+</span><span class="add">+    __dockerCompletion_linkIfNeeded &quot;${basePath}/etc/docker-compose.zsh-completion&quot; &quot;_docker-compose&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+__dockerCompletion_registerCompletion
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,7 +6,7 @@
+<span class="def"> # misc
+</span><span class="def"> alias ..=&apos;cd ../&apos;
+</span><span class="def"> alias ...=&apos;cd ../../&apos;
+</span><span class="sub">-alias l=&apos;ls -lhFv -I \*.o&apos;
+</span><span class="add">+alias l=&apos;ls -lhFv&apos;
+</span><span class="def"> alias lc=&apos;ls -c1&apos;
+</span><span class="def"> alias tmp=&apos;cd /tmp; l&apos;
+</span><span class="def"> alias _=&apos;sudo&apos;
+</span>@@ -15,12 +15,19 @@
+<span class="def"> alias rg=&apos;grep -r&apos;
+</span><span class="def"> alias pth=&apos;echo &quot;${PATH//:/\n}&quot;&apos;
+</span><span class="def"> vgr() { vim `grep -lr &quot;$@&quot;`; }
+</span><span class="add">+alias va=&quot;source venv/bin/activate&quot;
+</span><span class="add">+alias vd=&quot;deactivate&quot;
+</span><span class="add">+alias dc=docker-compose
+</span><span class="def"> 
+</span><span class="sub">-if [[ -z &quot;$WAYLAND_DISPLAY&quot; ]]
+</span><span class="add">+if [[ -n &quot;$WAYLAND_DISPLAY&quot; ]]
+</span><span class="def"> then
+</span><span class="sub">-    alias copy=&apos;xclip -selection clipboard&apos;
+</span><span class="sub">-else
+</span><span class="def">     alias copy=&apos;wl-copy&apos;
+</span><span class="add">+elif [[ -n &quot;$DISPLAY&quot; ]]
+</span><span class="add">+then
+</span><span class="add">+    alias copy=&apos;xclip -selection clipboard&apos;
+</span><span class="add">+elif [[ &quot;$OSTYPE&quot; == &quot;darwin&quot;* ]]
+</span><span class="add">+then
+</span><span class="add">+    alias copy=pbcopy
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="def"> alias grep=&apos;grep --exclude-dir=__pycache__ --exclude-dir=.git --exclude-dir=.tox --exclude-dir=.eggs --exclude-dir=.mypy_cache&apos;
+</span>@@ -61,12 +68,13 @@
+<span class="def"> # git
+</span><span class="def"> alias gs=&apos;git status&apos;
+</span><span class="def"> alias ad=&apos;git add&apos;
+</span><span class="add">+alias adp=&apos;git add --patch&apos;
+</span><span class="def"> alias co=&apos;git commit&apos;
+</span><span class="def"> alias cm=&apos;git commit -m&apos;
+</span><span class="def"> alias ca=&apos;git commit --amend&apos;
+</span><span class="def"> alias cmf=&apos;git commit --fixup&apos;
+</span><span class="def"> alias psh=&apos;git push&apos;
+</span><span class="sub">-alias pshs=&apos;git push &amp;&gt; /dev/null &amp;&apos;
+</span><span class="add">+alias pshs=&apos;git push &amp;&gt; /dev/null &amp;|&apos;
+</span><span class="def"> alias fe=&apos;git fetch &amp;&amp; git status&apos;
+</span><span class="def"> alias pl=&apos;git pull&apos;
+</span><span class="def"> rb() {
+</span>@@ -97,6 +105,11 @@
+<span class="def"> lgo()  { git log --oneline -${1:-1}; }
+</span><span class="def"> alias lgc=&quot;git log -1 | head -1 | awk &apos;{print \$2}&apos; | copy -n&quot;
+</span><span class="def"> 
+</span><span class="add">+pdif() {
+</span><span class="add">+    git diff --name-only --diff-filter=${1:-M}
+</span><span class="add">+}
+</span><span class="add">+alias vimd=&apos;vim `pdif`&apos;
+</span><span class="add">+
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span><span class="def"> alias psb=&apos;python setup.py -q build&apos;
+</span>@@ -120,8 +133,7 @@
+<span class="def"> alias gg=&apos;cd $HOME/git; l&apos;
+</span><span class="def"> alias gb=&apos;cd $HOME/.config/bin&apos;
+</span><span class="def"> alias ge=&apos;cd /etc&apos;
+</span><span class="sub">-alias gv=&apos;cd $HOME/.vim/bundle/vim-misc&apos;
+</span><span class="sub">-alias gvm=&apos;cd $HOME/.vim/bundle/vim-misc; ra&apos;
+</span><span class="add">+alias gv=&apos;cd $HOME/.vim/pack/vim-misc&apos;
+</span><span class="def"> alias gz=&apos;cd $HOME/.zsh; l&apos;
+</span><span class="def"> alias gR=&apos;cd $HOME/reach&apos;
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

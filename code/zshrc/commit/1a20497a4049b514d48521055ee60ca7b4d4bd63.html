@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - update prompt</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/1a20497a4049b514d48521055ee60ca7b4d4bd63.html">1a20497a4049b514d48521055ee60ca7b4d4bd63</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/5c16d5e63a5dff1629b651615bc3b8ecb258deaa.html">5c16d5e63a5dff1629b651615bc3b8ecb258deaa</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-07-28 20:10:31 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-07-28 20:10:31 +0100
+
+update prompt
+</pre><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,3 @@
+<span class="sub">-# vim:ft=zsh
+</span><span class="def"> #
+</span><span class="def"> # ban zsh theme
+</span><span class="def"> #
+</span>@@ -100,7 +99,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> prompt_dir() {
+</span><span class="sub">-    prompt_segment magenta 4 &apos; %4~ &apos;
+</span><span class="add">+    prompt_segment magenta 12 &apos; %4~ &apos;
+</span><span class="def">     #dir=$(print -Pn &apos;%3~/&apos;)
+</span><span class="def">     #[[ &quot;${(q)dir:0:2}&quot; == &apos;\~/&apos; ]] &amp;&amp; dir=&quot;%F{12}🏠%F{black}${dir:1}&quot;
+</span><span class="def">     #echo -n &quot; $dir &quot;
+</span>@@ -126,16 +125,6 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-#prompt_status() {
+</span><span class="sub">-#    local symbols
+</span><span class="sub">-#    symbols=()
+</span><span class="sub">-#    [[ $RETVAL -ne 0 ]] &amp;&amp; symbols+=&quot;%{%F{red}%}x&quot;
+</span><span class="sub">-#    [[ $UID -eq 0 ]] &amp;&amp; symbols+=&quot;%{%F{yellow}%}⚡&quot;
+</span><span class="sub">-#    [[ $(jobs -l | wc -l) -gt 0 ]] &amp;&amp; symbols+=&quot;%{%F{cyan}%}⚙&quot;
+</span><span class="sub">-#    [[ -n &quot;$symbols&quot; ]] &amp;&amp; prompt_segment black default &quot;$symbols&quot;
+</span><span class="sub">-#}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> if $IS_SSH
+</span><span class="def"> then
+</span><span class="def">     tmux_following_colour=green
+</span></pre>
+</div></div>
+  </body>
+</html>

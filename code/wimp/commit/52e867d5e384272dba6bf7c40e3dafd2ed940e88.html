@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Set desks with single value, and have desk-specific background/border opts</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/52e867d5e384272dba6bf7c40e3dafd2ed940e88.html">52e867d5e384272dba6bf7c40e3dafd2ed940e88</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/4f209b64b5ce30a8d36567d524faba1e4c36e430.html">4f209b64b5ce30a8d36567d524faba1e4c36e430</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 01:51:53 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 01:51:53 +0000
+
+Set desks with single value, and have desk-specific background/border opts
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,8 +7,6 @@
+<span class="def"> #             ██              ██
+</span><span class="def"> #             ██
+</span><span class="def"> # 
+</span><span class="sub">-# example wimp configuration file
+</span><span class="sub">-#
+</span><span class="def"> # All possible options are described here. Lines that start with &apos;#&apos; are
+</span><span class="def"> # ignored. Options that are commented out contain their default values.
+</span><span class="def"> #
+</span>@@ -17,12 +15,23 @@
+<span class="def"> #   $XDG_CONFIG_HOME/.config/wimp/config
+</span><span class="def"> #   $HOME/.config/wimp/config
+</span><span class="def"> 
+</span><span class="add">+# This will be executed after setting up the compositor.
+</span><span class="add">+#auto_start ${XDG_CONFIG_HOME:-$HOME}/.config/wimp/autostart
+</span><span class="def"> 
+</span><span class="sub">-## General settings
+</span><span class="sub">-
+</span><span class="sub">-# These specify the min and max magnification bounds when zooming.
+</span><span class="sub">-#zoom_min 0.5
+</span><span class="sub">-#zoom_max 3
+</span><span class="add">+#desks 2
+</span><span class="add">+#desk 1 background #5D479D
+</span><span class="add">+#desk 1 borders normal #3e3e73
+</span><span class="add">+#desk 1 borders focus #998dd1
+</span><span class="add">+#desk 1 borders width 4
+</span><span class="add">+#desk 2 background #3e3e73
+</span><span class="add">+#desk 2 borders normal #5D479D
+</span><span class="add">+#desk 2 borders focus #998dd1
+</span><span class="add">+#desk 2 borders width 6
+</span><span class="add">+desk 1 background ~/path/to/tiling-image.png
+</span><span class="add">+
+</span><span class="add">+# Magnification bounds
+</span><span class="add">+#zoom_min 0.1
+</span><span class="add">+#zoom_max 10
+</span><span class="def"> 
+</span><span class="def"> # Set the colour for the mark setter/getter indicator
+</span><span class="def"> #mark_indicator #000000
+</span>@@ -30,15 +39,16 @@
+<span class="def"> # Whether to allow VT switching: on or off.
+</span><span class="def"> #vt_switching on
+</span><span class="def"> 
+</span><span class="add">+# natural or reverse scrolling
+</span><span class="add">+#scroll_direction natural
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="sub">-## Bindings
+</span><span class="add">+## Key bindings
+</span><span class="def"> 
+</span><span class="sub">-# Set the modifier key used for bindings
+</span><span class="def"> # Can be one of: Shift, Caps, Ctrl, Alt, Mod2, Mod3, Logo, Mod5
+</span><span class="def"> #set_modifier Logo
+</span><span class="def"> 
+</span><span class="sub">-# Define key bindings
+</span><span class="sub">-# additional modifiers, key, action(, data)
+</span><span class="add">+# additional modifiers, key, action
+</span><span class="def"> bind	Ctrl	Escape		shutdown
+</span><span class="def"> bind	Ctrl	r		reload_config
+</span><span class="def"> 
+</span>@@ -84,29 +94,3 @@
+<span class="def"> bind		scroll		pan_desk_mouse
+</span><span class="def"> bind	Shift	scroll		zoom_mouse
+</span><span class="def"> bind		drag1		move_window
+</span><span class="sub">-
+</span><span class="sub">-# Scroll direction. Can be one of: natural, reverse
+</span><span class="sub">-#scroll_direction natural
+</span><span class="sub">-
+</span><span class="sub">-# Set an auto-start script. This will be executed after setting up the compositor.
+</span><span class="sub">-#auto_start ${XDG_CONFIG_HOME:-$HOME}/.config/wimp/autostart
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-## Configure desks
+</span><span class="sub">-
+</span><span class="sub">-# Commands until a further desk is added pertain to desk 1.
+</span><span class="sub">-
+</span><span class="sub">-# This can be a path to a png image, or a colour in the form #rrggbb.
+</span><span class="sub">-background ~/pattern.png
+</span><span class="sub">-
+</span><span class="sub">-# window border colors
+</span><span class="sub">-borders focus #998dd1
+</span><span class="sub">-borders normal #3e3e73
+</span><span class="sub">-borders width 4
+</span><span class="sub">-
+</span><span class="sub">-# This adds another desk. Following commands will apply to this desk.
+</span><span class="sub">-add_desk
+</span><span class="sub">-background #3e3e73
+</span><span class="sub">-borders normal #1f1c32
+</span><span class="sub">-borders focus #406794
+</span><span class="sub">-borders width 5
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,7 +24,6 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> struct wimp wimp = {
+</span><span class="sub">-    .mark_waiting = false,
+</span><span class="def">     .on_mouse_motion = NULL,
+</span><span class="def">     .on_mouse_scroll = NULL,
+</span><span class="def">     .on_drag1 = NULL,
+</span>@@ -32,6 +31,7 @@
+<span class="def">     .on_drag3 = NULL,
+</span><span class="def">     .can_steal_focus = true,
+</span><span class="def">     .desk_count = 0,
+</span><span class="add">+    .mark_waiting = false,
+</span><span class="def">     .mark_indicator.box.width = 25,
+</span><span class="def">     .mark_indicator.box.height = 25,
+</span><span class="def">     .mark_indicator.box.x = 0,
+</span>@@ -157,7 +157,6 @@
+<span class="def">     wl_list_init(&amp;wimp.key_bindings);
+</span><span class="def">     wl_list_init(&amp;wimp.mouse_bindings);
+</span><span class="def">     wl_list_init(&amp;wimp.marks);
+</span><span class="sub">-    add_desk();
+</span><span class="def"> 
+</span><span class="def">     // configure
+</span><span class="def">     locate_config();
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,7 +3,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-void add_desk();
+</span><span class="add">+void configure_desks(int wanted);
+</span><span class="def"> void set_desk(struct desk *desk);
+</span><span class="def"> void view_to_desk(struct view *view, int index);
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,7 +4,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void add_desk() {
+</span><span class="add">+static void add_desk() {
+</span><span class="def">     struct desk *desk = calloc(1, sizeof(struct desk));
+</span><span class="def">     wl_list_insert(wimp.desks.prev, &amp;desk-&gt;link);
+</span><span class="def">     wl_list_init(&amp;desk-&gt;views);
+</span>@@ -24,6 +24,32 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void remove_desk() {
+</span><span class="add">+    struct desk *last = wl_container_of(wimp.desks.next, last, link);
+</span><span class="add">+    if (last == wimp.current_desk) {
+</span><span class="add">+	set_desk(wl_container_of(wimp.desks.next, last, link));
+</span><span class="add">+    }
+</span><span class="add">+    struct view *view, *tview;
+</span><span class="add">+    wl_list_for_each_safe(view, tview, &amp;last-&gt;views, link) {
+</span><span class="add">+	view_to_desk(view, 0);
+</span><span class="add">+    };
+</span><span class="add">+    wl_list_init(&amp;last-&gt;link);
+</span><span class="add">+    wl_list_remove(&amp;last-&gt;link);
+</span><span class="add">+    free(last-&gt;wallpaper);
+</span><span class="add">+    free(last);
+</span><span class="add">+    wimp.desk_count--;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+void configure_desks(int wanted) {
+</span><span class="add">+    while (wanted &gt; wimp.desk_count) {
+</span><span class="add">+	add_desk();
+</span><span class="add">+    }
+</span><span class="add">+    while (wanted &lt; wimp.desk_count) {
+</span><span class="add">+	remove_desk();
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void set_desk(struct desk *desk) {
+</span><span class="def">     struct view *view;
+</span><span class="def">     wimp.can_steal_focus = false;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,13 +18,22 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static const char *DEFAULT_CONFIG =  &quot;\n\
+</span><span class="sub">-zoom_min 0.5\n\
+</span><span class="sub">-zoom_max 3\n\
+</span><span class="add">+desks 2\n\
+</span><span class="add">+desk 1 background #5D479D\n\
+</span><span class="add">+desk 1 borders normal #3e3e73\n\
+</span><span class="add">+desk 1 borders focus #998dd1\n\
+</span><span class="add">+desk 1 borders width 4\n\
+</span><span class="add">+desk 2 background #3e3e73\n\
+</span><span class="add">+desk 2 borders normal #5D479D\n\
+</span><span class="add">+desk 2 borders focus #998dd1\n\
+</span><span class="add">+desk 2 borders width 6\n\
+</span><span class="add">+zoom_min 0.1\n\
+</span><span class="add">+zoom_max 10\n\
+</span><span class="def"> mark_indicator #000000\n\
+</span><span class="def"> vt_switching on\n\
+</span><span class="add">+scroll_direction natural\n\
+</span><span class="def"> set_modifier Logo\n\
+</span><span class="def"> bind Ctrl Escape shutdown\n\
+</span><span class="sub">-scroll_direction natural\n\
+</span><span class="def"> &quot;;
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -288,9 +297,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void set_wallpaper(char *wallpaper) {
+</span><span class="sub">-    struct desk *desk = wl_container_of(wimp.desks.prev, desk, link);
+</span><span class="sub">-
+</span><span class="add">+static void set_wallpaper(struct desk *desk, char *wallpaper) {
+</span><span class="def">     // wallpaper is a colour
+</span><span class="def">     if (strlen(wallpaper) == 7 &amp;&amp; wallpaper[0] == &apos;#&apos;) {
+</span><span class="def"> 	assign_colour(wallpaper, desk-&gt;background);
+</span>@@ -397,65 +404,135 @@
+<span class="def">     char *s;
+</span><span class="def">     char linebuf[1024];
+</span><span class="def">     int line = 0;
+</span><span class="add">+    int index;
+</span><span class="add">+    static bool a = true;
+</span><span class="def"> 
+</span><span class="def">     while (fgets(linebuf, sizeof(linebuf), stream)) {
+</span><span class="def"> 	line++;
+</span><span class="def"> 	if (!(s = strtok(linebuf, &quot; \t\n\r&quot;)) || s[0] == &apos;#&apos;) {
+</span><span class="def"> 	    continue;
+</span><span class="def"> 	}
+</span><span class="sub">-	if (!strcasecmp(s, &quot;add_desk&quot;)) {
+</span><span class="sub">-	    add_desk();
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;background&quot;)) {
+</span><span class="sub">-	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-		set_wallpaper(s);
+</span><span class="add">+
+</span><span class="add">+	// desks &lt;int&gt;
+</span><span class="add">+	if (!strcasecmp(s, &quot;desks&quot;)) {
+</span><span class="add">+	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="add">+		configure_desks(strtod(s, NULL));
+</span><span class="def"> 	    }
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;set_modifier&quot;)) {
+</span><span class="sub">-	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-		enum wlr_keyboard_modifier mod = get(mods, s);
+</span><span class="sub">-		if (mod)
+</span><span class="sub">-		    wimp.mod = mod;
+</span><span class="sub">-		else
+</span><span class="sub">-		    wlr_log(WLR_ERROR, &quot;Config line %i: invalid modifier name &apos;%s&apos;.&quot;, line, s);
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// desk ...
+</span><span class="add">+	else if (!strcasecmp(s, &quot;desk&quot;)) {
+</span><span class="add">+	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="add">+		index = strtod(s, NULL) - 1;
+</span><span class="add">+		s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+		struct desk *desk;
+</span><span class="add">+		bool found = false;
+</span><span class="add">+		wl_list_for_each(desk, &amp;wimp.desks, link) {
+</span><span class="add">+		    if (desk-&gt;index == index) {
+</span><span class="add">+			found = true;
+</span><span class="add">+			break;
+</span><span class="add">+		    }
+</span><span class="add">+		}
+</span><span class="add">+		if (!found) {
+</span><span class="add">+		    continue;
+</span><span class="add">+		}
+</span><span class="add">+
+</span><span class="add">+		// desk &lt;index&gt; background #rrggbb
+</span><span class="add">+		// desk &lt;index&gt; background ~/path/to/image.png
+</span><span class="add">+		if (!strcasecmp(s, &quot;background&quot;)) {
+</span><span class="add">+		    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+			set_wallpaper(desk, s);
+</span><span class="add">+		    }
+</span><span class="add">+		}
+</span><span class="add">+
+</span><span class="add">+		// borders [desk] [focus|normal] #rrggbb
+</span><span class="add">+		// borders [desk] width &lt;int&gt;
+</span><span class="add">+		else if (!strcasecmp(s, &quot;borders&quot;)) {
+</span><span class="add">+		    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+		    if (!strcasecmp(s, &quot;normal&quot;)) {
+</span><span class="add">+			assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_normal);
+</span><span class="add">+		    }
+</span><span class="add">+		    else if (!strcasecmp(s, &quot;focus&quot;)) {
+</span><span class="add">+			assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_focus);
+</span><span class="add">+		    }
+</span><span class="add">+		    else if (!strcasecmp(s, &quot;width&quot;)) {
+</span><span class="add">+			if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="add">+			    desk-&gt;border_width = strtod(s, NULL);
+</span><span class="add">+			}
+</span><span class="add">+		    }
+</span><span class="add">+		}
+</span><span class="def"> 	    }
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;zoom_min&quot;)) {
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// zoom_min &lt;float&gt;
+</span><span class="add">+	else if (!strcasecmp(s, &quot;zoom_min&quot;)) {
+</span><span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="def"> 		wimp.zoom_min = strtod(s, NULL);
+</span><span class="add">+		printf(&quot;%f\n&quot;, wimp.zoom_min);
+</span><span class="def"> 	    }
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;zoom_max&quot;)) {
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// zoom_max &lt;float&gt;
+</span><span class="add">+	else if (!strcasecmp(s, &quot;zoom_max&quot;)) {
+</span><span class="def"> 	    if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s)) {
+</span><span class="def"> 		wimp.zoom_max = strtod(s, NULL);
+</span><span class="def"> 	    }
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;bind&quot;)) {
+</span><span class="sub">-	    add_binding(strtok(NULL, &quot;&quot;), line);
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;mark_indicator&quot;)) {
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// mark_indicator #rrggbb
+</span><span class="add">+	else if (!strcasecmp(s, &quot;mark_indicator&quot;)) {
+</span><span class="def"> 	    assign_colour(strtok(NULL, &quot; \t\n\r&quot;), wimp.mark_indicator.colour);
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;vt_switching&quot;)) {
+</span><span class="add">+	    wimp.mark_indicator.box.x = 0;
+</span><span class="add">+	    wimp.mark_indicator.box.y = 0;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// vt_switching [off|on]
+</span><span class="add">+	else if (!strcasecmp(s, &quot;vt_switching&quot;)) {
+</span><span class="def"> 	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def"> 	    if (!strcasecmp(s, &quot;off&quot;))
+</span><span class="def"> 		wimp.vt_switching = false;
+</span><span class="def"> 	    else if (!strcasecmp(s, &quot;on&quot;))
+</span><span class="def"> 		wimp.vt_switching = true;
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;borders&quot;)) {
+</span><span class="sub">-	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-	    struct desk *desk = wl_container_of(wimp.desks.prev, desk, link);
+</span><span class="sub">-	    if (!strcasecmp(s, &quot;normal&quot;))
+</span><span class="sub">-		assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_normal);
+</span><span class="sub">-	    else if (!strcasecmp(s, &quot;focus&quot;))
+</span><span class="sub">-		assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;border_focus);
+</span><span class="sub">-	    else if (!strcasecmp(s, &quot;width&quot;))
+</span><span class="sub">-		if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s))
+</span><span class="sub">-		    desk-&gt;border_width = strtod(s, NULL);
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;auto_start&quot;)) {
+</span><span class="sub">-	    wimp.auto_start = strdup(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="sub">-	} else if (!strcasecmp(s, &quot;scroll_direction&quot;)) {
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// scroll_direciton [natural|reverse]
+</span><span class="add">+	else if (!strcasecmp(s, &quot;scroll_direction&quot;)) {
+</span><span class="def"> 	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def"> 	    if (!strcasecmp(s, &quot;natural&quot;))
+</span><span class="def"> 		wimp.reverse_scrolling = false;
+</span><span class="def"> 	    else if (!strcasecmp(s, &quot;reverse&quot;))
+</span><span class="def"> 		wimp.reverse_scrolling = true;
+</span><span class="sub">-	} else {
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// e.g.: set_modifier logo
+</span><span class="add">+	else if (!strcasecmp(s, &quot;set_modifier&quot;)) {
+</span><span class="add">+	    if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+		enum wlr_keyboard_modifier mod = get(mods, s);
+</span><span class="add">+		if (mod)
+</span><span class="add">+		    wimp.mod = mod;
+</span><span class="add">+		else
+</span><span class="add">+		    wlr_log(WLR_ERROR, &quot;Config line %i: invalid modifier name &apos;%s&apos;.&quot;, line, s);
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// bind [&lt;modifiers&gt;] &lt;key&gt; &lt;action&gt;
+</span><span class="add">+	else if (!strcasecmp(s, &quot;bind&quot;)) {
+</span><span class="add">+	    add_binding(strtok(NULL, &quot;&quot;), line);
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// auto_start ~/script/to/execute.sh
+</span><span class="add">+	else if (!strcasecmp(s, &quot;auto_start&quot;)) {
+</span><span class="add">+	    wimp.auto_start = strdup(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	// other non-empty, non-commented lines
+</span><span class="add">+	else {
+</span><span class="def"> 	    wlr_log(WLR_ERROR, &quot;Config line %i: unknown option &apos;%s&apos;.&quot;, line, s);
+</span><span class="def"> 	}
+</span><span class="add">+	if (wimp.mark_waiting &amp;&amp; a) {
+</span><span class="add">+	    printf(&quot;%i\n&quot;, line);
+</span><span class="add">+	    a = false;
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

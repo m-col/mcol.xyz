@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - config updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/c6329158c18ebbb122b0d05cd7cfc2884b92ba02.html">c6329158c18ebbb122b0d05cd7cfc2884b92ba02</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/e5ef861b6569bd91e0711744c3d9dd65fb8eb793.html">e5ef861b6569bd91e0711744c3d9dd65fb8eb793</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-10-10 20:56:28 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-10-10 20:56:28 +0100
+
+config updates
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -34,7 +34,7 @@
+<span class="def">     &quot;type:keyboard&quot;: InputConfig(
+</span><span class="def">         kb_options=&quot;caps:swapescape,altwin:swap_alt_win&quot;,
+</span><span class="def">         kb_layout=&quot;gb&quot;,
+</span><span class="sub">-        kb_repeat_rate=35,
+</span><span class="add">+        kb_repeat_rate=50,
+</span><span class="def">         kb_repeat_delay=250,
+</span><span class="def">     ),
+</span><span class="def">     # Zenbook touchpad
+</span>@@ -79,7 +79,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> @hook.subscribe.client_managed
+</span><span class="sub">-def _(win):
+</span><span class="add">+async def _(win):
+</span><span class="def">     # Some other miscellaneous rules
+</span><span class="def">     if win.name == &quot;Firefox — Sharing Indicator&quot;:
+</span><span class="def">         win.place(win.x + win.borderwidth, 0, win.width, win.height, 0, None)
+</span>@@ -91,6 +91,28 @@
+<span class="def">         win.place(x, 240, 450, 600, win.borderwidth, win.bordercolor)
+</span><span class="def">         return
+</span><span class="def"> 
+</span><span class="add">+    if &quot;mpv&quot; in wm_class:
+</span><span class="add">+        # Resizing mpv if it&apos;s sized itself too big to fit on screen
+</span><span class="add">+        sw = qtile.current_screen.width
+</span><span class="add">+        sh = qtile.current_screen.height
+</span><span class="add">+        x = y = w = h = None
+</span><span class="add">+        if win.height &gt; sh:
+</span><span class="add">+            h = sh
+</span><span class="add">+            y = qtile.current_screen.y
+</span><span class="add">+        if win.width &gt; sw:
+</span><span class="add">+            w = sw
+</span><span class="add">+            x = qtile.current_screen.x
+</span><span class="add">+        if w is not None or h is not None:
+</span><span class="add">+            if h is None:
+</span><span class="add">+                h = win.height
+</span><span class="add">+                y = win.y
+</span><span class="add">+            else:
+</span><span class="add">+                w = win.width
+</span><span class="add">+                x = win.x
+</span><span class="add">+            bw = win.borderwidth
+</span><span class="add">+            win.place(x - bw, y - bw, w + 2 * bw, h + 2 * bw, 0, None)
+</span><span class="add">+        return
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> @hook.subscribe.startup_once
+</span><span class="def"> async def _():
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -244,6 +244,12 @@
+<span class="def">             lazy.spawn(&quot;swaync-client -t&quot;),
+</span><span class="def">             &quot;Toggle notification panel&quot;,
+</span><span class="def">         ),
+</span><span class="add">+        (
+</span><span class="add">+            [mod, &quot;control&quot;],
+</span><span class="add">+            &quot;y&quot;,
+</span><span class="add">+            lazy.spawn(&quot;yt-first&quot;),
+</span><span class="add">+            &quot;yt-first script&quot;,
+</span><span class="add">+        ),
+</span><span class="def">     ]
+</span><span class="def"> )
+</span><span class="def"> 
+</span>@@ -395,6 +401,7 @@
+<span class="def">         Match(wm_class=&quot;Dragon&quot;),
+</span><span class="def">         Match(wm_class=&quot;Dragon-drag-and-drop&quot;),
+</span><span class="def">         Match(wm_class=&quot;toolbar&quot;),
+</span><span class="add">+        Match(wm_class=&quot;tridactyl&quot;),
+</span><span class="def">         Match(wm_class=&quot;wlroots&quot;),
+</span><span class="def">         Match(wm_class=&quot;wdisplays&quot;),
+</span><span class="def">         Match(wm_class=&quot;Xephyr&quot;),
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - commit with working setup</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/897bd71badcffd05c7d776c11d42666d1add1d54.html">897bd71badcffd05c7d776c11d42666d1add1d54</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/.html"></a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 00:21:39 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 00:21:39 +0000
+
+commit with working setup
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,37 @@
+<span class="add">+#
+</span><span class="add">+# zshrc
+</span><span class="add">+#
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+ZSH=&quot;$HOME/.zsh&quot;
+</span><span class="add">+HYPHEN_INSENSITIVE=&quot;true&quot;
+</span><span class="add">+COMPLETION_WAITING_DOTS=&quot;true&quot;
+</span><span class="add">+ZSH_COMPDUMP=&quot;$HOME/.zcompdump&quot;
+</span><span class="add">+HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span><span class="add">+bindkey &apos;^A&apos; autosuggest-execute
+</span><span class="add">+
+</span><span class="add">+for plugin ($ZSH/*.zsh)
+</span><span class="add">+do
+</span><span class="add">+    source $plugin
+</span><span class="add">+done
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+so () { [[ -e $1 ]] &amp;&amp; source $1 }
+</span><span class="add">+
+</span><span class="add">+so $ZSH/aliases	    # general aliases
+</span><span class="add">+so $HOME/.aliases   # machine-specific aliases
+</span><span class="add">+
+</span><span class="add">+ZSH_THEME=&quot;ban&quot;
+</span><span class="add">+so $ZSH/themes/$ZSH_THEME.zsh-theme
+</span><span class="add">+
+</span><span class="add">+_Z_DATA=$HOME/.config/z
+</span><span class="add">+so $ZSH/z/z.sh
+</span><span class="add">+
+</span><span class="add">+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+</span><span class="add">+so $ZSH/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Ensure that the prompt is redrawn when the terminal size changes.
+</span><span class="add">+TRAPWINCH () {
+</span><span class="add">+    zle &amp;&amp;  zle -R
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>zsh-autosuggestions.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,78 @@
+<span class="add">+# -------------------------------------------------#
+</span><span class="add">+# https://github.com/zsh-users/zsh-autosuggestions #
+</span><span class="add">+# -------------------------------------------------#
+</span><span class="add">+
+</span><span class="add">+if [[ -e $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh ]]
+</span><span class="add">+then
+</span><span class="add">+    source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
+</span><span class="add">+else
+</span><span class="add">+    return
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+# Color to use when highlighting suggestion
+</span><span class="add">+# Uses format of `region_highlight`
+</span><span class="add">+# More info: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Widgets
+</span><span class="add">+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=&apos;fg=8&apos;
+</span><span class="add">+
+</span><span class="add">+# Prefix to use when saving original versions of bound widgets
+</span><span class="add">+ZSH_AUTOSUGGEST_ORIGINAL_WIDGET_PREFIX=autosuggest-orig-
+</span><span class="add">+
+</span><span class="add">+#ZSH_AUTOSUGGEST_STRATEGY=default
+</span><span class="add">+ZSH_AUTOSUGGEST_STRATEGY=match_prev_cmd
+</span><span class="add">+
+</span><span class="add">+# Widgets that clear the suggestion
+</span><span class="add">+ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(
+</span><span class="add">+	history-search-forward
+</span><span class="add">+	history-search-backward
+</span><span class="add">+	history-beginning-search-forward
+</span><span class="add">+	history-beginning-search-backward
+</span><span class="add">+	history-substring-search-up
+</span><span class="add">+	history-substring-search-down
+</span><span class="add">+	up-line-or-beginning-search
+</span><span class="add">+	down-line-or-beginning-search
+</span><span class="add">+	up-line-or-history
+</span><span class="add">+	down-line-or-history
+</span><span class="add">+	accept-line
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that accept the entire suggestion
+</span><span class="add">+ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(
+</span><span class="add">+	forward-char
+</span><span class="add">+	end-of-line
+</span><span class="add">+	vi-forward-char
+</span><span class="add">+	vi-end-of-line
+</span><span class="add">+	vi-add-eol
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that accept the entire suggestion and execute it
+</span><span class="add">+ZSH_AUTOSUGGEST_EXECUTE_WIDGETS=(
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that accept the suggestion as far as the cursor moves
+</span><span class="add">+ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
+</span><span class="add">+	forward-word
+</span><span class="add">+	emacs-forward-word
+</span><span class="add">+	vi-forward-word
+</span><span class="add">+	vi-forward-word-end
+</span><span class="add">+	vi-forward-blank-word
+</span><span class="add">+	vi-forward-blank-word-end
+</span><span class="add">+	vi-find-next-char
+</span><span class="add">+	vi-find-next-char-skip
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that should be ignored (globbing supported but must be escaped)
+</span><span class="add">+ZSH_AUTOSUGGEST_IGNORE_WIDGETS=(
+</span><span class="add">+	orig-\*
+</span><span class="add">+	beep
+</span><span class="add">+	run-help
+</span><span class="add">+	set-local-history
+</span><span class="add">+	which-command
+</span><span class="add">+	yank
+</span><span class="add">+	yank-pop
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Max size of buffer to trigger autosuggestion. Leave undefined for no upper bound.
+</span><span class="add">+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=
+</span><span class="add">+
+</span><span class="add">+# Pty name for calculating autosuggestions asynchronously
+</span><span class="add">+ZSH_AUTOSUGGEST_ASYNC_PTY_NAME=zsh_autosuggest_pty
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>themes/simple2.zsh-theme</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,6 @@
+<span class="add">+PROMPT=&apos;%(!.%{$fg[red]%}.%{$fg[green]%})%~%{$fg_bold[blue]%}$(git_prompt_info)%{$reset_color%} &apos;
+</span><span class="add">+
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_PREFIX=&quot;(&quot;
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;)&quot;
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_DIRTY=&quot; √&quot;
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_CLEAN=&quot; x&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,193 @@
+<span class="add">+### Segment drawing
+</span><span class="add">+# A few utility functions to make it easy and re-usable to draw segmented prompts
+</span><span class="add">+
+</span><span class="add">+CURRENT_BG=&apos;NONE&apos;
+</span><span class="add">+
+</span><span class="add">+# Special Powerline characters
+</span><span class="add">+
+</span><span class="add">+() {
+</span><span class="add">+  local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="add">+  # NOTE: This segment separator character is correct.  In 2012, Powerline changed
+</span><span class="add">+  # the code points they use for their special characters. This is the new code point.
+</span><span class="add">+  # If this is not working for you, you probably have an old version of the
+</span><span class="add">+  # Powerline-patched fonts installed. Download and install the new version.
+</span><span class="add">+  # Do not submit PRs to change this unless you have reviewed the Powerline code point
+</span><span class="add">+  # history and have new information.
+</span><span class="add">+  # This is defined using a Unicode escape sequence so it is unambiguously readable, regardless of
+</span><span class="add">+  # what font the user is viewing this source code in. Do not replace the
+</span><span class="add">+  # escape sequence with a single literal character.
+</span><span class="add">+  # Do not change this! Do not make it &apos;\u2b80&apos;; that is the old, wrong code point.
+</span><span class="add">+  #SEGMENT_SEPARATOR=$&apos;\ue0b0&apos;
+</span><span class="add">+  SEGMENT_SEPARATOR=$&apos;&apos;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Begin a segment
+</span><span class="add">+# Takes two arguments, background and foreground. Both can be omitted,
+</span><span class="add">+# rendering default background/foreground.
+</span><span class="add">+prompt_segment() {
+</span><span class="add">+  local bg fg
+</span><span class="add">+  [[ -n $1 ]] &amp;&amp; bg=&quot;%K{$1}&quot; || bg=&quot;%k&quot;
+</span><span class="add">+  [[ -n $2 ]] &amp;&amp; fg=&quot;%F{$2}&quot; || fg=&quot;%f&quot;
+</span><span class="add">+  if [[ $CURRENT_BG != &apos;NONE&apos; &amp;&amp; $1 != $CURRENT_BG ]]; then
+</span><span class="add">+    echo -n &quot; %{$bg%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR%{$fg%} &quot;
+</span><span class="add">+  else
+</span><span class="add">+    echo -n &quot;%{$bg%}%{$fg%} &quot;
+</span><span class="add">+  fi
+</span><span class="add">+  CURRENT_BG=$1
+</span><span class="add">+  [[ -n $3 ]] &amp;&amp; echo -n $3
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# End the prompt, closing any open segments
+</span><span class="add">+prompt_end() {
+</span><span class="add">+  if [[ -n $CURRENT_BG ]]; then
+</span><span class="add">+    echo -n &quot; %{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR&quot;
+</span><span class="add">+  else
+</span><span class="add">+    echo -n &quot;%{%k%}&quot;
+</span><span class="add">+  fi
+</span><span class="add">+  echo -n &quot;%{%f%}&quot;
+</span><span class="add">+  CURRENT_BG=&apos;&apos;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+prompt_context() {
+</span><span class="add">+  if [[ &quot;$USER&quot; != &quot;$DEFAULT_USER&quot; || -n &quot;$SSH_CLIENT&quot; ]]; then
+</span><span class="add">+    prompt_segment black default &quot;%(!.%{%F{yellow}%}.)$USER&quot;
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+prompt_git() {
+</span><span class="add">+  (( $+commands[git] )) || return
+</span><span class="add">+  local PL_BRANCH_CHAR
+</span><span class="add">+  () {
+</span><span class="add">+    local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="add">+    #PL_BRANCH_CHAR=$&apos;\ue0a0&apos;         # 
+</span><span class="add">+    PL_BRANCH_CHAR=$&apos;&apos;
+</span><span class="add">+  }
+</span><span class="add">+  local ref dirty mode repo_path
+</span><span class="add">+  repo_path=$(git rev-parse --git-dir 2&gt;/dev/null)
+</span><span class="add">+
+</span><span class="add">+  if $(git rev-parse --is-inside-work-tree &gt;/dev/null 2&gt;&amp;1); then
+</span><span class="add">+    dirty=$(parse_git_dirty)
+</span><span class="add">+    ref=$(git symbolic-ref HEAD 2&gt; /dev/null) || ref=&quot;➦ $(git rev-parse --short HEAD 2&gt; /dev/null)&quot;
+</span><span class="add">+    if [[ -n $dirty ]]; then
+</span><span class="add">+      prompt_segment yellow black
+</span><span class="add">+    else
+</span><span class="add">+      prompt_segment green black
+</span><span class="add">+    fi
+</span><span class="add">+
+</span><span class="add">+    if [[ -e &quot;${repo_path}/BISECT_LOG&quot; ]]; then
+</span><span class="add">+      mode=&quot; &lt;B&gt;&quot;
+</span><span class="add">+    elif [[ -e &quot;${repo_path}/MERGE_HEAD&quot; ]]; then
+</span><span class="add">+      mode=&quot; &gt;M&lt;&quot;
+</span><span class="add">+    elif [[ -e &quot;${repo_path}/rebase&quot; || -e &quot;${repo_path}/rebase-apply&quot; || -e &quot;${repo_path}/rebase-merge&quot; || -e &quot;${repo_path}/../.dotest&quot; ]]; then
+</span><span class="add">+      mode=&quot; &gt;R&gt;&quot;
+</span><span class="add">+    fi
+</span><span class="add">+
+</span><span class="add">+    setopt promptsubst
+</span><span class="add">+    autoload -Uz vcs_info
+</span><span class="add">+
+</span><span class="add">+    zstyle &apos;:vcs_info:*&apos; enable git
+</span><span class="add">+    zstyle &apos;:vcs_info:*&apos; get-revision true
+</span><span class="add">+    zstyle &apos;:vcs_info:*&apos; check-for-changes true
+</span><span class="add">+    zstyle &apos;:vcs_info:*&apos; stagedstr &apos;+&apos;
+</span><span class="add">+    zstyle &apos;:vcs_info:*&apos; unstagedstr &apos;**&apos;
+</span><span class="add">+    zstyle &apos;:vcs_info:*&apos; formats &apos; %u%c&apos;
+</span><span class="add">+    zstyle &apos;:vcs_info:*&apos; actionformats &apos; %u%c&apos;
+</span><span class="add">+    vcs_info
+</span><span class="add">+    echo -n &quot;${ref/refs\/heads\//$PL_BRANCH_CHAR }${vcs_info_msg_0_%% }${mode}&quot;
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Dir: current working directory
+</span><span class="add">+prompt_dir() {
+</span><span class="add">+  prompt_segment magenta black &apos;%3~&apos;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+prompt_mes() {
+</span><span class="add">+  [[ $RETVAL -ne 0 ]] &amp;&amp; prompt_segment red black &apos;&gt;&apos;
+</span><span class="add">+  [[ $RETVAL -eq 0 ]] &amp;&amp; prompt_segment blue black &apos;&gt;&apos;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Virtualenv: current working virtualenv
+</span><span class="add">+prompt_virtualenv() {
+</span><span class="add">+  local virtualenv_path=&quot;$VIRTUAL_ENV&quot;
+</span><span class="add">+  if [[ -n $virtualenv_path &amp;&amp; -n $VIRTUAL_ENV_DISABLE_PROMPT ]]; then
+</span><span class="add">+    prompt_segment red black &quot;(`basename $virtualenv_path`)&quot;
+</span><span class="add">+  fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+prompt_status() {
+</span><span class="add">+  local symbols
+</span><span class="add">+  symbols=()
+</span><span class="add">+  [[ $RETVAL -ne 0 ]] &amp;&amp; symbols+=&quot;%{%F{red}%}x&quot;
+</span><span class="add">+  [[ $UID -eq 0 ]] &amp;&amp; symbols+=&quot;%{%F{yellow}%}⚡&quot;
+</span><span class="add">+  [[ $(jobs -l | wc -l) -gt 0 ]] &amp;&amp; symbols+=&quot;%{%F{cyan}%}⚙&quot;
+</span><span class="add">+
+</span><span class="add">+  [[ -n &quot;$symbols&quot; ]] &amp;&amp; prompt_segment black default &quot;$symbols&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+##### vi mode
+</span><span class="add">+VIM_PROMPT=&quot;--INSERT--&quot;
+</span><span class="add">+export KEYTIMEOUT=1
+</span><span class="add">+bindkey -v
+</span><span class="add">+prompt_vi(){
+</span><span class="add">+    prompt_segment default white $VIM_PROMPT
+</span><span class="add">+}
+</span><span class="add">+zle-line-init() { zle -K viins; }
+</span><span class="add">+zle -N zle-line-init
+</span><span class="add">+######
+</span><span class="add">+
+</span><span class="add">+## Main left prompt
+</span><span class="add">+build_prompt() {
+</span><span class="add">+  RETVAL=$?
+</span><span class="add">+  prompt_dir
+</span><span class="add">+  prompt_mes
+</span><span class="add">+  prompt_end
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+build_rprompt() {
+</span><span class="add">+  RETVAL=$?
+</span><span class="add">+  prompt_virtualenv
+</span><span class="add">+  prompt_vi
+</span><span class="add">+  prompt_git
+</span><span class="add">+  prompt_end
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+PROMPT=&apos;%{%f%b%k%}$(build_prompt) &apos;
+</span><span class="add">+RPROMPT=&apos;%{%f%b%k%}$(build_rprompt)&apos;
+</span><span class="add">+
+</span><span class="add">+# redraw prompt on mode changes
+</span><span class="add">+zle-keymap-select() {
+</span><span class="add">+    if [ $KEYMAP = vicmd ]; then
+</span><span class="add">+	printf &quot;\033[2 q&quot; # block cursor
+</span><span class="add">+	VIM_PROMPT=&quot;-- NORMAL --&quot;
+</span><span class="add">+    else
+</span><span class="add">+	printf &quot;\033[4 q&quot; # underline. Change 4 to 6 for vertical line
+</span><span class="add">+	VIM_PROMPT=&quot;&quot;
+</span><span class="add">+    fi
+</span><span class="add">+
+</span><span class="add">+    PROMPT=&apos;%{%f%b%k%}$(build_prompt) &apos;
+</span><span class="add">+    RPROMPT=&apos;%{%f%b%k%}$(build_rprompt)&apos;
+</span><span class="add">+    zle reset-prompt
+</span><span class="add">+    zle -R
+</span><span class="add">+}
+</span><span class="add">+zle -N zle-keymap-select
+</span><span class="add">+
+</span><span class="add">+#PROMPT=&apos;%{$FG[001]%}&gt; %{$reset_color%}&apos;
+</span><span class="add">+#RPROMPT=&apos;%{$FG[001]%}%2~ $(git_prompt_info)$(git_prompt_status)%{$reset_color%}&apos;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_DIRTY=&quot;%{$fg[yellow]%}✗%{$reset_color%}&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_PREFIX=&quot;(&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;)&quot;
+</span><span class="add">+
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_PREFIX=&quot;%{$fg[magenta]%}[&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;]%{$reset_color%}&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_DIRTY=&quot;&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_CLEAN=&quot;&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_ADDED=&quot;%{$fg[cyan]%}+&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_MODIFIED=&quot;%{$fg[yellow]%}*&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_DELETED=&quot;%{$fg[red]%}x&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_RENAMED=&quot;%{$fg[blue]%}~&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_UNMERGED=&quot;%{$fg[magenta]%}&gt;&lt;&quot;
+</span><span class="add">+#ZSH_THEME_GIT_PROMPT_UNTRACKED=&quot;%{$fg[white]%}**&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme-and-appearance.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,55 @@
+<span class="add">+# ls colors
+</span><span class="add">+autoload -U colors &amp;&amp; colors
+</span><span class="add">+
+</span><span class="add">+# Enable ls colors
+</span><span class="add">+export LSCOLORS=&quot;Gxfxcxdxbxegedabagacad&quot;
+</span><span class="add">+
+</span><span class="add">+# TODO organise this chaotic logic
+</span><span class="add">+
+</span><span class="add">+if [[ &quot;$DISABLE_LS_COLORS&quot; != &quot;true&quot; ]]; then
+</span><span class="add">+  # Find the option for using colors in ls, depending on the version
+</span><span class="add">+  if [[ &quot;$OSTYPE&quot; == netbsd* ]]; then
+</span><span class="add">+    # On NetBSD, test if &quot;gls&quot; (GNU ls) is installed (this one supports colors);
+</span><span class="add">+    # otherwise, leave ls as is, because NetBSD&apos;s ls doesn&apos;t support -G
+</span><span class="add">+    gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+</span><span class="add">+  elif [[ &quot;$OSTYPE&quot; == openbsd* ]]; then
+</span><span class="add">+    # On OpenBSD, &quot;gls&quot; (ls from GNU coreutils) and &quot;colorls&quot; (ls from base,
+</span><span class="add">+    # with color and multibyte support) are available from ports.  &quot;colorls&quot;
+</span><span class="add">+    # will be installed on purpose and can&apos;t be pulled in by installing
+</span><span class="add">+    # coreutils, so prefer it to &quot;gls&quot;.
+</span><span class="add">+    gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+</span><span class="add">+    colorls -G -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;colorls -G&apos;
+</span><span class="add">+  elif [[ &quot;$OSTYPE&quot; == darwin* ]]; then
+</span><span class="add">+    # this is a good alias, it works by default just using $LSCOLORS
+</span><span class="add">+    ls -G . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls -G&apos;
+</span><span class="add">+
+</span><span class="add">+    # only use coreutils ls if there is a dircolors customization present ($LS_COLORS or .dircolors file)
+</span><span class="add">+    # otherwise, gls will use the default color scheme which is ugly af
+</span><span class="add">+    [[ -n &quot;$LS_COLORS&quot; || -f &quot;$HOME/.dircolors&quot; ]] &amp;&amp; gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+</span><span class="add">+  else
+</span><span class="add">+    # For GNU ls, we use the default ls color theme. They can later be overwritten by themes.
+</span><span class="add">+    if [[ -z &quot;$LS_COLORS&quot; ]]; then
+</span><span class="add">+      (( $+commands[dircolors] )) &amp;&amp; eval &quot;$(dircolors -b)&quot;
+</span><span class="add">+    fi
+</span><span class="add">+
+</span><span class="add">+    ls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls --color=tty&apos; || { ls -G . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls -G&apos; }
+</span><span class="add">+
+</span><span class="add">+    # Take advantage of $LS_COLORS for completion as well.
+</span><span class="add">+    zstyle &apos;:completion:*&apos; list-colors &quot;${(s.:.)LS_COLORS}&quot;
+</span><span class="add">+  fi
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+setopt auto_cd
+</span><span class="add">+setopt multios
+</span><span class="add">+setopt prompt_subst
+</span><span class="add">+
+</span><span class="add">+[[ -n &quot;$WINDOW&quot; ]] &amp;&amp; SCREEN_NO=&quot;%B$WINDOW%b &quot; || SCREEN_NO=&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+# Apply theming defaults
+</span><span class="add">+PS1=&quot;%n@%m:%~%# &quot;
+</span><span class="add">+
+</span><span class="add">+# git theming default: Variables for theming the git info prompt
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_PREFIX=&quot;git:(&quot;         # Prefix at the very beginning of the prompt, before the branch name
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_SUFFIX=&quot;)&quot;             # At the very end of the prompt
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_DIRTY=&quot;*&quot;              # Text to display if the branch is dirty
+</span><span class="add">+ZSH_THEME_GIT_PROMPT_CLEAN=&quot;&quot;               # Text to display if the branch is clean
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>misc.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,34 @@
+<span class="add">+## Load smart urls if available
+</span><span class="add">+# bracketed-paste-magic is known buggy in zsh 5.1.1 (only), so skip it there; see #4434
+</span><span class="add">+autoload -Uz is-at-least
+</span><span class="add">+if [[ $ZSH_VERSION != 5.1.1 ]]; then
+</span><span class="add">+  for d in $fpath; do
+</span><span class="add">+  	if [[ -e &quot;$d/url-quote-magic&quot; ]]; then
+</span><span class="add">+  		if is-at-least 5.1; then
+</span><span class="add">+  			autoload -Uz bracketed-paste-magic
+</span><span class="add">+  			zle -N bracketed-paste bracketed-paste-magic
+</span><span class="add">+  		fi
+</span><span class="add">+  		autoload -Uz url-quote-magic
+</span><span class="add">+  		zle -N self-insert url-quote-magic
+</span><span class="add">+      break
+</span><span class="add">+  	fi
+</span><span class="add">+  done
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+## jobs
+</span><span class="add">+setopt long_list_jobs
+</span><span class="add">+
+</span><span class="add">+## more intelligent acking for ubuntu users
+</span><span class="add">+if which ack-grep &amp;&gt; /dev/null; then
+</span><span class="add">+  alias afind=&apos;ack-grep -il&apos;
+</span><span class="add">+else
+</span><span class="add">+  alias afind=&apos;ack -il&apos;
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+# only define LC_CTYPE if undefined
+</span><span class="add">+if [[ -z &quot;$LC_CTYPE&quot; &amp;&amp; -z &quot;$LC_ALL&quot; ]]; then
+</span><span class="add">+	export LC_CTYPE=${LANG%%:*} # pick the first entry from LANG
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+# recognize comments
+</span><span class="add">+setopt interactivecomments
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>key-bindings.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,93 @@
+<span class="add">+# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html
+</span><span class="add">+# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Builtins
+</span><span class="add">+# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Standard-Widgets
+</span><span class="add">+
+</span><span class="add">+# Make sure that the terminal is in application mode when zle is active, since
+</span><span class="add">+# only then values from $terminfo are valid
+</span><span class="add">+if (( ${+terminfo[smkx]} )) &amp;&amp; (( ${+terminfo[rmkx]} )); then
+</span><span class="add">+  function zle-line-init() {
+</span><span class="add">+    echoti smkx
+</span><span class="add">+  }
+</span><span class="add">+  function zle-line-finish() {
+</span><span class="add">+    echoti rmkx
+</span><span class="add">+  }
+</span><span class="add">+  zle -N zle-line-init
+</span><span class="add">+  zle -N zle-line-finish
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+bindkey -e                                            # Use emacs key bindings
+</span><span class="add">+
+</span><span class="add">+bindkey &apos;\ew&apos; kill-region                             # [Esc-w] - Kill from the cursor to the mark
+</span><span class="add">+bindkey -s &apos;\el&apos; &apos;ls\n&apos;                               # [Esc-l] - run command: ls
+</span><span class="add">+bindkey &apos;^r&apos; history-incremental-search-backward      # [Ctrl-r] - Search backward incrementally for a specified string. The string may begin with ^ to anchor the search to the beginning of the line.
+</span><span class="add">+if [[ &quot;${terminfo[kpp]}&quot; != &quot;&quot; ]]; then
+</span><span class="add">+  bindkey &quot;${terminfo[kpp]}&quot; up-line-or-history       # [PageUp] - Up a line of history
+</span><span class="add">+fi
+</span><span class="add">+if [[ &quot;${terminfo[knp]}&quot; != &quot;&quot; ]]; then
+</span><span class="add">+  bindkey &quot;${terminfo[knp]}&quot; down-line-or-history     # [PageDown] - Down a line of history
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+# start typing + [Up-Arrow] - fuzzy find history forward
+</span><span class="add">+if [[ &quot;${terminfo[kcuu1]}&quot; != &quot;&quot; ]]; then
+</span><span class="add">+  autoload -U up-line-or-beginning-search
+</span><span class="add">+  zle -N up-line-or-beginning-search
+</span><span class="add">+  bindkey &quot;${terminfo[kcuu1]}&quot; up-line-or-beginning-search
+</span><span class="add">+fi
+</span><span class="add">+# start typing + [Down-Arrow] - fuzzy find history backward
+</span><span class="add">+if [[ &quot;${terminfo[kcud1]}&quot; != &quot;&quot; ]]; then
+</span><span class="add">+  autoload -U down-line-or-beginning-search
+</span><span class="add">+  zle -N down-line-or-beginning-search
+</span><span class="add">+  bindkey &quot;${terminfo[kcud1]}&quot; down-line-or-beginning-search
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+if [[ &quot;${terminfo[khome]}&quot; != &quot;&quot; ]]; then
+</span><span class="add">+  bindkey &quot;${terminfo[khome]}&quot; beginning-of-line      # [Home] - Go to beginning of line
+</span><span class="add">+fi
+</span><span class="add">+if [[ &quot;${terminfo[kend]}&quot; != &quot;&quot; ]]; then
+</span><span class="add">+  bindkey &quot;${terminfo[kend]}&quot;  end-of-line            # [End] - Go to end of line
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+bindkey &apos; &apos; magic-space                               # [Space] - do history expansion
+</span><span class="add">+
+</span><span class="add">+bindkey &apos;^[[1;5C&apos; forward-word                        # [Ctrl-RightArrow] - move forward one word
+</span><span class="add">+bindkey &apos;^[[1;5D&apos; backward-word                       # [Ctrl-LeftArrow] - move backward one word
+</span><span class="add">+
+</span><span class="add">+if [[ &quot;${terminfo[kcbt]}&quot; != &quot;&quot; ]]; then
+</span><span class="add">+  bindkey &quot;${terminfo[kcbt]}&quot; reverse-menu-complete   # [Shift-Tab] - move through the completion menu backwards
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+bindkey &apos;^?&apos; backward-delete-char                     # [Backspace] - delete backward
+</span><span class="add">+if [[ &quot;${terminfo[kdch1]}&quot; != &quot;&quot; ]]; then
+</span><span class="add">+  bindkey &quot;${terminfo[kdch1]}&quot; delete-char            # [Delete] - delete forward
+</span><span class="add">+else
+</span><span class="add">+  bindkey &quot;^[[3~&quot; delete-char
+</span><span class="add">+  bindkey &quot;^[3;5~&quot; delete-char
+</span><span class="add">+  bindkey &quot;\e[3~&quot; delete-char
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+# Edit the current command line in $EDITOR
+</span><span class="add">+autoload -U edit-command-line
+</span><span class="add">+zle -N edit-command-line
+</span><span class="add">+bindkey &apos;\C-x\C-e&apos; edit-command-line
+</span><span class="add">+
+</span><span class="add">+# file rename magick
+</span><span class="add">+bindkey &quot;^[m&quot; copy-prev-shell-word
+</span><span class="add">+
+</span><span class="add">+# consider emacs keybindings:
+</span><span class="add">+
+</span><span class="add">+#bindkey -e  ## emacs key bindings
+</span><span class="add">+#
+</span><span class="add">+#bindkey &apos;^[[A&apos; up-line-or-search
+</span><span class="add">+#bindkey &apos;^[[B&apos; down-line-or-search
+</span><span class="add">+#bindkey &apos;^[^[[C&apos; emacs-forward-word
+</span><span class="add">+#bindkey &apos;^[^[[D&apos; emacs-backward-word
+</span><span class="add">+#
+</span><span class="add">+#bindkey -s &apos;^X^Z&apos; &apos;%-^M&apos;
+</span><span class="add">+#bindkey &apos;^[e&apos; expand-cmd-path
+</span><span class="add">+#bindkey &apos;^[^I&apos; reverse-menu-complete
+</span><span class="add">+#bindkey &apos;^X^N&apos; accept-and-infer-next-history
+</span><span class="add">+#bindkey &apos;^W&apos; kill-region
+</span><span class="add">+#bindkey &apos;^I&apos; complete-word
+</span><span class="add">+## Fix weird sequence that rxvt produces
+</span><span class="add">+#bindkey -s &apos;^[[Z&apos; &apos;\t&apos;
+</span><span class="add">+#
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>install</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,12 @@
+<span class="add">+#!/usr/bin/env bash
+</span><span class="add">+
+</span><span class="add">+dir=$(dirname &quot;$(readlink -f &quot;$0&quot;)&quot;)
+</span><span class="add">+
+</span><span class="add">+# source this zshrc from ~/.zshrc
+</span><span class="add">+echo &quot;source $dir/zshrc&quot; &gt;&gt; $HOME/.zshrc
+</span><span class="add">+
+</span><span class="add">+# we may need a config directory for a plugin
+</span><span class="add">+[[ ! -d $HOME/.config ]] &amp;&amp; mkdir $HOME/.config
+</span><span class="add">+
+</span><span class="add">+# if installation didn&apos;t include submodules they need installing
+</span><span class="add">+
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,21 @@
+<span class="add">+function take() {
+</span><span class="add">+  mkdir -p $@ &amp;&amp; cd ${@:$#}
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+#
+</span><span class="add">+# Set variable &quot;$1&quot; to default value &quot;$2&quot; if &quot;$1&quot; is not yet defined.
+</span><span class="add">+#
+</span><span class="add">+# Arguments:
+</span><span class="add">+#    1. name - The variable to set
+</span><span class="add">+#    2. val  - The default value
+</span><span class="add">+# Return value:
+</span><span class="add">+#    0 if the variable exists, 3 if it was set
+</span><span class="add">+#
+</span><span class="add">+function default() {
+</span><span class="add">+    test `typeset +m &quot;$1&quot;` &amp;&amp; return 0
+</span><span class="add">+    typeset -g &quot;$1&quot;=&quot;$2&quot;   &amp;&amp; return 3
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# Required for $langinfo
+</span><span class="add">+zmodload zsh/langinfo
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>completion.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,84 @@
+<span class="add">+# Load all stock functions (from $fpath files) called below.
+</span><span class="add">+autoload -U compaudit compinit
+</span><span class="add">+
+</span><span class="add">+if [[ $ZSH_DISABLE_COMPFIX != true ]]; then
+</span><span class="add">+  # If completion insecurities exist, warn the user
+</span><span class="add">+  if ! compaudit &amp;&gt;/dev/null; then
+</span><span class="add">+    handle_completion_insecurities
+</span><span class="add">+  fi
+</span><span class="add">+  # Load only from secure directories
+</span><span class="add">+  compinit -i -d &quot;${ZSH_COMPDUMP}&quot;
+</span><span class="add">+else
+</span><span class="add">+  # If the user wants it, load from all found directories
+</span><span class="add">+  compinit -u -d &quot;${ZSH_COMPDUMP}&quot;
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+# fixme - the load process here seems a bit bizarre
+</span><span class="add">+zmodload -i zsh/complist
+</span><span class="add">+
+</span><span class="add">+WORDCHARS=&apos;&apos;
+</span><span class="add">+
+</span><span class="add">+unsetopt menu_complete   # do not autoselect the first completion entry
+</span><span class="add">+unsetopt flowcontrol
+</span><span class="add">+setopt auto_menu         # show completion menu on successive tab press
+</span><span class="add">+setopt complete_in_word
+</span><span class="add">+setopt always_to_end
+</span><span class="add">+
+</span><span class="add">+# should this be in keybindings?
+</span><span class="add">+bindkey -M menuselect &apos;^o&apos; accept-and-infer-next-history
+</span><span class="add">+zstyle &apos;:completion:*:*:*:*:*&apos; menu select
+</span><span class="add">+
+</span><span class="add">+# case insensitive (all), partial-word and substring completion
+</span><span class="add">+if [[ &quot;$CASE_SENSITIVE&quot; = true ]]; then
+</span><span class="add">+  zstyle &apos;:completion:*&apos; matcher-list &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+</span><span class="add">+else
+</span><span class="add">+  if [[ &quot;$HYPHEN_INSENSITIVE&quot; = true ]]; then
+</span><span class="add">+    zstyle &apos;:completion:*&apos; matcher-list &apos;m:{a-zA-Z-_}={A-Za-z_-}&apos; &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+</span><span class="add">+  else
+</span><span class="add">+    zstyle &apos;:completion:*&apos; matcher-list &apos;m:{a-zA-Z}={A-Za-z}&apos; &apos;r:|=*&apos; &apos;l:|=* r:|=*&apos;
+</span><span class="add">+  fi
+</span><span class="add">+fi
+</span><span class="add">+unset CASE_SENSITIVE HYPHEN_INSENSITIVE
+</span><span class="add">+
+</span><span class="add">+# Complete . and .. special directories
+</span><span class="add">+zstyle &apos;:completion:*&apos; special-dirs true
+</span><span class="add">+
+</span><span class="add">+zstyle &apos;:completion:*&apos; list-colors &apos;&apos;
+</span><span class="add">+zstyle &apos;:completion:*:*:kill:*:processes&apos; list-colors &apos;=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01&apos;
+</span><span class="add">+
+</span><span class="add">+zstyle &apos;:completion:*:*:*:*:processes&apos; command &quot;ps -u $USER -o pid,user,comm -w -w&quot;
+</span><span class="add">+
+</span><span class="add">+# disable named-directories autocompletion
+</span><span class="add">+zstyle &apos;:completion:*:cd:*&apos; tag-order local-directories directory-stack path-directories
+</span><span class="add">+
+</span><span class="add">+# Use caching so that commands like apt and dpkg complete are useable
+</span><span class="add">+zstyle &apos;:completion::complete:*&apos; use-cache 1
+</span><span class="add">+zstyle &apos;:completion::complete:*&apos; cache-path $ZSH_CACHE_DIR
+</span><span class="add">+
+</span><span class="add">+# Don&apos;t complete uninteresting users
+</span><span class="add">+zstyle &apos;:completion:*:*:*:users&apos; ignored-patterns \
+</span><span class="add">+        adm amanda apache at avahi avahi-autoipd beaglidx bin cacti canna \
+</span><span class="add">+        clamav daemon dbus distcache dnsmasq dovecot fax ftp games gdm \
+</span><span class="add">+        gkrellmd gopher hacluster haldaemon halt hsqldb ident junkbust kdm \
+</span><span class="add">+        ldap lp mail mailman mailnull man messagebus  mldonkey mysql nagios \
+</span><span class="add">+        named netdump news nfsnobody nobody nscd ntp nut nx obsrun openvpn \
+</span><span class="add">+        operator pcap polkitd postfix postgres privoxy pulse pvm quagga radvd \
+</span><span class="add">+        rpc rpcuser rpm rtkit scard shutdown squid sshd statd svn sync tftp \
+</span><span class="add">+        usbmux uucp vcsa wwwrun xfs &apos;_*&apos;
+</span><span class="add">+
+</span><span class="add">+# ... unless we really want to.
+</span><span class="add">+zstyle &apos;*&apos; single-ignored show
+</span><span class="add">+
+</span><span class="add">+if [[ $COMPLETION_WAITING_DOTS = true ]]; then
+</span><span class="add">+  expand-or-complete-with-dots() {
+</span><span class="add">+    # toggle line-wrapping off and back on again
+</span><span class="add">+    [[ -n &quot;$terminfo[rmam]&quot; &amp;&amp; -n &quot;$terminfo[smam]&quot; ]] &amp;&amp; echoti rmam
+</span><span class="add">+    print -Pn &quot;%{%F{red}......%f%}&quot;
+</span><span class="add">+    [[ -n &quot;$terminfo[rmam]&quot; &amp;&amp; -n &quot;$terminfo[smam]&quot; ]] &amp;&amp; echoti smam
+</span><span class="add">+
+</span><span class="add">+    zle expand-or-complete
+</span><span class="add">+    zle redisplay
+</span><span class="add">+  }
+</span><span class="add">+  zle -N expand-or-complete-with-dots
+</span><span class="add">+  bindkey &quot;^I&quot; expand-or-complete-with-dots
+</span><span class="add">+fi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>compfix.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,44 @@
+<span class="add">+# Handle completions insecurities (i.e., completion-dependent directories with
+</span><span class="add">+# insecure ownership or permissions) by:
+</span><span class="add">+#
+</span><span class="add">+# * Human-readably notifying the user of these insecurities.
+</span><span class="add">+function handle_completion_insecurities() {
+</span><span class="add">+  # List of the absolute paths of all unique insecure directories, split on
+</span><span class="add">+  # newline from compaudit()&apos;s output resembling:
+</span><span class="add">+  #
+</span><span class="add">+  #     There are insecure directories:
+</span><span class="add">+  #     /usr/share/zsh/site-functions
+</span><span class="add">+  #     /usr/share/zsh/5.0.6/functions
+</span><span class="add">+  #     /usr/share/zsh
+</span><span class="add">+  #     /usr/share/zsh/5.0.6
+</span><span class="add">+  #
+</span><span class="add">+  # Since the ignorable first line is printed to stderr and thus not captured,
+</span><span class="add">+  # stderr is squelched to prevent this output from leaking to the user. 
+</span><span class="add">+  local -aU insecure_dirs
+</span><span class="add">+  insecure_dirs=( ${(f@):-&quot;$(compaudit 2&gt;/dev/null)&quot;} )
+</span><span class="add">+
+</span><span class="add">+  # If no such directories exist, get us out of here.
+</span><span class="add">+  (( ! ${#insecure_dirs} )) &amp;&amp; return
+</span><span class="add">+
+</span><span class="add">+  # List ownership and permissions of all insecure directories.
+</span><span class="add">+  print &quot;[oh-my-zsh] Insecure completion-dependent directories detected:&quot;
+</span><span class="add">+  ls -ld &quot;${(@)insecure_dirs}&quot;
+</span><span class="add">+
+</span><span class="add">+  cat &lt;&lt;EOD
+</span><span class="add">+
+</span><span class="add">+[oh-my-zsh] For safety, we will not load completions from these directories until
+</span><span class="add">+[oh-my-zsh] you fix their permissions and ownership and restart zsh.
+</span><span class="add">+[oh-my-zsh] See the above list for directories with group or other writability.
+</span><span class="add">+
+</span><span class="add">+[oh-my-zsh] To fix your permissions you can do so by disabling
+</span><span class="add">+[oh-my-zsh] the write permission of &quot;group&quot; and &quot;others&quot; and making sure that the
+</span><span class="add">+[oh-my-zsh] owner of these directories is either root or your current user.
+</span><span class="add">+[oh-my-zsh] The following command may help:
+</span><span class="add">+[oh-my-zsh]     compaudit | xargs chmod g-w,o-w
+</span><span class="add">+
+</span><span class="add">+[oh-my-zsh] If the above didn&apos;t help or you want to skip the verification of
+</span><span class="add">+[oh-my-zsh] insecure directories you can set the variable ZSH_DISABLE_COMPFIX to
+</span><span class="add">+[oh-my-zsh] &quot;true&quot; before oh-my-zsh is sourced in your zshrc file.
+</span><span class="add">+
+</span><span class="add">+EOD
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,107 @@
+<span class="add">+#
+</span><span class="add">+# General aliases go here
+</span><span class="add">+# Machine-specific aliases go in $HOME/.aliases
+</span><span class="add">+#
+</span><span class="add">+
+</span><span class="add">+# misc
+</span><span class="add">+alias ..=&apos;cd ../&apos;
+</span><span class="add">+alias ...=&apos;cd ../../&apos;
+</span><span class="add">+alias l=&apos;ls -alhF&apos;
+</span><span class="add">+alias lc=&apos;ls -c1&apos;
+</span><span class="add">+alias q=&quot;exit&quot;
+</span><span class="add">+alias :q=&quot;exit&quot;
+</span><span class="add">+alias tmp=&quot;cd /tmp; l&quot;
+</span><span class="add">+alias _=&quot;sudo&quot;
+</span><span class="add">+
+</span><span class="add">+# networking
+</span><span class="add">+alias eduroam=&apos;nmcli con up eduroam&apos;
+</span><span class="add">+alias pinga=&apos;ping archlinux.org&apos;
+</span><span class="add">+alias ip=&quot;ip -c&quot;
+</span><span class="add">+
+</span><span class="add">+# launchers
+</span><span class="add">+alias ra=&quot;ranger&quot;
+</span><span class="add">+alias vi=&quot;vim&quot;
+</span><span class="add">+
+</span><span class="add">+# git
+</span><span class="add">+alias gs=&quot;git status&quot;
+</span><span class="add">+alias ad=&quot;git add&quot;
+</span><span class="add">+alias cm=&quot;git commit -m&quot;
+</span><span class="add">+alias psh=&quot;git push&quot;
+</span><span class="add">+alias pshu=&quot;git push --set-upstream&quot;
+</span><span class="add">+alias pl=&quot;git pull&quot;
+</span><span class="add">+alias grm=&quot;git rm&quot;
+</span><span class="add">+alias br=&quot;git branch&quot;
+</span><span class="add">+alias ch=&quot;git checkout&quot;
+</span><span class="add">+
+</span><span class="add">+# tools
+</span><span class="add">+alias usync=&quot;rsync -avPzh --delete&quot;
+</span><span class="add">+alias cl=&apos;clear; cd $HOME&apos;
+</span><span class="add">+alias sc=&quot;sudo systemctl&quot;
+</span><span class="add">+alias removespaces=&quot;for run in {1..20}; do; find . -type f -name \&quot;* *\&quot; -exec rename \&quot; \&quot; \&quot;_\&quot; {} \; ; done&quot;
+</span><span class="add">+
+</span><span class="add">+# quick edits
+</span><span class="add">+alias modalia=&apos;vim $HOME/.aliases &amp;&amp; source $HOME/.aliases&apos;
+</span><span class="add">+alias vimrc=&apos;vim $HOME/.vim/bundle/vim-misc/vimrc&apos;
+</span><span class="add">+alias vimkeys=&apos;vim $HOME/.vim/bundle/vim-misc/plugin/keybindings.vim&apos;
+</span><span class="add">+alias modtux=&apos;vim $HOME/.vim/bundle/vim-misc/tmux.conf&apos;
+</span><span class="add">+alias zshrc=&apos;vim $HOME/.zsh/zshrc&apos;
+</span><span class="add">+alias modrc=&apos;vim $HOME/.config/ranger/rc.conf&apos;
+</span><span class="add">+
+</span><span class="add">+# shortcuts
+</span><span class="add">+alias gh=&apos;cd $HOME; ls&apos;
+</span><span class="add">+alias gd=&apos;cd $HOME/documents&apos;
+</span><span class="add">+alias gD=&apos;cd $HOME/Downloads&apos;
+</span><span class="add">+alias ge=&apos;cd /etc&apos;
+</span><span class="add">+alias gv=&apos;cd $HOME/.vim; ranger&apos;
+</span><span class="add">+alias gvm=&apos;cd $HOME/.vim/bundle/vim-misc; ra&apos;
+</span><span class="add">+alias gz=&apos;cd $HOME/.zsh; l&apos;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# colourise man pages
+</span><span class="add">+function man() {
+</span><span class="add">+    env \
+</span><span class="add">+	LESS_TERMCAP_mb=$(printf &quot;\e[1;31m&quot;) \
+</span><span class="add">+	LESS_TERMCAP_md=$(printf &quot;\e[1;31m&quot;) \
+</span><span class="add">+	LESS_TERMCAP_me=$(printf &quot;\e[0m&quot;) \
+</span><span class="add">+	LESS_TERMCAP_se=$(printf &quot;\e[0m&quot;) \
+</span><span class="add">+	LESS_TERMCAP_so=$(printf &quot;\e[1;44;33m&quot;) \
+</span><span class="add">+	LESS_TERMCAP_ue=$(printf &quot;\e[0m&quot;) \
+</span><span class="add">+	LESS_TERMCAP_us=$(printf &quot;\e[1;32m&quot;) \
+</span><span class="add">+	PAGER=&quot;${commands[less]:-$PAGER}&quot; \
+</span><span class="add">+	_NROFF_U=1 \
+</span><span class="add">+	PATH=&quot;$HOME/bin:$PATH&quot; \
+</span><span class="add">+	man &quot;$@&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# use last browsed directory automatically with ranger
+</span><span class="add">+ranger-cd() { 
+</span><span class="add">+    tempfile=&quot;$(mktemp -t tmp.XXXXXX)&quot;
+</span><span class="add">+    if [[ -f /usr/local/bin/ranger ]]
+</span><span class="add">+    then
+</span><span class="add">+	/usr/local/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="add">+    else
+</span><span class="add">+	/usr/bin/ranger --choosedir=&quot;$tempfile&quot; &quot;${@:-$(pwd)}&quot;
+</span><span class="add">+    fi
+</span><span class="add">+    test -f &quot;$tempfile&quot; &amp;&amp;
+</span><span class="add">+	if [ &quot;$(cat -- &quot;$tempfile&quot;)&quot; != &quot;$(echo -n `pwd`)&quot; ]; then
+</span><span class="add">+	    cd -- &quot;$(cat &quot;$tempfile&quot;)&quot;
+</span><span class="add">+	fi
+</span><span class="add">+	rm -f -- &quot;$tempfile&quot;
+</span><span class="add">+}
+</span><span class="add">+ranger() { # prevent nested ranger instances when shelling from ranger
+</span><span class="add">+    if [ -z &quot;$RANGER_LEVEL&quot; ]; then
+</span><span class="add">+	ranger-cd &quot;$@&quot;
+</span><span class="add">+    else
+</span><span class="add">+	exit
+</span><span class="add">+    fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+shebang() { # create new file, add shebang, and vim
+</span><span class="add">+    touch $1
+</span><span class="add">+    chmod +x $1
+</span><span class="add">+    echo -e &quot;#!/usr/bin/env bash\n&quot; &gt; $1
+</span><span class="add">+    vim +2 $1
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+# vim: ft=sh
+</span></pre>
+</div></div>
+  </body>
+</html>

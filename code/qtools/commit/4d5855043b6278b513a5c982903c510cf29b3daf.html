@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - import qtile and Popup from libqtile</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/4d5855043b6278b513a5c982903c510cf29b3daf.html">4d5855043b6278b513a5c982903c510cf29b3daf</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/7aeca15ddc1f2b26ffd68a01316bbd47e3156b14.html">7aeca15ddc1f2b26ffd68a01316bbd47e3156b14</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-09-04 22:42:41 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-09-04 22:42:41 +0100
+
+import qtile and Popup from libqtile
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,12 +14,11 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-from libqtile import configurable, hook, images, pangocffi
+</span><span class="add">+from libqtile import configurable, hook, images, pangocffi, qtile
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.log_utils import logger
+</span><span class="def"> from libqtile.notify import notifier
+</span><span class="sub">-
+</span><span class="sub">-from qtools import Popup
+</span><span class="add">+from libqtile.popup import Popup
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> class Server(configurable.Configurable):
+</span>@@ -100,13 +99,12 @@
+<span class="def">         (&apos;fullscreen&apos;, &apos;show&apos;, &apos;What to do when in fullscreen: show, hide, or queue.&apos;),
+</span><span class="def">         (&apos;screen&apos;, &apos;focus&apos;, &apos;How to select a screen: focus, mouse, or an int.&apos;),
+</span><span class="def">     ]
+</span><span class="sub">-    capabilities = {&apos;body&apos;, &apos;body-markup&apos;}
+</span><span class="add">+    capabilities = {&apos;body&apos;, &apos;body-markup&apos;, &apos;actions&apos;}
+</span><span class="def">     # specification: https://developer.gnome.org/notification-spec/
+</span><span class="def"> 
+</span><span class="def">     def __init__(self, **config):
+</span><span class="def">         configurable.Configurable.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Server.defaults)
+</span><span class="sub">-        self.qtile = None
+</span><span class="def">         self._hidden = []
+</span><span class="def">         self._shown = []
+</span><span class="def">         self._queue = []
+</span>@@ -139,13 +137,11 @@
+<span class="def">         if not isinstance(value, (tuple, list)):
+</span><span class="def">             setattr(self, attr, (value,) * 3)
+</span><span class="def"> 
+</span><span class="sub">-    def configure(self, qtile):
+</span><span class="add">+    def configure(self):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         This method needs to be called to set up the Server with the Qtile manager and
+</span><span class="def">         create the required popup windows.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="sub">-        self.qtile = qtile
+</span><span class="sub">-
+</span><span class="def">         if self.horizontal_padding is None:
+</span><span class="def">             self.horizontal_padding = self.font_size / 2
+</span><span class="def">         if self.vertical_padding is None:
+</span>@@ -162,7 +158,7 @@
+<span class="def">                     popup_config[key] = value
+</span><span class="def"> 
+</span><span class="def">         for win in range(self.max_windows):
+</span><span class="sub">-            popup = Popup(self.qtile, **popup_config)
+</span><span class="add">+            popup = Popup(qtile, **popup_config)
+</span><span class="def">             popup.win.handle_ButtonPress = self._buttonpress(popup)
+</span><span class="def">             popup.replaces_id = None
+</span><span class="def">             self._hidden.append(popup)
+</span>@@ -188,7 +184,7 @@
+<span class="def">             self._queue.append(notif)
+</span><span class="def">             return
+</span><span class="def"> 
+</span><span class="sub">-        if self.qtile.current_window and self.qtile.current_window.fullscreen:
+</span><span class="add">+        if qtile.current_window and qtile.current_window.fullscreen:
+</span><span class="def">             if self.fullscreen != &apos;show&apos;:
+</span><span class="def">                 if self.fullscreen == &apos;queue&apos;:
+</span><span class="def">                     if self._unfullscreen not in hook.subscriptions:
+</span>@@ -213,7 +209,7 @@
+<span class="def">         &quot;&quot;&quot;
+</span><span class="def">         Begin displaying of queue notifications after leaving fullscreen.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="sub">-        if not self.qtile.current_window.fullscreen:
+</span><span class="add">+        if not qtile.current_window.fullscreen:
+</span><span class="def">             hook.unsubscribe.float_change(self._unfullscreen)
+</span><span class="def">             self._renotify()
+</span><span class="def"> 
+</span>@@ -273,9 +269,7 @@
+<span class="def">         elif timeout &lt; 0:
+</span><span class="def">             timeout = self.timeout[urgency]
+</span><span class="def">         if timeout &gt; 0:
+</span><span class="sub">-            self.qtile.call_later(
+</span><span class="sub">-                timeout / 1000, self._close, popup, self._current_id
+</span><span class="sub">-            )
+</span><span class="add">+            qtile.call_later(timeout / 1000, self._close, popup, self._current_id)
+</span><span class="def"> 
+</span><span class="def">     def _get_text(self, notif):
+</span><span class="def">         summary = &apos;&apos;
+</span>@@ -292,11 +286,11 @@
+<span class="def">     def _get_coordinates(self):
+</span><span class="def">         x, y = self._positions[len(self._shown) - 1]
+</span><span class="def">         if isinstance(self.screen, int):
+</span><span class="sub">-            screen = self.qtile.screens[self.screen]
+</span><span class="add">+            screen = qtile.screens[self.screen]
+</span><span class="def">         elif self.screen == &apos;focus&apos;:
+</span><span class="sub">-            screen = self.qtile.current_screen
+</span><span class="add">+            screen = qtile.current_screen
+</span><span class="def">         elif self.screen == &apos;mouse&apos;:
+</span><span class="sub">-            screen = self.qtile.find_screen(*self.qtile.mouse_position)
+</span><span class="add">+            screen = qtile.find_screen(*qtile.mouse_position)
+</span><span class="def">         return x + screen.x, y + screen.y
+</span><span class="def"> 
+</span><span class="def">     def _close(self, popup, nid=None):
+</span></pre>
+</div></div>
+  </body>
+</html>

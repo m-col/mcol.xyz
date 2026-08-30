@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - move scratchpad functions into dedicated file</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/eed3b6da3c36e7fab2bd17a89567ecfbebca6fc4.html">eed3b6da3c36e7fab2bd17a89567ecfbebca6fc4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/4f9ea5c9e9309cfdb7eea01e3dbbbe87584fd4f3.html">4f9ea5c9e9309cfdb7eea01e3dbbbe87584fd4f3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-06 14:25:17 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-06 14:25:17 +0000
+
+move scratchpad functions into dedicated file
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,55 +2,10 @@
+<span class="def"> #include &lt;wlr/util/edges.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;action.h&quot;
+</span><span class="add">+#include &quot;scratchpad.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static struct scratchpad *scratchpad_from_view(struct view *view) {
+</span><span class="sub">-    struct scratchpad *scratchpad;
+</span><span class="sub">-
+</span><span class="sub">-    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="sub">-	if (view == scratchpad-&gt;view) {
+</span><span class="sub">-	    return scratchpad;
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    return NULL;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void scratchpad_apply_geo(struct scratchpad *scratchpad) {
+</span><span class="sub">-    struct wlr_output *output =
+</span><span class="sub">-	wlr_output_layout_output_at(wimp.output_layout, wimp.cursor-&gt;x, wimp.cursor-&gt;y);
+</span><span class="sub">-    struct wlr_box *ogeo = wlr_output_layout_get_box(wimp.output_layout, output);
+</span><span class="sub">-    struct view *view = scratchpad-&gt;view;
+</span><span class="sub">-    struct wlr_box *geo = &amp;scratchpad-&gt;geo;
+</span><span class="sub">-
+</span><span class="sub">-    if (geo-&gt;x &gt; 0) {
+</span><span class="sub">-	view-&gt;x = geo-&gt;x;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	view-&gt;x = ogeo-&gt;x - (ogeo-&gt;width * geo-&gt;x / 100);
+</span><span class="sub">-    }
+</span><span class="sub">-    if (geo-&gt;y &gt; 0) {
+</span><span class="sub">-	view-&gt;y = geo-&gt;y;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	view-&gt;y = ogeo-&gt;y - (ogeo-&gt;height * geo-&gt;y / 100);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    struct wlr_box *sgeo = &amp;view-&gt;surface-&gt;geometry;
+</span><span class="sub">-    if (geo-&gt;width &gt; 0) {
+</span><span class="sub">-	sgeo-&gt;width = geo-&gt;width;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	sgeo-&gt;width = - ogeo-&gt;width * geo-&gt;width / 100;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (geo-&gt;height &gt; 0) {
+</span><span class="sub">-	sgeo-&gt;height = geo-&gt;height;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	sgeo-&gt;height = - ogeo-&gt;height * geo-&gt;height / 100;
+</span><span class="sub">-    }
+</span><span class="sub">-    wlr_xdg_toplevel_set_size(view-&gt;surface, sgeo-&gt;width, sgeo-&gt;height);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void unmap_view(struct view *view) {
+</span><span class="def">     wl_signal_emit(&amp;view-&gt;surface-&gt;events.unmap, view);
+</span><span class="def"> }
+</span>@@ -79,12 +34,8 @@
+<span class="def">     struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat);
+</span><span class="def"> 
+</span><span class="def">     if (view-&gt;is_scratchpad) {
+</span><span class="sub">-	struct scratchpad *scratchpad;
+</span><span class="sub">-	wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="sub">-	    if (scratchpad-&gt;view == view) {
+</span><span class="sub">-		scratchpad-&gt;is_mapped = true;
+</span><span class="sub">-	    }
+</span><span class="sub">-	}
+</span><span class="add">+	struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="add">+	scratchpad-&gt;is_mapped = true;
+</span><span class="def">     } else {
+</span><span class="def"> 	wl_list_remove(&amp;view-&gt;link);
+</span><span class="def"> 	wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+</span>@@ -180,8 +131,8 @@
+<span class="def"> 
+</span><span class="def">     if (view-&gt;is_scratchpad) {
+</span><span class="def"> 	struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="sub">-	scratchpad-&gt;is_mapped = true;
+</span><span class="def"> 	scratchpad_apply_geo(scratchpad);
+</span><span class="add">+	scratchpad-&gt;is_mapped = true;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     if (wimp.can_steal_focus) {
+</span>@@ -296,18 +247,8 @@
+<span class="def">     wl_signal_add(&amp;toplevel-&gt;events.request_fullscreen, &amp;view-&gt;request_fullscreen_listener);
+</span><span class="def"> 
+</span><span class="def">     if (wimp.scratchpad_waiting) {
+</span><span class="sub">-	pid_t pid;
+</span><span class="sub">-	wl_client_get_credentials(surface-&gt;client-&gt;client, &amp;pid, NULL, NULL);
+</span><span class="sub">-	struct scratchpad *scratchpad;
+</span><span class="sub">-	wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="sub">-	    if (scratchpad-&gt;pid == pid) {
+</span><span class="sub">-		scratchpad-&gt;view = view;
+</span><span class="sub">-		view-&gt;is_scratchpad = true;
+</span><span class="sub">-		view-&gt;x = 50;
+</span><span class="sub">-		view-&gt;y = 50;
+</span><span class="sub">-		map_view(view);
+</span><span class="sub">-		return;
+</span><span class="sub">-	    }
+</span><span class="add">+	if (catch_scratchpad(view)) {
+</span><span class="add">+	    return;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/scratchpad.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,10 @@
+<span class="add">+#ifndef DESKWM_SCRATCHPAD_H
+</span><span class="add">+#define DESKWM_SCRATCHPAD_H
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+struct scratchpad *scratchpad_from_view(struct view *view);
+</span><span class="add">+void scratchpad_apply_geo(struct scratchpad *scratchpad);
+</span><span class="add">+bool catch_scratchpad(struct view *view);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/scratchpad.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,67 @@
+<span class="add">+#include &quot;shell.h&quot;
+</span><span class="add">+#include &quot;scratchpad.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+struct scratchpad *scratchpad_from_view(struct view *view) {
+</span><span class="add">+    struct scratchpad *scratchpad;
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (view == scratchpad-&gt;view) {
+</span><span class="add">+	    return scratchpad;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    return NULL;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void scratchpad_apply_geo(struct scratchpad *scratchpad) {
+</span><span class="add">+    struct wlr_output *output =
+</span><span class="add">+	wlr_output_layout_output_at(wimp.output_layout, wimp.cursor-&gt;x, wimp.cursor-&gt;y);
+</span><span class="add">+    struct wlr_box *ogeo = wlr_output_layout_get_box(wimp.output_layout, output);
+</span><span class="add">+    struct view *view = scratchpad-&gt;view;
+</span><span class="add">+    struct wlr_box *geo = &amp;scratchpad-&gt;geo;
+</span><span class="add">+
+</span><span class="add">+    if (geo-&gt;x &gt; 0) {
+</span><span class="add">+	view-&gt;x = geo-&gt;x;
+</span><span class="add">+    } else {
+</span><span class="add">+	view-&gt;x = ogeo-&gt;x - (ogeo-&gt;width * geo-&gt;x / 100);
+</span><span class="add">+    }
+</span><span class="add">+    if (geo-&gt;y &gt; 0) {
+</span><span class="add">+	view-&gt;y = geo-&gt;y;
+</span><span class="add">+    } else {
+</span><span class="add">+	view-&gt;y = ogeo-&gt;y - (ogeo-&gt;height * geo-&gt;y / 100);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct wlr_box *sgeo = &amp;view-&gt;surface-&gt;geometry;
+</span><span class="add">+    if (geo-&gt;width &gt; 0) {
+</span><span class="add">+	sgeo-&gt;width = geo-&gt;width;
+</span><span class="add">+    } else {
+</span><span class="add">+	sgeo-&gt;width = - ogeo-&gt;width * geo-&gt;width / 100;
+</span><span class="add">+    }
+</span><span class="add">+    if (geo-&gt;height &gt; 0) {
+</span><span class="add">+	sgeo-&gt;height = geo-&gt;height;
+</span><span class="add">+    } else {
+</span><span class="add">+	sgeo-&gt;height = - ogeo-&gt;height * geo-&gt;height / 100;
+</span><span class="add">+    }
+</span><span class="add">+    wlr_xdg_toplevel_set_size(view-&gt;surface, sgeo-&gt;width, sgeo-&gt;height);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool catch_scratchpad(struct view *view) {
+</span><span class="add">+    pid_t pid;
+</span><span class="add">+    wl_client_get_credentials(view-&gt;surface-&gt;client-&gt;client, &amp;pid, NULL, NULL);
+</span><span class="add">+
+</span><span class="add">+    struct scratchpad *scratchpad;
+</span><span class="add">+    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (scratchpad-&gt;pid == pid) {
+</span><span class="add">+	    scratchpad-&gt;view = view;
+</span><span class="add">+	    view-&gt;is_scratchpad = true;
+</span><span class="add">+	    map_view(view);
+</span><span class="add">+	    return true;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -263,7 +263,7 @@
+<span class="def">     { &quot;maximize&quot;, &amp;maximize, NULL },
+</span><span class="def">     { &quot;reload_config&quot;, &amp;reload_config, NULL },
+</span><span class="def">     { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="sub">-    { &quot;scratchpad&quot;, &amp;scratchpad, &amp;scratchpad_handler },
+</span><span class="add">+    { &quot;scratchpad&quot;, &amp;toggle_scratchpad, &amp;scratchpad_handler },
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,6 +26,6 @@
+<span class="def"> void maximize(void *data);
+</span><span class="def"> void reload_config(void *data);
+</span><span class="def"> void send_to_desk(void *data);
+</span><span class="sub">-void scratchpad(void *data);
+</span><span class="add">+void toggle_scratchpad(void *data);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -402,7 +402,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void scratchpad(void *data) {
+</span><span class="add">+void toggle_scratchpad(void *data) {
+</span><span class="def">     int id = *(int *)data;
+</span><span class="def">     struct scratchpad *scratchpad;
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

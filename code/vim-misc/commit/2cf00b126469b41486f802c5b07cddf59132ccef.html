@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/2cf00b126469b41486f802c5b07cddf59132ccef.html">2cf00b126469b41486f802c5b07cddf59132ccef</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/a41d8c8b5f45d0baec42b47dcb06700881032034.html">a41d8c8b5f45d0baec42b47dcb06700881032034</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-08-23 22:07:52 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-08-23 22:07:56 +0100
+
+updates
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,6 +38,7 @@
+<span class="def"> Plugin &apos;Yggdroot/indentLine&apos;                &quot;Show indentation lines
+</span><span class="def"> Plugin &apos;masukomi/vim-markdown-folding&apos;      &quot;markdown folding
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> call vundle#end()			    &quot; required
+</span><span class="def"> filetype plugin indent on		    &quot; required
+</span><span class="def"> &quot; Brief help
+</span>@@ -69,9 +70,10 @@
+<span class="def"> set linebreak			&quot; Allow backspacing over indention, line breaks and insertion start
+</span><span class="def"> set backspace=indent,eol,start	&quot; Backspace behaviour
+</span><span class="def"> set formatoptions+=j	        &quot; Delete comment characters when joining lines.
+</span><span class="sub">-autocmd FileType * setlocal formatoptions-=cro    &quot; disable autocommenting
+</span><span class="add">+&quot;autocmd FileType * setlocal formatoptions-=cro    &quot; disable autocommenting
+</span><span class="def"> set matchtime=2
+</span><span class="def"> set conceallevel=0              &quot; disable all concealing
+</span><span class="add">+set nojoinspaces                &quot; don&apos;t put 2 spaces after periods when joining lines
+</span><span class="def"> 
+</span><span class="def"> set undolevels=200		&quot; Number of undo levels
+</span><span class="def"> set undodir=~/.vim/undo//	&quot; undo files
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/theme.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -76,3 +76,6 @@
+<span class="def"> &quot; character for split barrier
+</span><span class="def"> set fillchars=vert:\ 
+</span><span class="def"> hi VertSplit cterm=bold term=bold ctermbg=12
+</span><span class="add">+
+</span><span class="add">+&quot; remove all underlining, it&apos;s ugly
+</span><span class="add">+hi Underlined cterm=none
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>ftplugin/markdown.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,4 @@
+<span class="sub">-setlocal textwidth=100
+</span><span class="add">+setlocal textwidth=101
+</span><span class="def"> &quot;setlocal spell spelllang=en_gb
+</span><span class="def"> nnoremap &lt;localleader&gt;c :mkview&lt;CR&gt;gqip:silent loadview&lt;CR&gt;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>after/ftplugin/markdown.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,7 @@
+<span class="add">+&quot; Identify HTML comment-like blocks as markdown comments
+</span><span class="add">+setlocal comments+=s:&lt;!---,e:--&gt;
+</span><span class="add">+&quot; couldn&apos;t get this to work, so just sticking in &lt;br&gt; where needed
+</span><span class="add">+&quot;setlocal comments+=s:![**,e:](
+</span><span class="add">+
+</span><span class="add">+&quot; auto format paragraphs
+</span><span class="add">+setlocal formatoptions+=a
+</span></pre>
+</div></div>
+  </body>
+</html>

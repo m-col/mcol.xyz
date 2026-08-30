@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - replace hard-coding of my own home dir with users home dir</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/02b5e0ddf681699309f4f1d576312d8ac0d5953f.html">02b5e0ddf681699309f4f1d576312d8ac0d5953f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/29bf7861b2b9b46c0d10a230c6d5d055de93f949.html">29bf7861b2b9b46c0d10a230c6d5d055de93f949</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-20 15:53:03 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-20 15:53:03 +0100
+
+replace hard-coding of my own home dir with users home dir
+</pre><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,7 @@
+<span class="def"> import Data.Text (pack)
+</span><span class="def"> import Data.Void
+</span><span class="def"> import GHC.Int (Int32)
+</span><span class="sub">-import System.Directory (getDirectoryContents)
+</span><span class="add">+import System.Directory (getDirectoryContents, getHomeDirectory)
+</span><span class="def"> 
+</span><span class="def"> import Data.GI.Base
+</span><span class="def"> import qualified Data.GI.Base.GType as GType
+</span>@@ -42,7 +42,8 @@
+<span class="def">         ]
+</span><span class="def">     screen &lt;- Gtk.windowGetScreen win
+</span><span class="def">     iconTheme &lt;- Gtk.iconThemeGetForScreen screen
+</span><span class="sub">-    populate listStore iconTheme &quot;/home/mcol/Desktop&quot;
+</span><span class="add">+    homeDir &lt;- getHomeDirectory
+</span><span class="add">+    populate listStore iconTheme $ homeDir &lt;&gt; &quot;/Desktop&quot;
+</span><span class="def">     #add win view
+</span><span class="def">     #showAll win
+</span><span class="def">     return ()
+</span></pre>
+</div></div>
+  </body>
+</html>

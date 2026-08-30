@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - fill in basic cursor handlers, based on tinywm</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/9c9e396f412c7a640613c68e8fb706c43bf11979.html">9c9e396f412c7a640613c68e8fb706c43bf11979</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/65115c7d85c4418f62de6aabb5fdb11dce98601e.html">65115c7d85c4418f62de6aabb5fdb11dce98601e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-05 22:59:59 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-05 22:59:59 +0000
+
+fill in basic cursor handlers, based on tinywm
+</pre><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,11 +3,27 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void process_cursor_move(struct server *server, uint32_t time);
+</span><span class="add">+void process_cursor_resize(struct server *server, uint32_t time);
+</span><span class="add">+void process_cursor_motion(struct server *server, uint32_t time);
+</span><span class="add">+bool view_at(
+</span><span class="add">+    struct view *view, double lx, double ly, struct wlr_surface **surface,
+</span><span class="add">+    double *sx, double *sy
+</span><span class="add">+);
+</span><span class="add">+struct view *desktop_view_at(
+</span><span class="add">+    struct server *server, double lx, double ly, struct wlr_surface **surface,
+</span><span class="add">+    double *sx, double *sy
+</span><span class="add">+);
+</span><span class="add">+void process_cursor_motion(struct server *server, uint32_t time);
+</span><span class="def"> void on_cursor_motion(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_cursor_motion_absolute(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_cursor_button(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_cursor_axis(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_cursor_frame(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_modifier(struct wl_listener *listener, void *data);
+</span><span class="add">+bool handle_keybinding(struct server *server, xkb_keysym_t sym);
+</span><span class="add">+void on_key(struct wl_listener *listener, void *data);
+</span><span class="add">+void on_new_keyboard(struct server *server, struct wlr_input_device *device);
+</span><span class="def"> void on_new_input(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_request_cursor(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_request_set_selection(struct wl_listener *listener, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,17 +1,23 @@
+<span class="def"> #include &lt;wlr/types/wlr_cursor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_keyboard.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xcursor_manager.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;input.h&quot;
+</span><span class="add">+#include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void process_cursor_move(struct server *server, uint32_t time) {
+</span><span class="add">+enum wlr_keyboard_modifier MOD = WLR_MODIFIER_LOGO;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void process_cursor_move(struct server *server, uint32_t time) {
+</span><span class="def">     server-&gt;grabbed_view-&gt;x = server-&gt;cursor-&gt;x - server-&gt;grab_x;
+</span><span class="def">     server-&gt;grabbed_view-&gt;y = server-&gt;cursor-&gt;y - server-&gt;grab_y;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void process_cursor_resize(struct server *server, uint32_t time) {
+</span><span class="add">+void process_cursor_resize(struct server *server, uint32_t time) {
+</span><span class="def">     struct view *view = server-&gt;grabbed_view;
+</span><span class="def">     double border_x = server-&gt;cursor-&gt;x - server-&gt;grab_x;
+</span><span class="def">     double border_y = server-&gt;cursor-&gt;y - server-&gt;grab_y;
+</span>@@ -54,7 +60,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool view_at(
+</span><span class="add">+bool view_at(
+</span><span class="def">     struct view *view, double lx, double ly, struct wlr_surface **surface,
+</span><span class="def">     double *sx, double *sy
+</span><span class="def"> ) {
+</span>@@ -76,7 +82,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static struct view *desktop_view_at(
+</span><span class="add">+struct view *desktop_view_at(
+</span><span class="def">     struct server *server, double lx, double ly, struct wlr_surface **surface,
+</span><span class="def">     double *sx, double *sy
+</span><span class="def"> ) {
+</span>@@ -90,7 +96,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void process_cursor_motion(struct server *server, uint32_t time) {
+</span><span class="add">+void process_cursor_motion(struct server *server, uint32_t time) {
+</span><span class="def">     double sx, sy;
+</span><span class="def">     struct wlr_seat *seat;
+</span><span class="def">     struct wlr_surface *surface;
+</span>@@ -99,8 +105,10 @@
+<span class="def">     switch (server-&gt;cursor_mode) {
+</span><span class="def"> 	case CURSOR_MOVE:
+</span><span class="def"> 	    process_cursor_move(server, time);
+</span><span class="add">+	    break;
+</span><span class="def"> 	case CURSOR_RESIZE:
+</span><span class="def"> 	    process_cursor_resize(server, time);
+</span><span class="add">+	    break;
+</span><span class="def"> 	case CURSOR_PASSTHROUGH:
+</span><span class="def"> 	    seat = server-&gt;seat;
+</span><span class="def"> 	    surface = NULL;
+</span>@@ -120,9 +128,11 @@
+<span class="def"> 	    } else {
+</span><span class="def"> 		wlr_seat_pointer_clear_focus(seat);
+</span><span class="def"> 	    }
+</span><span class="add">+	    break;
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> void on_cursor_motion(struct wl_listener *listener, void *data){
+</span><span class="def">     struct server *server = wl_container_of(listener, server, cursor_motion_listener);
+</span><span class="def">     struct wlr_event_pointer_motion *event = data;
+</span>@@ -141,31 +151,175 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void on_cursor_button(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    return;
+</span><span class="add">+    struct server *server = wl_container_of(listener, server, cursor_button_listener);
+</span><span class="add">+    struct wlr_event_pointer_button *event = data;
+</span><span class="add">+    wlr_seat_pointer_notify_button(
+</span><span class="add">+	server-&gt;seat, event-&gt;time_msec, event-&gt;button, event-&gt;state
+</span><span class="add">+    );
+</span><span class="add">+    double sx, sy;
+</span><span class="add">+    struct wlr_surface *surface;
+</span><span class="add">+    struct view *view = desktop_view_at(
+</span><span class="add">+	server, server-&gt;cursor-&gt;x, server-&gt;cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    if (event-&gt;state == WLR_BUTTON_RELEASED) {
+</span><span class="add">+	server-&gt;cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="add">+    } else {
+</span><span class="add">+	focus_view(view, surface);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> void on_cursor_axis(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    return;
+</span><span class="add">+    struct server *server = wl_container_of(listener, server, cursor_axis_listener);
+</span><span class="add">+    struct wlr_event_pointer_axis *event = data;
+</span><span class="add">+    wlr_seat_pointer_notify_axis(
+</span><span class="add">+	server-&gt;seat, event-&gt;time_msec, event-&gt;orientation, event-&gt;delta,
+</span><span class="add">+	event-&gt;delta_discrete, event-&gt;source
+</span><span class="add">+    );
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void on_cursor_frame(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    return;
+</span><span class="add">+    struct server *server = wl_container_of(listener, server, cursor_frame_listener);
+</span><span class="add">+    wlr_seat_pointer_notify_frame(server-&gt;seat);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_modifier(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct keyboard *keyboard = wl_container_of(listener, keyboard, modifier_listener);
+</span><span class="add">+    wlr_seat_set_keyboard(keyboard-&gt;server-&gt;seat, keyboard-&gt;device); // move to on_new_keyboard?
+</span><span class="add">+    wlr_seat_keyboard_notify_modifiers(
+</span><span class="add">+	keyboard-&gt;server-&gt;seat, &amp;keyboard-&gt;device-&gt;keyboard-&gt;modifiers
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool handle_keybinding(struct server *server, xkb_keysym_t sym) {
+</span><span class="add">+    switch (sym) {
+</span><span class="add">+
+</span><span class="add">+    case XKB_KEY_Escape:
+</span><span class="add">+	wl_display_terminate(server-&gt;display);
+</span><span class="add">+	break;
+</span><span class="add">+
+</span><span class="add">+    case XKB_KEY_F1: // to next view
+</span><span class="add">+	if (wl_list_length(&amp;server-&gt;views) &lt; 2) {
+</span><span class="add">+	    break;
+</span><span class="add">+	}
+</span><span class="add">+	struct view *current_view = wl_container_of(
+</span><span class="add">+	    server-&gt;views.next, current_view, link);
+</span><span class="add">+	struct view *next_view = wl_container_of(
+</span><span class="add">+	    current_view-&gt;link.next, next_view, link);
+</span><span class="add">+	focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="add">+	wl_list_remove(&amp;current_view-&gt;link);
+</span><span class="add">+	wl_list_insert(server-&gt;views.prev, &amp;current_view-&gt;link);
+</span><span class="add">+	break;
+</span><span class="add">+
+</span><span class="add">+    default:
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    return true;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_key(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct keyboard *keyboard = wl_container_of(listener, keyboard, key_listener);
+</span><span class="add">+    struct server *server = keyboard-&gt;server;
+</span><span class="add">+    struct wlr_event_keyboard_key *event = data;
+</span><span class="add">+    struct wlr_seat *seat = server-&gt;seat;
+</span><span class="add">+
+</span><span class="add">+    /* Translate libinput keycode -&gt; xkbcommon */
+</span><span class="add">+    uint32_t keycode = event-&gt;keycode + 8;
+</span><span class="add">+    /* Get a list of keysyms based on the keymap for this keyboard */
+</span><span class="add">+    const xkb_keysym_t *syms;
+</span><span class="add">+    int nsyms = xkb_state_key_get_syms(
+</span><span class="add">+		    keyboard-&gt;device-&gt;keyboard-&gt;xkb_state, keycode, &amp;syms);
+</span><span class="add">+
+</span><span class="add">+    bool handled = false;
+</span><span class="add">+    uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard-&gt;device-&gt;keyboard);
+</span><span class="add">+    if ((modifiers &amp; MOD) &amp;&amp; event-&gt;state == WLR_KEY_PRESSED) {
+</span><span class="add">+	for (int i = 0; i &lt; nsyms; i++) {
+</span><span class="add">+		handled = handle_keybinding(server, syms[i]);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (!handled) {
+</span><span class="add">+	// forward to client
+</span><span class="add">+	wlr_seat_set_keyboard(seat, keyboard-&gt;device); // move to on_new_keyboard?
+</span><span class="add">+	wlr_seat_keyboard_notify_key(seat, event-&gt;time_msec,
+</span><span class="add">+	    event-&gt;keycode, event-&gt;state);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void on_new_keyboard(struct server *server, struct wlr_input_device *device) {
+</span><span class="add">+    struct keyboard *keyboard = calloc(1, sizeof(struct keyboard));
+</span><span class="add">+    keyboard-&gt;server = server;
+</span><span class="add">+    keyboard-&gt;device = device;
+</span><span class="add">+
+</span><span class="add">+    // currently assumes default &quot;us&quot;
+</span><span class="add">+    struct xkb_rule_names rules = { 0 };
+</span><span class="add">+    struct xkb_context *context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+</span><span class="add">+    struct xkb_keymap *keymap = xkb_map_new_from_names(context, &amp;rules,
+</span><span class="add">+	XKB_KEYMAP_COMPILE_NO_FLAGS);
+</span><span class="add">+
+</span><span class="add">+    wlr_keyboard_set_keymap(device-&gt;keyboard, keymap);
+</span><span class="add">+    xkb_keymap_unref(keymap);
+</span><span class="add">+    xkb_context_unref(context);
+</span><span class="add">+    wlr_keyboard_set_repeat_info(device-&gt;keyboard, 25, 600);
+</span><span class="add">+
+</span><span class="add">+    keyboard-&gt;modifier_listener.notify = on_modifier;
+</span><span class="add">+    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.modifiers, &amp;keyboard-&gt;modifier_listener);
+</span><span class="add">+    keyboard-&gt;key_listener.notify = on_key;
+</span><span class="add">+    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.key, &amp;keyboard-&gt;key_listener);
+</span><span class="add">+    wlr_seat_set_keyboard(server-&gt;seat, device);
+</span><span class="add">+    wl_list_insert(&amp;server-&gt;keyboards, &amp;keyboard-&gt;link);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void on_new_input(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    return;
+</span><span class="add">+    struct server *server = wl_container_of(
+</span><span class="add">+	listener, server, new_input_listener
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    struct wlr_input_device *device = data;
+</span><span class="add">+    switch (device-&gt;type) {
+</span><span class="add">+    case WLR_INPUT_DEVICE_KEYBOARD:
+</span><span class="add">+	    on_new_keyboard(server, device);
+</span><span class="add">+	    break;
+</span><span class="add">+    case WLR_INPUT_DEVICE_POINTER:
+</span><span class="add">+	    wlr_cursor_attach_input_device(server-&gt;cursor, device);
+</span><span class="add">+	    break;
+</span><span class="add">+    default:
+</span><span class="add">+	    break;
+</span><span class="add">+    }
+</span><span class="add">+    uint32_t capabilities = WL_SEAT_CAPABILITY_POINTER;
+</span><span class="add">+    if (!wl_list_empty(&amp;server-&gt;keyboards)) {
+</span><span class="add">+	    capabilities |= WL_SEAT_CAPABILITY_KEYBOARD;
+</span><span class="add">+    }
+</span><span class="add">+    wlr_seat_set_capabilities(server-&gt;seat, capabilities);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void on_request_cursor(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    return;
+</span><span class="add">+    struct server *server = wl_container_of(listener, server, request_cursor_listener);
+</span><span class="add">+    struct wlr_seat_pointer_request_set_cursor_event *event = data;
+</span><span class="add">+    struct wlr_seat_client *focused_client =
+</span><span class="add">+	server-&gt;seat-&gt;pointer_state.focused_client;
+</span><span class="add">+
+</span><span class="add">+    if (focused_client == event-&gt;seat_client) {
+</span><span class="add">+	wlr_cursor_set_surface(
+</span><span class="add">+	    server-&gt;cursor, event-&gt;surface, event-&gt;hotspot_x, event-&gt;hotspot_y
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void on_request_set_selection(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    return;
+</span><span class="add">+    struct server *server = wl_container_of(
+</span><span class="add">+	listener, server, request_set_selection_listener);
+</span><span class="add">+    struct wlr_seat_request_set_selection_event *event = data;
+</span><span class="add">+    wlr_seat_set_selection(server-&gt;seat, event-&gt;source, event-&gt;serial);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - misc updates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/8bccc8cc554de5438e267575150e92977e73d4ca.html">8bccc8cc554de5438e267575150e92977e73d4ca</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/63d32431764324931834045c97c3a0eec2cfc13b.html">63d32431764324931834045c97c3a0eec2cfc13b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-16 21:13:02 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-16 21:13:02 +0100
+
+misc updates
+</pre><div class="diff">
+  <p>
+    <b>x11.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,7 +18,7 @@
+<span class="def"> 
+</span><span class="def"> # Keys to run X11-only launchers
+</span><span class="def"> keys_backend.extend([
+</span><span class="sub">-    ([mod],             &apos;d&apos;,    lazy.spawn(&apos;rofi -show run -theme ~/.config/rofi/common-large.rasi&apos;), &quot;rofi: run&quot;),
+</span><span class="add">+    #([mod],             &apos;d&apos;,    lazy.spawn(&apos;rofi -show run -theme ~/.config/rofi/common-large.rasi&apos;), &quot;rofi: run&quot;),
+</span><span class="def">     ([],    &apos;XF86PowerOff&apos;,     lazy.spawn(&apos;power-menu&apos;),                   &quot;Power menu&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;x&apos;,    lazy.spawn(&apos;set_monitors&apos;),                 &quot;Configure monitors&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;i&apos;,    lazy.spawn(&apos;slock systemctl suspend -i&apos;),   &quot;Suspend system and lock&quot;),
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -31,9 +31,9 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Keys to run Wayland-only launchers
+</span><span class="sub">-keys_backend.extend([
+</span><span class="sub">-    ([mod], &apos;d&apos;, lazy.spawn(&apos;wofi --gtk-dark --show run&apos;), &quot;wofi: run&quot;),
+</span><span class="sub">-])
+</span><span class="add">+#keys_backend.extend([
+</span><span class="add">+#    ([mod], &apos;d&apos;, lazy.spawn(&apos;wofi --gtk-dark --show run&apos;), &quot;wofi: run&quot;),
+</span><span class="add">+#])
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Configure libinput devices
+</span>@@ -60,14 +60,14 @@
+<span class="def"> async def _():
+</span><span class="def">     # Run a startup script
+</span><span class="def">     env = os.environ.copy()
+</span><span class="sub">-    env[&quot;WOB_HEIGHT&quot;] = &quot;32&quot;
+</span><span class="add">+    env[&quot;WOB_HEIGHT&quot;] = &quot;28&quot;
+</span><span class="def">     env[&quot;WOB_WIDTH&quot;] = &quot;1920&quot;
+</span><span class="def">     env[&quot;WOB_MARGIN&quot;] = &quot;0&quot;
+</span><span class="def">     env[&quot;WOB_OFFSET&quot;] = &quot;0&quot;
+</span><span class="def">     env[&quot;WOB_BORDER&quot;] = &quot;0&quot;
+</span><span class="def">     env[&quot;WOB_PADDING&quot;] = &quot;0&quot;
+</span><span class="def">     env[&quot;WOB_BACKGROUND&quot;] = &quot;#00000000&quot;
+</span><span class="sub">-    env[&quot;WOB_BAR&quot;] = &quot;#ffCFCCD6&quot;
+</span><span class="add">+    env[&quot;WOB_BAR&quot;] = &quot;#66CFCCD6&quot;
+</span><span class="def">     HOME = os.path.expanduser(&apos;~&apos;)
+</span><span class="def">     subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True, env=env)
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,7 +12,7 @@
+<span class="def">     -M ${WOB_MARGIN:-0} -H ${WOB_HEIGHT:-32} -W ${WOB_WIDTH:-400} \
+</span><span class="def">     -o ${WOB_OFFSET:-0} -b ${WOB_BORDER:-0} -p ${WOB_PADDING:-0} \
+</span><span class="def">     --background-color ${WOB_BACKGROUND:-#ff000000} \
+</span><span class="sub">-    --bar-color ${WOB_BAR:-#00ffffff} &amp;
+</span><span class="add">+    --bar-color ${WOB_BAR:-#00ffffff} -t 800 &amp;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Things after this are only run on a TTY
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -31,7 +31,7 @@
+<span class="def">     Group(&apos;1&apos;, label=&apos;term&apos;),
+</span><span class="def">     Group(&apos;2&apos;, label=&apos;term&apos;),
+</span><span class="def">     Group(&apos;3&apos;, label=&apos;term&apos;),
+</span><span class="sub">-    Group(&apos;q&apos;, label=&apos;surf&apos;, matches=[Match(wm_class=&apos;firefox&apos;)]),
+</span><span class="add">+    Group(&apos;q&apos;, label=&apos;surf&apos;, matches=[Match(wm_class=&apos;firefox&apos;)], layout=&apos;max&apos;),
+</span><span class="def">     Group(&apos;w&apos;, label=&apos;chat&apos;),
+</span><span class="def">     Group(&apos;e&apos;, label=&apos;toot&apos;, matches=[Match(wm_class=&apos;hyperspace desktop&apos;)]),
+</span><span class="def"> ]
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -62,12 +62,12 @@
+<span class="def"> colours = [theme[f&apos;color{n}&apos;] for n in range(16)]
+</span><span class="def"> background = theme[&apos;background&apos;]
+</span><span class="def"> foreground = theme[&apos;foreground&apos;]
+</span><span class="sub">-bw = 5
+</span><span class="add">+bw = 6
+</span><span class="def"> cw = 5
+</span><span class="def"> colour_focussed = &apos;#6fa3e0&apos;
+</span><span class="def"> colour_unfocussed = &apos;#0e101c&apos;
+</span><span class="sub">-inner_gaps = 4
+</span><span class="sub">-outer_gaps = 4
+</span><span class="add">+inner_gaps = 8
+</span><span class="add">+outer_gaps = 0
+</span><span class="def"> 
+</span><span class="def"> # https://coolors.co/1b2021-cfccd6-bbc2e2-b7b5e4-847979
+</span><span class="def"> 
+</span>@@ -134,6 +134,7 @@
+<span class="def">     ([], &apos;F5&apos;,                    lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.DOWN, 3), &quot;Decrease backlight&quot;),
+</span><span class="def"> 
+</span><span class="def">     # Launchers
+</span><span class="add">+    ([mod],             &apos;d&apos;,        lazy.spawncmd(),                            &quot;Spawn with Prompt&quot;),
+</span><span class="def">     ([mod],             &apos;Return&apos;,   lazy.spawn(term),                           &quot;Spawn terminal&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;f&apos;,        lazy.spawn(&quot;firefox&quot;),                      &quot;Spawn Firefox&quot;),
+</span><span class="def">     ([mod, &apos;control&apos;],  &apos;f&apos;,        lazy.spawn(&quot;tor-browser --allow-remote&quot;) ,  &quot;Spawn Tor Browser&quot;),
+</span>@@ -158,7 +159,6 @@
+<span class="def"> #border_focus = colours[13]
+</span><span class="def"> border_normal = background
+</span><span class="def"> #border_normal = colours[8]
+</span><span class="sub">-border_width = 6
+</span><span class="def"> 
+</span><span class="def"> #import qtools.borders
+</span><span class="def"> #qtools.borders.enable(&apos;cde&apos;)
+</span>@@ -169,7 +169,7 @@
+<span class="def"> layouts = [
+</span><span class="def">     layout.Columns(
+</span><span class="def">         insert_position = 1,
+</span><span class="sub">-        border_width = border_width,
+</span><span class="add">+        border_width = bw,
+</span><span class="def">         border_focus = border_focus,
+</span><span class="def">         border_normal = border_normal,
+</span><span class="def">         border_on_single = True,
+</span>@@ -182,7 +182,7 @@
+<span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> floating_layout = layout.Floating(
+</span><span class="sub">-    border_width = border_width,
+</span><span class="add">+    border_width = bw,
+</span><span class="def">     border_focus = border_focus,
+</span><span class="def">     border_normal = border_normal,
+</span><span class="def">     corner_radius = cw,
+</span>@@ -194,23 +194,18 @@
+<span class="def">         Match(wm_class=&apos;confirm&apos;),
+</span><span class="def">         Match(wm_class=&apos;dialog&apos;),
+</span><span class="def">         Match(wm_class=&apos;download&apos;),
+</span><span class="sub">-        Match(wm_class=&apos;Dragon&apos;),
+</span><span class="def">         Match(wm_class=&apos;error&apos;),
+</span><span class="def">         Match(wm_class=&apos;fiji-Main&apos;),
+</span><span class="def">         Match(wm_class=&apos;file_progress&apos;),
+</span><span class="sub">-        Match(wm_class=&apos;fontforge&apos;),
+</span><span class="def">         Match(wm_class=&apos;imv&apos;),
+</span><span class="sub">-        Match(wm_class=&apos;love&apos;),
+</span><span class="def">         Match(wm_class=&apos;lxappearance&apos;),
+</span><span class="def">         Match(wm_class=&apos;mpv&apos;),
+</span><span class="sub">-        Match(wm_class=&apos;Nm-connection-editor&apos;),
+</span><span class="def">         Match(wm_class=&apos;notification&apos;),
+</span><span class="sub">-        Match(wm_class=&apos;Oomox&apos;),
+</span><span class="def">         Match(wm_class=&apos;Pavucontrol&apos;),
+</span><span class="def">         Match(wm_class=&apos;Pinentry-gtk-2&apos;),
+</span><span class="def">         Match(wm_class=&apos;qt5ct&apos;),
+</span><span class="def">         Match(wm_class=&apos;ssh-askpass&apos;),
+</span><span class="sub">-        Match(wm_class=&apos;tinyterm&apos;),
+</span><span class="add">+        Match(wm_class=&apos;Dragon&apos;),
+</span><span class="def">         Match(wm_class=&apos;Dragon-drag-and-drop&apos;),
+</span><span class="def">         Match(wm_class=&apos;toolbar&apos;),
+</span><span class="def">         Match(wm_class=&apos;Xephyr&apos;),
+</span>@@ -232,14 +227,14 @@
+<span class="def"> 
+</span><span class="def"> groupbox_config = {
+</span><span class="def">     &apos;active&apos;: foreground,
+</span><span class="sub">-    &apos;highlight_method&apos;: &apos;line&apos;,
+</span><span class="add">+    &apos;highlight_method&apos;: &apos;block&apos;,
+</span><span class="def">     &apos;this_current_screen_border&apos;: colour_focussed,
+</span><span class="def">     &apos;other_current_screen_border&apos;: colours[5],
+</span><span class="def">     &apos;highlight_color&apos;: [background, colours[5]],
+</span><span class="def">     &apos;disable_drag&apos;: True,
+</span><span class="def">     &apos;padding&apos;: 4,
+</span><span class="sub">-    #&apos;font&apos;: &apos;TamzenForPowerline Bold&apos;,
+</span><span class="sub">-    &apos;fontsize&apos;: 10,
+</span><span class="add">+    &apos;font&apos;: &apos;TamzenForPowerline Bold&apos;,
+</span><span class="add">+    &apos;fontsize&apos;: 12,
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> mpd2 = widget.Mpd2(
+</span>@@ -426,13 +421,24 @@
+<span class="def">         groupboxes[0].bar.draw()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+prompt = widget.Prompt(
+</span><span class="add">+    fontsize=20,
+</span><span class="add">+    font=&apos;TamzenForPowerline Medium&apos;,
+</span><span class="add">+    cursor_color=foreground,
+</span><span class="add">+    visual_bell_color=foreground,
+</span><span class="add">+    background=colours[5],
+</span><span class="add">+    bell_style=&apos;visual&apos;,
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="def"> screens = [
+</span><span class="def">     Screen(
+</span><span class="def">         bottom=bar.Bar(
+</span><span class="def">             [
+</span><span class="sub">-                groupboxes[0], cpugraph, widget.Spacer(), mpd2,
+</span><span class="sub">-                widget.Spacer(), systray, bklight, volume, wlan,
+</span><span class="sub">-                battery, date, time, 
+</span><span class="add">+                groupboxes[0], cpugraph, prompt,  # Left
+</span><span class="add">+                widget.Spacer(),
+</span><span class="add">+                mpd2,  # Centre
+</span><span class="add">+                widget.Spacer(),
+</span><span class="add">+                systray, bklight, volume, wlan, battery, date, time,  # Right
+</span><span class="def">             ],
+</span><span class="def">             28,
+</span><span class="def">             background=background,
+</span>@@ -444,9 +450,11 @@
+<span class="def">     Screen(
+</span><span class="def">         bottom=bar.Bar(
+</span><span class="def">             [
+</span><span class="sub">-                groupboxes[1], cpugraph, widget.Spacer(), mpd2,
+</span><span class="sub">-                widget.Spacer(), bklight, volume, wlan,
+</span><span class="sub">-                battery, date, time
+</span><span class="add">+                groupboxes[1], cpugraph,  # Left
+</span><span class="add">+                widget.Spacer(),
+</span><span class="add">+                mpd2,  # Centre
+</span><span class="add">+                widget.Spacer(),
+</span><span class="add">+                bklight, volume, wlan, battery, date, time,  # Right
+</span><span class="def">             ],
+</span><span class="def">             28,
+</span><span class="def">             background=background,
+</span></pre>
+</div></div>
+  </body>
+</html>

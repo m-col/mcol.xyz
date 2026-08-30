@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - add debug make target</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/f4f89cda663f9cc2a3effc6237e5b724f5a9d67a.html">f4f89cda663f9cc2a3effc6237e5b724f5a9d67a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/ea612441915ba2a396fbd666c7f2c6f9bba9520e.html">ea612441915ba2a396fbd666c7f2c6f9bba9520e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-18 20:56:46 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-18 20:56:46 +0100
+
+add debug make target
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -101,7 +101,8 @@
+<span class="def"> {
+</span><span class="def">     xcb_generic_event_t *event;
+</span><span class="def">     xcb_enter_notify_event_t *entry;
+</span><span class="sub">-    int16_t x, y;
+</span><span class="add">+    int16_t x = 0;
+</span><span class="add">+    int16_t y = 0;
+</span><span class="def"> 
+</span><span class="def">     int16_t far_x = screen-&gt;width_in_pixels - 1;
+</span><span class="def">     int16_t far_y = screen-&gt;height_in_pixels - 1;
+</span>@@ -129,7 +130,9 @@
+<span class="def"> 		conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y
+</span><span class="def"> 	    );
+</span><span class="def"> 	    xcb_flush(conn);
+</span><span class="add">+#ifdef DEBUG
+</span><span class="def"> 	    printf(&quot;(%d, %d) to (%d, %d)\n&quot;, entry-&gt;event_x, entry-&gt;event_y, x, y);
+</span><span class="add">+#endif
+</span><span class="def"> 	    break;
+</span><span class="def"> 	}
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,6 +6,9 @@
+<span class="def"> 
+</span><span class="def"> all: $(OUT)
+</span><span class="def"> 
+</span><span class="add">+debug: CFLAGS += -g -DDEBUG
+</span><span class="add">+debug: all
+</span><span class="add">+
+</span><span class="def"> clean:
+</span><span class="def"> 	$(RM) $(OUT) $(OBJ)
+</span><span class="def"> 
+</span>@@ -17,4 +20,4 @@
+<span class="def"> 	rm -f &quot;$(DESTDIR)$(BINPREFIX)&quot;/xoop
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-.PHONY: all clean install uninstall
+</span><span class="add">+.PHONY: all debug clean install uninstall
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - content/posts/raspberrypi/git_backups.rst</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- content/posts/raspberrypi/git_backups.rst</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> minimal but complete nightly backups to raspberry pi
+<a href="#l2" class="line" id="l2">      2</a> ====================================================
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> :date: 2019-04-25
+<a href="#l5" class="line" id="l5">      5</a> :summary: minimal but complete nightly backups to raspberry pi
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a> I searched far and wide for an effective backup solution for my laptop that
+<a href="#l8" class="line" id="l8">      8</a> wasn&apos;t overkill.
+<a href="#l9" class="line" id="l9">      9</a> 
+<a href="#l10" class="line" id="l10">     10</a> When I first converted to linux I used programs like `timeshift
+<a href="#l11" class="line" id="l11">     11</a> &lt;https://github.com/teejee2008/timeshift&gt;`_ and `backintime
+<a href="#l12" class="line" id="l12">     12</a> &lt;https://github.com/bit-team/backintime&gt;`_ and although they worked well, I
+<a href="#l13" class="line" id="l13">     13</a> wanted more fine grain control over what was backed up and less meat on what
+<a href="#l14" class="line" id="l14">     14</a> should be a lightweight background process.
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> In my quest I stumbled upon this `Hacker News discussion
+<a href="#l17" class="line" id="l17">     17</a> &lt;https://news.ycombinator.com/item?id=11070797&gt;`_ about turning your home
+<a href="#l18" class="line" id="l18">     18</a> directory into a git working tree, where its .git folder is in some other
+<a href="#l19" class="line" id="l19">     19</a> folder, out of the way. This setup stops your home git repo from getting in the
+<a href="#l20" class="line" id="l20">     20</a> way of any git folders you have in your home directory, but has some problems:
+<a href="#l21" class="line" id="l21">     21</a> 
+<a href="#l22" class="line" id="l22">     22</a> - you need to remember to use the alias or folder names for this git repo to
+<a href="#l23" class="line" id="l23">     23</a>   use the correct .git folder and working tree
+<a href="#l24" class="line" id="l24">     24</a> 
+<a href="#l25" class="line" id="l25">     25</a> - working tree changes won&apos;t get picked up by utilities like zsh prompts or
+<a href="#l26" class="line" id="l26">     26</a>   ranger, so you might not always remember when things have changed
+<a href="#l27" class="line" id="l27">     27</a> 
+<a href="#l28" class="line" id="l28">     28</a> - to not pick up every single file in your home directory, these setups
+<a href="#l29" class="line" id="l29">     29</a>   generally ignore untracked files. This requires you to remember to manually
+<a href="#l30" class="line" id="l30">     30</a>   add any new config files in the future
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> Maybe I just have a poor memory.
+<a href="#l33" class="line" id="l33">     33</a> 
+<a href="#l34" class="line" id="l34">     34</a> A slight adjustment of this is to just use the :code:`$HOME/.config` folder for
+<a href="#l35" class="line" id="l35">     35</a> what it was intended: storing your config files. Turning this folder into your
+<a href="#l36" class="line" id="l36">     36</a> dotfiles repository, you can treat it as any other git repo.
+<a href="#l37" class="line" id="l37">     37</a> 
+<a href="#l38" class="line" id="l38">     38</a> Most programs can keep their configs in this folder, but the few that don&apos;t can
+<a href="#l39" class="line" id="l39">     39</a> simply have their configs symlinked into place from the repo. This symlinking
+<a href="#l40" class="line" id="l40">     40</a> make up the only scripting that would be required to install the repo into
+<a href="#l41" class="line" id="l41">     41</a> another machine.
+<a href="#l42" class="line" id="l42">     42</a> 
+<a href="#l43" class="line" id="l43">     43</a> It makes sense to git track configuration files, but your photos, music and
+<a href="#l44" class="line" id="l44">     44</a> documents? git is not going to like that. This calls for a small bit of
+<a href="#l45" class="line" id="l45">     45</a> scripting to rsync these folders and push the .config repo to a remote
+<a href="#l46" class="line" id="l46">     46</a> location.
+<a href="#l47" class="line" id="l47">     47</a> 
+<a href="#l48" class="line" id="l48">     48</a> First we need the location: a raspberry pi, ticking away somewhere hidden in
+<a href="#l49" class="line" id="l49">     49</a> your flat, wired to an external hard drive. With one up and running, stick your
+<a href="#l50" class="line" id="l50">     50</a> hard drive into the pi&apos;s :code:`/etc/fstab`:
+<a href="#l51" class="line" id="l51">     51</a> 
+<a href="#l52" class="line" id="l52">     52</a> .. code-block:: conf
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a>     /dev/disk/by-uuid/1234-abcd /mnt/backups ext4 auto,rw,nofail,noatime,nosuid,noexec 0 0
+<a href="#l55" class="line" id="l55">     55</a> 
+<a href="#l56" class="line" id="l56">     56</a> Make sure your user has write access to the hard drive and then create the
+<a href="#l57" class="line" id="l57">     57</a> remote repo for the configs:
+<a href="#l58" class="line" id="l58">     58</a> 
+<a href="#l59" class="line" id="l59">     59</a> .. code-block:: bash
+<a href="#l60" class="line" id="l60">     60</a> 
+<a href="#l61" class="line" id="l61">     61</a>     mkdir -m 1777 /mnt/backups/dotfiles
+<a href="#l62" class="line" id="l62">     62</a>     cd /mnt/backups/dotfiles
+<a href="#l63" class="line" id="l63">     63</a>     git init --bare
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a> Make any additional folders for each folder in your home directory that will be
+<a href="#l66" class="line" id="l66">     66</a> backed up:
+<a href="#l67" class="line" id="l67">     67</a> 
+<a href="#l68" class="line" id="l68">     68</a> .. code-block:: bash
+<a href="#l69" class="line" id="l69">     69</a> 
+<a href="#l70" class="line" id="l70">     70</a>     mkdir /mnt/backups/{documents,music,pictures}
+<a href="#l71" class="line" id="l71">     71</a> 
+<a href="#l72" class="line" id="l72">     72</a> While we&apos;re on the rasperry pi, let&apos;s configure some hard drive power
+<a href="#l73" class="line" id="l73">     73</a> management so the hard drive spins down soon after the daily backup to save
+<a href="#l74" class="line" id="l74">     74</a> some power. First install :code:`hdparm`, then set the power management and
+<a href="#l75" class="line" id="l75">     75</a> spin down settings (see the `Arch wiki
+<a href="#l76" class="line" id="l76">     76</a> &lt;https://wiki.archlinux.org/index.php/Hdparm#Power_management_configuration&gt;`_
+<a href="#l77" class="line" id="l77">     77</a> for more info).
+<a href="#l78" class="line" id="l78">     78</a> 
+<a href="#l79" class="line" id="l79">     79</a> .. code-block:: bash
+<a href="#l80" class="line" id="l80">     80</a> 
+<a href="#l81" class="line" id="l81">     81</a>     apt-get install hdparm
+<a href="#l82" class="line" id="l82">     82</a>     hdparm -B 127 /dev/disk/by-uuid/1234-abcd   # best performance permitting spin-down
+<a href="#l83" class="line" id="l83">     83</a>     hdparm -S 241 /dev/disk/by-uuid/1234-abcd   # spin down after 30 minutes
+<a href="#l84" class="line" id="l84">     84</a> 
+<a href="#l85" class="line" id="l85">     85</a> Back on the laptop, we write the backup script, substituting where necessary:
+<a href="#l86" class="line" id="l86">     86</a> 
+<a href="#l87" class="line" id="l87">     87</a> .. code-block:: bash
+<a href="#l88" class="line" id="l88">     88</a> 
+<a href="#l89" class="line" id="l89">     89</a>     pi_IP=192.168.1.2
+<a href="#l90" class="line" id="l90">     90</a>     pi_drive=&quot;pi@$pi_IP:/mnt/backups&quot;
+<a href="#l91" class="line" id="l91">     91</a> 
+<a href="#l92" class="line" id="l92">     92</a>     rsyncargs=&quot;--recursive --links --times --partial --delete --compress --perms --verbose&quot;
+<a href="#l93" class="line" id="l93">     93</a>     
+<a href="#l94" class="line" id="l94">     94</a>     # this environmental variable lets cron use notify-send for user ID 1000
+<a href="#l95" class="line" id="l95">     95</a>     export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+<a href="#l96" class="line" id="l96">     96</a>     
+<a href="#l97" class="line" id="l97">     97</a>     if ping $pi_IP -c 1 
+<a href="#l98" class="line" id="l98">     98</a>     then
+<a href="#l99" class="line" id="l99">     99</a>         notify-send &quot;Nightly backup to pi&quot; &quot;Backup starting...&quot;
+<a href="#l100" class="line" id="l100">    100</a>     else
+<a href="#l101" class="line" id="l101">    101</a>         notify-send &quot;Nightly backup to pi&quot; &quot;Couldn&apos;t ping pi&quot;
+<a href="#l102" class="line" id="l102">    102</a>         exit    # exit if we can&apos;t ping the pi - are you still at work?
+<a href="#l103" class="line" id="l103">    103</a>     fi
+<a href="#l104" class="line" id="l104">    104</a>     
+<a href="#l105" class="line" id="l105">    105</a>     {
+<a href="#l106" class="line" id="l106">    106</a>         # dotfiles
+<a href="#l107" class="line" id="l107">    107</a>         git --git-dir=$HOME/.config/.git/ --work-tree=$HOME/.config add -A
+<a href="#l108" class="line" id="l108">    108</a>         git --git-dir=$HOME/.config/.git/ --work-tree=$HOME/.config commit -m &quot;cron commit&quot;
+<a href="#l109" class="line" id="l109">    109</a>         git --git-dir=$HOME/.config/.git/ --work-tree=$HOME/.config push || errors=true
+<a href="#l110" class="line" id="l110">    110</a>     
+<a href="#l111" class="line" id="l111">    111</a>         # other folders
+<a href="#l112" class="line" id="l112">    112</a>         rsync $rsyncargs \
+<a href="#l113" class="line" id="l113">    113</a>     	--exclude=path/to/folder/you/want/to/exclude \
+<a href="#l114" class="line" id="l114">    114</a>     	$HOME/documents/ $pi_drive/documents/ || errors=true
+<a href="#l115" class="line" id="l115">    115</a>     
+<a href="#l116" class="line" id="l116">    116</a>         rsync $rsyncargs $HOME/pictures/    $pi_drive/pictures/  || errors=true
+<a href="#l117" class="line" id="l117">    117</a>         rsync $rsyncargs $HOME/music/       $pi_drive/music/     || errors=true
+<a href="#l118" class="line" id="l118">    118</a> 
+<a href="#l119" class="line" id="l119">    119</a>     # catch the output into a file in case we need it
+<a href="#l120" class="line" id="l120">    120</a>     } | tee -a /tmp/BACKUPLOG-$(date +%y%m%d-%H%M%S)
+<a href="#l121" class="line" id="l121">    121</a>     
+<a href="#l122" class="line" id="l122">    122</a>     # notify with outcome
+<a href="#l123" class="line" id="l123">    123</a>     if ${errors:-false}
+<a href="#l124" class="line" id="l124">    124</a>     then
+<a href="#l125" class="line" id="l125">    125</a>         notify-send &quot;Nightly backup to pi&quot; &quot;Completed with error(s)&quot;
+<a href="#l126" class="line" id="l126">    126</a>     else
+<a href="#l127" class="line" id="l127">    127</a>         notify-send &quot;Nightly backup to pi&quot; &quot;Completed successfully.&quot;
+<a href="#l128" class="line" id="l128">    128</a>     fi
+<a href="#l129" class="line" id="l129">    129</a> 
+<a href="#l130" class="line" id="l130">    130</a> This can easily be run by cron, e.g.:
+<a href="#l131" class="line" id="l131">    131</a> 
+<a href="#l132" class="line" id="l132">    132</a> .. code-block:: bash
+<a href="#l133" class="line" id="l133">    133</a> 
+<a href="#l134" class="line" id="l134">    134</a>     # backup nightly at 9.30 pm
+<a href="#l135" class="line" id="l135">    135</a>     30 21 * * * $HOME/bin/nightly_backup
+<a href="#l136" class="line" id="l136">    136</a> 
+<a href="#l137" class="line" id="l137">    137</a> Now every night at 9.30 your home directory will get backed up to the raspberry
+<a href="#l138" class="line" id="l138">    138</a> pi if you&apos;re at home. If it doesn&apos;t work for whatever reason, you&apos;ll get
+<a href="#l139" class="line" id="l139">    139</a> notified of the error and you can check out the log in the /tmp folder.
+<a href="#l140" class="line" id="l140">    140</a> 
+<a href="#l141" class="line" id="l141">    141</a> Complement this with `etckeeper
+<a href="#l142" class="line" id="l142">    142</a> &lt;https://wiki.archlinux.org/index.php/etckeeper&gt;`_ to back up system files and
+<a href="#l143" class="line" id="l143">    143</a> this simple and lightweight setup can restore your machine in no time.
+<a href="#l144" class="line" id="l144">    144</a> 
+</pre>
+  </div>
+  </body>
+</html>

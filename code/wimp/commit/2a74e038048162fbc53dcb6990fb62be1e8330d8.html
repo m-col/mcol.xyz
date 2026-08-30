@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - don&apos;t move grabbed_view if cursor was blocked by layout constraints</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/2a74e038048162fbc53dcb6990fb62be1e8330d8.html">2a74e038048162fbc53dcb6990fb62be1e8330d8</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/40d6ef029cfd2bfb3251139ae8efdb745d6ee4bc.html">40d6ef029cfd2bfb3251139ae8efdb745d6ee4bc</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 15:08:48 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 15:08:48 +0000
+
+don&apos;t move grabbed_view if cursor was blocked by layout constraints
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -358,7 +358,7 @@
+<span class="def"> 
+</span><span class="def"> static void on_cursor_motion(struct wl_listener *listener, void *data){
+</span><span class="def">     struct wlr_event_pointer_motion *event = data;
+</span><span class="sub">-    if (wimp.grabbed_view) {
+</span><span class="add">+    if (wimp.resize_edges) {
+</span><span class="def"> 	if (wimp.resize_edges &amp; WLR_EDGE_TOP) {
+</span><span class="def"> 	    if (wimp.grabbed_view-&gt;surface-&gt;geometry.height &lt;= CORNER &amp;&amp; event-&gt;delta_y &gt; 0) {
+</span><span class="def"> 		event-&gt;delta_y = 0;
+</span>@@ -378,7 +378,17 @@
+<span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+
+</span><span class="add">+    double x = wimp.cursor-&gt;x;
+</span><span class="add">+    double y = wimp.cursor-&gt;y;
+</span><span class="def">     wlr_cursor_move(wimp.cursor, event-&gt;device, event-&gt;delta_x, event-&gt;delta_y);
+</span><span class="add">+    if (x == wimp.cursor-&gt;x) {
+</span><span class="add">+	event-&gt;delta_x = 0;
+</span><span class="add">+    }
+</span><span class="add">+    if (y == wimp.cursor-&gt;y) {
+</span><span class="add">+	event-&gt;delta_y = 0;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     process_cursor_motion(event-&gt;time_msec, event-&gt;delta_x, event-&gt;delta_y);
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -421,6 +431,7 @@
+<span class="def"> 	    }
+</span><span class="def"> 	    wimp.grabbed_view = NULL;
+</span><span class="def"> 	    wimp.can_snap = false;
+</span><span class="add">+	    wimp.resize_edges = 0;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

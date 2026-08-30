@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Add Mpd2 next/prev to keybindings</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/13d434c2b2ac6b0678b023c2a1ba2fcba1958da5.html">13d434c2b2ac6b0678b023c2a1ba2fcba1958da5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/26b2094257ed1de41791e00c0a6be75dc244c0cd.html">26b2094257ed1de41791e00c0a6be75dc244c0cd</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-13 13:09:29 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-13 13:09:29 +0000
+
+Add Mpd2 next/prev to keybindings
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -153,6 +153,12 @@
+<span class="def">     ([mod], &apos;F5&apos;,
+</span><span class="def">         lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.DOWN, 5), &quot;Decrease backlight&quot;),
+</span><span class="def"> 
+</span><span class="add">+    # Music control
+</span><span class="add">+    ([mod], &apos;bracketright&apos;,
+</span><span class="add">+        lazy.widget[&apos;mpd2&apos;].function(lambda w: w.button_press(0, 0, 5)),   &quot;Next song&quot;),
+</span><span class="add">+    ([mod], &apos;bracketleft&apos;,
+</span><span class="add">+        lazy.widget[&apos;mpd2&apos;].function(lambda w: w.button_press(0, 0, 4)),   &quot;Previous song&quot;),
+</span><span class="add">+
+</span><span class="def">     # Launchers
+</span><span class="def">     ([mod],             &apos;d&apos;,        lazy.spawncmd(),                            &quot;Spawn with Prompt&quot;),
+</span><span class="def">     ([mod],             &apos;Return&apos;,   lazy.spawn(term),                           &quot;Spawn terminal&quot;),
+</span></pre>
+</div></div>
+  </body>
+</html>

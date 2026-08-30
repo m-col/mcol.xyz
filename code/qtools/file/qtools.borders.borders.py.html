@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - qtools/borders/borders.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- qtools/borders/borders.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &quot;&quot;&quot;
+<a href="#l2" class="line" id="l2">      2</a> This plugin can make Qtile draw different patterns on window borders.
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> Example usage:
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a>     from qtools import borders
+<a href="#l7" class="line" id="l7">      7</a> 
+<a href="#l8" class="line" id="l8">      8</a>     borders.enable(&apos;frame&apos;)
+<a href="#l9" class="line" id="l9">      9</a> 
+<a href="#l10" class="line" id="l10">     10</a> &quot;&quot;&quot;
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> 
+<a href="#l13" class="line" id="l13">     13</a> from libqtile.log_utils import logger
+<a href="#l14" class="line" id="l14">     14</a> from libqtile.backend.x11 import xcbq
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> from .cde import cde
+<a href="#l17" class="line" id="l17">     17</a> from .frame import frame
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> 
+<a href="#l20" class="line" id="l20">     20</a> _style_map = {
+<a href="#l21" class="line" id="l21">     21</a>     &apos;frame&apos;: frame,
+<a href="#l22" class="line" id="l22">     22</a>     &apos;cde&apos;: cde,
+<a href="#l23" class="line" id="l23">     23</a> }
+<a href="#l24" class="line" id="l24">     24</a> 
+<a href="#l25" class="line" id="l25">     25</a> 
+<a href="#l26" class="line" id="l26">     26</a> def enable(style):
+<a href="#l27" class="line" id="l27">     27</a>     &quot;&quot;&quot;
+<a href="#l28" class="line" id="l28">     28</a>     Enable a particular style of window borders.
+<a href="#l29" class="line" id="l29">     29</a> 
+<a href="#l30" class="line" id="l30">     30</a>     Available styles:
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a>         - frame
+<a href="#l33" class="line" id="l33">     33</a>         - CDE
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a>     Parameters
+<a href="#l36" class="line" id="l36">     36</a>     ----------
+<a href="#l37" class="line" id="l37">     37</a>     style : str
+<a href="#l38" class="line" id="l38">     38</a>         A string specifying which style to use.
+<a href="#l39" class="line" id="l39">     39</a> 
+<a href="#l40" class="line" id="l40">     40</a>     &quot;&quot;&quot;
+<a href="#l41" class="line" id="l41">     41</a>     style = style.lower()
+<a href="#l42" class="line" id="l42">     42</a>     if style in _style_map:
+<a href="#l43" class="line" id="l43">     43</a>         xcbq.Window.paint_borders = _style_map[style]
+<a href="#l44" class="line" id="l44">     44</a>     else:
+<a href="#l45" class="line" id="l45">     45</a>         logger.exception(&quot;qtools.borders: style {} not found.&quot;.format(style))
+<a href="#l46" class="line" id="l46">     46</a> 
+</pre>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - Merge pull request #4 from limasierra/master</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/5bcaa001058798eb245d53315bcfa8d4f36eea03.html">5bcaa001058798eb245d53315bcfa8d4f36eea03</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/03a8999aa980ed2cfe7286f3fddfe86add6a5e12.html">03a8999aa980ed2cfe7286f3fddfe86add6a5e12</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2024-05-04 11:48:58 +0100
+<b>Committer:</b> GitHub &lt;<a href="mailto:noreply@github.com">noreply@github.com</a>&gt;
+<b>Committed:</b> 2024-05-04 11:48:58 +0100
+
+Merge pull request #4 from limasierra/master
+
+Fixing build issues
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -50,7 +50,7 @@
+<span class="def"> 
+</span><span class="def"> void exit_angrily(char msg[])
+</span><span class="def"> {
+</span><span class="sub">-    fprintf(stderr, msg);
+</span><span class="add">+    fprintf(stderr, &quot;%s&quot;, msg);
+</span><span class="def">     xcb_disconnect(conn);
+</span><span class="def">     exit(EXIT_FAILURE);
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -29,6 +29,18 @@
+<span class="def"> -h  help
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+Required libraries
+</span><span class="add">+------------------
+</span><span class="add">+
+</span><span class="add">+On Ubuntu 23.10, the following packages are required:
+</span><span class="add">+
+</span><span class="add">+$ sudo apt install \
+</span><span class="add">+    libxcb-randr0-dev \
+</span><span class="add">+    libxcb-util0-dev \
+</span><span class="add">+    libxcb-xfixes0-dev \
+</span><span class="add">+    libxcb-xinput-dev
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> To install
+</span><span class="def"> ----------
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,7 @@
+<span class="def"> OUT        = xoop
+</span><span class="sub">-SRC 	   = xoop.c
+</span><span class="sub">-CFLAGS 	  += -Wall -Wextra -pedantic -lxcb -lxcb-randr -lxcb-xinput -lxcb-xfixes
+</span><span class="add">+SRC        = xoop.c
+</span><span class="add">+CFLAGS    += -Wall -Wextra -pedantic
+</span><span class="add">+LDLIBS    += -lxcb -lxcb-randr -lxcb-xinput -lxcb-xfixes
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span><span class="def"> MANPREFIX ?= $(PREFIX)/man/man1
+</span></pre>
+</div></div>
+  </body>
+</html>

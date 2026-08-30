@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - templates/stagit/template.html.include</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- templates/stagit/template.html.include</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> {#- This is the base template used for all pages. -#}
+<a href="#l2" class="line" id="l2">      2</a> {#- Style credit goes to stagit. -#}
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> &lt;!doctype html&gt;
+<a href="#l5" class="line" id="l5">      5</a> &lt;html lang=&quot;en&quot;&gt;
+<a href="#l6" class="line" id="l6">      6</a>   &lt;head&gt;
+<a href="#l7" class="line" id="l7">      7</a>     &lt;meta charset=&quot;utf-8&quot;&gt;
+<a href="#l8" class="line" id="l8">      8</a>     &lt;meta http-equiv=&quot;x-ua-compatible&quot; content=&quot;ie=edge&quot;&gt;
+<a href="#l9" class="line" id="l9">      9</a>     &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+<a href="#l10" class="line" id="l10">     10</a>     &lt;title&gt;{% block title %}{% endblock %}&lt;/title&gt;
+<a href="#l11" class="line" id="l11">     11</a>     &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;{{ host }}/style.css&quot;/&gt;
+<a href="#l12" class="line" id="l12">     12</a>     &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;/favicon.png&quot;/&gt;
+<a href="#l13" class="line" id="l13">     13</a>   &lt;/head&gt;
+<a href="#l14" class="line" id="l14">     14</a>   &lt;body&gt;
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a>   {% block body %}
+<a href="#l17" class="line" id="l17">     17</a>   {% endblock %}
+<a href="#l18" class="line" id="l18">     18</a>   &lt;/body&gt;
+<a href="#l19" class="line" id="l19">     19</a> &lt;/html&gt;
+<a href="#l20" class="line" id="l20">     20</a> 
+</pre>
+  </div>
+  </body>
+</html>

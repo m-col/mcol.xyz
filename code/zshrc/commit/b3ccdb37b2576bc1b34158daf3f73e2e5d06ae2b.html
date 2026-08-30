@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - more aliases</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/b3ccdb37b2576bc1b34158daf3f73e2e5d06ae2b.html">b3ccdb37b2576bc1b34158daf3f73e2e5d06ae2b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/d5961cdb9622d97ce70d1b14f36e41dfdac699cb.html">d5961cdb9622d97ce70d1b14f36e41dfdac699cb</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2025-11-12 11:58:06 +0000
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2025-11-12 11:58:06 +0000
+
+more aliases
+</pre><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,8 @@
+<span class="def"> # General aliases go here
+</span><span class="def"> # Machine-specific aliases go in $HOME/.config/aliases
+</span><span class="def"> # 
+</span><span class="add">+#
+</span><span class="add">+alias uv-debug-setup=&quot;uv pip install ptpython pudb&quot;
+</span><span class="def"> 
+</span><span class="def"> # misc
+</span><span class="def"> alias ..=&apos;cd ../&apos;
+</span>@@ -22,6 +24,7 @@
+<span class="def"> alias vim=nvim
+</span><span class="def"> alias fv=&quot;fzf --print0 | xargs -0 -o nvim&quot;
+</span><span class="def"> alias cat=bat
+</span><span class="add">+alias vi=vim
+</span><span class="def"> 
+</span><span class="def"> if [[ -n &quot;$WAYLAND_DISPLAY&quot; ]]
+</span><span class="def"> then
+</span>@@ -34,7 +37,7 @@
+<span class="def">     alias copy=pbcopy
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="sub">-alias grep=&apos;grep --exclude-dir=__pycache__ --exclude-dir=.git --exclude-dir=.tox --exclude-dir=.eggs --exclude-dir=.mypy_cache&apos;
+</span><span class="add">+alias grep=&apos;grep --exclude-dir=__pycache__ --exclude-dir=.terraform --exclude-dir=.git --exclude-dir=.tox --exclude-dir=tags --exclude-dir=.eggs --exclude-dir=.mypy_cache&apos;
+</span><span class="def"> 
+</span><span class="def"> # systemd
+</span><span class="def"> alias sc=&apos;systemctl&apos;
+</span>@@ -108,10 +111,33 @@
+<span class="def"> alias st=&apos;git stash&apos;
+</span><span class="def"> alias stl=&apos;git stash list&apos;
+</span><span class="def"> alias stp=&apos;git stash pop&apos;
+</span><span class="add">+alias cg=&apos;cd &quot;$(git rev-parse --show-cdup)&quot;&apos;
+</span><span class="def"> pr() { git fetch upstream pull/$1/head:$1 &amp;&amp; git checkout $1; }
+</span><span class="def"> lg() { git log -${1:-1}; }
+</span><span class="def"> lgo()  { git log --oneline -${1:-1}; }
+</span><span class="def"> alias lgc=&quot;git log -1 | head -1 | awk &apos;{print \$2}&apos; | copy -n&quot;
+</span><span class="add">+newbr() {
+</span><span class="add">+    branches=$(br | wc -l)
+</span><span class="add">+    if (( branches != 2 ))
+</span><span class="add">+    then
+</span><span class="add">+	echo &quot;$branches branches, can&apos;t continue&quot;
+</span><span class="add">+	return 0
+</span><span class="add">+    fi
+</span><span class="add">+    new_name=&quot;$1&quot;
+</span><span class="add">+    if [[ -z &quot;$new_name&quot; ]]
+</span><span class="add">+    then
+</span><span class="add">+	echo &quot;no name given, pass in a name&quot;
+</span><span class="add">+	return 0
+</span><span class="add">+    fi
+</span><span class="add">+    ch main
+</span><span class="add">+    br -D $(git branch --format=&apos;%(refname:short)&apos; | grep -v main)
+</span><span class="add">+    pl
+</span><span class="add">+    ch -b matt/$new_name
+</span><span class="add">+    echo
+</span><span class="add">+    br
+</span><span class="add">+    echo
+</span><span class="add">+    gs
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="def"> pdif() {
+</span><span class="def">     git diff --name-only --diff-filter=${1:-M}
+</span>@@ -123,7 +149,13 @@
+<span class="def"> get_git_dirty() {
+</span><span class="def">     git status --porcelain | awk &apos;match($1, &quot;M&quot;){print $2}&apos; | grep -E &quot;\.tsx$|\.ts$&quot;
+</span><span class="def"> }
+</span><span class="sub">-alias prs=&quot;gh search prs --author=@me --owner=edra-org --state=open&quot;
+</span><span class="add">+prs() {
+</span><span class="add">+    (echo -e &quot;REPO\tNUMBER\tTITLE\tURL&quot; &amp;&amp; \
+</span><span class="add">+	gh search prs --author=@me --owner=edra-org --state=open \
+</span><span class="add">+      --json number,title,repository,url \
+</span><span class="add">+      --jq &apos;.[] | [.repository.name, &quot;#\(.number)&quot;, .title, .url] | @tsv&apos;) \
+</span><span class="add">+      | column -t -s $&apos;\t&apos;
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - update readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/836186342e24230b79697af55efd8e2cb50692a6.html">836186342e24230b79697af55efd8e2cb50692a6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/7a07c40d6da2030e9ef1d3ce3ded5bf4f82eb756.html">7a07c40d6da2030e9ef1d3ce3ded5bf4f82eb756</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-15 11:22:42 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-15 11:22:42 +0100
+
+update readme
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,10 +2,12 @@
+<span class="def"> ===================================
+</span><span class="def"> 
+</span><span class="def"> minify-fontawesome is a plugin for the `pelican
+</span><span class="sub">-&lt;https://github.com/getpelican/pelican&gt;`_ static site generator that extracts
+</span><span class="sub">-only icons used in your website from fontawesome source files upon site
+</span><span class="sub">-generation. If you only use a small number of icons it reduces served CSS from
+</span><span class="sub">-around 70KB to around 5KB.
+</span><span class="add">+&lt;https://github.com/getpelican/pelican&gt;`_ static site generator that copies
+</span><span class="add">+fontawesome fonts and css into your output folder, *excluding* those that are
+</span><span class="add">+not found in your site.
+</span><span class="add">+
+</span><span class="add">+If you only use a small number of icons it can reduce fontawesome CSS from
+</span><span class="add">+~70KB to ~5KB, and fonts from ~90KB to ~2KB.
+</span><span class="def"> 
+</span><span class="def"> At the end of site generation, the plugin identifies which icons are being used
+</span><span class="def"> and copies the CSS and font definitions of these icons into
+</span>@@ -29,3 +31,5 @@
+<span class="def"> .. code-block:: html
+</span><span class="def"> 
+</span><span class="def">     &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ SITEURL }}/theme/css/fa.css&quot;/&gt;
+</span><span class="add">+
+</span><span class="add">+This has only been tested with fontawesome-free-5.11.2-web so far.
+</span></pre>
+</div></div>
+  </body>
+</html>

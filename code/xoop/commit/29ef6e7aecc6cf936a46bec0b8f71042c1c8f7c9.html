@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - debug: make window visible and print events</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/29ef6e7aecc6cf936a46bec0b8f71042c1c8f7c9.html">29ef6e7aecc6cf936a46bec0b8f71042c1c8f7c9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/03d0f72ce4ef288be09dcbc90696da9df43503d8.html">03d0f72ce4ef288be09dcbc90696da9df43503d8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-04 18:26:31 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-04 18:26:31 +0100
+
+debug: make window visible and print events
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -75,30 +75,55 @@
+<span class="def"> 
+</span><span class="def"> void set_window_shape()
+</span><span class="def"> {
+</span><span class="sub">-    xcb_gcontext_t gc = xcb_generate_id(conn);
+</span><span class="def">     xcb_pixmap_t pixmap = xcb_generate_id(conn);
+</span><span class="sub">-
+</span><span class="add">+    xcb_gcontext_t gc = xcb_generate_id(conn);
+</span><span class="def">     xcb_create_pixmap(
+</span><span class="def"> 	conn, 1, pixmap, wid, screen-&gt;width_in_pixels, screen-&gt;height_in_pixels
+</span><span class="def">     );
+</span><span class="sub">-
+</span><span class="def">     xcb_create_gc(
+</span><span class="sub">-	conn, gc, pixmap, XCB_GC_FOREGROUND, (uint32_t []){screen-&gt;white_pixel}
+</span><span class="add">+	conn, gc, pixmap, XCB_GC_FOREGROUND, &amp;screen-&gt;white_pixel
+</span><span class="def">     );
+</span><span class="sub">-
+</span><span class="def">     xcb_rectangle_t rect = {
+</span><span class="sub">-	1, 1, screen-&gt;width_in_pixels - 2, screen-&gt;height_in_pixels - 2
+</span><span class="add">+	0, 0, screen-&gt;width_in_pixels, screen-&gt;height_in_pixels
+</span><span class="def">     };
+</span><span class="def">     xcb_poly_fill_rectangle(
+</span><span class="def"> 	conn, pixmap, gc, 1, &amp;rect
+</span><span class="def">     );
+</span><span class="add">+    xcb_shape_mask(
+</span><span class="add">+	conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_INPUT, wid, 0, 0, pixmap
+</span><span class="add">+    );
+</span><span class="def"> 
+</span><span class="add">+    xcb_pixmap_t pixmap2 = xcb_generate_id(conn);
+</span><span class="add">+    xcb_gcontext_t gc2 = xcb_generate_id(conn);
+</span><span class="add">+    xcb_create_pixmap(
+</span><span class="add">+	conn, 1, pixmap2, wid, screen-&gt;width_in_pixels, screen-&gt;height_in_pixels
+</span><span class="add">+    );
+</span><span class="add">+    xcb_create_gc(
+</span><span class="add">+	conn, gc2, pixmap2, XCB_GC_FOREGROUND, &amp;screen-&gt;white_pixel
+</span><span class="add">+    );
+</span><span class="add">+    xcb_rectangle_t rect2 = {
+</span><span class="add">+	1, 1, screen-&gt;width_in_pixels - 2, screen-&gt;height_in_pixels - 2
+</span><span class="add">+    };
+</span><span class="add">+    xcb_poly_fill_rectangle(
+</span><span class="add">+	conn, pixmap2, gc2, 1, &amp;rect2
+</span><span class="add">+    );
+</span><span class="def">     xcb_shape_mask(
+</span><span class="sub">-	conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_INPUT, wid, 0, 0, pixmap
+</span><span class="add">+	conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_INPUT, wid, 0, 0, pixmap2
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="sub">-    xcb_free_gc(conn, gc);
+</span><span class="add">+#ifdef DEBUG
+</span><span class="add">+    xcb_shape_mask(
+</span><span class="add">+	conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, wid, 0, 0, pixmap
+</span><span class="add">+    );
+</span><span class="add">+    xcb_shape_mask(
+</span><span class="add">+	conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_BOUNDING, wid, 0, 0, pixmap2
+</span><span class="add">+    );
+</span><span class="add">+#endif
+</span><span class="add">+
+</span><span class="def">     xcb_free_pixmap(conn, pixmap);
+</span><span class="add">+    xcb_free_pixmap(conn, pixmap2);
+</span><span class="add">+    xcb_free_gc(conn, gc);
+</span><span class="add">+    xcb_free_gc(conn, gc2);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -106,9 +131,6 @@
+<span class="def"> {
+</span><span class="def">     wid = xcb_generate_id(conn);
+</span><span class="def"> 
+</span><span class="sub">-    uint32_t values = 0;
+</span><span class="sub">-    values |= XCB_EVENT_MASK_ENTER_WINDOW;
+</span><span class="sub">-
+</span><span class="def">     xcb_create_window(
+</span><span class="def"> 	conn,
+</span><span class="def"> 	XCB_COPY_FROM_PARENT,
+</span>@@ -119,10 +141,17 @@
+<span class="def"> 	screen-&gt;width_in_pixels,
+</span><span class="def"> 	screen-&gt;height_in_pixels,
+</span><span class="def"> 	0,
+</span><span class="add">+#ifdef DEBUG
+</span><span class="add">+	XCB_WINDOW_CLASS_INPUT_OUTPUT,
+</span><span class="add">+	XCB_COPY_FROM_PARENT,
+</span><span class="add">+	XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK,
+</span><span class="add">+	(uint32_t []){screen-&gt;white_pixel, XCB_EVENT_MASK_ENTER_WINDOW}
+</span><span class="add">+#else
+</span><span class="def"> 	XCB_WINDOW_CLASS_INPUT_ONLY,
+</span><span class="def"> 	XCB_COPY_FROM_PARENT,
+</span><span class="def"> 	XCB_CW_EVENT_MASK,
+</span><span class="sub">-	&amp;values
+</span><span class="add">+	(uint32_t []){XCB_EVENT_MASK_ENTER_WINDOW}
+</span><span class="add">+#endif
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     set_window_type();
+</span>@@ -150,7 +179,7 @@
+<span class="def"> 	    entry = (xcb_enter_notify_event_t *)event;
+</span><span class="def"> 
+</span><span class="def"> #ifdef DEBUG
+</span><span class="sub">-	    printf(&quot;%d, %d\n&quot;, entry-&gt;event_x, entry-&gt;event_y);
+</span><span class="add">+	    printf(&quot;Entry: %d, %d\n&quot;, entry-&gt;event_x, entry-&gt;event_y);
+</span><span class="def"> #endif
+</span><span class="def"> 	    if (entry-&gt;event_x == 0) {
+</span><span class="def"> 		x = far_x;
+</span>@@ -170,7 +199,7 @@
+<span class="def"> 	    );
+</span><span class="def"> 	    xcb_flush(conn);
+</span><span class="def"> #ifdef DEBUG
+</span><span class="sub">-	    printf(&quot;(%d, %d) to (%d, %d)\n&quot;, entry-&gt;event_x, entry-&gt;event_y, x, y);
+</span><span class="add">+	    printf(&quot;Warp: (%d, %d) to (%d, %d)\n&quot;, entry-&gt;event_x, entry-&gt;event_y, x, y);
+</span><span class="def"> #endif
+</span><span class="def"> 	    break;
+</span><span class="def"> 	}
+</span></pre>
+</div></div>
+  </body>
+</html>

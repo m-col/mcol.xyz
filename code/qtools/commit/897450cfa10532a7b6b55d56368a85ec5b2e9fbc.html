@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - xresources: log connection error, use defaults for fallbacks</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/897450cfa10532a7b6b55d56368a85ec5b2e9fbc.html">897450cfa10532a7b6b55d56368a85ec5b2e9fbc</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/094dd68c5d89827ad5669139345734dba6de8106.html">094dd68c5d89827ad5669139345734dba6de8106</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-05-03 17:45:28 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-05-03 17:45:28 +0100
+
+xresources: log connection error, use defaults for fallbacks
+</pre><div class="diff">
+  <p>
+    <b>qtools/xresources/xresources.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,7 @@
+<span class="def"> 
+</span><span class="def"> import xcffib
+</span><span class="def"> import xcffib.xproto
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> def get(DISPLAY, defaults=None):
+</span>@@ -28,10 +29,13 @@
+<span class="def">         &apos;*.&apos; stripped.
+</span><span class="def"> 
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="add">+    resources = defaults if defaults else {}
+</span><span class="add">+
+</span><span class="def">     try:
+</span><span class="def">         conn = xcffib.connect(display=DISPLAY)
+</span><span class="sub">-    except xcffib.ConnectionException:
+</span><span class="sub">-        return defaults if defaults else {}
+</span><span class="add">+    except xcffib.ConnectionException as e:
+</span><span class="add">+        logger.exception(e)
+</span><span class="add">+        return resources
+</span><span class="def"> 
+</span><span class="def">     root = conn.get_setup().roots[0].root
+</span><span class="def">     atom = conn.core.InternAtom(False, 16, &apos;RESOURCE_MANAGER&apos;).reply().atom
+</span>@@ -45,7 +49,6 @@
+<span class="def"> 
+</span><span class="def">     resource_string = reply.value.buf().decode(&quot;utf-8&quot;)
+</span><span class="def">     resource_list = filter(None, resource_string.split(&apos;\n&apos;))
+</span><span class="sub">-    resources = {}
+</span><span class="def"> 
+</span><span class="def">     for resource in resource_list:
+</span><span class="def">         key, value = resource.split(&apos;:\t&apos;)
+</span></pre>
+</div></div>
+  </body>
+</html>

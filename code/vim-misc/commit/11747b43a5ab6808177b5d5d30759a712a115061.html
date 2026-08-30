@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - more changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/11747b43a5ab6808177b5d5d30759a712a115061.html">11747b43a5ab6808177b5d5d30759a712a115061</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/45f27b6d2e8da83703c04bca8f5fd3b14122824c.html">45f27b6d2e8da83703c04bca8f5fd3b14122824c</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2024-10-12 12:11:49 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2024-10-12 12:11:49 +0100
+
+more changes
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -87,7 +87,7 @@
+<span class="def"> nnoremap vs :vsp&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; toggle spell checking
+</span><span class="sub">-nnoremap &lt;leader&gt;S :setlocal spell! spelllang=en_gb spell?&lt;CR&gt;:echo &quot;zg to add new word&quot;&lt;CR&gt;
+</span><span class="add">+&quot;nnoremap &lt;leader&gt;S :setlocal spell! spelllang=en_gb spell?&lt;CR&gt;:echo &quot;zg to add new word&quot;&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; toggle [ ] tick box on current line with ctrl-space
+</span><span class="def"> &quot;function! ToggleTodo()
+</span>@@ -125,7 +125,7 @@
+<span class="def"> &quot; ALE navigation
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-S-k&gt; &lt;Plug&gt;(ale_previous_wrap)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-S-j&gt; &lt;Plug&gt;(ale_next_wrap)
+</span><span class="sub">-nmap &lt;silent&gt; &lt;C-S-f&gt; :ALEFix&lt;CR&gt;
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-S-f&gt; &lt;Plug&gt;(ale_fix)
+</span><span class="def"> 
+</span><span class="def"> &quot; Github copilot
+</span><span class="def"> &quot;imap &lt;silent&gt; &lt;S-Tab&gt; &lt;Plug&gt;(copilot-next)
+</span>@@ -139,4 +139,15 @@
+<span class="def"> xnoremap &lt;leader&gt;g :AnyJumpVisual&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; blamer
+</span><span class="sub">-nnoremap &lt;C-b&gt; :BlamerToggle&lt;CR&gt;
+</span><span class="add">+nnoremap &lt;A-b&gt; :BlamerToggle&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot; add python breakpoint: vim function that checks for &apos;breakpoint&apos; in the current line and removes this line if it exists, otherwise adds a new line on this line with breakpoint() on it
+</span><span class="add">+function! Breakpoint()
+</span><span class="add">+    let l:line = getline(&apos;.&apos;)
+</span><span class="add">+    if match(l:line, &apos;breakpoint&apos;) != -1
+</span><span class="add">+	execute &apos;normal! dd&apos;
+</span><span class="add">+    else
+</span><span class="add">+	execute &apos;normal! Obreakpoint()&apos;
+</span><span class="add">+    endif
+</span><span class="add">+endfunction
+</span><span class="add">+nnoremap &lt;C-b&gt; :call Breakpoint()&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,11 @@
+<span class="def"> # neovim lua config
+</span><span class="def"> 
+</span><span class="sub">-require(&quot;supermaven-nvim&quot;).setup({})
+</span><span class="add">+require(&quot;supermaven-nvim&quot;).setup({
+</span><span class="add">+    keymaps = {
+</span><span class="add">+      accept_suggestion = &quot;&lt;Tab&gt;&quot;,
+</span><span class="add">+      clear_suggestion = &quot;&lt;S-Tab&gt;&quot;,
+</span><span class="add">+  }
+</span><span class="add">+})
+</span><span class="def"> 
+</span><span class="def"> require(&apos;lualine&apos;).setup({
+</span><span class="def">     options = { section_separators = &apos;&apos;, component_separators = &apos;&apos; }
+</span></pre>
+</div></div>
+  </body>
+</html>

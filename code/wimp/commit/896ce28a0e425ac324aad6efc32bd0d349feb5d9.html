@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - move output freeing into output.c</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/896ce28a0e425ac324aad6efc32bd0d349feb5d9.html">896ce28a0e425ac324aad6efc32bd0d349feb5d9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/3856c3b92f7d1a2b08e92eb173fd7ca58757d1f0.html">3856c3b92f7d1a2b08e92eb173fd7ca58757d1f0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-07 11:43:40 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-07 11:46:39 +0000
+
+move output freeing into output.c
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -132,6 +132,7 @@
+<span class="def">     struct wl_list layer_views[4];
+</span><span class="def">     struct wlr_output *wlr_output;
+</span><span class="def">     struct wl_listener frame_listener;
+</span><span class="add">+    struct wl_listener destroy_listener;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> struct layer_view {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -208,6 +208,27 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void on_destroy(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct output *output = wl_container_of(listener, output, destroy_listener);
+</span><span class="add">+
+</span><span class="add">+    struct layer_view *lview, *tlview;
+</span><span class="add">+    for (int i = 0; i &lt; 4; i++ ) {
+</span><span class="add">+        wl_list_for_each_safe(lview, tlview, &amp;output-&gt;layer_views[i], link) {
+</span><span class="add">+            wl_list_remove(&amp;lview-&gt;link);
+</span><span class="add">+            wl_list_remove(&amp;lview-&gt;map_listener.link);
+</span><span class="add">+            wl_list_remove(&amp;lview-&gt;unmap_listener.link);
+</span><span class="add">+            wl_list_remove(&amp;lview-&gt;destroy_listener.link);
+</span><span class="add">+            free(lview);
+</span><span class="add">+        };
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    wl_list_remove(&amp;output-&gt;frame_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;output-&gt;destroy_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;output-&gt;link);
+</span><span class="add">+    free(output);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void on_new_output(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_output *wlr_output = data;
+</span><span class="def"> 
+</span>@@ -225,7 +246,10 @@
+<span class="def">     wlr_output-&gt;data = output;
+</span><span class="def"> 
+</span><span class="def">     output-&gt;frame_listener.notify = on_frame;
+</span><span class="add">+    output-&gt;destroy_listener.notify = on_destroy;
+</span><span class="def">     wl_signal_add(&amp;wlr_output-&gt;events.frame, &amp;output-&gt;frame_listener);
+</span><span class="add">+    wl_signal_add(&amp;wlr_output-&gt;events.destroy, &amp;output-&gt;destroy_listener);
+</span><span class="add">+
+</span><span class="def">     wl_list_insert(&amp;wimp.outputs, &amp;output-&gt;link);
+</span><span class="def">     wlr_output_layout_add_auto(wimp.output_layout, wlr_output);
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -103,23 +103,6 @@
+<span class="def"> 	free(desk);
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="sub">-    struct output *output, *toutput;
+</span><span class="sub">-    struct layer_view *lview, *tlview;
+</span><span class="sub">-    wl_list_for_each_safe(output, toutput, &amp;wimp.outputs, link) {
+</span><span class="sub">-	for (int i = 0; i &lt; 4; i++ ) {
+</span><span class="sub">-	    wl_list_for_each_safe(lview, tlview, &amp;output-&gt;layer_views[i], link) {
+</span><span class="sub">-		wl_list_remove(&amp;lview-&gt;link);
+</span><span class="sub">-		wl_list_remove(&amp;lview-&gt;map_listener.link);
+</span><span class="sub">-		wl_list_remove(&amp;lview-&gt;unmap_listener.link);
+</span><span class="sub">-		wl_list_remove(&amp;lview-&gt;destroy_listener.link);
+</span><span class="sub">-		free(lview);
+</span><span class="sub">-	    };
+</span><span class="sub">-	}
+</span><span class="sub">-	wl_list_remove(&amp;output-&gt;link);
+</span><span class="sub">-	wl_list_remove(&amp;output-&gt;frame_listener.link);
+</span><span class="sub">-	free(output);
+</span><span class="sub">-    };
+</span><span class="sub">-
+</span><span class="def">     struct mark *mark, *tmark;
+</span><span class="def">     wl_list_for_each_safe(mark, tmark, &amp;wimp.marks, link) {
+</span><span class="def"> 	wl_list_remove(&amp;mark-&gt;link);
+</span></pre>
+</div></div>
+  </body>
+</html>

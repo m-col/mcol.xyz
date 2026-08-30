@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Make wlsunset go more red</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/7647bc881eaf1a717377819e6f0ee331600f1a36.html">7647bc881eaf1a717377819e6f0ee331600f1a36</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/51863104df5f9f71b068c565b66bf612bf2be9c5.html">51863104df5f9f71b068c565b66bf612bf2be9c5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-02 20:54:13 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-02 20:54:13 +0100
+
+Make wlsunset go more red
+</pre><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,7 +26,7 @@
+<span class="def"> run_if_new() { ps aux | grep -v grep | grep -q $1 || $@; }
+</span><span class="def"> 
+</span><span class="def"> [[ -z &quot;$QTILE_XEPHYR&quot; ]] &amp;&amp; {
+</span><span class="sub">-    wlsunset -t 3100 -T 5700 -l 55.7 -L -3.1 &amp;
+</span><span class="add">+    wlsunset -t 2500 -T 5700 -l 55.7 -L -3.1 &amp;
+</span><span class="def">     kanshi &amp;
+</span><span class="def">     run_if_new keepassxc &amp;
+</span><span class="def">     run_if_new firefox &amp;
+</span></pre>
+</div></div>
+  </body>
+</html>

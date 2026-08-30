@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - Merge branch &apos;master&apos; of https://github.com/m-col/zshrc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/92ff090c88ef2e3ae012a95da7d4f049cd9d468a.html">92ff090c88ef2e3ae012a95da7d4f049cd9d468a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/56597a235f5d99cada167013c7804e3be3d13d20.html">56597a235f5d99cada167013c7804e3be3d13d20</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-16 20:43:06 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-16 20:43:06 +0100
+
+Merge branch &apos;master&apos; of https://github.com/m-col/zshrc
+</pre><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -54,45 +54,47 @@
+<span class="def"> prompt_context() {
+</span><span class="def">     if $IS_SSH; then
+</span><span class="def"> 	prompt_segment green black &quot; %(!.%{%F{yellow}%}.)$USER@$HOST &quot;
+</span><span class="add">+    elif [[ $EUID -eq 0 ]]; then
+</span><span class="add">+	prompt_segment red black &quot; %(!.%{%F{black}%}.)$USER@$HOST &quot;
+</span><span class="def">     fi
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-source $HOME/.zsh/gitstatus/gitstatus.plugin.zsh
+</span><span class="sub">-gitstatus_start MY
+</span><span class="sub">-prompt_git() {
+</span><span class="sub">-    local PL_BRANCH_CHAR
+</span><span class="sub">-    () {
+</span><span class="sub">-	local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="sub">-	PL_BRANCH_CHAR=$&apos;\ue0a0&apos;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    gitstatus_query MY                  || return 1  # error
+</span><span class="sub">-    [[ $VCS_STATUS_RESULT == ok-sync ]] || return 0  # not a git repo
+</span><span class="sub">-
+</span><span class="sub">-    local     clean=&apos;%F{076}&apos;  # green foreground
+</span><span class="sub">-    local untracked=&apos;%F{014}&apos;  # teal foreground
+</span><span class="sub">-    local  modified=&apos;%F{011}&apos;  # yellow foreground
+</span><span class="sub">-
+</span><span class="sub">-    local p
+</span><span class="sub">-    if (( VCS_STATUS_HAS_STAGED || VCS_STATUS_HAS_UNSTAGED )); then
+</span><span class="sub">-	p+=$modified
+</span><span class="sub">-    elif (( VCS_STATUS_HAS_UNTRACKED )); then
+</span><span class="sub">-	p+=$untracked
+</span><span class="sub">-    else
+</span><span class="sub">-	p+=$clean
+</span><span class="sub">-    fi
+</span><span class="sub">-    p+=${${VCS_STATUS_LOCAL_BRANCH:-@${VCS_STATUS_COMMIT}}//\%/%%}            # escape %
+</span><span class="sub">-
+</span><span class="sub">-    #[[ -n $VCS_STATUS_TAG               ]] &amp;&amp; p+=&quot;#${VCS_STATUS_TAG//\%/%%}&quot;  # escape %
+</span><span class="sub">-    [[ $VCS_STATUS_HAS_STAGED      == 1 ]] &amp;&amp; p+=&quot;${modified}+&quot;
+</span><span class="sub">-    [[ $VCS_STATUS_HAS_UNSTAGED    == 1 ]] &amp;&amp; p+=&quot;${modified}!&quot;
+</span><span class="sub">-    [[ $VCS_STATUS_HAS_UNTRACKED   == 1 ]] &amp;&amp; p+=&quot;${untracked}?&quot;
+</span><span class="sub">-    [[ $VCS_STATUS_COMMITS_AHEAD  -gt 0 ]] &amp;&amp; p+=&quot;${clean} ⇡${VCS_STATUS_COMMITS_AHEAD}&quot;
+</span><span class="sub">-    [[ $VCS_STATUS_COMMITS_BEHIND -gt 0 ]] &amp;&amp; p+=&quot;${clean} ⇣${VCS_STATUS_COMMITS_BEHIND}&quot;
+</span><span class="sub">-    #[[ $VCS_STATUS_STASHES        -gt 0 ]] &amp;&amp; p+=&quot;${clean} *${VCS_STATUS_STASHES}&quot;
+</span><span class="sub">-
+</span><span class="sub">-    prompt_segment default green &quot;${p}&quot;
+</span><span class="sub">-}
+</span><span class="add">+#source $HOME/.zsh/gitstatus/gitstatus.plugin.zsh
+</span><span class="add">+#gitstatus_start MY
+</span><span class="add">+#prompt_git() {
+</span><span class="add">+#    local PL_BRANCH_CHAR
+</span><span class="add">+#    () {
+</span><span class="add">+#	local LC_ALL=&quot;&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+</span><span class="add">+#	PL_BRANCH_CHAR=$&apos;\ue0a0&apos;
+</span><span class="add">+#    }
+</span><span class="add">+#
+</span><span class="add">+#    gitstatus_query MY                  || return 1  # error
+</span><span class="add">+#    [[ $VCS_STATUS_RESULT == ok-sync ]] || return 0  # not a git repo
+</span><span class="add">+#
+</span><span class="add">+#    local     clean=&apos;%F{076}&apos;  # green foreground
+</span><span class="add">+#    local untracked=&apos;%F{014}&apos;  # teal foreground
+</span><span class="add">+#    local  modified=&apos;%F{011}&apos;  # yellow foreground
+</span><span class="add">+#
+</span><span class="add">+#    local p
+</span><span class="add">+#    if (( VCS_STATUS_HAS_STAGED || VCS_STATUS_HAS_UNSTAGED )); then
+</span><span class="add">+#	p+=$modified
+</span><span class="add">+#    elif (( VCS_STATUS_HAS_UNTRACKED )); then
+</span><span class="add">+#	p+=$untracked
+</span><span class="add">+#    else
+</span><span class="add">+#	p+=$clean
+</span><span class="add">+#    fi
+</span><span class="add">+#    p+=${${VCS_STATUS_LOCAL_BRANCH:-@${VCS_STATUS_COMMIT}}//\%/%%}            # escape %
+</span><span class="add">+#
+</span><span class="add">+#    #[[ -n $VCS_STATUS_TAG               ]] &amp;&amp; p+=&quot;#${VCS_STATUS_TAG//\%/%%}&quot;  # escape %
+</span><span class="add">+#    [[ $VCS_STATUS_HAS_STAGED      == 1 ]] &amp;&amp; p+=&quot;${modified}+&quot;
+</span><span class="add">+#    [[ $VCS_STATUS_HAS_UNSTAGED    == 1 ]] &amp;&amp; p+=&quot;${modified}!&quot;
+</span><span class="add">+#    [[ $VCS_STATUS_HAS_UNTRACKED   == 1 ]] &amp;&amp; p+=&quot;${untracked}?&quot;
+</span><span class="add">+#    [[ $VCS_STATUS_COMMITS_AHEAD  -gt 0 ]] &amp;&amp; p+=&quot;${clean} ⇡${VCS_STATUS_COMMITS_AHEAD}&quot;
+</span><span class="add">+#    [[ $VCS_STATUS_COMMITS_BEHIND -gt 0 ]] &amp;&amp; p+=&quot;${clean} ⇣${VCS_STATUS_COMMITS_BEHIND}&quot;
+</span><span class="add">+#    #[[ $VCS_STATUS_STASHES        -gt 0 ]] &amp;&amp; p+=&quot;${clean} *${VCS_STATUS_STASHES}&quot;
+</span><span class="add">+#
+</span><span class="add">+#    prompt_segment default green &quot;${p}&quot;
+</span><span class="add">+#}
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> prompt_dir() {
+</span>@@ -118,19 +120,22 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-prompt_status() {
+</span><span class="sub">-    local symbols
+</span><span class="sub">-    symbols=()
+</span><span class="sub">-    [[ $RETVAL -ne 0 ]] &amp;&amp; symbols+=&quot;%{%F{red}%}x&quot;
+</span><span class="sub">-    [[ $UID -eq 0 ]] &amp;&amp; symbols+=&quot;%{%F{yellow}%}⚡&quot;
+</span><span class="sub">-    [[ $(jobs -l | wc -l) -gt 0 ]] &amp;&amp; symbols+=&quot;%{%F{cyan}%}⚙&quot;
+</span><span class="sub">-    [[ -n &quot;$symbols&quot; ]] &amp;&amp; prompt_segment black default &quot;$symbols&quot;
+</span><span class="sub">-}
+</span><span class="add">+#prompt_status() {
+</span><span class="add">+#    local symbols
+</span><span class="add">+#    symbols=()
+</span><span class="add">+#    [[ $RETVAL -ne 0 ]] &amp;&amp; symbols+=&quot;%{%F{red}%}x&quot;
+</span><span class="add">+#    [[ $UID -eq 0 ]] &amp;&amp; symbols+=&quot;%{%F{yellow}%}⚡&quot;
+</span><span class="add">+#    [[ $(jobs -l | wc -l) -gt 0 ]] &amp;&amp; symbols+=&quot;%{%F{cyan}%}⚙&quot;
+</span><span class="add">+#    [[ -n &quot;$symbols&quot; ]] &amp;&amp; prompt_segment black default &quot;$symbols&quot;
+</span><span class="add">+#}
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> if $IS_SSH
+</span><span class="def"> then
+</span><span class="def">     tmux_following_colour=green
+</span><span class="add">+elif [[ $EUID -eq 0 ]]
+</span><span class="add">+then
+</span><span class="add">+    tmux_following_colour=red
+</span><span class="def"> else
+</span><span class="def">     tmux_following_colour=magenta
+</span><span class="def"> fi
+</span>@@ -172,7 +177,7 @@
+<span class="def">     local SEGMENT_SEPARATOR=$SEGMENT_SEPARATOR_R
+</span><span class="def">     prompt_virtualenv
+</span><span class="def">     prompt_vi
+</span><span class="sub">-    prompt_git
+</span><span class="add">+    #prompt_git
+</span><span class="def">     prompt_end
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

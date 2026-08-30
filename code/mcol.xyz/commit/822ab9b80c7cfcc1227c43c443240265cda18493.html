@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - remove overflow line from onion post</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/822ab9b80c7cfcc1227c43c443240265cda18493.html">822ab9b80c7cfcc1227c43c443240265cda18493</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/f062e379527823a758876a0803fd7304eff6ca19.html">f062e379527823a758876a0803fd7304eff6ca19</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-02 22:10:06 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-02 22:10:06 +0100
+
+remove overflow line from onion post
+</pre><div class="diff">
+  <p>
+    <b>content/notes/tor/onion_location_headers.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -32,8 +32,6 @@
+<span class="def"> 
+</span><span class="def">     add_header Onion-Location http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion$request_uri;
+</span><span class="def"> 
+</span><span class="sub">-(In case of overflow: that is one line.)
+</span><span class="sub">-
+</span><span class="def"> That header is all it takes for tor browser users to use onions by default on
+</span><span class="def"> all sites that host them, removing any need for manual identification of
+</span><span class="def"> whether websites that they visit host onion services.
+</span></pre>
+</div></div>
+  </body>
+</html>

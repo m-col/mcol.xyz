@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Notification server determines screen using libqtile mouse position</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/4c04fa3656b506ea4c546d2650320afafff1fa0a.html">4c04fa3656b506ea4c546d2650320afafff1fa0a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/748b65674ec86fc3e3d4af4929c4544ab9dce98d.html">748b65674ec86fc3e3d4af4929c4544ab9dce98d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-02-29 10:07:49 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-02-29 10:07:49 +0000
+
+Notification server determines screen using libqtile mouse position
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -55,6 +55,10 @@
+<span class="def"> 
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     defaults = [
+</span><span class="add">+        (&apos;x&apos;, 32, &apos;x position on screen to start drawing notifications.&apos;),
+</span><span class="add">+        (&apos;y&apos;, 64, &apos;y position on screen to start drawing notifications.&apos;),
+</span><span class="add">+        (&apos;width&apos;, 192, &apos;Width of notifications.&apos;),
+</span><span class="add">+        (&apos;height&apos;, 64, &apos;Height of notifications.&apos;),
+</span><span class="def">         (&apos;format&apos;, &apos;{summary}\n{body}&apos;, &apos;Text format.&apos;),
+</span><span class="def">         (
+</span><span class="def">             &apos;foreground&apos;,
+</span>@@ -96,6 +100,7 @@
+<span class="def">         (&apos;sticky_history&apos;, True, &apos;Disable timeout when browsing history.&apos;),
+</span><span class="def">         (&apos;icon_size&apos;, 36, &apos;Pixel size of any icons.&apos;),
+</span><span class="def">         (&apos;fullscreen&apos;, &apos;show&apos;, &apos;What to do when in fullscreen: show, hide, or queue.&apos;),
+</span><span class="add">+        (&apos;screen&apos;, &apos;focus&apos;, &apos;How to select a screen: focus, mouse, or an int.&apos;),
+</span><span class="def">     ]
+</span><span class="def">     capabilities = {&apos;body&apos;, &apos;body-markup&apos;}
+</span><span class="def">     # specification: https://developer.gnome.org/notification-spec/
+</span>@@ -187,12 +192,13 @@
+<span class="def">             self._queue.append(notif)
+</span><span class="def">             return
+</span><span class="def"> 
+</span><span class="sub">-        if self.qtile.current_window.fullscreen and self.fullscreen != &apos;show&apos;:
+</span><span class="sub">-            if self.fullscreen == &apos;queue&apos;:
+</span><span class="sub">-                if self._unfullscreen not in hook.subscriptions:
+</span><span class="sub">-                    hook.subscribe.float_change(self._unfullscreen)
+</span><span class="sub">-                self._queue.append(notif)
+</span><span class="sub">-            return
+</span><span class="add">+        if self.qtile.current_window and self.qtile.current_window.fullscreen:
+</span><span class="add">+            if self.fullscreen != &apos;show&apos;:
+</span><span class="add">+                if self.fullscreen == &apos;queue&apos;:
+</span><span class="add">+                    if self._unfullscreen not in hook.subscriptions:
+</span><span class="add">+                        hook.subscribe.float_change(self._unfullscreen)
+</span><span class="add">+                    self._queue.append(notif)
+</span><span class="add">+                return
+</span><span class="def"> 
+</span><span class="def">         if notif.replaces_id:
+</span><span class="def">             for popup in self._shown:
+</span>@@ -235,7 +241,7 @@
+<span class="def">         popup.id = self._current_id
+</span><span class="def">         if popup not in self._shown:
+</span><span class="def">             self._shown.append(popup)
+</span><span class="sub">-        popup.x, popup.y = self._positions[len(self._shown) - 1]
+</span><span class="add">+        popup.x, popup.y = self._get_coordinates()
+</span><span class="def">         icon = self._load_icon(notif)
+</span><span class="def"> 
+</span><span class="def">         popup.background = self.background[urgency]
+</span>@@ -287,6 +293,16 @@
+<span class="def">             app_name = pangocffi.markup_escape_text(notif.app_name)
+</span><span class="def">         return self.format.format(summary=summary, body=body, app_name=app_name)
+</span><span class="def"> 
+</span><span class="add">+    def _get_coordinates(self):
+</span><span class="add">+        x, y = self._positions[len(self._shown) - 1]
+</span><span class="add">+        if isinstance(self.screen, int):
+</span><span class="add">+            screen = self.qtile.screens[self.screen]
+</span><span class="add">+        elif self.screen == &apos;focus&apos;:
+</span><span class="add">+            screen = self.qtile.current_screen
+</span><span class="add">+        elif self.screen == &apos;mouse&apos;:
+</span><span class="add">+            screen = self.qtile.find_screen(*self.qtile.mouse_position)
+</span><span class="add">+        return x + screen.x, y + screen.y
+</span><span class="add">+
+</span><span class="def">     def _close(self, popup, nid=None):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         Close the specified Popup instance.
+</span>@@ -315,14 +331,18 @@
+<span class="def">             if notif.app_icon in self._icons:
+</span><span class="def">                 return self._icons.get(notif.app_icon)
+</span><span class="def">             else:
+</span><span class="sub">-                img = images.Img.from_path(notif.app_icon)
+</span><span class="sub">-                if img.width &gt; img.height:
+</span><span class="sub">-                    img.resize(width=self.icon_size)
+</span><span class="sub">-                else:
+</span><span class="sub">-                    img.resize(height=self.icon_size)
+</span><span class="sub">-                self._icons[notif.app_icon] = _decode_image(
+</span><span class="sub">-                    img.bytes_img, img.width, img.height
+</span><span class="sub">-                )
+</span><span class="add">+                try:
+</span><span class="add">+                    img = images.Img.from_path(notif.app_icon)
+</span><span class="add">+                    if img.width &gt; img.height:
+</span><span class="add">+                        img.resize(width=self.icon_size)
+</span><span class="add">+                    else:
+</span><span class="add">+                        img.resize(height=self.icon_size)
+</span><span class="add">+                    self._icons[notif.app_icon] = _decode_image(
+</span><span class="add">+                        img.bytes_img, img.width, img.height
+</span><span class="add">+                    )
+</span><span class="add">+                except (FileNotFoundError, libqtile.images.LoadingError) as e :
+</span><span class="add">+                    logger.exception(e)
+</span><span class="add">+                    self._icons[notif.app_icon] = None
+</span><span class="def">                 return self._icons[notif.app_icon]
+</span><span class="def">         else:
+</span><span class="def">             return None
+</span>@@ -389,6 +409,7 @@
+<span class="def">             while self._shown:
+</span><span class="def">                 self._close(self._shown[0])
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> def _decode_image(bytes_img, width, height):
+</span><span class="def">     try:
+</span><span class="def">         surface, _ = images._decode_to_image_surface(bytes_img, width, height)
+</span></pre>
+</div></div>
+  </body>
+</html>

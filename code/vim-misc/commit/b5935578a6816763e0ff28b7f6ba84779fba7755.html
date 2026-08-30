@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/b5935578a6816763e0ff28b7f6ba84779fba7755.html">b5935578a6816763e0ff28b7f6ba84779fba7755</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/ac71ea23315aa94fb61b417d1b08ade6b11b4dcc.html">ac71ea23315aa94fb61b417d1b08ade6b11b4dcc</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2025-12-06 11:44:51 +0000
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2025-12-06 11:44:51 +0000
+
+stuff
+</pre><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,12 +6,11 @@
+<span class="def"> bind C-s send-prefix
+</span><span class="def"> 
+</span><span class="def"> # bindings
+</span><span class="sub">-bind r source-file ~/.tmux.conf
+</span><span class="add">+#bind r source-file ~/.tmux.conf
+</span><span class="def"> bind C-l send-keys &apos;C-l&apos;
+</span><span class="def"> bind C-a send-keys &apos;C-a&apos;
+</span><span class="sub">-#bind-key | split-window -hb \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="sub">-bind-key | split-window -hb
+</span><span class="sub">-#set-hook -g pane-exited &apos;run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;&apos;
+</span><span class="add">+bind | splitw -hb -c &apos;#{pane_current_path}&apos;
+</span><span class="add">+bind &apos;&quot;&apos; splitw -c &apos;#{pane_current_path}&apos;
+</span><span class="def"> 
+</span><span class="def"> # general settings
+</span><span class="def"> #set -g default-terminal &quot;rxvt-unicode-256color&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -78,10 +78,11 @@
+<span class="def"> let g:ale_linters = {
+</span><span class="def"> \   &apos;haskell&apos;: [&apos;hlint&apos;],
+</span><span class="def"> \   &apos;python&apos;: [&apos;flake8&apos;, &apos;pyright&apos;, &apos;ruff&apos;],
+</span><span class="sub">-\   &apos;typescriptreact&apos;: [&apos;tsserver&apos;, &apos;eslint&apos;],
+</span><span class="sub">-\   &apos;typescript&apos;: [&apos;tsserver&apos;, &apos;eslint&apos;],
+</span><span class="sub">-\   &apos;rust&apos;: [&apos;analyzer&apos;],
+</span><span class="add">+&quot;\   &apos;rust&apos;: [&apos;analyzer&apos;],
+</span><span class="add">+\   &apos;terraform&apos;: [&apos;tflint&apos;, &apos;terraform_ls&apos;],
+</span><span class="def"> \}
+</span><span class="add">+&quot;\   &apos;typescriptreact&apos;: [&apos;tsserver&apos;, &apos;eslint&apos;],
+</span><span class="add">+&quot;\   &apos;typescript&apos;: [&apos;tsserver&apos;, &apos;eslint&apos;],
+</span><span class="def"> &quot; Don&apos;t show errors in virtual text or signs column; rely on echoed message instead
+</span><span class="def"> let g:ale_virtualtext_cursor = 0
+</span><span class="def"> let g:ale_set_signs = 0
+</span>@@ -104,10 +105,10 @@
+<span class="def"> &quot; used by Ctrl-P, likely among other things
+</span><span class="def"> set wildignore+=*/tmp/*,*.so,*.swp,*.zip,node_modules,target,.mypy_cache
+</span><span class="def"> 
+</span><span class="sub">-&quot; For some reason i need this for typescriptreact files to be configured
+</span><span class="sub">-augroup run_ftplugin_typescriptreact
+</span><span class="sub">-    autocmd!
+</span><span class="sub">-    autocmd FileType typescriptreact source ~/.vim/pack/vim-misc/start/self/ftplugin/typescriptreact.vim
+</span><span class="sub">-    autocmd FileType typescript source ~/.vim/pack/vim-misc/start/self/ftplugin/typescript.vim
+</span><span class="sub">-    autocmd FileType javascript source ~/.vim/pack/vim-misc/start/self/ftplugin/javascript.vim
+</span><span class="sub">-augroup END
+</span><span class="add">+&quot;&quot; For some reason i need this for typescriptreact files to be configured
+</span><span class="add">+&quot;augroup run_ftplugin_typescriptreact
+</span><span class="add">+&quot;    autocmd!
+</span><span class="add">+&quot;    autocmd FileType typescriptreact source ~/.vim/pack/vim-misc/start/self/ftplugin/typescriptreact.vim
+</span><span class="add">+&quot;    autocmd FileType typescript source ~/.vim/pack/vim-misc/start/self/ftplugin/typescript.vim
+</span><span class="add">+&quot;    autocmd FileType javascript source ~/.vim/pack/vim-misc/start/self/ftplugin/javascript.vim
+</span><span class="add">+&quot;augroup END
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -126,6 +126,7 @@
+<span class="def"> nmap &lt;silent&gt; &lt;C-i&gt; &lt;Plug&gt;(ale_find_references)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-]&gt; &lt;Plug&gt;(ale_go_to_definition)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-f&gt; &lt;Plug&gt;(ale_fix)
+</span><span class="add">+nmap &lt;silent&gt; &lt;leader&gt;r :ALERename&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; telescope
+</span><span class="def"> nnoremap &lt;silent&gt; &lt;C-p&gt; :Telescope git_files&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -70,6 +70,14 @@
+<span class="def"> 
+</span><span class="def">   { &apos;dense-analysis/ale&apos; },
+</span><span class="def"> 
+</span><span class="add">+  { 
+</span><span class="add">+      &apos;hashivim/vim-terraform&apos;,
+</span><span class="add">+      init = function()
+</span><span class="add">+        vim.g.terraform_fmt_on_save = 1
+</span><span class="add">+	vim.g.terraform_align = 1
+</span><span class="add">+      end
+</span><span class="add">+  },
+</span><span class="add">+
+</span><span class="def">   {
+</span><span class="def">     &apos;m-col/buffer-closer.nvim&apos;,
+</span><span class="def">     opts = {
+</span></pre>
+</div></div>
+  </body>
+</html>

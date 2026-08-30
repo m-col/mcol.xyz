@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add config parameter to fullscreen windows (implementation next)</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/30e7ee5cf61eb15806533bbe3e42f3fb91e84dba.html">30e7ee5cf61eb15806533bbe3e42f3fb91e84dba</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/480be466081d23c0364fe708b2d791e837ef8c1b.html">480be466081d23c0364fe708b2d791e837ef8c1b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-12-06 21:13:35 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-12-06 21:13:35 +0000
+
+add config parameter to fullscreen windows (implementation next)
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -73,6 +73,8 @@
+<span class="def"> 	kb-&gt;data = calloc(strlen(data), sizeof(char));
+</span><span class="def"> 	strncpy(kb-&gt;data, data, strlen(data));
+</span><span class="def">     }
+</span><span class="add">+    else if (strcasecmp(name, &quot;toggle_fullscreen&quot;) == 0)
+</span><span class="add">+	kb-&gt;action = &amp;toggle_fullscreen;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,5 +17,6 @@
+<span class="def"> void actually_set_mark(struct server *server, const xkb_keysym_t sym);
+</span><span class="def"> void go_to_mark(struct server *server, void *data);
+</span><span class="def"> void actually_go_to_mark(struct server *server, const xkb_keysym_t sym);
+</span><span class="add">+void toggle_fullscreen(struct server *server, void *data);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -187,3 +187,14 @@
+<span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void toggle_fullscreen(struct server *server, void *data) {
+</span><span class="add">+    struct wlr_surface *surface = server-&gt;seat-&gt;keyboard_state.focused_surface;
+</span><span class="add">+    if (!surface)
+</span><span class="add">+	return;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_xdg_surface *xdg_surface = wlr_xdg_surface_from_wlr_surface(surface);
+</span><span class="add">+    if (xdg_surface)
+</span><span class="add">+	wlr_xdg_toplevel_set_fullscreen(xdg_surface, true);
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,6 +38,7 @@
+<span class="def"> bind	Ctrl	q		close_current_window
+</span><span class="def"> bind		Tab		next_desk
+</span><span class="def"> bind		ISO_Left_Tab	prev_desk
+</span><span class="add">+bind		f		toggle_fullscreen
+</span><span class="def"> bind		i		zoom_in
+</span><span class="def"> bind		o		zoom_out
+</span><span class="def"> bind		r		reset_zoom
+</span></pre>
+</div></div>
+  </body>
+</html>

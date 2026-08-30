@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - remove old and unnecessary assign_action function</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/e2c2b84258cb437359d23be220f41160e5eba435.html">e2c2b84258cb437359d23be220f41160e5eba435</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/bc59846e4a2d90bbb3dfb39153967966e2e7642b.html">bc59846e4a2d90bbb3dfb39153967966e2e7642b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-07 16:13:34 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-07 16:13:34 +0000
+
+remove old and unnecessary assign_action function
+</pre><div class="diff">
+  <p>
+    <b>src/keybind.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,12 +26,6 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool assign_action(char *name, char *args, struct binding *kb, char *response) {
+</span><span class="sub">-    // TODO: remove
+</span><span class="sub">-    return get_action(name, &amp;kb-&gt;action, args, &amp;kb-&gt;data, response, kb-&gt;key);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void free_binding(struct binding *kb) {
+</span><span class="def">     if (kb-&gt;data)
+</span><span class="def"> 	free(kb-&gt;data);
+</span>@@ -83,7 +77,7 @@
+<span class="def"> 	sprintf(response,  &quot;Command malformed/incomplete.&quot;);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="sub">-    if (!assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb, response)) {
+</span><span class="add">+    if (!get_action(s, &amp;kb-&gt;action, strtok(NULL, &quot;\n\r&quot;), &amp;kb-&gt;data, response, kb-&gt;key)) {
+</span><span class="def"> 	free(kb);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span></pre>
+</div></div>
+  </body>
+</html>

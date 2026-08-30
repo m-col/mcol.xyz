@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Add actions and keybindings to focus windows in given direction</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/071859c2a3c4d663e78b9eb9d12505c97bff5ade.html">071859c2a3c4d663e78b9eb9d12505c97bff5ade</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/55c36f4353bddfcfc60e717241294811b1d76bde.html">55c36f4353bddfcfc60e717241294811b1d76bde</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-21 21:21:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-21 21:26:45 +0000
+
+Add actions and keybindings to focus windows in given direction
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -141,4 +141,12 @@
+<span class="def">     double zoom, x, y;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+enum direction {
+</span><span class="add">+    NONE,
+</span><span class="add">+    UP,
+</span><span class="add">+    RIGHT,
+</span><span class="add">+    DOWN,
+</span><span class="add">+    LEFT,
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -36,6 +36,19 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+enum direction direction_from_name(char *name) {
+</span><span class="add">+    if (strcasecmp(name, &quot;up&quot;) == 0)
+</span><span class="add">+	return UP;
+</span><span class="add">+    if (strcasecmp(name, &quot;right&quot;) == 0)
+</span><span class="add">+	return RIGHT;
+</span><span class="add">+    if (strcasecmp(name, &quot;down&quot;) == 0)
+</span><span class="add">+	return DOWN;
+</span><span class="add">+    if (strcasecmp(name, &quot;left&quot;) == 0)
+</span><span class="add">+	return LEFT;
+</span><span class="add">+    return NONE;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void assign_action(char *name, char *data, struct binding *kb) {
+</span><span class="def">     kb-&gt;data = NULL;
+</span><span class="def">     kb-&gt;action = NULL;
+</span>@@ -44,6 +57,11 @@
+<span class="def"> 	kb-&gt;action = &amp;shutdown;
+</span><span class="def">     else if (strcasecmp(name, &quot;close_current_window&quot;) == 0)
+</span><span class="def"> 	kb-&gt;action = &amp;close_current_window;
+</span><span class="add">+    else if (strcasecmp(name, &quot;focus&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;focus_in_direction;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="add">+	*(enum direction *)(kb-&gt;data) = direction_from_name(data);
+</span><span class="add">+    }
+</span><span class="def">     else if (strcasecmp(name, &quot;next_desk&quot;) == 0)
+</span><span class="def"> 	kb-&gt;action = &amp;next_desk;
+</span><span class="def">     else if (strcasecmp(name, &quot;prev_desk&quot;) == 0)
+</span>@@ -117,7 +135,7 @@
+<span class="def"> 
+</span><span class="def">     // action
+</span><span class="def">     s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-    assign_action(s, strtok(NULL, &quot;&quot;), kb);
+</span><span class="add">+    assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb);
+</span><span class="def">     if (kb-&gt;action == NULL) {
+</span><span class="def"> 	wlr_log(WLR_ERROR, &quot;Config line %i: No such action &apos;%s&apos;.&quot;, line, s);
+</span><span class="def"> 	free(kb);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,6 +7,7 @@
+<span class="def"> void exec_command(struct server *server, void *data);
+</span><span class="def"> void change_vt(struct server *server, void *data);
+</span><span class="def"> void close_current_window(struct server *server, void *data);
+</span><span class="add">+void focus_in_direction(struct server *server, void *data);
+</span><span class="def"> void next_desk(struct server *server, void *data);
+</span><span class="def"> void prev_desk(struct server *server, void *data);
+</span><span class="def"> void pan_desk(struct server *server, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,6 +8,8 @@
+<span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+#define DIST(x, y) ((x) * (x) + (y) * (y))
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> void shutdown(struct server *server, void *data) {
+</span><span class="def">     wl_display_terminate(server-&gt;display);
+</span>@@ -41,6 +43,72 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void focus_in_direction(struct server *server, void *data) {
+</span><span class="add">+    struct view *current = wl_container_of(server-&gt;current_desk-&gt;views.next, current, link);
+</span><span class="add">+    enum direction dir = *(enum direction*)data;
+</span><span class="add">+
+</span><span class="add">+    double x = current-&gt;x + current-&gt;surface-&gt;geometry.width / 2;
+</span><span class="add">+    double y = current-&gt;y + current-&gt;surface-&gt;geometry.height / 2;
+</span><span class="add">+    double c = y - x;  // y = x + c    / slope
+</span><span class="add">+    double n = y + x;  // y = n - x    \ slope
+</span><span class="add">+
+</span><span class="add">+    struct view *next = NULL;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    double vx, vy, vdist, dist;
+</span><span class="add">+
+</span><span class="add">+    switch (dir) {
+</span><span class="add">+	case RIGHT:
+</span><span class="add">+	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="add">+		vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="add">+		vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="add">+		vdist = DIST(x - vx, y - vy);
+</span><span class="add">+		if (vy - vx &lt; c &amp;&amp; vy + vx &gt; n &amp;&amp; (!next || vdist &lt; dist)) {
+</span><span class="add">+		    next = view;
+</span><span class="add">+		    dist = vdist;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	    break;
+</span><span class="add">+	case LEFT:
+</span><span class="add">+	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="add">+		vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="add">+		vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="add">+		vdist = DIST(x - vx, y - vy);
+</span><span class="add">+		if (vy - vx &gt; c &amp;&amp; vy + vx &lt; n &amp;&amp; (!next || vdist &lt; dist)) {
+</span><span class="add">+		    next = view;
+</span><span class="add">+		    dist = vdist;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	    break;
+</span><span class="add">+	case DOWN:
+</span><span class="add">+	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="add">+		vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="add">+		vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="add">+		vdist = DIST(x - vx, y - vy);
+</span><span class="add">+		if (vy - vx &gt; c &amp;&amp; vy + vx &gt; n &amp;&amp; (!next || vdist &lt; dist)) {
+</span><span class="add">+		    next = view;
+</span><span class="add">+		    dist = vdist;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	    break;
+</span><span class="add">+	case UP:
+</span><span class="add">+	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="add">+		vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="add">+		vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="add">+		vdist = DIST(x - vx, y - vy);
+</span><span class="add">+		if (vy - vx &lt; c &amp;&amp; vy + vx &lt; n &amp;&amp; (!next || vdist &lt; dist)) {
+</span><span class="add">+		    next = view;
+</span><span class="add">+		    dist = vdist;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	    break;
+</span><span class="add">+	case NONE:
+</span><span class="add">+	    return;
+</span><span class="add">+    }
+</span><span class="add">+    if (next)
+</span><span class="add">+	focus_view(next, next-&gt;surface-&gt;surface);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void next_desk(struct server *server, void *data) {
+</span><span class="def">     struct desk *desk;
+</span><span class="def">     if (server-&gt;current_desk-&gt;index + 1 == server-&gt;desk_count) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,7 +16,6 @@
+<span class="def"> To do list:
+</span><span class="def">  - xwayland
+</span><span class="def">  - xdg-decoration protocol
+</span><span class="sub">- - functions to shift focus
+</span><span class="def">  - functions to shift desk view
+</span><span class="def">  - pinch gestures for desk zooming
+</span><span class="def">  - draw rect with mouse when zoomed out to set new view
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -35,13 +35,22 @@
+<span class="def"> # Define key bindings
+</span><span class="def"> # additional modifiers, key, action(, data)
+</span><span class="def"> bind	Ctrl	Escape		shutdown
+</span><span class="add">+
+</span><span class="add">+# These actions act on windows
+</span><span class="def"> bind	Ctrl	q		close_current_window
+</span><span class="add">+bind		j		focus down
+</span><span class="add">+bind		k		focus up
+</span><span class="add">+bind		h		focus left
+</span><span class="add">+bind		l		focus right
+</span><span class="add">+bind		f		toggle_fullscreen
+</span><span class="add">+
+</span><span class="add">+# And these act on desks
+</span><span class="def"> bind		Tab		next_desk
+</span><span class="def"> bind		ISO_Left_Tab	prev_desk
+</span><span class="sub">-bind		f		toggle_fullscreen
+</span><span class="def"> bind		i		zoom_in
+</span><span class="def"> bind		o		zoom_out
+</span><span class="def"> bind		r		reset_zoom
+</span><span class="add">+
+</span><span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="def"> bind		Return		exec wterm
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

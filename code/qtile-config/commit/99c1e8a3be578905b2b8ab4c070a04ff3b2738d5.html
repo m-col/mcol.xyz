@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - fork dbus/systemctl commands, sometimes they are slow</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/99c1e8a3be578905b2b8ab4c070a04ff3b2738d5.html">99c1e8a3be578905b2b8ab4c070a04ff3b2738d5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/ba6c44416188524c3cc458896a38402aa3c11c4c.html">ba6c44416188524c3cc458896a38402aa3c11c4c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-09-03 00:49:59 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-09-03 00:49:59 +0100
+
+fork dbus/systemctl commands, sometimes they are slow
+</pre><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,6 @@
+<span class="def"> 
+</span><span class="def"> {
+</span><span class="def">     foot --server &amp;
+</span><span class="sub">-    #swaybg -c &apos;#1B2021&apos; &amp;
+</span><span class="def"> 
+</span><span class="def">     # wob
+</span><span class="def">     FIFO=/tmp/wob-$WAYLAND_DISPLAY
+</span>@@ -24,9 +23,9 @@
+<span class="def"> 
+</span><span class="def"> [[ -z &quot;$QTILE_XEPHYR&quot; ]] &amp;&amp; {
+</span><span class="def">     # Session setup
+</span><span class="sub">-    systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+</span><span class="add">+    systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP &amp;
+</span><span class="def">     dbus-update-activation-environment --systemd \
+</span><span class="sub">-	WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=$XDG_CURRENT_DESKTOP
+</span><span class="add">+	WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=$XDG_CURRENT_DESKTOP &amp;
+</span><span class="def"> 
+</span><span class="def">     # Services
+</span><span class="def">     kanshi &amp;
+</span></pre>
+</div></div>
+  </body>
+</html>

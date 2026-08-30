@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - remove scratchpads upon config reload or shutdown</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/1c3699540311da35aee7aa66fe94df2e4dd004b7.html">1c3699540311da35aee7aa66fe94df2e4dd004b7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/79686a16a9f5b2dec1bd270cc9a7aa8769c4225b.html">79686a16a9f5b2dec1bd270cc9a7aa8769c4225b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-06 19:07:58 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-06 19:07:58 +0000
+
+remove scratchpads upon config reload or shutdown
+</pre><div class="diff">
+  <p>
+    <b>src/scratchpad.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,5 +6,6 @@
+<span class="def"> struct scratchpad *scratchpad_from_view(struct view *view);
+</span><span class="def"> void scratchpad_apply_geo(struct scratchpad *scratchpad);
+</span><span class="def"> bool catch_scratchpad(struct view *view);
+</span><span class="add">+void drop_scratchpads();
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/scratchpad.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -65,3 +65,17 @@
+<span class="def">     }
+</span><span class="def">     return false;
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void drop_scratchpads() {
+</span><span class="add">+    struct scratchpad *scratchpad, *tmp;
+</span><span class="add">+    wl_list_for_each_safe(scratchpad, tmp, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (scratchpad-&gt;view) {
+</span><span class="add">+	    scratchpad-&gt;view-&gt;is_scratchpad = false;
+</span><span class="add">+	    wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;scratchpad-&gt;view-&gt;link);
+</span><span class="add">+	    map_view(scratchpad-&gt;view);
+</span><span class="add">+	}
+</span><span class="add">+	free(scratchpad-&gt;command);
+</span><span class="add">+	free(scratchpad);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,6 +19,7 @@
+<span class="def"> #include &quot;layer_shell.h&quot;
+</span><span class="def"> #include &quot;log.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="add">+#include &quot;scratchpad.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span>@@ -66,6 +67,8 @@
+<span class="def">     wl_list_remove(&amp;wimp.request_cursor_listener.link);
+</span><span class="def">     wl_list_remove(&amp;wimp.request_set_selection_listener.link);
+</span><span class="def"> 
+</span><span class="add">+    drop_scratchpads();
+</span><span class="add">+
+</span><span class="def">     struct binding *kb, *tkb;
+</span><span class="def">     wl_list_for_each_safe(kb, tkb, &amp;wimp.mouse_bindings, link) {
+</span><span class="def"> 	wl_list_remove(&amp;kb-&gt;link);
+</span>@@ -117,14 +120,6 @@
+<span class="def"> 	free(output);
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="sub">-    struct scratchpad *scratchpad, *tscratchpad;
+</span><span class="sub">-    wl_list_for_each_safe(scratchpad, tscratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="sub">-	wl_list_remove(&amp;scratchpad-&gt;link);
+</span><span class="sub">-	free(scratchpad-&gt;view);
+</span><span class="sub">-	free(scratchpad-&gt;command);
+</span><span class="sub">-	free(scratchpad);
+</span><span class="sub">-    };
+</span><span class="sub">-
+</span><span class="def">     struct keyboard *keyboard, *tkeyboard;
+</span><span class="def">     wl_list_for_each_safe(keyboard, tkeyboard, &amp;wimp.keyboards, link) {
+</span><span class="def"> 	wl_list_remove(&amp;keyboard-&gt;link);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,6 +10,7 @@
+<span class="def"> #include &quot;action.h&quot;
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;scratchpad.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> #define is_number(s) (strspn(s, &quot;0123456789.-&quot;) == strlen(s))
+</span>@@ -668,6 +669,8 @@
+<span class="def"> 	free_binding(kb);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    drop_scratchpads();
+</span><span class="add">+
+</span><span class="def">     // load defaults
+</span><span class="def">     char *buffer = NULL;
+</span><span class="def">     size_t size = 0;
+</span></pre>
+</div></div>
+  </body>
+</html>

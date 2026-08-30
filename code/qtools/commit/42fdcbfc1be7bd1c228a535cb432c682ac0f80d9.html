@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - xresources: get DISPLAY if not provided</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/42fdcbfc1be7bd1c228a535cb432c682ac0f80d9.html">42fdcbfc1be7bd1c228a535cb432c682ac0f80d9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/897450cfa10532a7b6b55d56368a85ec5b2e9fbc.html">897450cfa10532a7b6b55d56368a85ec5b2e9fbc</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-02 20:41:39 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-02 20:41:39 +0100
+
+xresources: get DISPLAY if not provided
+</pre><div class="diff">
+  <p>
+    <b>qtools/xresources/xresources.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,19 +3,21 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+import os
+</span><span class="add">+
+</span><span class="def"> import xcffib
+</span><span class="def"> import xcffib.xproto
+</span><span class="def"> from libqtile.log_utils import logger
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-def get(DISPLAY, defaults=None):
+</span><span class="add">+def get(DISPLAY=None, defaults=None):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     Get the X resources in an X servers resource manager.
+</span><span class="def"> 
+</span><span class="def">     Parameters
+</span><span class="def">     ==========
+</span><span class="sub">-    DISPLAY : str
+</span><span class="sub">-        DISPLAY name to query.
+</span><span class="add">+    DISPLAY : str (optional)
+</span><span class="add">+        DISPLAY name to query. This will be taken from the environment if not specified.
+</span><span class="def"> 
+</span><span class="def">     defaults : dict (optional)
+</span><span class="def">         Default values to act as a fallback for missing values or in the event of a
+</span>@@ -31,6 +33,9 @@
+<span class="def">     &quot;&quot;&quot;
+</span><span class="def">     resources = defaults if defaults else {}
+</span><span class="def"> 
+</span><span class="add">+    if DISPLAY is None:
+</span><span class="add">+        DISPLAY = os.environ.get(&quot;DISPLAY&quot;)
+</span><span class="add">+
+</span><span class="def">     try:
+</span><span class="def">         conn = xcffib.connect(display=DISPLAY)
+</span><span class="def">     except xcffib.ConnectionException as e:
+</span></pre>
+</div></div>
+  </body>
+</html>

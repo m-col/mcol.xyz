@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - update readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/7c007d1beaf8f3b0100cb738c936583ed6f7804a.html">7c007d1beaf8f3b0100cb738c936583ed6f7804a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/7e215410ea23d8c83a3d2e0a596fbc73a6222d8a.html">7e215410ea23d8c83a3d2e0a596fbc73a6222d8a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-11 21:13:50 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-11 21:13:50 +0000
+
+update readme
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,7 +16,7 @@
+<span class="def"> #define is_number(s) (strspn(s, &quot;0123456789.-&quot;) == strlen(s))
+</span><span class="def"> #define is_number_perc(s) (strspn(s, &quot;0123456789.-%&quot;) == strlen(s))
+</span><span class="def"> #define CONFIG_HOME &quot;$HOME/.config/wimp/&quot;
+</span><span class="sub">-#define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/.config/wimp/&quot;
+</span><span class="add">+#define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/wimp/&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static const char *DEFAULT_CONFIG =  &quot;\n\
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,11 +9,40 @@
+<span class="def">              ██
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-A desktop with limitless bounds. Picture GIMP but for windows. WIMP, if you will.
+</span><span class="add">+A desktop with limitless bounds. Picture GIMP but for windows. WIMP, if you
+</span><span class="add">+will.
+</span><span class="def"> 
+</span><span class="sub">-A Wayland compositor based on wlroots.
+</span><span class="add">+A Wayland compositor focussed on organisation and enabling an efficient
+</span><span class="add">+workflow.
+</span><span class="def"> 
+</span><span class="sub">-This software is a work in progress.
+</span><span class="add">+WIMP is still early in development, but (almost) everything works and is
+</span><span class="add">+usable.
+</span><span class="add">+
+</span><span class="add">+Aims/Features
+</span><span class="add">+-------------
+</span><span class="add">+
+</span><span class="add">+ - Intuitive navigation around and management of many windows
+</span><span class="add">+ - Great trackpad experience
+</span><span class="add">+ - Seamless multi-monitor experience
+</span><span class="add">+ - Remain lightweight and minimal, delegating where appropriate to clients
+</span><span class="add">+ - Wide support of useful desktop wayland protocols
+</span><span class="add">+ - And avoid adding Xwayland
+</span><span class="add">+
+</span><span class="add">+Using WIMP
+</span><span class="add">+----------
+</span><span class="add">+
+</span><span class="add">+WIMP can be called directly from a TTY as `wimp`. I recommend writing a small
+</span><span class="add">+script to set up the session&apos;s environment and `exec wimp`.
+</span><span class="add">+
+</span><span class="add">+WIMP looks for a configuration file first at `$XDG_CONFIG_HOME/wimp/config`
+</span><span class="add">+then `$HOME/.config/wimp/config`. An example configuration file is provided and
+</span><span class="add">+also serves as a reference of all possible settings and actions.
+</span><span class="add">+
+</span><span class="add">+Users migrating from X may find `arewewaylandyet.com
+</span><span class="add">+&lt;https://arewewaylandyet.com/&gt;`_ and `this page
+</span><span class="add">+&lt;https://github.com/swaywm/sway/wiki/i3-Migration-Guide&gt;`_ from Sway&apos;s wiki
+</span><span class="add">+helpful for finding Wayland-supporting alternatives to common X-specific
+</span><span class="add">+utilies.
+</span><span class="def"> 
+</span><span class="def"> Building
+</span><span class="def"> --------
+</span>@@ -25,17 +54,19 @@
+<span class="def">  - wlroots (currently git master version)
+</span><span class="def">  - cairo
+</span><span class="def"> 
+</span><span class="sub">-.. code-block:: sh
+</span><span class="sub">-
+</span><span class="sub">-   make
+</span><span class="sub">-   sudo make install
+</span><span class="add">+1. make with `make`
+</span><span class="add">+2. install with `sudo make install`
+</span><span class="def"> 
+</span><span class="sub">-Acknowledgemnets
+</span><span class="add">+Acknowledgements
+</span><span class="def"> ----------------
+</span><span class="def"> 
+</span><span class="def"> I learned a lot (and copied some code) from:
+</span><span class="def"> 
+</span><span class="sub">- - `wlroots &lt;https://github.com/swaywm/wlroots&gt;`_
+</span><span class="def">  - `sway &lt;https://github.com/swaywm/sway&gt;`_
+</span><span class="def">  - `dwl &lt;https://github.com/djpohly/dwl&gt;`_
+</span><span class="def">  - `labwc &lt;https://github.com/johanmalm/labwc&gt;`_
+</span><span class="add">+
+</span><span class="add">+With special thanks to the guys working on `wlroots
+</span><span class="add">+&lt;https://github.com/swaywm/wlroots&gt;`_, upon which WIMP is built. Their TinyWL
+</span><span class="add">+compositor served as a helpful base to start from.
+</span><span class="add">+
+</span></pre>
+</div></div>
+  </body>
+</html>

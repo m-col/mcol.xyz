@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tide - fix run section to not run extra line at bottom</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/tide">tide</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/tide">https://github.com/m-col/tide</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/tide/tree.html">Files</a> | <a href="https://mcol.xyz/code/tide/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/tide/file/README.md.html">Readme</a>     | <a href="https://mcol.xyz/code/tide/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/tide/commit/72c6303579c7f4341a3cdc8eef03ab39cad37495.html">72c6303579c7f4341a3cdc8eef03ab39cad37495</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/tide/commit/9d2c3d784f6de41767f49691ce0cd13b672be729.html">9d2c3d784f6de41767f49691ce0cd13b672be729</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 10:31:00 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 10:31:00 +0000
+
+fix run section to not run extra line at bottom
+</pre><div class="diff">
+  <p>
+    <b>plugin/tide.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -72,9 +72,11 @@
+<span class="def"> &quot; send current section delimited by double comments
+</span><span class="def"> function! s:TmuxSendSection()
+</span><span class="def">     &quot; find shortest comment character
+</span><span class="sub">-    let s:com = split(&amp;comments, &quot;,&quot;)
+</span><span class="sub">-    let s:scom = substitute(s:com[0], &quot;^.*:&quot;, &apos;&apos;, &apos;&apos;)
+</span><span class="sub">-    for s:i in s:com
+</span><span class="add">+    if ! exists(&quot;b:com&quot;)
+</span><span class="add">+	let b:com = split(&amp;comments, &quot;,&quot;)
+</span><span class="add">+    endif
+</span><span class="add">+    let s:scom = substitute(b:com[0], &quot;^.*:&quot;, &apos;&apos;, &apos;&apos;)
+</span><span class="add">+    for s:i in b:com
+</span><span class="def"> 	let s:ncom = substitute(s:i, &quot;^.*:&quot;, &apos;&apos;, &apos;&apos;)
+</span><span class="def"> 	if len(s:ncom) &lt; len(s:scom)
+</span><span class="def"> 	    let s:scom = s:ncom
+</span>@@ -86,7 +88,7 @@
+<span class="def">     if s:bottom &lt;= s:top
+</span><span class="def"> 	let s:bottom = line(&apos;$&apos;)
+</span><span class="def">     elseif s:bottom != line(&apos;$&apos;)
+</span><span class="sub">-	let s:bottom = prevnonblank(s:bottom)
+</span><span class="add">+	let s:bottom = prevnonblank(s:bottom-1)
+</span><span class="def">     endif
+</span><span class="def">     if s:top == 0
+</span><span class="def"> 	let s:top = 1
+</span></pre>
+</div></div>
+  </body>
+</html>

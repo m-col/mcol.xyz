@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - scale borders when zooming</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/4b5efe4c5719e333a433296fc23a163a02e23773.html">4b5efe4c5719e333a433296fc23a163a02e23773</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/5bcebdde3eba4212adb37c60460140ee95913f51.html">5bcebdde3eba4212adb37c60460140ee95913f51</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-12 14:34:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-12 14:34:06 +0000
+
+scale borders when zooming
+</pre><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +1,4 @@
+<span class="add">+#include &lt;math.h&gt;
+</span><span class="def"> #include &lt;time.h&gt;
+</span><span class="def"> #include &lt;pixman.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_gamma_control_v1.h&gt;
+</span>@@ -44,10 +45,10 @@
+<span class="def">     if (rdata-&gt;bordered == surface) {
+</span><span class="def"> 	int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="def"> 	struct wlr_box borders = {
+</span><span class="sub">-	    .x = x - border_width,
+</span><span class="sub">-	    .y = y - border_width,
+</span><span class="sub">-	    .width = width + border_width * 2,
+</span><span class="sub">-	    .height = height + border_width * 2,
+</span><span class="add">+	    .x = x - border_width * rdata-&gt;zoom,
+</span><span class="add">+	    .y = y - border_width * rdata-&gt;zoom,
+</span><span class="add">+	    .width = width + ceil(border_width * 2 * rdata-&gt;zoom),
+</span><span class="add">+	    .height = height + ceil(border_width * 2 * rdata-&gt;zoom),
+</span><span class="def"> 	};
+</span><span class="def"> 	wlr_render_rect(
+</span><span class="def"> 	    rdata-&gt;renderer,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,8 @@
+<span class="def"> 	    $(shell pkg-config --cflags --libs xkbcommon) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs libinput) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs cairo) \
+</span><span class="sub">-	    $(shell pkg-config --cflags --libs pixman-1)
+</span><span class="add">+	    $(shell pkg-config --cflags --libs pixman-1) \
+</span><span class="add">+	    -lm
+</span><span class="def"> 
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span></pre>
+</div></div>
+  </body>
+</html>

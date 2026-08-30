@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - make compiler more pedantic</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/bfd1ffe1c387f50d9e56dfa44fc570c46e147cbd.html">bfd1ffe1c387f50d9e56dfa44fc570c46e147cbd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/152f752a708a35a70d72d0f11b2892ae5be9953f.html">152f752a708a35a70d72d0f11b2892ae5be9953f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-05 22:49:26 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-05 22:49:26 +0000
+
+make compiler more pedantic
+</pre><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +1,7 @@
+<span class="def"> OUT	= deskwm
+</span><span class="def"> SOURCES	= $(wildcard src/*.c)
+</span><span class="def"> OBJECTS	= $(SOURCES:.c=.o)
+</span><span class="sub">-CFLAGS  += -g -I. -DWLR_USE_UNSTABLE
+</span><span class="sub">-#CFLAGS  += -g -I. -DWLR_USE_UNSTABLE -Wall -Wextra -pedantic
+</span><span class="add">+CFLAGS  += -g -I. -DWLR_USE_UNSTABLE -Wall -Wextra -pedantic
+</span><span class="def"> LDFLAGS	+= $(shell pkg-config --cflags --libs wlroots) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs wayland-server) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs xkbcommon)
+</span></pre>
+</div></div>
+  </body>
+</html>

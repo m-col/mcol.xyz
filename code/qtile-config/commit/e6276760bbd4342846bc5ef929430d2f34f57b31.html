@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Move groups to file, change some colours</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/e6276760bbd4342846bc5ef929430d2f34f57b31.html">e6276760bbd4342846bc5ef929430d2f34f57b31</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/579aa8ed2bac72e8fccf6fc2a007b60b78804680.html">579aa8ed2bac72e8fccf6fc2a007b60b78804680</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-15 22:43:50 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-15 22:43:50 +0100
+
+Move groups to file, change some colours
+</pre><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,10 +3,11 @@
+<span class="def"> # Qtile Wayland startup script
+</span><span class="def"> 
+</span><span class="def"> foot --server &amp;
+</span><span class="add">+swaybg -c &apos;#1B2021&apos; &amp;
+</span><span class="def"> 
+</span><span class="def"> FIFO=/tmp/wob-$WAYLAND_DISPLAY
+</span><span class="def"> test -e $FIFO || mkfifo $FIFO
+</span><span class="sub">-tail -f $FIFO | wob -a top &amp;
+</span><span class="add">+tail -f $FIFO | wob -a left -a right -a bottom &amp;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Things after this are only run on a TTY
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,96 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Groups
+</span><span class="add">+======
+</span><span class="add">+
+</span><span class="add">+ - 6 groups
+</span><span class="add">+ - 3 bound to each screen when using two monitors
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+from __future__ import annotations
+</span><span class="add">+
+</span><span class="add">+import os
+</span><span class="add">+from typing import TYPE_CHECKING
+</span><span class="add">+
+</span><span class="add">+from libqtile.config import Group, Match
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="add">+
+</span><span class="add">+if TYPE_CHECKING:
+</span><span class="add">+    from typing import Callable, List, Tuple
+</span><span class="add">+
+</span><span class="add">+    from libqtile.core.manager import Qtile
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+mod = &quot;mod1&quot; if int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) else &quot;mod4&quot;
+</span><span class="add">+
+</span><span class="add">+keys_group: Tuple[List[str], str, Any, str] = []
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+groups: List[Group] = [
+</span><span class="add">+    Group(&apos;1&apos;, label=&apos;term&apos;),
+</span><span class="add">+    Group(&apos;2&apos;, label=&apos;term&apos;),
+</span><span class="add">+    Group(&apos;3&apos;, label=&apos;term&apos;),
+</span><span class="add">+    Group(&apos;q&apos;, label=&apos;surf&apos;, matches=[Match(wm_class=&apos;firefox&apos;)]),
+</span><span class="add">+    Group(&apos;w&apos;, label=&apos;chat&apos;),
+</span><span class="add">+    Group(&apos;e&apos;, label=&apos;toot&apos;, matches=[Match(wm_class=&apos;hyperspace desktop&apos;)]),
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def _go_to_group(name: str) -&gt; Callable:
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This creates lazy functions that jump to a given group. When there is more than one
+</span><span class="add">+    screen, the first 3 and second 3 groups are kept on the first and second screen.
+</span><span class="add">+    E.g. going to the fourth group when the first group (and first screen) is focussed
+</span><span class="add">+    will also change the screen to the second screen.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    def _inner(qtile: Qtile) -&gt; None:
+</span><span class="add">+        if len(qtile.screens) == 1:
+</span><span class="add">+            qtile.groups_map[name].cmd_toscreen()
+</span><span class="add">+            return
+</span><span class="add">+
+</span><span class="add">+        old = qtile.current_screen.group.name
+</span><span class="add">+        if group in &apos;123&apos;:
+</span><span class="add">+            qtile.focus_screen(0)
+</span><span class="add">+            if old in &apos;123&apos; or qtile.current_screen.group.name != group:
+</span><span class="add">+                qtile.groups_map[name].cmd_toscreen()
+</span><span class="add">+        else:
+</span><span class="add">+            qtile.focus_screen(1)
+</span><span class="add">+            if old in &apos;qwe&apos; or qtile.current_screen.group.name != group:
+</span><span class="add">+                qtile.groups_map[name].cmd_toscreen()
+</span><span class="add">+
+</span><span class="add">+    return _inner
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+for i in groups:
+</span><span class="add">+    keys_group.extend([
+</span><span class="add">+        ([mod],             i.name, lazy.function(_go_to_group(i.name)), f&quot;Go to group {i.name}&quot;),
+</span><span class="add">+        ([mod, &apos;shift&apos;],    i.name, lazy.window.togroup(i.name), f&quot;Send window to group {i.name}&quot;),
+</span><span class="add">+    ])
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def _scroll_screen(direction: int) -&gt; Callable:
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Scroll to the next/prev group of the subset allocated to a specific screen. This
+</span><span class="add">+    will rotate between e.g. 1-&gt;2-&gt;3-&gt;1 when the first screen is focussed.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    def _inner(qtile: Qtile):
+</span><span class="add">+        if len(qtile.screens) == 1:
+</span><span class="add">+            current = qtile.groups.index(qtile.current_group)
+</span><span class="add">+            destination = (current + direction) % 6
+</span><span class="add">+            qtile.groups[destination].cmd_toscreen()
+</span><span class="add">+            return
+</span><span class="add">+
+</span><span class="add">+        current = qtile.groups.index(qtile.current_group)
+</span><span class="add">+        if current &lt; 3:
+</span><span class="add">+            destination = (current + direction) % 3
+</span><span class="add">+        else:
+</span><span class="add">+            destination = ((current - 3 + direction) % 3) + 3
+</span><span class="add">+        qtile.groups[destination].cmd_toscreen()
+</span><span class="add">+
+</span><span class="add">+    return _inner
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+keys_group.extend([
+</span><span class="add">+    ([mod], &apos;m&apos;, lazy.function(_scroll_screen(1)),  &quot;Screen groups forward&quot;),
+</span><span class="add">+    ([mod], &apos;n&apos;, lazy.function(_scroll_screen(-1)), &quot;Screen groups backward&quot;),
+</span><span class="add">+])
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,11 +3,14 @@
+<span class="def"> ======================
+</span><span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="add">+from __future__ import annotations
+</span><span class="add">+
+</span><span class="def"> import asyncio
+</span><span class="def"> import os
+</span><span class="def"> import sys
+</span><span class="def"> import subprocess
+</span><span class="def"> from functools import partial
+</span><span class="add">+from typing import TYPE_CHECKING
+</span><span class="def"> 
+</span><span class="def"> from libqtile import layout, hook, bar, widget, qtile
+</span><span class="def"> from libqtile.config import Key, EzKey, Screen, Group, Drag, Click, Match, ScratchPad, DropDown
+</span>@@ -16,6 +19,10 @@
+<span class="def"> from libqtile.widget.backlight import ChangeDirection
+</span><span class="def"> 
+</span><span class="def"> import traverse
+</span><span class="add">+from groups import groups, keys_group
+</span><span class="add">+
+</span><span class="add">+if TYPE_CHECKING:
+</span><span class="add">+    from typing import List, Tuple
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> ## Basic vars
+</span>@@ -39,11 +46,10 @@
+<span class="def"> 
+</span><span class="def"> HOME = os.path.expanduser(&apos;~&apos;)
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> ## Colours
+</span><span class="def"> theme = dict(
+</span><span class="sub">-    foreground=&apos;#bcbcbe&apos;,
+</span><span class="sub">-    background=&apos;#030405&apos;,
+</span><span class="add">+    foreground=&apos;#CFCCD6&apos;,
+</span><span class="add">+    background=&apos;#1B2021&apos;,
+</span><span class="def">     color0=&apos;#030405&apos;,
+</span><span class="def">     color8=&apos;#1f1c32&apos;,
+</span><span class="def">     color1=&apos;#8742a5&apos;,
+</span>@@ -53,7 +59,7 @@
+<span class="def">     color3=&apos;#653c21&apos;,
+</span><span class="def">     color11=&apos;#6e9fcd&apos;,
+</span><span class="def">     color4=&apos;#8f4ff0&apos;,
+</span><span class="sub">-    color12=&apos;#bd9ef9&apos;,
+</span><span class="add">+    color12=&apos;#BBC2E2&apos;,
+</span><span class="def">     color5=&apos;#5d479d&apos;,
+</span><span class="def">     color13=&apos;#998dd1&apos;,
+</span><span class="def">     color6=&apos;#3e3e73&apos;,
+</span>@@ -65,16 +71,19 @@
+<span class="def"> colours = [theme[f&apos;color{n}&apos;] for n in range(16)]
+</span><span class="def"> background = theme[&apos;background&apos;]
+</span><span class="def"> foreground = theme[&apos;foreground&apos;]
+</span><span class="sub">-wm_bw = 5
+</span><span class="sub">-wm_cr = 5
+</span><span class="sub">-wm_colorfocused = &apos;#6fa3e0&apos;
+</span><span class="sub">-wm_colorunfocused = &apos;#0e101c&apos;
+</span><span class="sub">-wm_gapsinner = 2
+</span><span class="sub">-wm_gapsouter = 2
+</span><span class="add">+bw = 5
+</span><span class="add">+cw = 5
+</span><span class="add">+colour_focussed = &apos;#6fa3e0&apos;
+</span><span class="add">+colour_unfocussed = &apos;#0e101c&apos;
+</span><span class="add">+inner_gaps = 4
+</span><span class="add">+outer_gaps = 4
+</span><span class="add">+
+</span><span class="add">+# https://coolors.co/1b2021-cfccd6-bbc2e2-b7b5e4-847979
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> ## Keys
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> @lazy.function
+</span><span class="def"> def float_to_front(qtile):
+</span><span class="def">     &quot;&quot;&quot; Bring all floating windows of the group to front &quot;&quot;&quot;
+</span>@@ -83,7 +92,7 @@
+<span class="def">             window.cmd_bring_to_front()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-keys = [
+</span><span class="add">+my_keys: Tuple[List[str], str, Any, str] = [
+</span><span class="def">     # Window management
+</span><span class="def">     ([mod, &apos;control&apos;],  &apos;q&apos;,        lazy.window.kill(),                 &quot;Close window&quot;),
+</span><span class="def">     ([mod],             &apos;f&apos;,        lazy.window.toggle_fullscreen(),    &quot;Toggle fullscreen&quot;),
+</span>@@ -134,12 +143,12 @@
+<span class="def"> 
+</span><span class="def"> # Backend-specific launchers
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="sub">-    keys.extend([
+</span><span class="add">+    my_keys.extend([
+</span><span class="def">         ([mod], &apos;d&apos;, lazy.spawn(&apos;wofi --gtk-dark --show run&apos;), &quot;wofi: run&quot;),
+</span><span class="def">     ])
+</span><span class="def"> 
+</span><span class="def"> else:
+</span><span class="sub">-    keys.extend([
+</span><span class="add">+    my_keys.extend([
+</span><span class="def">         ([mod],             &apos;d&apos;,    lazy.spawn(&apos;rofi -show run -theme ~/.config/rofi/common-large.rasi&apos;), &quot;rofi: run&quot;),
+</span><span class="def">         ([],    &apos;XF86PowerOff&apos;,     lazy.spawn(&apos;power-menu&apos;),                   &quot;Power menu&quot;),
+</span><span class="def">         ([mod, &apos;shift&apos;],    &apos;x&apos;,    lazy.spawn(&apos;set_monitors&apos;),                 &quot;Configure monitors&quot;),
+</span>@@ -149,7 +158,7 @@
+<span class="def"> 
+</span><span class="def"> # Changing VT
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="sub">-    keys.extend([
+</span><span class="add">+    my_keys.extend([
+</span><span class="def">         ([mod], &apos;F1&apos;,     lazy.change_vt(1),    &quot;Change to VT 1&quot;),
+</span><span class="def">         ([mod], &apos;F2&apos;,     lazy.change_vt(2),    &quot;Change to VT 2&quot;),
+</span><span class="def">         ([mod], &apos;F3&apos;,     lazy.change_vt(3),    &quot;Change to VT 3&quot;),
+</span>@@ -189,8 +198,8 @@
+<span class="def">         border_on_single = True,
+</span><span class="def">         wrap_focus_columns = False,
+</span><span class="def">         wrap_focus_rows = False,
+</span><span class="sub">-        margin = wm_gapsinner,
+</span><span class="sub">-        corner_radius = wm_cr,
+</span><span class="add">+        margin = inner_gaps,
+</span><span class="add">+        corner_radius = cw,
+</span><span class="def">     ),
+</span><span class="def">     layout.Max(),
+</span><span class="def"> ]
+</span>@@ -199,7 +208,7 @@
+<span class="def">     border_width = border_width,
+</span><span class="def">     border_focus = border_focus,
+</span><span class="def">     border_normal = border_normal,
+</span><span class="sub">-    corner_radius = wm_cr,
+</span><span class="add">+    corner_radius = cw,
+</span><span class="def">     float_rules=[
+</span><span class="def">         Match(title=&apos;wlroots - X11-1&apos;),
+</span><span class="def">         Match(title=&apos;wlroots - X11-2&apos;),
+</span>@@ -244,12 +253,10 @@
+<span class="def">     &apos;fontsize&apos;: 16,
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-trim = widget.TextBox(&apos; &apos;, background=colours[8])
+</span><span class="sub">-
+</span><span class="def"> groupbox_config = {
+</span><span class="def">     &apos;active&apos;: foreground,
+</span><span class="def">     &apos;highlight_method&apos;: &apos;line&apos;,
+</span><span class="sub">-    &apos;this_current_screen_border&apos;: wm_colorfocused,
+</span><span class="add">+    &apos;this_current_screen_border&apos;: colour_focussed,
+</span><span class="def">     &apos;other_current_screen_border&apos;: colours[5],
+</span><span class="def">     &apos;highlight_color&apos;: [background, colours[5]],
+</span><span class="def">     &apos;disable_drag&apos;: True,
+</span>@@ -269,7 +276,7 @@
+<span class="def">  
+</span><span class="def"> cpugraph = widget.CPUGraph(
+</span><span class="def">     graph_color=colours[12],
+</span><span class="sub">-    fill_color=wm_colorunfocused,
+</span><span class="add">+    fill_color=colour_unfocussed,
+</span><span class="def">     border_width=0,
+</span><span class="def">     margin_x=10,
+</span><span class="def">     margin_y=4,
+</span>@@ -344,7 +351,7 @@
+<span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="sub">-    systray = trim
+</span><span class="add">+    systray = widget.TextBox(&apos;&apos;)
+</span><span class="def"> else:
+</span><span class="def">     systray = widget.Systray(padding=20)
+</span><span class="def"> 
+</span>@@ -421,98 +428,37 @@
+<span class="def">     widget.GroupBox(**groupbox_config, visible_groups=[&apos;q&apos;, &apos;w&apos;, &apos;e&apos;]),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="sub">-gaps = wm_gapsinner + wm_gapsouter
+</span><span class="def"> screens = [
+</span><span class="def">     Screen(
+</span><span class="sub">-        top=bar.Bar(
+</span><span class="add">+        bottom=bar.Bar(
+</span><span class="def">             [
+</span><span class="sub">-                trim, groupboxes[0], trim, cpugraph, widget.Spacer(), mpd2,
+</span><span class="add">+                groupboxes[0], cpugraph, widget.Spacer(), mpd2,
+</span><span class="def">                 widget.Spacer(), systray, bklight, volume, wlan,
+</span><span class="sub">-                battery, trim, date, time, trim
+</span><span class="add">+                battery, date, time, 
+</span><span class="def">             ],
+</span><span class="sub">-            40,
+</span><span class="add">+            32,
+</span><span class="def">             background=background,
+</span><span class="sub">-            margin=[gaps, gaps, wm_gapsouter, gaps],
+</span><span class="def">         ),
+</span><span class="sub">-        wallpaper_mode=&apos;fill&apos;,
+</span><span class="sub">-        bottom=bar.Gap(wm_gapsouter),
+</span><span class="sub">-        left=bar.Gap(wm_gapsouter),
+</span><span class="sub">-        right=bar.Gap(wm_gapsouter),
+</span><span class="sub">-        wallpaper=f&apos;{HOME}/pictures/pixart/diver.png&apos;
+</span><span class="add">+        top=bar.Gap(outer_gaps),
+</span><span class="add">+        left=bar.Gap(outer_gaps),
+</span><span class="add">+        right=bar.Gap(outer_gaps),
+</span><span class="def">     ),
+</span><span class="def">     Screen(
+</span><span class="sub">-        top=bar.Bar(
+</span><span class="add">+        bottom=bar.Bar(
+</span><span class="def">             [
+</span><span class="sub">-                trim, groupboxes[1], trim, cpugraph, widget.Spacer(), mpd2,
+</span><span class="add">+                groupboxes[1], cpugraph, widget.Spacer(), mpd2,
+</span><span class="def">                 widget.Spacer(), bklight, volume, wlan,
+</span><span class="sub">-                battery, trim, date, time, trim
+</span><span class="add">+                battery, date, time
+</span><span class="def">             ],
+</span><span class="sub">-            40,
+</span><span class="add">+            32,
+</span><span class="def">             background=background,
+</span><span class="sub">-            margin=[gaps, gaps, wm_gapsouter, gaps],
+</span><span class="def">         ),
+</span><span class="sub">-        wallpaper_mode=&apos;fill&apos;,
+</span><span class="sub">-        bottom=bar.Gap(wm_gapsouter),
+</span><span class="sub">-        left=bar.Gap(wm_gapsouter),
+</span><span class="sub">-        right=bar.Gap(wm_gapsouter),
+</span><span class="sub">-        wallpaper=f&apos;{HOME}/pictures/pixart/diver.png&apos;
+</span><span class="add">+        top=bar.Gap(outer_gaps),
+</span><span class="add">+        left=bar.Gap(outer_gaps),
+</span><span class="add">+        right=bar.Gap(outer_gaps),
+</span><span class="def">     ),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="sub">-## Groups
+</span><span class="sub">-groups = [
+</span><span class="sub">-    Group(&apos;1&apos;, label=&apos;&apos;),
+</span><span class="sub">-    Group(&apos;2&apos;, label=&apos;&apos;, matches=[Match(wm_class=&apos;Tor Browser&apos;), Match(wm_class=&apos;hyperspace desktop&apos;)]),
+</span><span class="sub">-    Group(&apos;3&apos;, label=&apos;&apos;, matches=[Match(wm_class=&apos;firefox&apos;)]),
+</span><span class="sub">-    Group(&apos;q&apos;, label=&apos;&apos;),
+</span><span class="sub">-    Group(&apos;w&apos;, label=&apos;&apos;, matches=[Match(wm_class=&apos;Slack&apos;)]),
+</span><span class="sub">-    Group(&apos;e&apos;, label=&apos;&apos;, matches=[Match(wm_class=&apos;halebird&apos;)]),
+</span><span class="sub">-]
+</span><span class="sub">-
+</span><span class="sub">-def _go_to_group(group):
+</span><span class="sub">-    def _inner(qtile):
+</span><span class="sub">-        if len(qtile.screens) &gt; 1:
+</span><span class="sub">-            old = qtile.current_screen.group.name
+</span><span class="sub">-            if group in &apos;123&apos;:
+</span><span class="sub">-                qtile.focus_screen(0)
+</span><span class="sub">-                if old in &apos;123&apos; or qtile.current_screen.group.name != group:
+</span><span class="sub">-                    qtile.groups_map[group].cmd_toscreen()
+</span><span class="sub">-            else:
+</span><span class="sub">-                qtile.focus_screen(1)
+</span><span class="sub">-                if old in &apos;qwe&apos; or qtile.current_screen.group.name != group:
+</span><span class="sub">-                    qtile.groups_map[group].cmd_toscreen()
+</span><span class="sub">-        else:
+</span><span class="sub">-            qtile.groups_map[group].cmd_toscreen()
+</span><span class="sub">-    return _inner
+</span><span class="sub">-
+</span><span class="sub">-for i in groups:
+</span><span class="sub">-    keys.extend([
+</span><span class="sub">-        ([mod],             i.name, lazy.function(_go_to_group(i.name)), f&quot;Go to group {i.name}&quot;),
+</span><span class="sub">-        ([mod, &apos;shift&apos;],    i.name, lazy.window.togroup(i.name), f&quot;Send window to group {i.name}&quot;),
+</span><span class="sub">-    ])
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def _scroll_screen(direction):
+</span><span class="sub">-    &quot;&quot;&quot; Scroll next group of subset allocated to specific screen &quot;&quot;&quot;
+</span><span class="sub">-    def _inner(qtile):
+</span><span class="sub">-        if len(qtile.screens) &gt; 1:
+</span><span class="sub">-            current = qtile.groups.index(qtile.current_group)
+</span><span class="sub">-            if current &lt; 3:
+</span><span class="sub">-                destination = (current + direction) % 3
+</span><span class="sub">-            else:
+</span><span class="sub">-                destination = ((current - 3 + direction) % 3) + 3
+</span><span class="sub">-            qtile.groups[destination].cmd_toscreen()
+</span><span class="sub">-        else:
+</span><span class="sub">-            current = qtile.groups.index(qtile.current_group)
+</span><span class="sub">-            destination = (current + direction) % 6
+</span><span class="sub">-            qtile.groups[destination].cmd_toscreen()
+</span><span class="sub">-    return _inner
+</span><span class="sub">-
+</span><span class="sub">-keys.extend([
+</span><span class="sub">-    ([mod], &apos;m&apos;, lazy.function(_scroll_screen(1)),  &quot;Screen groups forward&quot;),
+</span><span class="sub">-    ([mod], &apos;n&apos;, lazy.function(_scroll_screen(-1)), &quot;Screen groups backward&quot;),
+</span><span class="sub">-])
+</span><span class="sub">-
+</span><span class="def"> 
+</span><span class="def"> # Dropdowns and Scratchpad
+</span><span class="def"> 
+</span>@@ -543,7 +489,7 @@
+<span class="def"> 
+</span><span class="def"> groups.append(ScratchPad(&quot;scratchpad&quot;, dropdowns))
+</span><span class="def"> 
+</span><span class="sub">-keys.extend([
+</span><span class="add">+my_keys.extend([
+</span><span class="def">     ([mod, &apos;shift&apos;],     &apos;Return&apos;,   lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;tmux&apos;), &quot;Toggle tmux scratchpad&quot;),
+</span><span class="def">     ([mod, &apos;control&apos;],   &apos;e&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;email&apos;), &quot;Toggle email scratchpad&quot;),
+</span><span class="def">     ([mod, &apos;control&apos;],   &apos;w&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;irc&apos;), &quot;Toggle irc scratchpad&quot;),
+</span>@@ -608,8 +554,11 @@
+<span class="def"> ## Startup script for Wayland
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="def">     @hook.subscribe.startup_once
+</span><span class="sub">-    async def auto_start():
+</span><span class="sub">-        qtile.cmd_spawn(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True)
+</span><span class="add">+    async def _():
+</span><span class="add">+        env = os.environ.copy()
+</span><span class="add">+        env[&quot;WOB_DEFAULT_HEIGHT&quot;] = str(32)
+</span><span class="add">+        env[&quot;WOB_DEFAULT_MARGIN&quot;] = str(0)
+</span><span class="add">+        subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True, env=env)
+</span><span class="def"> 
+</span><span class="def">     if xephyr:
+</span><span class="def">         @hook.subscribe.startup_once
+</span>@@ -628,7 +577,8 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Reformat keys
+</span><span class="sub">-keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in keys]
+</span><span class="add">+my_keys.extend(keys_group)
+</span><span class="add">+keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Configure libinput devices
+</span></pre>
+</div></div>
+  </body>
+</html>

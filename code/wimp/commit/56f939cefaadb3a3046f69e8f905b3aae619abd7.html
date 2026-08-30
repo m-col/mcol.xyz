@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add scratchpad_from_id</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/56f939cefaadb3a3046f69e8f905b3aae619abd7.html">56f939cefaadb3a3046f69e8f905b3aae619abd7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/46520dc1c23f10b7732b0a0f685c00f503a2c4ee.html">46520dc1c23f10b7732b0a0f685c00f503a2c4ee</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-08 23:55:00 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-08 23:55:00 +0000
+
+add scratchpad_from_id
+</pre><div class="diff">
+  <p>
+    <b>src/scratchpad.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,6 +4,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> struct scratchpad *scratchpad_from_view(struct view *view);
+</span><span class="add">+struct scratchpad *scratchpad_from_id(int id);
+</span><span class="def"> void scratchpad_apply_geo(struct scratchpad *scratchpad);
+</span><span class="def"> bool catch_scratchpad(struct view *view);
+</span><span class="def"> void drop_scratchpads();
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/scratchpad.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,6 +16,19 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+struct scratchpad *scratchpad_from_id(int id) {
+</span><span class="add">+    struct scratchpad *scratchpad;
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="add">+	if (scratchpad-&gt;id == id) {
+</span><span class="add">+	    return scratchpad;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    return NULL;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void scratchpad_apply_geo(struct scratchpad *scratchpad) {
+</span><span class="def">     struct wlr_output *output =
+</span><span class="def"> 	wlr_output_layout_output_at(wimp.output_layout, wimp.cursor-&gt;x, wimp.cursor-&gt;y);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,6 +8,7 @@
+<span class="def"> #include &quot;cursor.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="add">+#include &quot;scratchpad.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span>@@ -410,14 +411,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void toggle_scratchpad(void *data) {
+</span><span class="sub">-    int id = *(int *)data;
+</span><span class="sub">-    struct scratchpad *scratchpad;
+</span><span class="sub">-
+</span><span class="sub">-    wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="sub">-	if (scratchpad-&gt;id == id) {
+</span><span class="sub">-	    break;
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="add">+    struct scratchpad *scratchpad = scratchpad_from_id(*(int *)data);
+</span><span class="def"> 
+</span><span class="def">     if (scratchpad-&gt;view) {
+</span><span class="def"> 	if (scratchpad-&gt;is_mapped) {
+</span></pre>
+</div></div>
+  </body>
+</html>

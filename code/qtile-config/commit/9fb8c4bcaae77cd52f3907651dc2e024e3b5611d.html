@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - more auto floats</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/9fb8c4bcaae77cd52f3907651dc2e024e3b5611d.html">9fb8c4bcaae77cd52f3907651dc2e024e3b5611d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/7c35908d5611a23d0e86855b5e5752317b187d83.html">7c35908d5611a23d0e86855b5e5752317b187d83</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-25 23:43:40 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-25 23:43:40 +0100
+
+more auto floats
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -204,6 +204,7 @@
+<span class="def">         Match(title=&apos;wlroots - WL-1&apos;),
+</span><span class="def">         Match(title=&apos;wlroots - WL-2&apos;),
+</span><span class="def">         Match(title=&apos;Open File&apos;),
+</span><span class="add">+        Match(title=&apos;Unlock Database - KeePassXC&apos;),  # Wayland
+</span><span class="def">         Match(wm_class=&apos;Arandr&apos;),
+</span><span class="def">         Match(wm_class=&apos;confirm&apos;),
+</span><span class="def">         Match(wm_class=&apos;dialog&apos;),
+</span>@@ -215,7 +216,7 @@
+<span class="def">         Match(wm_class=&apos;lxappearance&apos;),
+</span><span class="def">         Match(wm_class=&apos;mpv&apos;),
+</span><span class="def">         Match(wm_class=&apos;notification&apos;),
+</span><span class="sub">-        Match(wm_class=&apos;Pavucontrol&apos;),
+</span><span class="add">+        Match(wm_class=&apos;pavucontrol&apos;),
+</span><span class="def">         Match(wm_class=&apos;Pinentry-gtk-2&apos;),
+</span><span class="def">         Match(wm_class=&apos;qt5ct&apos;),
+</span><span class="def">         Match(wm_class=&apos;ssh-askpass&apos;),
+</span></pre>
+</div></div>
+  </body>
+</html>

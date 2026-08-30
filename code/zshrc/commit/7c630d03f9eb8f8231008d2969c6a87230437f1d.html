@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - added ranger config; added git diff alias</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/7c630d03f9eb8f8231008d2969c6a87230437f1d.html">7c630d03f9eb8f8231008d2969c6a87230437f1d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/de28c8f26b67268c6e48efd971f7c10b8681b3e7.html">de28c8f26b67268c6e48efd971f7c10b8681b3e7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-21 20:28:08 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-21 20:28:08 +0000
+
+added ranger config; added git diff alias
+</pre><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,665 @@
+<span class="add">+# ===================================================================
+</span><span class="add">+# This file contains the default startup commands for ranger.
+</span><span class="add">+# To change them, it is recommended to create the file
+</span><span class="add">+# ~/.config/ranger/rc.conf and add your custom commands there.
+</span><span class="add">+#
+</span><span class="add">+# If you copy this whole file there, you may want to set the environment
+</span><span class="add">+# variable RANGER_LOAD_DEFAULT_RC to FALSE to avoid loading it twice.
+</span><span class="add">+#
+</span><span class="add">+# The purpose of this file is mainly to define keybindings and settings.
+</span><span class="add">+# For running more complex python code, please create a plugin in &quot;plugins/&quot; or
+</span><span class="add">+# a command in &quot;commands.py&quot;.
+</span><span class="add">+#
+</span><span class="add">+# Each line is a command that will be run before the user interface
+</span><span class="add">+# is initialized.  As a result, you can not use commands which rely
+</span><span class="add">+# on the UI such as :delete or :mark.
+</span><span class="add">+# ===================================================================
+</span><span class="add">+
+</span><span class="add">+# ===================================================================
+</span><span class="add">+# == Options
+</span><span class="add">+# ===================================================================
+</span><span class="add">+
+</span><span class="add">+# Which viewmode should be used?  Possible values are:
+</span><span class="add">+#     miller: Use miller columns which show multiple levels of the hierarchy
+</span><span class="add">+#     multipane: Midnight-commander like multipane view showing all tabs next
+</span><span class="add">+#                to each other
+</span><span class="add">+set viewmode miller
+</span><span class="add">+#set viewmode multipane
+</span><span class="add">+
+</span><span class="add">+# How many columns are there, and what are their relative widths?
+</span><span class="add">+set column_ratios 1,3,4
+</span><span class="add">+
+</span><span class="add">+# Which files should be hidden? (regular expression)
+</span><span class="add">+set hidden_filter ^\.|\.(?:pyc|pyo|bak|swp)$|^lost\+found$|^__(py)?cache__$
+</span><span class="add">+
+</span><span class="add">+# Show hidden files? You can toggle this by typing &apos;zh&apos;
+</span><span class="add">+set show_hidden false
+</span><span class="add">+
+</span><span class="add">+# Ask for a confirmation when running the &quot;delete&quot; command?
+</span><span class="add">+# Valid values are &quot;always&quot;, &quot;never&quot;, &quot;multiple&quot; (default)
+</span><span class="add">+# With &quot;multiple&quot;, ranger will ask only if you delete multiple files at once.
+</span><span class="add">+set confirm_on_delete multiple
+</span><span class="add">+
+</span><span class="add">+# Use non-default path for file preview script?
+</span><span class="add">+# ranger ships with scope.sh, a script that calls external programs (see
+</span><span class="add">+# README.md for dependencies) to preview images, archives, etc.
+</span><span class="add">+set preview_script ~/.config/ranger/scope.sh
+</span><span class="add">+
+</span><span class="add">+# Use the external preview script or display simple plain text or image previews?
+</span><span class="add">+set use_preview_script true
+</span><span class="add">+
+</span><span class="add">+# Automatically count files in the directory, even before entering them?
+</span><span class="add">+set automatically_count_files false
+</span><span class="add">+
+</span><span class="add">+# Open all images in this directory when running certain image viewers
+</span><span class="add">+# like feh or sxiv?  You can still open selected files by marking them.
+</span><span class="add">+set open_all_images false
+</span><span class="add">+
+</span><span class="add">+# Be aware of version control systems and display information.
+</span><span class="add">+set vcs_aware true
+</span><span class="add">+
+</span><span class="add">+# State of the four backends git, hg, bzr, svn. The possible states are
+</span><span class="add">+# disabled, local (only show local info), enabled (show local and remote
+</span><span class="add">+# information).
+</span><span class="add">+set vcs_backend_git enabled
+</span><span class="add">+set vcs_backend_hg disabled
+</span><span class="add">+set vcs_backend_bzr disabled
+</span><span class="add">+set vcs_backend_svn disabled
+</span><span class="add">+
+</span><span class="add">+# Use one of the supported image preview protocols
+</span><span class="add">+set preview_images true
+</span><span class="add">+
+</span><span class="add">+# Set the preview image method. Supported methods:
+</span><span class="add">+#
+</span><span class="add">+# * w3m (default):
+</span><span class="add">+#   Preview images in full color with the external command &quot;w3mimgpreview&quot;?
+</span><span class="add">+#   This requires the console web browser &quot;w3m&quot; and a supported terminal.
+</span><span class="add">+#   It has been successfully tested with &quot;xterm&quot; and &quot;urxvt&quot; without tmux.
+</span><span class="add">+#
+</span><span class="add">+# * iterm2:
+</span><span class="add">+#   Preview images in full color using iTerm2 image previews
+</span><span class="add">+#   (http://iterm2.com/images.html). This requires using iTerm2 compiled
+</span><span class="add">+#   with image preview support.
+</span><span class="add">+#
+</span><span class="add">+#   This feature relies on the dimensions of the terminal&apos;s font.  By default, a
+</span><span class="add">+#   width of 8 and height of 11 are used.  To use other values, set the options
+</span><span class="add">+#   iterm2_font_width and iterm2_font_height to the desired values.
+</span><span class="add">+#
+</span><span class="add">+# * urxvt:
+</span><span class="add">+#   Preview images in full color using urxvt image backgrounds. This
+</span><span class="add">+#   requires using urxvt compiled with pixbuf support.
+</span><span class="add">+#
+</span><span class="add">+# * urxvt-full:
+</span><span class="add">+#   The same as urxvt but utilizing not only the preview pane but the
+</span><span class="add">+#   whole terminal window.
+</span><span class="add">+set preview_images_method w3m
+</span><span class="add">+
+</span><span class="add">+# Default iTerm2 font size (see: preview_images_method: iterm2)
+</span><span class="add">+set iterm2_font_width 8
+</span><span class="add">+set iterm2_font_height 11
+</span><span class="add">+
+</span><span class="add">+# Use a unicode &quot;...&quot; character to mark cut-off filenames?
+</span><span class="add">+set unicode_ellipsis false
+</span><span class="add">+
+</span><span class="add">+# Show dotfiles in the bookmark preview box?
+</span><span class="add">+set show_hidden_bookmarks true
+</span><span class="add">+
+</span><span class="add">+# Which colorscheme to use?  These colorschemes are available by default:
+</span><span class="add">+# default, jungle, snow, solarized
+</span><span class="add">+set colorscheme default
+</span><span class="add">+
+</span><span class="add">+# Preview files on the rightmost column?
+</span><span class="add">+# And collapse (shrink) the last column if there is nothing to preview?
+</span><span class="add">+set preview_files true
+</span><span class="add">+set preview_directories true
+</span><span class="add">+set collapse_preview true
+</span><span class="add">+
+</span><span class="add">+# Save the console history on exit?
+</span><span class="add">+set save_console_history false
+</span><span class="add">+
+</span><span class="add">+# Draw the status bar on top of the browser window (default: bottom)
+</span><span class="add">+set status_bar_on_top false
+</span><span class="add">+
+</span><span class="add">+# Draw a progress bar in the status bar which displays the average state of all
+</span><span class="add">+# currently running tasks which support progress bars?
+</span><span class="add">+set draw_progress_bar_in_status_bar true
+</span><span class="add">+
+</span><span class="add">+# Draw borders around columns?
+</span><span class="add">+set draw_borders true
+</span><span class="add">+
+</span><span class="add">+# Display the directory name in tabs?
+</span><span class="add">+set dirname_in_tabs true
+</span><span class="add">+
+</span><span class="add">+# Enable the mouse support?
+</span><span class="add">+set mouse_enabled true
+</span><span class="add">+
+</span><span class="add">+# Display the file size in the main column or status bar?
+</span><span class="add">+set display_size_in_main_column true
+</span><span class="add">+set display_size_in_status_bar true
+</span><span class="add">+
+</span><span class="add">+# Display files tags in all columns or only in main column?
+</span><span class="add">+set display_tags_in_all_columns true
+</span><span class="add">+
+</span><span class="add">+# Set a title for the window?
+</span><span class="add">+set update_title true
+</span><span class="add">+
+</span><span class="add">+# Set the title to &quot;ranger&quot; in the tmux program?
+</span><span class="add">+set update_tmux_title false
+</span><span class="add">+
+</span><span class="add">+# Shorten the title if it gets long?  The number defines how many
+</span><span class="add">+# directories are displayed at once, 0 turns off this feature.
+</span><span class="add">+set shorten_title 3
+</span><span class="add">+
+</span><span class="add">+# Show hostname in titlebar?
+</span><span class="add">+set hostname_in_titlebar true
+</span><span class="add">+
+</span><span class="add">+# Abbreviate $HOME with ~ in the titlebar (first line) of ranger?
+</span><span class="add">+set tilde_in_titlebar true
+</span><span class="add">+
+</span><span class="add">+# How many directory-changes or console-commands should be kept in history?
+</span><span class="add">+set max_history_size 20
+</span><span class="add">+set max_console_history_size 50
+</span><span class="add">+
+</span><span class="add">+# Try to keep so much space between the top/bottom border when scrolling:
+</span><span class="add">+set scroll_offset 8
+</span><span class="add">+
+</span><span class="add">+# Flush the input after each key hit?  (Noticeable when ranger lags)
+</span><span class="add">+set flushinput true
+</span><span class="add">+
+</span><span class="add">+# Padding on the right when there&apos;s no preview?
+</span><span class="add">+# This allows you to click into the space to run the file.
+</span><span class="add">+set padding_right false
+</span><span class="add">+
+</span><span class="add">+# Save bookmarks (used with mX and `X) instantly?
+</span><span class="add">+# This helps to synchronize bookmarks between multiple ranger
+</span><span class="add">+# instances but leads to *slight* performance loss.
+</span><span class="add">+# When false, bookmarks are saved when ranger is exited.
+</span><span class="add">+set autosave_bookmarks true
+</span><span class="add">+
+</span><span class="add">+# Save the &quot;`&quot; bookmark to disk.  This can be used to switch to the last
+</span><span class="add">+# directory by typing &quot;``&quot;.
+</span><span class="add">+set save_backtick_bookmark true
+</span><span class="add">+
+</span><span class="add">+# You can display the &quot;real&quot; cumulative size of directories by using the
+</span><span class="add">+# command :get_cumulative_size or typing &quot;dc&quot;.  The size is expensive to
+</span><span class="add">+# calculate and will not be updated automatically.  You can choose
+</span><span class="add">+# to update it automatically though by turning on this option:
+</span><span class="add">+set autoupdate_cumulative_size false
+</span><span class="add">+
+</span><span class="add">+# Turning this on makes sense for screen readers:
+</span><span class="add">+set show_cursor false
+</span><span class="add">+
+</span><span class="add">+# One of: size, natural, basename, atime, ctime, mtime, type, random
+</span><span class="add">+set sort natural
+</span><span class="add">+
+</span><span class="add">+# Additional sorting options
+</span><span class="add">+set sort_reverse false
+</span><span class="add">+set sort_case_insensitive true
+</span><span class="add">+set sort_directories_first true
+</span><span class="add">+set sort_unicode false
+</span><span class="add">+
+</span><span class="add">+# Enable this if key combinations with the Alt Key don&apos;t work for you.
+</span><span class="add">+# (Especially on xterm)
+</span><span class="add">+set xterm_alt_key false
+</span><span class="add">+
+</span><span class="add">+# Whether to include bookmarks in cd command
+</span><span class="add">+set cd_bookmarks true
+</span><span class="add">+
+</span><span class="add">+# Changes case sensitivity for the cd command tab completion
+</span><span class="add">+set cd_tab_case insensitive
+</span><span class="add">+
+</span><span class="add">+# Use fuzzy tab completion with the &quot;cd&quot; command. For example,
+</span><span class="add">+# &quot;:cd /u/lo/b&lt;tab&gt;&quot; expands to &quot;:cd /usr/local/bin&quot;.
+</span><span class="add">+set cd_tab_fuzzy false
+</span><span class="add">+
+</span><span class="add">+# Avoid previewing files larger than this size, in bytes.  Use a value of 0 to
+</span><span class="add">+# disable this feature.
+</span><span class="add">+set preview_max_size 0
+</span><span class="add">+
+</span><span class="add">+# Add the highlighted file to the path in the titlebar
+</span><span class="add">+set show_selection_in_titlebar true
+</span><span class="add">+
+</span><span class="add">+# The delay that ranger idly waits for user input, in milliseconds, with a
+</span><span class="add">+# resolution of 100ms.  Lower delay reduces lag between directory updates but
+</span><span class="add">+# increases CPU load.
+</span><span class="add">+set idle_delay 2000
+</span><span class="add">+
+</span><span class="add">+# When the metadata manager module looks for metadata, should it only look for
+</span><span class="add">+# a &quot;.metadata.json&quot; file in the current directory, or do a deep search and
+</span><span class="add">+# check all directories above the current one as well?
+</span><span class="add">+set metadata_deep_search false
+</span><span class="add">+
+</span><span class="add">+# Clear all existing filters when leaving a directory
+</span><span class="add">+set clear_filters_on_dir_change false
+</span><span class="add">+
+</span><span class="add">+# Disable displaying line numbers in main column
+</span><span class="add">+set line_numbers true
+</span><span class="add">+
+</span><span class="add">+# Start line numbers from 1 instead of 0
+</span><span class="add">+set one_indexed false
+</span><span class="add">+
+</span><span class="add">+# Save tabs on exit
+</span><span class="add">+set save_tabs_on_exit false
+</span><span class="add">+
+</span><span class="add">+# Enable scroll wrapping - moving down while on the last item will wrap around to
+</span><span class="add">+# the top and vice versa.
+</span><span class="add">+set wrap_scroll true
+</span><span class="add">+
+</span><span class="add">+# Set the global_inode_type_filter to nothing.  Possible options: d, f and l for
+</span><span class="add">+# directories, files and symlinks respectively.
+</span><span class="add">+set global_inode_type_filter
+</span><span class="add">+
+</span><span class="add">+# ===================================================================
+</span><span class="add">+# == Local Options
+</span><span class="add">+# ===================================================================
+</span><span class="add">+# You can set local options that only affect a single directory.
+</span><span class="add">+
+</span><span class="add">+# Examples:
+</span><span class="add">+# setlocal path=~/downloads sort mtime
+</span><span class="add">+
+</span><span class="add">+# ===================================================================
+</span><span class="add">+# == Command Aliases in the Console
+</span><span class="add">+# ===================================================================
+</span><span class="add">+
+</span><span class="add">+alias e     edit
+</span><span class="add">+alias q     quit
+</span><span class="add">+alias q!    quit!
+</span><span class="add">+alias qa    quitall
+</span><span class="add">+alias qa!   quitall!
+</span><span class="add">+alias qall  quitall
+</span><span class="add">+alias qall! quitall!
+</span><span class="add">+alias setl  setlocal
+</span><span class="add">+
+</span><span class="add">+alias filter     scout -prt
+</span><span class="add">+alias find       scout -aeit
+</span><span class="add">+alias mark       scout -mr
+</span><span class="add">+alias unmark     scout -Mr
+</span><span class="add">+alias search     scout -rs
+</span><span class="add">+alias search_inc scout -rts
+</span><span class="add">+alias travel     scout -aefklst
+</span><span class="add">+
+</span><span class="add">+# ===================================================================
+</span><span class="add">+# == Define keys for the browser
+</span><span class="add">+# ===================================================================
+</span><span class="add">+
+</span><span class="add">+# Basic
+</span><span class="add">+map     Q quitall
+</span><span class="add">+map     q quit
+</span><span class="add">+copymap q ZZ ZQ
+</span><span class="add">+
+</span><span class="add">+map R     reload_cwd
+</span><span class="add">+map F     set freeze_files!
+</span><span class="add">+map &lt;C-r&gt; reset
+</span><span class="add">+map &lt;C-l&gt; redraw_window
+</span><span class="add">+map &lt;C-c&gt; abort
+</span><span class="add">+map &lt;esc&gt; change_mode normal
+</span><span class="add">+map ~ set viewmode!
+</span><span class="add">+
+</span><span class="add">+map i display_file
+</span><span class="add">+map ? help
+</span><span class="add">+map W display_log
+</span><span class="add">+map w taskview_open
+</span><span class="add">+map S shell $SHELL
+</span><span class="add">+
+</span><span class="add">+map :  console
+</span><span class="add">+map ;  console
+</span><span class="add">+map !  console shell%space
+</span><span class="add">+map @  console -p6 shell  %%s
+</span><span class="add">+map #  console shell -p%space
+</span><span class="add">+map s  console shell%space
+</span><span class="add">+map r  chain draw_possible_programs; console open_with%%space
+</span><span class="add">+map f  console find%space
+</span><span class="add">+map cd console cd%space
+</span><span class="add">+
+</span><span class="add">+# Change the line mode
+</span><span class="add">+map Mf linemode filename
+</span><span class="add">+map Mi linemode fileinfo
+</span><span class="add">+map Mm linemode mtime
+</span><span class="add">+map Mp linemode permissions
+</span><span class="add">+map Ms linemode sizemtime
+</span><span class="add">+map Mt linemode metatitle
+</span><span class="add">+
+</span><span class="add">+# Tagging / Marking
+</span><span class="add">+map t       tag_toggle
+</span><span class="add">+map ut      tag_remove
+</span><span class="add">+map &quot;&lt;any&gt;  tag_toggle tag=%any
+</span><span class="add">+map &lt;Space&gt; mark_files toggle=True
+</span><span class="add">+map v       mark_files all=True toggle=True
+</span><span class="add">+map uv      mark_files all=True val=False
+</span><span class="add">+map V       toggle_visual_mode
+</span><span class="add">+map uV      toggle_visual_mode reverse=True
+</span><span class="add">+
+</span><span class="add">+# VIM-like navigation
+</span><span class="add">+map k	    move up=1
+</span><span class="add">+map j 	    move down=1
+</span><span class="add">+map h 	    move left=1
+</span><span class="add">+map l 	    move right=1
+</span><span class="add">+map gg	    move to=0
+</span><span class="add">+map G	    move to=-1
+</span><span class="add">+map &lt;C-F&gt;   move down=1   pages=True
+</span><span class="add">+map &lt;C-B&gt;   move up=1     pages=True
+</span><span class="add">+map &lt;CR&gt;    move right=1
+</span><span class="add">+map J	    move down=0.5  pages=True
+</span><span class="add">+map K  	    move up=0.5    pages=True
+</span><span class="add">+copymap J   &lt;C-D&gt;
+</span><span class="add">+copymap K   &lt;C-U&gt;
+</span><span class="add">+
+</span><span class="add">+# Jumping around
+</span><span class="add">+map H     history_go -1
+</span><span class="add">+map L     history_go 1
+</span><span class="add">+map ]     move_parent 1
+</span><span class="add">+map [     move_parent -1
+</span><span class="add">+map }     traverse
+</span><span class="add">+map )     jump_non
+</span><span class="add">+
+</span><span class="add">+# External Programs
+</span><span class="add">+map E  edit
+</span><span class="add">+map du shell -p du --max-depth=1 -h --apparent-size
+</span><span class="add">+map dU shell -p du --max-depth=1 -h --apparent-size | sort -rh
+</span><span class="add">+map yp yank path
+</span><span class="add">+map yd yank dir
+</span><span class="add">+map yn yank name
+</span><span class="add">+
+</span><span class="add">+# Filesystem Operations
+</span><span class="add">+map =  chmod
+</span><span class="add">+
+</span><span class="add">+map cw console rename%space
+</span><span class="add">+map a  rename_append
+</span><span class="add">+map A  eval fm.open_console(&apos;rename &apos; + fm.thisfile.relative_path.replace(&quot;%&quot;, &quot;%%&quot;))
+</span><span class="add">+map I  eval fm.open_console(&apos;rename &apos; + fm.thisfile.relative_path.replace(&quot;%&quot;, &quot;%%&quot;), position=7)
+</span><span class="add">+
+</span><span class="add">+map pp paste
+</span><span class="add">+map po paste overwrite=True
+</span><span class="add">+map pP paste append=True
+</span><span class="add">+map pO paste overwrite=True append=True
+</span><span class="add">+map pl paste_symlink relative=False
+</span><span class="add">+map pL paste_symlink relative=True
+</span><span class="add">+map phl paste_hardlink
+</span><span class="add">+map pht paste_hardlinked_subtree
+</span><span class="add">+
+</span><span class="add">+map dD console delete
+</span><span class="add">+
+</span><span class="add">+map dd cut
+</span><span class="add">+map ud uncut
+</span><span class="add">+map da cut mode=add
+</span><span class="add">+map dr cut mode=remove
+</span><span class="add">+map dt cut mode=toggle
+</span><span class="add">+
+</span><span class="add">+map yy copy
+</span><span class="add">+map uy uncut
+</span><span class="add">+map ya copy mode=add
+</span><span class="add">+map yr copy mode=remove
+</span><span class="add">+map yt copy mode=toggle
+</span><span class="add">+map DD shell bin &apos;%s&apos;
+</span><span class="add">+
+</span><span class="add">+# Temporary workarounds
+</span><span class="add">+map dgg eval fm.cut(dirarg=dict(to=0), narg=quantifier)
+</span><span class="add">+map dG  eval fm.cut(dirarg=dict(to=-1), narg=quantifier)
+</span><span class="add">+map dj  eval fm.cut(dirarg=dict(down=1), narg=quantifier)
+</span><span class="add">+map dk  eval fm.cut(dirarg=dict(up=1), narg=quantifier)
+</span><span class="add">+map ygg eval fm.copy(dirarg=dict(to=0), narg=quantifier)
+</span><span class="add">+map yG  eval fm.copy(dirarg=dict(to=-1), narg=quantifier)
+</span><span class="add">+map yj  eval fm.copy(dirarg=dict(down=1), narg=quantifier)
+</span><span class="add">+map yk  eval fm.copy(dirarg=dict(up=1), narg=quantifier)
+</span><span class="add">+
+</span><span class="add">+# Searching
+</span><span class="add">+map /  console search%space
+</span><span class="add">+map n  search_next
+</span><span class="add">+map N  search_next forward=False
+</span><span class="add">+map ct search_next order=tag
+</span><span class="add">+map cs search_next order=size
+</span><span class="add">+map ci search_next order=mimetype
+</span><span class="add">+map cc search_next order=ctime
+</span><span class="add">+map cm search_next order=mtime
+</span><span class="add">+map ca search_next order=atime
+</span><span class="add">+
+</span><span class="add">+# Tabs
+</span><span class="add">+map &lt;C-n&gt;     tab_new
+</span><span class="add">+map &lt;C-w&gt;     tab_close
+</span><span class="add">+map &lt;TAB&gt;     tab_move 1
+</span><span class="add">+map &lt;S-TAB&gt;   tab_move -1
+</span><span class="add">+map &lt;A-Right&gt; tab_move 1
+</span><span class="add">+map &lt;A-Left&gt;  tab_move -1
+</span><span class="add">+map gt        tab_move 1
+</span><span class="add">+map gT        tab_move -1
+</span><span class="add">+map gn        tab_new
+</span><span class="add">+map &lt;c-n&gt;  eval fm.tab_new(&apos;%d&apos;)
+</span><span class="add">+#map gc        tab_close
+</span><span class="add">+map uq        tab_restore
+</span><span class="add">+map &lt;a-1&gt;     tab_open 1
+</span><span class="add">+map &lt;a-2&gt;     tab_open 2
+</span><span class="add">+map &lt;a-3&gt;     tab_open 3
+</span><span class="add">+map &lt;a-4&gt;     tab_open 4
+</span><span class="add">+map &lt;a-5&gt;     tab_open 5
+</span><span class="add">+map &lt;a-6&gt;     tab_open 6
+</span><span class="add">+map &lt;a-7&gt;     tab_open 7
+</span><span class="add">+map &lt;a-8&gt;     tab_open 8
+</span><span class="add">+map &lt;a-9&gt;     tab_open 9
+</span><span class="add">+
+</span><span class="add">+# Sorting
+</span><span class="add">+map or set sort_reverse!
+</span><span class="add">+map oz set sort=random
+</span><span class="add">+map os chain set sort=size;      set sort_reverse=False
+</span><span class="add">+map ob chain set sort=basename;  set sort_reverse=False
+</span><span class="add">+map on chain set sort=natural;   set sort_reverse=False
+</span><span class="add">+map om chain set sort=mtime;     set sort_reverse=False
+</span><span class="add">+map oc chain set sort=ctime;     set sort_reverse=False
+</span><span class="add">+map oa chain set sort=atime;     set sort_reverse=False
+</span><span class="add">+map ot chain set sort=type;      set sort_reverse=False
+</span><span class="add">+map oe chain set sort=extension; set sort_reverse=False
+</span><span class="add">+
+</span><span class="add">+map oS chain set sort=size;      set sort_reverse=True
+</span><span class="add">+map oB chain set sort=basename;  set sort_reverse=True
+</span><span class="add">+map oN chain set sort=natural;   set sort_reverse=True
+</span><span class="add">+map oM chain set sort=mtime;     set sort_reverse=True
+</span><span class="add">+map oC chain set sort=ctime;     set sort_reverse=True
+</span><span class="add">+map oA chain set sort=atime;     set sort_reverse=True
+</span><span class="add">+map oT chain set sort=type;      set sort_reverse=True
+</span><span class="add">+map oE chain set sort=extension; set sort_reverse=True
+</span><span class="add">+
+</span><span class="add">+map dc get_cumulative_size
+</span><span class="add">+
+</span><span class="add">+# Settings
+</span><span class="add">+map zc    set collapse_preview!
+</span><span class="add">+map zd    set sort_directories_first!
+</span><span class="add">+map zh    set show_hidden!
+</span><span class="add">+map &lt;C-h&gt; set show_hidden!
+</span><span class="add">+map zI    set flushinput!
+</span><span class="add">+map zi    set preview_images!
+</span><span class="add">+map zm    set mouse_enabled!
+</span><span class="add">+map zp    set preview_files!
+</span><span class="add">+map zP    set preview_directories!
+</span><span class="add">+map zs    set sort_case_insensitive!
+</span><span class="add">+map zu    set autoupdate_cumulative_size!
+</span><span class="add">+map zv    set use_preview_script!
+</span><span class="add">+map zf    console filter%space
+</span><span class="add">+copymap zf zz
+</span><span class="add">+
+</span><span class="add">+# Bookmarks
+</span><span class="add">+map `&lt;any&gt;  enter_bookmark %any
+</span><span class="add">+map &apos;&lt;any&gt;  enter_bookmark %any
+</span><span class="add">+map m&lt;any&gt;  set_bookmark %any
+</span><span class="add">+map um&lt;any&gt; unset_bookmark %any
+</span><span class="add">+
+</span><span class="add">+map m&lt;bg&gt;   draw_bookmarks
+</span><span class="add">+copymap m&lt;bg&gt;  um&lt;bg&gt; `&lt;bg&gt; &apos;&lt;bg&gt;
+</span><span class="add">+
+</span><span class="add">+# Generate all the chmod bindings with some python help:
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map +u{0} shell -f chmod u+{0} %s&quot;.format(arg))
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map +g{0} shell -f chmod g+{0} %s&quot;.format(arg))
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map +o{0} shell -f chmod o+{0} %s&quot;.format(arg))
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map +a{0} shell -f chmod a+{0} %s&quot;.format(arg))
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map +{0}  shell -f chmod u+{0} %s&quot;.format(arg))
+</span><span class="add">+
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map -u{0} shell -f chmod u-{0} %s&quot;.format(arg))
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map -g{0} shell -f chmod g-{0} %s&quot;.format(arg))
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map -o{0} shell -f chmod o-{0} %s&quot;.format(arg))
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map -a{0} shell -f chmod a-{0} %s&quot;.format(arg))
+</span><span class="add">+eval for arg in &quot;rwxXst&quot;: cmd(&quot;map -{0}  shell -f chmod u-{0} %s&quot;.format(arg))
+</span><span class="add">+
+</span><span class="add">+# ===================================================================
+</span><span class="add">+# == Define keys for the console
+</span><span class="add">+# ===================================================================
+</span><span class="add">+# Note: Unmapped keys are passed directly to the console.
+</span><span class="add">+
+</span><span class="add">+# Basic
+</span><span class="add">+cmap &lt;tab&gt;   eval fm.ui.console.tab()
+</span><span class="add">+cmap &lt;s-tab&gt; eval fm.ui.console.tab(-1)
+</span><span class="add">+cmap &lt;ESC&gt;   eval fm.ui.console.close()
+</span><span class="add">+cmap &lt;CR&gt;    eval fm.ui.console.execute()
+</span><span class="add">+cmap &lt;C-l&gt;   redraw_window
+</span><span class="add">+
+</span><span class="add">+copycmap &lt;ESC&gt; &lt;C-c&gt;
+</span><span class="add">+copycmap &lt;CR&gt;  &lt;C-j&gt;
+</span><span class="add">+
+</span><span class="add">+# Move around
+</span><span class="add">+cmap &lt;up&gt;    eval fm.ui.console.history_move(-1)
+</span><span class="add">+cmap &lt;down&gt;  eval fm.ui.console.history_move(1)
+</span><span class="add">+cmap &lt;left&gt;  eval fm.ui.console.move(left=1)
+</span><span class="add">+cmap &lt;right&gt; eval fm.ui.console.move(right=1)
+</span><span class="add">+cmap &lt;home&gt;  eval fm.ui.console.move(right=0, absolute=True)
+</span><span class="add">+cmap &lt;end&gt;   eval fm.ui.console.move(right=-1, absolute=True)
+</span><span class="add">+cmap &lt;a-left&gt;   eval fm.ui.console.move_word(left=1)
+</span><span class="add">+cmap &lt;a-right&gt;  eval fm.ui.console.move_word(right=1)
+</span><span class="add">+
+</span><span class="add">+# Line Editing
+</span><span class="add">+cmap &lt;backspace&gt;  eval fm.ui.console.delete(-1)
+</span><span class="add">+cmap &lt;delete&gt;     eval fm.ui.console.delete(0)
+</span><span class="add">+cmap &lt;C-w&gt;        eval fm.ui.console.delete_word()
+</span><span class="add">+cmap &lt;A-d&gt;        eval fm.ui.console.delete_word(backward=False)
+</span><span class="add">+cmap &lt;C-k&gt;        eval fm.ui.console.delete_rest(1)
+</span><span class="add">+cmap &lt;C-u&gt;        eval fm.ui.console.delete_rest(-1)
+</span><span class="add">+cmap &lt;C-y&gt;        eval fm.ui.console.paste()
+</span><span class="add">+
+</span><span class="add">+# And of course the emacs way
+</span><span class="add">+copycmap &lt;up&gt;        &lt;C-p&gt;
+</span><span class="add">+copycmap &lt;down&gt;      &lt;C-n&gt;
+</span><span class="add">+copycmap &lt;left&gt;      &lt;C-b&gt;
+</span><span class="add">+copycmap &lt;right&gt;     &lt;C-f&gt;
+</span><span class="add">+copycmap &lt;home&gt;      &lt;C-a&gt;
+</span><span class="add">+copycmap &lt;end&gt;       &lt;C-e&gt;
+</span><span class="add">+copycmap &lt;delete&gt;    &lt;C-d&gt;
+</span><span class="add">+copycmap &lt;backspace&gt; &lt;C-h&gt;
+</span><span class="add">+
+</span><span class="add">+# Note: There are multiple ways to express backspaces.  &lt;backspace&gt; (code 263)
+</span><span class="add">+# and &lt;backspace2&gt; (code 127).  To be sure, use both.
+</span><span class="add">+copycmap &lt;backspace&gt; &lt;backspace2&gt;
+</span><span class="add">+
+</span><span class="add">+# This special expression allows typing in numerals:
+</span><span class="add">+cmap &lt;allow_quantifiers&gt; false
+</span><span class="add">+
+</span><span class="add">+# ===================================================================
+</span><span class="add">+# == Pager Keybindings
+</span><span class="add">+# ===================================================================
+</span><span class="add">+
+</span><span class="add">+# Movement
+</span><span class="add">+pmap  &lt;down&gt;      pager_move  down=1
+</span><span class="add">+pmap  &lt;up&gt;        pager_move  up=1
+</span><span class="add">+pmap  &lt;left&gt;      pager_move  left=4
+</span><span class="add">+pmap  &lt;right&gt;     pager_move  right=4
+</span><span class="add">+pmap  &lt;home&gt;      pager_move  to=0
+</span><span class="add">+pmap  &lt;end&gt;       pager_move  to=-1
+</span><span class="add">+pmap  &lt;pagedown&gt;  pager_move  down=1.0  pages=True
+</span><span class="add">+pmap  &lt;pageup&gt;    pager_move  up=1.0    pages=True
+</span><span class="add">+pmap  &lt;C-d&gt;       pager_move  down=0.5  pages=True
+</span><span class="add">+pmap  &lt;C-u&gt;       pager_move  up=0.5    pages=True
+</span><span class="add">+
+</span><span class="add">+copypmap &lt;UP&gt;       k  &lt;C-p&gt;
+</span><span class="add">+copypmap &lt;DOWN&gt;     j  &lt;C-n&gt; &lt;CR&gt;
+</span><span class="add">+copypmap &lt;LEFT&gt;     h
+</span><span class="add">+copypmap &lt;RIGHT&gt;    l
+</span><span class="add">+copypmap &lt;HOME&gt;     g
+</span><span class="add">+copypmap &lt;END&gt;      G
+</span><span class="add">+copypmap &lt;C-d&gt;      d
+</span><span class="add">+copypmap &lt;C-u&gt;      u
+</span><span class="add">+copypmap &lt;PAGEDOWN&gt; n  f  &lt;C-F&gt;  &lt;Space&gt;
+</span><span class="add">+copypmap &lt;PAGEUP&gt;   p  b  &lt;C-B&gt;
+</span><span class="add">+
+</span><span class="add">+# Basic
+</span><span class="add">+pmap     &lt;C-l&gt; redraw_window
+</span><span class="add">+pmap     &lt;ESC&gt; pager_close
+</span><span class="add">+copypmap &lt;ESC&gt; q Q i &lt;F3&gt;
+</span><span class="add">+pmap E      edit_file
+</span><span class="add">+
+</span><span class="add">+# ===================================================================
+</span><span class="add">+# == Taskview Keybindings
+</span><span class="add">+# ===================================================================
+</span><span class="add">+
+</span><span class="add">+# Movement
+</span><span class="add">+tmap &lt;up&gt;        taskview_move up=1
+</span><span class="add">+tmap &lt;down&gt;      taskview_move down=1
+</span><span class="add">+tmap &lt;home&gt;      taskview_move to=0
+</span><span class="add">+tmap &lt;end&gt;       taskview_move to=-1
+</span><span class="add">+tmap &lt;pagedown&gt;  taskview_move down=1.0  pages=True
+</span><span class="add">+tmap &lt;pageup&gt;    taskview_move up=1.0    pages=True
+</span><span class="add">+tmap &lt;C-d&gt;       taskview_move down=0.5  pages=True
+</span><span class="add">+tmap &lt;C-u&gt;       taskview_move up=0.5    pages=True
+</span><span class="add">+
+</span><span class="add">+copytmap &lt;UP&gt;       k  &lt;C-p&gt;
+</span><span class="add">+copytmap &lt;DOWN&gt;     j  &lt;C-n&gt; &lt;CR&gt;
+</span><span class="add">+copytmap &lt;HOME&gt;     g
+</span><span class="add">+copytmap &lt;END&gt;      G
+</span><span class="add">+copytmap &lt;C-u&gt;      u
+</span><span class="add">+copytmap &lt;PAGEDOWN&gt; n  f  &lt;C-F&gt;  &lt;Space&gt;
+</span><span class="add">+copytmap &lt;PAGEUP&gt;   p  b  &lt;C-B&gt;
+</span><span class="add">+
+</span><span class="add">+# Changing priority and deleting tasks
+</span><span class="add">+tmap J          eval -q fm.ui.taskview.task_move(-1)
+</span><span class="add">+tmap K          eval -q fm.ui.taskview.task_move(0)
+</span><span class="add">+tmap dd         eval -q fm.ui.taskview.task_remove()
+</span><span class="add">+tmap &lt;pagedown&gt; eval -q fm.ui.taskview.task_move(-1)
+</span><span class="add">+tmap &lt;pageup&gt;   eval -q fm.ui.taskview.task_move(0)
+</span><span class="add">+tmap &lt;delete&gt;   eval -q fm.ui.taskview.task_remove()
+</span><span class="add">+
+</span><span class="add">+# Basic
+</span><span class="add">+tmap &lt;C-l&gt; redraw_window
+</span><span class="add">+tmap &lt;ESC&gt; taskview_close
+</span><span class="add">+copytmap &lt;ESC&gt; q Q w &lt;C-c&gt;
+</span><span class="add">+
+</span><span class="add">+map gL cd -r %f
+</span><span class="add">+map gl cd -r .
+</span><span class="add">+map gR eval fm.cd(ranger.RANGERDIR)
+</span><span class="add">+
+</span><span class="add">+map cw eval fm.execute_console(&apos;bulkrename&apos;) if fm.thisdir.marked_items else fm.open_console(&apos;rename &apos;)
+</span><span class="add">+
+</span><span class="add">+# rotate image
+</span><span class="add">+map r noop
+</span><span class="add">+map r1 shell mogrify -rotate 90 %s
+</span><span class="add">+map r2 shell mogrify -rotate 180 %s
+</span><span class="add">+map r3 shell mogrify -rotate 270 %s
+</span><span class="add">+
+</span><span class="add">+# drag files
+</span><span class="add">+map &lt;C-d&gt; shell dragon -a -x %p
+</span><span class="add">+
+</span><span class="add">+# filter while finding
+</span><span class="add">+map f console scout -ftsea%space
+</span><span class="add">+
+</span><span class="add">+# open split in tmux
+</span><span class="add">+map ev eval import shlex; fm.run(&quot;tmux splitw -v rifle &quot; + shlex.quote(fm.thisfile.basename))
+</span><span class="add">+
+</span><span class="add">+# shortcuts
+</span><span class="add">+map gh cd ~
+</span><span class="add">+map gd cd ~/documents
+</span><span class="add">+map gD cd ~/Desktop
+</span><span class="add">+map gH cd /mnt/home
+</span><span class="add">+map gM cd /media
+</span><span class="add">+map gN cd /mnt
+</span><span class="add">+map ge cd /etc
+</span><span class="add">+map g/ cd /
+</span><span class="add">+map gS cd /etc/systemd/system
+</span><span class="add">+
+</span><span class="add">+map gc cd ~/.config
+</span><span class="add">+map gx cd ~/.Xresources.d
+</span><span class="add">+map gm cd ~/media
+</span><span class="add">+map gb cd ~/bin
+</span><span class="add">+map gP cd ~/pictures
+</span><span class="add">+map gw cd ~/work
+</span><span class="add">+map ga cd ~/work/analysis
+</span><span class="add">+map gp cd ~/work/research/papers
+</span><span class="add">+map gf cd ~/work/analysis/Figures
+</span><span class="add">+map gW cd ~/work/research/research.wiki
+</span><span class="add">+map gr cd ~/work/analysis/rochefort-tools
+</span><span class="add">+map gv cd ~/.vim
+</span><span class="add">+map gC cd ~/documents/C
+</span><span class="add">+map gD cd ~/Downloads
+</span><span class="add">+map gz cd ~/.zsh
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>install</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,3 +23,8 @@
+<span class="def"> then
+</span><span class="def"> 	echo &quot;zsh is not installed on this system.&quot;
+</span><span class="def"> fi
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# symlink ranger config
+</span><span class="add">+mkdir -p $HOME/.config/ranger
+</span><span class="add">+ln -s $dir/rc.conf $HOME/.config/ranger/rc.conf
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -33,6 +33,7 @@
+<span class="def"> alias grm=&quot;git rm&quot;
+</span><span class="def"> alias br=&quot;git branch&quot;
+</span><span class="def"> alias ch=&quot;git checkout&quot;
+</span><span class="add">+alias dif=&quot;git diff&quot;
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&quot;rsync -avPzh --delete&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

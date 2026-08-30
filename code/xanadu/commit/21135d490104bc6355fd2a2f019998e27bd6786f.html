@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Make main less penetrable</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/21135d490104bc6355fd2a2f019998e27bd6786f.html">21135d490104bc6355fd2a2f019998e27bd6786f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/f7ff274355999e98090fd2d711f96f3f4f664744.html">f7ff274355999e98090fd2d711f96f3f4f664744</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-03 16:06:12 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-03 16:06:12 +0000
+
+Make main less penetrable
+</pre><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,6 +7,7 @@
+<span class="def"> import Style (initStyle)
+</span><span class="def"> import Window (initWindow)
+</span><span class="def"> 
+</span><span class="add">+import Control.Monad ((&lt;=&lt;))
+</span><span class="def"> import Data.GI.Base
+</span><span class="def"> import qualified GI.Gio as Gio
+</span><span class="def"> import qualified GI.Gtk as Gtk
+</span>@@ -22,10 +23,5 @@
+<span class="def">     return ()
+</span><span class="def"> 
+</span><span class="def"> activateApp :: Gtk.Application -&gt; IO ()
+</span><span class="sub">-activateApp app = do
+</span><span class="sub">-    win &lt;- initWindow app
+</span><span class="sub">-    initStyle win
+</span><span class="sub">-    iconView &lt;- initIcons win
+</span><span class="sub">-    #add win iconView
+</span><span class="sub">-    #showAll win
+</span><span class="sub">-    return ()
+</span><span class="add">+activateApp =
+</span><span class="add">+    mconcat . sequenceA [initStyle, initIcons, Gtk.widgetShowAll] &lt;=&lt; initWindow
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Icons.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,7 +21,7 @@
+<span class="def"> import qualified GI.Gio as Gio
+</span><span class="def"> import qualified GI.Gtk as Gtk
+</span><span class="def"> 
+</span><span class="sub">-initIcons :: Gtk.ApplicationWindow -&gt; IO Gtk.IconView
+</span><span class="add">+initIcons :: Gtk.ApplicationWindow -&gt; IO ()
+</span><span class="def"> initIcons win = do
+</span><span class="def">     pixbufGType &lt;- glibType @Pixbuf.Pixbuf
+</span><span class="def">     listStore &lt;- Gtk.listStoreNew [GType.gtypeString, pixbufGType]
+</span>@@ -39,7 +39,8 @@
+<span class="def">         , #activateOnSingleClick := True
+</span><span class="def">         ]
+</span><span class="def">     on iconView #itemActivated $ onItemActivated listStore root
+</span><span class="sub">-    return iconView
+</span><span class="add">+    Gtk.containerAdd win iconView
+</span><span class="add">+    return ()
+</span><span class="def"> 
+</span><span class="def"> -- Root folder is $(XDG_DESKTOP_DIR:-$HOME/Desktop)
+</span><span class="def"> getRoot :: IO FilePath
+</span></pre>
+</div></div>
+  </body>
+</html>

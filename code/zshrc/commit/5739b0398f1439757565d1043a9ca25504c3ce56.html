@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add hex functions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/5739b0398f1439757565d1043a9ca25504c3ce56.html">5739b0398f1439757565d1043a9ca25504c3ce56</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/806413d63219c548a270fddacabe6e335ee4a35e.html">806413d63219c548a270fddacabe6e335ee4a35e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-07-28 20:48:23 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-07-28 20:48:23 +0100
+
+add hex functions
+</pre><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -46,3 +46,14 @@
+<span class="def"> sb () {
+</span><span class="def">     sed &apos;s/.*/\L&amp;/g; s/\(.\{1\}\)\(.\)/\1\U\2/g&apos; &lt;&lt;&lt; &quot;$@&quot;
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+hex_fg() {
+</span><span class="add">+    #eval printf \&quot;x1b[38\;2\;$(printf &quot;\$((16#%s));\$((16#%s));\$((16#%s))\n&quot; $(echo ${1//#} | fold -w2))m\&quot;  # &lt;- works up to leading escape
+</span><span class="add">+    eval printf \\\\\&quot;x1b[38\;2\;$(printf &quot;\$((16#%s));\$((16#%s));\$((16#%s))\n&quot; $(echo ${1//#} | fold -w2))m\&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+hex_bg() {
+</span><span class="add">+    #eval printf \&quot;x1b[38\;2\;$(printf &quot;\$((16#%s));\$((16#%s));\$((16#%s))\n&quot; $(echo ${1//#} | fold -w2))m\&quot;  # &lt;- works up to leading escape
+</span><span class="add">+    eval printf \\\\\&quot;x1b[48\;2\;$(printf &quot;\$\(\(16#%s\)\);\$\(\(16#%s\)\);\$\(\(16#%s\)\)\n&quot; $(echo ${1//#} | fold -w2))m\&quot;
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

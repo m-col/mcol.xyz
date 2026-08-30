@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - deleted some unnecessary zsh files</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/a06a985738e7287497f910c6d54f548938d585ef.html">a06a985738e7287497f910c6d54f548938d585ef</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/9ed48c7d59f689be0015cad5dd23a53a2d062f1e.html">9ed48c7d59f689be0015cad5dd23a53a2d062f1e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 01:12:11 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 01:12:11 +0000
+
+deleted some unnecessary zsh files
+</pre><div class="diff">
+  <p>
+    <b>misc.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,34 +0,0 @@
+<span class="sub">-## Load smart urls if available
+</span><span class="sub">-# bracketed-paste-magic is known buggy in zsh 5.1.1 (only), so skip it there; see #4434
+</span><span class="sub">-autoload -Uz is-at-least
+</span><span class="sub">-if [[ $ZSH_VERSION != 5.1.1 ]]; then
+</span><span class="sub">-  for d in $fpath; do
+</span><span class="sub">-  	if [[ -e &quot;$d/url-quote-magic&quot; ]]; then
+</span><span class="sub">-  		if is-at-least 5.1; then
+</span><span class="sub">-  			autoload -Uz bracketed-paste-magic
+</span><span class="sub">-  			zle -N bracketed-paste bracketed-paste-magic
+</span><span class="sub">-  		fi
+</span><span class="sub">-  		autoload -Uz url-quote-magic
+</span><span class="sub">-  		zle -N self-insert url-quote-magic
+</span><span class="sub">-      break
+</span><span class="sub">-  	fi
+</span><span class="sub">-  done
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-## jobs
+</span><span class="sub">-setopt long_list_jobs
+</span><span class="sub">-
+</span><span class="sub">-## more intelligent acking for ubuntu users
+</span><span class="sub">-if which ack-grep &amp;&gt; /dev/null; then
+</span><span class="sub">-  alias afind=&apos;ack-grep -il&apos;
+</span><span class="sub">-else
+</span><span class="sub">-  alias afind=&apos;ack -il&apos;
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-# only define LC_CTYPE if undefined
+</span><span class="sub">-if [[ -z &quot;$LC_CTYPE&quot; &amp;&amp; -z &quot;$LC_ALL&quot; ]]; then
+</span><span class="sub">-	export LC_CTYPE=${LANG%%:*} # pick the first entry from LANG
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-# recognize comments
+</span><span class="sub">-setopt interactivecomments
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>key-bindings.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,93 +0,0 @@
+<span class="sub">-# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html
+</span><span class="sub">-# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Builtins
+</span><span class="sub">-# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Standard-Widgets
+</span><span class="sub">-
+</span><span class="sub">-# Make sure that the terminal is in application mode when zle is active, since
+</span><span class="sub">-# only then values from $terminfo are valid
+</span><span class="sub">-if (( ${+terminfo[smkx]} )) &amp;&amp; (( ${+terminfo[rmkx]} )); then
+</span><span class="sub">-  function zle-line-init() {
+</span><span class="sub">-    echoti smkx
+</span><span class="sub">-  }
+</span><span class="sub">-  function zle-line-finish() {
+</span><span class="sub">-    echoti rmkx
+</span><span class="sub">-  }
+</span><span class="sub">-  zle -N zle-line-init
+</span><span class="sub">-  zle -N zle-line-finish
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-bindkey -e                                            # Use emacs key bindings
+</span><span class="sub">-
+</span><span class="sub">-bindkey &apos;\ew&apos; kill-region                             # [Esc-w] - Kill from the cursor to the mark
+</span><span class="sub">-bindkey -s &apos;\el&apos; &apos;ls\n&apos;                               # [Esc-l] - run command: ls
+</span><span class="sub">-bindkey &apos;^r&apos; history-incremental-search-backward      # [Ctrl-r] - Search backward incrementally for a specified string. The string may begin with ^ to anchor the search to the beginning of the line.
+</span><span class="sub">-if [[ &quot;${terminfo[kpp]}&quot; != &quot;&quot; ]]; then
+</span><span class="sub">-  bindkey &quot;${terminfo[kpp]}&quot; up-line-or-history       # [PageUp] - Up a line of history
+</span><span class="sub">-fi
+</span><span class="sub">-if [[ &quot;${terminfo[knp]}&quot; != &quot;&quot; ]]; then
+</span><span class="sub">-  bindkey &quot;${terminfo[knp]}&quot; down-line-or-history     # [PageDown] - Down a line of history
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-# start typing + [Up-Arrow] - fuzzy find history forward
+</span><span class="sub">-if [[ &quot;${terminfo[kcuu1]}&quot; != &quot;&quot; ]]; then
+</span><span class="sub">-  autoload -U up-line-or-beginning-search
+</span><span class="sub">-  zle -N up-line-or-beginning-search
+</span><span class="sub">-  bindkey &quot;${terminfo[kcuu1]}&quot; up-line-or-beginning-search
+</span><span class="sub">-fi
+</span><span class="sub">-# start typing + [Down-Arrow] - fuzzy find history backward
+</span><span class="sub">-if [[ &quot;${terminfo[kcud1]}&quot; != &quot;&quot; ]]; then
+</span><span class="sub">-  autoload -U down-line-or-beginning-search
+</span><span class="sub">-  zle -N down-line-or-beginning-search
+</span><span class="sub">-  bindkey &quot;${terminfo[kcud1]}&quot; down-line-or-beginning-search
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-if [[ &quot;${terminfo[khome]}&quot; != &quot;&quot; ]]; then
+</span><span class="sub">-  bindkey &quot;${terminfo[khome]}&quot; beginning-of-line      # [Home] - Go to beginning of line
+</span><span class="sub">-fi
+</span><span class="sub">-if [[ &quot;${terminfo[kend]}&quot; != &quot;&quot; ]]; then
+</span><span class="sub">-  bindkey &quot;${terminfo[kend]}&quot;  end-of-line            # [End] - Go to end of line
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-bindkey &apos; &apos; magic-space                               # [Space] - do history expansion
+</span><span class="sub">-
+</span><span class="sub">-bindkey &apos;^[[1;5C&apos; forward-word                        # [Ctrl-RightArrow] - move forward one word
+</span><span class="sub">-bindkey &apos;^[[1;5D&apos; backward-word                       # [Ctrl-LeftArrow] - move backward one word
+</span><span class="sub">-
+</span><span class="sub">-if [[ &quot;${terminfo[kcbt]}&quot; != &quot;&quot; ]]; then
+</span><span class="sub">-  bindkey &quot;${terminfo[kcbt]}&quot; reverse-menu-complete   # [Shift-Tab] - move through the completion menu backwards
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-bindkey &apos;^?&apos; backward-delete-char                     # [Backspace] - delete backward
+</span><span class="sub">-if [[ &quot;${terminfo[kdch1]}&quot; != &quot;&quot; ]]; then
+</span><span class="sub">-  bindkey &quot;${terminfo[kdch1]}&quot; delete-char            # [Delete] - delete forward
+</span><span class="sub">-else
+</span><span class="sub">-  bindkey &quot;^[[3~&quot; delete-char
+</span><span class="sub">-  bindkey &quot;^[3;5~&quot; delete-char
+</span><span class="sub">-  bindkey &quot;\e[3~&quot; delete-char
+</span><span class="sub">-fi
+</span><span class="sub">-
+</span><span class="sub">-# Edit the current command line in $EDITOR
+</span><span class="sub">-autoload -U edit-command-line
+</span><span class="sub">-zle -N edit-command-line
+</span><span class="sub">-bindkey &apos;\C-x\C-e&apos; edit-command-line
+</span><span class="sub">-
+</span><span class="sub">-# file rename magick
+</span><span class="sub">-bindkey &quot;^[m&quot; copy-prev-shell-word
+</span><span class="sub">-
+</span><span class="sub">-# consider emacs keybindings:
+</span><span class="sub">-
+</span><span class="sub">-#bindkey -e  ## emacs key bindings
+</span><span class="sub">-#
+</span><span class="sub">-#bindkey &apos;^[[A&apos; up-line-or-search
+</span><span class="sub">-#bindkey &apos;^[[B&apos; down-line-or-search
+</span><span class="sub">-#bindkey &apos;^[^[[C&apos; emacs-forward-word
+</span><span class="sub">-#bindkey &apos;^[^[[D&apos; emacs-backward-word
+</span><span class="sub">-#
+</span><span class="sub">-#bindkey -s &apos;^X^Z&apos; &apos;%-^M&apos;
+</span><span class="sub">-#bindkey &apos;^[e&apos; expand-cmd-path
+</span><span class="sub">-#bindkey &apos;^[^I&apos; reverse-menu-complete
+</span><span class="sub">-#bindkey &apos;^X^N&apos; accept-and-infer-next-history
+</span><span class="sub">-#bindkey &apos;^W&apos; kill-region
+</span><span class="sub">-#bindkey &apos;^I&apos; complete-word
+</span><span class="sub">-## Fix weird sequence that rxvt produces
+</span><span class="sub">-#bindkey -s &apos;^[[Z&apos; &apos;\t&apos;
+</span><span class="sub">-#
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,21 +0,0 @@
+<span class="sub">-function take() {
+</span><span class="sub">-  mkdir -p $@ &amp;&amp; cd ${@:$#}
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-#
+</span><span class="sub">-# Set variable &quot;$1&quot; to default value &quot;$2&quot; if &quot;$1&quot; is not yet defined.
+</span><span class="sub">-#
+</span><span class="sub">-# Arguments:
+</span><span class="sub">-#    1. name - The variable to set
+</span><span class="sub">-#    2. val  - The default value
+</span><span class="sub">-# Return value:
+</span><span class="sub">-#    0 if the variable exists, 3 if it was set
+</span><span class="sub">-#
+</span><span class="sub">-function default() {
+</span><span class="sub">-    test `typeset +m &quot;$1&quot;` &amp;&amp; return 0
+</span><span class="sub">-    typeset -g &quot;$1&quot;=&quot;$2&quot;   &amp;&amp; return 3
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-# Required for $langinfo
+</span><span class="sub">-zmodload zsh/langinfo
+</span></pre>
+</div></div>
+  </body>
+</html>

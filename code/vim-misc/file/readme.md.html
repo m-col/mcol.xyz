@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - readme.md</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- readme.md</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> To install:
+<a href="#l2" class="line" id="l2">      2</a> 
+<a href="#l3" class="line" id="l3">      3</a>     git clone https://github.com/m-col/vim-misc ~/.vim/pack/vim-misc
+<a href="#l4" class="line" id="l4">      4</a>     mv $HOME/.tmux.conf $HOME/.tmux.conf.backup
+<a href="#l5" class="line" id="l5">      5</a>     echo &quot;source ~/.vim/pack/vim-misc/tmux.conf&quot; &gt; ~/.tmux.conf
+<a href="#l6" class="line" id="l6">      6</a>     mkdir -p $HOME/.vim/{backups,sessions,swap,undo,spell}
+<a href="#l7" class="line" id="l7">      7</a>     git -C ~/.vim/pack/vim-misc submodule init
+<a href="#l8" class="line" id="l8">      8</a>     git -C ~/.vim/pack/vim-misc submodule update --remote
+<a href="#l9" class="line" id="l9">      9</a> 
+<a href="#l10" class="line" id="l10">     10</a> To update git submodule plugins:
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a>     git -C ~/.vim/pack/vim-misc submodule update --remote
+<a href="#l13" class="line" id="l13">     13</a> 
+<a href="#l14" class="line" id="l14">     14</a> To add a new git-backed plugin:
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a>     git submodule add &lt;url of git repository&gt; start/&lt;plugin name&gt;
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> To remove a plugin:
+<a href="#l19" class="line" id="l19">     19</a> 
+<a href="#l20" class="line" id="l20">     20</a>     git rm start/&lt;plugin name&gt;
+<a href="#l21" class="line" id="l21">     21</a> 
+</pre>
+  </div>
+  </body>
+</html>

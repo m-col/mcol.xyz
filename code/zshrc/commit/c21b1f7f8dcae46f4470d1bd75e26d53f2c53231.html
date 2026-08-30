@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - update</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/c21b1f7f8dcae46f4470d1bd75e26d53f2c53231.html">c21b1f7f8dcae46f4470d1bd75e26d53f2c53231</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/7d148c5f7a89530912db959208d70e3d48c79fb6.html">7d148c5f7a89530912db959208d70e3d48c79fb6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-15 00:49:22 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-15 00:49:22 +0000
+
+update
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,6 +21,7 @@
+<span class="def"> HYPHEN_INSENSITIVE=&quot;true&quot;
+</span><span class="def"> COMPLETION_WAITING_DOTS=&quot;true&quot;
+</span><span class="def"> ZSH_COMPDUMP=&quot;$HOME/.zcompdump&quot;
+</span><span class="add">+setopt NO_nomatch
+</span><span class="def"> 
+</span><span class="def"> # zsh history
+</span><span class="def"> HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span>@@ -68,6 +69,16 @@
+<span class="def"> # don&apos;t load default ranger config
+</span><span class="def"> export RANGER_LOAD_DEFAULT_RC=FALSE
+</span><span class="def"> 
+</span><span class="sub">-export PYTHONPATH=$HOME/git/reach
+</span><span class="sub">-export XKB_DEFAULT_OPTIONS=caps:swapescape,altwin:swap_alt_win
+</span><span class="sub">-export XKB_DEFAULT_LAYOUT=gb
+</span><span class="add">+export PYTHONPATH=$HOME/git/reach:$PYTHONPATH
+</span><span class="add">+
+</span><span class="add">+# mypy
+</span><span class="add">+export MYPYPATH=$PYTHONPATH
+</span><span class="add">+
+</span><span class="add">+export PAGER=&quot;less --mouse&quot;
+</span><span class="add">+
+</span><span class="add">+# If being executed via the &apos;2&apos; script
+</span><span class="add">+if [[ -n &quot;$DO2&quot; ]]
+</span><span class="add">+then
+</span><span class="add">+    z $DO2
+</span><span class="add">+    unset DO2
+</span><span class="add">+fi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>zsh-syntax-highlighting</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-Subproject commit d61ebbcbbf7da8fc35040f591e37b89272623036
+</span><span class="add">+Subproject commit c7caf57ca805abd54f11f756fda6395dd4187f8a
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>zsh-autosuggestions</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-Subproject commit 70f36c007db30a5fe1edf2b63664088b502a729c
+</span><span class="add">+Subproject commit a411ef3e0992d4839f0732ebeb9823024afaaaa8
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>z</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-Subproject commit e77e9384937bd43eb6ca8f1ba036924f4006df07
+</span><span class="add">+Subproject commit b82ac78a2d4457d2ca09973332638f123f065fd1
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,7 +23,7 @@
+<span class="def"> set column_ratios 1,3,4
+</span><span class="def"> 
+</span><span class="def"> # Which files should be hidden? (regular expression)
+</span><span class="sub">-set hidden_filter ^\.|\.(?:pyc|pyo|bak|swp)$|^lost\+found$|^__(py)?cache__$
+</span><span class="add">+set hidden_filter ^\.|\.(?:pyc|pyo|o|swp)$|^lost\+found$|^__(py)?cache__$
+</span><span class="def"> 
+</span><span class="def"> # Show hidden files? You can toggle this by typing &apos;zh&apos;
+</span><span class="def"> set show_hidden false
+</span>@@ -614,8 +614,8 @@
+<span class="def"> map r3 shell convert %s -rotate 270 %s
+</span><span class="def"> 
+</span><span class="def"> # drag files
+</span><span class="sub">-#map &lt;C-d&gt; shell dragon-drag-and-drop -a -x %p &amp;&gt; /dev/null &amp;
+</span><span class="sub">-map &lt;C-d&gt; shell cp %s /tmp/%s &amp;&amp; dragon-drag-and-drop -a -x /tmp/%s &amp;&gt; /dev/null &amp;
+</span><span class="add">+map &lt;C-d&gt; shell dragon-drag-and-drop -a -x %p &amp;&gt; /dev/null &amp;
+</span><span class="add">+#map &lt;C-d&gt; shell cp %s /tmp/%s &amp;&amp; dragon-drag-and-drop -a -x /tmp/%s &amp;&gt; /dev/null &amp;
+</span><span class="def"> 
+</span><span class="def"> # filter while finding
+</span><span class="def"> map f console scout -ftsea%space
+</span>@@ -653,23 +653,23 @@
+<span class="def"> map gD cd ~/Downloads
+</span><span class="def"> map gz cd ~/.zsh
+</span><span class="def"> map gB cd ~/.local/share/Trash/files
+</span><span class="sub">-map gq cd /usr/lib/python3.7/site-packages/libqtile
+</span><span class="add">+map gq cd ~/git/qtile
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # git
+</span><span class="sub">-map bs shell git -c color.status=always status | less -r
+</span><span class="add">+map bs shell git -c color.status=always status | less --mouse -r
+</span><span class="def"> map bm console shell git commit -m &apos;
+</span><span class="sub">-map bd shell git diff --color=always %s | less -r
+</span><span class="sub">-map bD shell git diff --color=always | less -r
+</span><span class="add">+map bd shell git diff --color=always -- %s | less --mouse -r
+</span><span class="add">+map bD shell git diff --color=always | less --mouse -r
+</span><span class="def"> map ba shell git add %s
+</span><span class="def"> map bA shell git add -f %s
+</span><span class="def"> map bc console shell git checkout%space
+</span><span class="sub">-map bp shell git push | less -r
+</span><span class="sub">-map bl shell git pull | less -r
+</span><span class="add">+map bp shell git push | less --mouse -r
+</span><span class="add">+map bl shell git pull | less --mouse -r
+</span><span class="def"> map bu shell git restore --cached %s
+</span><span class="def"> map br shell git restore %s
+</span><span class="def"> map bt shell tig
+</span><span class="sub">-map bg shell gita add $(git rev-parse --show-toplevel) | less
+</span><span class="add">+map bg shell gita add $(git rev-parse --show-toplevel) | less --mouse
+</span><span class="def"> # a plugin that adds file glyphs / icon support to Ranger:
+</span><span class="def"> # https://github.com/alexanderjeurissen/ranger_devicons
+</span><span class="def"> default_linemode devicons
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -63,8 +63,12 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> rec_screen() {
+</span><span class="sub">-    ffmpeg -f x11grab -r 30 -s 1920x1080 -i :0.0 out.mp4
+</span><span class="add">+    ffmpeg -f x11grab -r 30 -s 1920x1080 -i $DISPLAY -pix_fmt yuv420p out.mp4
+</span><span class="def"> }
+</span><span class="def"> rec_screen_mic() {
+</span><span class="sub">-    ffmpeg -f x11grab -r 30 -s 1920x1080 -i :0.0 -f pulse -ac 2 -i default out.mkv
+</span><span class="add">+    ffmpeg -f x11grab -r 30 -s 1920x1080 -i $DISPLAY -f pulse -ac 2 -i default out.mkv
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+tagans() {
+</span><span class="add">+    git log --pretty=format:&quot;%an&quot; $1...$2 | sort -u
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,13 +6,22 @@
+<span class="def"> # misc
+</span><span class="def"> alias ..=&apos;cd ../&apos;
+</span><span class="def"> alias ...=&apos;cd ../../&apos;
+</span><span class="sub">-alias l=&apos;ls -lhFv&apos;
+</span><span class="add">+alias l=&apos;ls -lhFv -I \*.o&apos;
+</span><span class="def"> alias lc=&apos;ls -c1&apos;
+</span><span class="def"> alias tmp=&apos;cd /tmp; l&apos;
+</span><span class="def"> alias _=&apos;sudo&apos;
+</span><span class="def"> alias grep=&apos;grep --exclude-dir=&quot;__pycache__&quot;&apos;
+</span><span class="def"> alias p=&apos;ps aux  | grep -v grep | grep -i&apos;
+</span><span class="def"> alias import=&apos;echo you forgot to enter python&apos;
+</span><span class="add">+alias rg=&apos;grep -r&apos;
+</span><span class="add">+vgr() { vim `grep -lr &quot;$@&quot;`; }
+</span><span class="add">+
+</span><span class="add">+if [[ -z &quot;$WAYLAND_DISPLAY&quot; ]]
+</span><span class="add">+then
+</span><span class="add">+    alias copy=&apos;xclip -selection clipboard&apos;
+</span><span class="add">+else
+</span><span class="add">+    alias copy=&apos;wl-copy&apos;
+</span><span class="add">+fi
+</span><span class="def"> 
+</span><span class="def"> # systemd
+</span><span class="def"> alias sc=&apos;systemctl&apos;
+</span>@@ -52,14 +61,20 @@
+<span class="def"> alias ad=&apos;git add&apos;
+</span><span class="def"> alias co=&apos;git commit&apos;
+</span><span class="def"> alias cm=&apos;git commit -m&apos;
+</span><span class="add">+alias ca=&apos;git commit --amend&apos;
+</span><span class="def"> alias psh=&apos;git push&apos;
+</span><span class="add">+alias pshs=&apos;git push &amp;&gt; /dev/null &amp;&apos;
+</span><span class="def"> alias fe=&apos;git fetch &amp;&amp; git status&apos;
+</span><span class="def"> alias pl=&apos;git pull&apos;
+</span><span class="sub">-alias rb=&apos;git pull --rebase upstream master&apos;
+</span><span class="add">+alias rb=&apos;git pull --rebase upstream master || git pull --rebase upstream main&apos;
+</span><span class="add">+alias rbi=&apos;git rebase -i&apos;
+</span><span class="add">+alias rbc=&apos;git rebase --continue&apos;
+</span><span class="add">+rbh() { git rebase -i HEAD~$1; }
+</span><span class="def"> alias br=&apos;git branch&apos;
+</span><span class="def"> alias brs=&apos;git branch -v&apos;
+</span><span class="def"> alias ch=&apos;git checkout&apos;
+</span><span class="def"> alias dif=&apos;git diff&apos;
+</span><span class="add">+alias diff=&apos;git diff --&apos;
+</span><span class="def"> alias dic=&apos;git diff --cached&apos;
+</span><span class="def"> alias cl=&apos;git clone&apos;
+</span><span class="def"> alias chp=&apos;git cherry-pick&apos;
+</span>@@ -67,12 +82,17 @@
+<span class="def"> alias st=&apos;git stash&apos;
+</span><span class="def"> alias stl=&apos;git stash list&apos;
+</span><span class="def"> alias stp=&apos;git stash pop&apos;
+</span><span class="add">+pr() { git fetch upstream pull/$1/head:$1 &amp;&amp; git checkout $1; }
+</span><span class="add">+lg() { git log -${1:-1}; }
+</span><span class="add">+alias lgc=&quot;git log -1 | head -1 | awk &apos;{print \$2}&apos; | copy -n&quot;
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span><span class="sub">-alias psb=&apos;python setup.py build&apos;
+</span><span class="sub">-alias psi=&apos;python setup.py install&apos;
+</span><span class="sub">-alias psiu=&apos;python setup.py install --user&apos;
+</span><span class="add">+alias psb=&apos;python setup.py -q build&apos;
+</span><span class="add">+alias psi=&apos;python setup.py -q install&apos;
+</span><span class="add">+alias psiu=&apos;python setup.py -q install --user&apos;
+</span><span class="add">+alias m=make
+</span><span class="add">+alias mc=&apos;make clean&apos;
+</span><span class="def"> 
+</span><span class="def"> # quick edits
+</span><span class="def"> alias modalia=&apos;vim $HOME/.config/aliases &amp;&amp; source $HOME/.config/aliases&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

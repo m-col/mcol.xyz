@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Remove existing index file more clearly</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/6db437d5c906dda3f895e7cb084b1bba07143d3f.html">6db437d5c906dda3f895e7cb084b1bba07143d3f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/345cebf9b1c456f24ff85c4e6924008eac30730e.html">345cebf9b1c456f24ff85c4e6924008eac30730e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-06 20:33:22 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-06 20:33:22 +0100
+
+Remove existing index file more clearly
+</pre><div class="diff">
+  <p>
+    <b>src/Index.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,6 +8,8 @@
+<span class="def"> import qualified Data.HashMap.Strict as HashMap
+</span><span class="def"> import Data.Text (Text, unpack)
+</span><span class="def"> import Path (toFilePath)
+</span><span class="add">+import Path.IO (ignoringAbsence)
+</span><span class="add">+import System.Directory (removeFile)
+</span><span class="def"> import System.FilePath (combine)
+</span><span class="def"> import Text.Ginger.GVal (GVal, toGVal)
+</span><span class="def"> import Text.Ginger.Html (Html, htmlSource)
+</span>@@ -29,7 +31,7 @@
+<span class="def"> runIndexFile env repos template = do
+</span><span class="def">     let output = combine (toFilePath . envOutput $ env) . toFilePath . templatePath $ template
+</span><span class="def">     unless (envQuiet env) . putStrLn $ &quot;Writing &quot; &lt;&gt; output
+</span><span class="sub">-    writeFile output &quot;&quot; -- Clear contents of file if it exists
+</span><span class="add">+    ignoringAbsence . removeFile $ output
+</span><span class="def">     void $
+</span><span class="def">         easyRenderM
+</span><span class="def">             (appendFile output . unpack . htmlSource)
+</span></pre>
+</div></div>
+  </body>
+</html>

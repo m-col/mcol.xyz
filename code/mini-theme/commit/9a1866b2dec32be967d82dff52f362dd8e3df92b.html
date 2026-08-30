@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mini-theme - add main CSS file for blog and stagit</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mini-theme">mini-theme</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A mini theme for the pelican static site generator</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mini-theme">https://github.com/m-col/mini-theme</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mini-theme/tree.html">Files</a> | <a href="https://mcol.xyz/code/mini-theme/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mini-theme/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mini-theme/commit/9a1866b2dec32be967d82dff52f362dd8e3df92b.html">9a1866b2dec32be967d82dff52f362dd8e3df92b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mini-theme/commit/5103344f210a23917d37e18c625e449e59befc97.html">5103344f210a23917d37e18c625e449e59befc97</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-01 01:48:18 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-01 01:48:18 +0100
+
+add main CSS file for blog and stagit
+</pre><div class="diff">
+  <p>
+    <b>static/css/main.css</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,235 @@
+<span class="add">+/* 🐱  🐭  */
+</span><span class="add">+
+</span><span class="add">+:root {
+</span><span class="add">+    --trim: #5D479D; /* purple */
+</span><span class="add">+
+</span><span class="add">+    /* code colours */
+</span><span class="add">+    --c0: #030405; /* dark */
+</span><span class="add">+    --c1: #8742a5; /* red */
+</span><span class="add">+    --c2: #e6df52; /* green */
+</span><span class="add">+    --c3: #406794; /* yellow */
+</span><span class="add">+    --c4: #8f4ff0; /* blue */
+</span><span class="add">+    --c5: var(--trim); /* purple */
+</span><span class="add">+    --c6: var(--text2); /* cyan */
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+@viewport {
+</span><span class="add">+    width: device-width;
+</span><span class="add">+    zoom: 1.0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+html {
+</span><span class="add">+    color: #000;
+</span><span class="add">+    font-family: monospace;
+</span><span class="add">+    font-size: 1em;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+body {
+</span><span class="add">+    max-width: 900px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+li {
+</span><span class="add">+    list-style-type: square;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+h1, h2 {
+</span><span class="add">+    font-size: 1em;
+</span><span class="add">+    margin: 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+h2 {
+</span><span class="add">+    font-weight: bold;
+</span><span class="add">+    text-decoration: underline;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+::selection {
+</span><span class="add">+    background: var(--trim);
+</span><span class="add">+    color: #fff;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.fas {
+</span><span class="add">+    vertical-align: -5%;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+table td {
+</span><span class="add">+    padding: 0 0.4em;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+td.link {
+</span><span class="add">+    text-align: right;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.mod {
+</span><span class="add">+    font-style: italic;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+a:target {
+</span><span class="add">+    background-color: #ddd;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+footer {
+</span><span class="add">+    margin: 15px 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+img, video {
+</span><span class="add">+    max-width: 100%;
+</span><span class="add">+    margin: 0 auto;
+</span><span class="add">+    display: block;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#avatar {
+</span><span class="add">+    width: 32px;
+</span><span class="add">+    height: 32px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#avatar:hover {
+</span><span class="add">+    transform: scaleY(-1);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+/* some of these are from stagit */
+</span><span class="add">+a.d,
+</span><span class="add">+a.h,
+</span><span class="add">+a.i,
+</span><span class="add">+a.line {
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#blob a,
+</span><span class="add">+.desc {
+</span><span class="add">+    color: #777;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#blob a:hover {
+</span><span class="add">+    color: blue;
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+table thead td {
+</span><span class="add">+    font-weight: bold;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#content table td {
+</span><span class="add">+        vertical-align: top;
+</span><span class="add">+        white-space: nowrap;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#branches tr:hover td,
+</span><span class="add">+#tags tr:hover td,
+</span><span class="add">+#index tr:hover td,
+</span><span class="add">+#log tr:hover td,
+</span><span class="add">+#files tr:hover td {
+</span><span class="add">+        background-color: #eee;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#index tr td:nth-child(2),
+</span><span class="add">+#tags tr td:nth-child(3),
+</span><span class="add">+#branches tr td:nth-child(3),
+</span><span class="add">+#log tr td:nth-child(2) {
+</span><span class="add">+        white-space: normal;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+td.num {
+</span><span class="add">+        text-align: right;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+hr {
+</span><span class="add">+        border: 0;
+</span><span class="add">+        border-top: 1px solid #777;
+</span><span class="add">+        height: 1px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+pre a.h {
+</span><span class="add">+        color: #00a;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.A,
+</span><span class="add">+span.i,
+</span><span class="add">+pre a.i {
+</span><span class="add">+        color: #070;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.D,
+</span><span class="add">+span.d,
+</span><span class="add">+pre a.d {
+</span><span class="add">+        color: #e00;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+pre a.h:hover,
+</span><span class="add">+pre a.i:hover,
+</span><span class="add">+pre a.d:hover {
+</span><span class="add">+        text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.highlight {
+</span><span class="add">+    white-space: pre-wrap;
+</span><span class="add">+    word-wrap: break-word;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.err { color: var(--c1); } /* Error */
+</span><span class="add">+.o { color: var(--c1); } /* Operator */
+</span><span class="add">+.c { color: var(--c4); } /* Comment */
+</span><span class="add">+.ch { color: var(--c4); } /* Comment.Hashbang */
+</span><span class="add">+.cm { color: var(--c4); } /* Comment.Multiline */
+</span><span class="add">+.cp { color: var(--c4); } /* Comment.Preproc */
+</span><span class="add">+.cpf{ color: var(--c4); } /* Comment.PreprocFile */
+</span><span class="add">+.c1 { color: var(--c4); } /* Comment.Single */
+</span><span class="add">+.cs { color: var(--c4); font-weight: bold } /* Comment.Special */
+</span><span class="add">+.gd { color: var(--c1); } /* Generic.Deleted */
+</span><span class="add">+.ge { font-style: italic; } /* Generic.Emph */
+</span><span class="add">+.gr { color: var(--c1); } /* Generic.Error */
+</span><span class="add">+.gh { color: var(--c0); font-weight: bold } /* Generic.Heading */
+</span><span class="add">+.gi { color: var(--c0); } /* Generic.Inserted */
+</span><span class="add">+.go { color: var(--c0); } /* Generic.Output */
+</span><span class="add">+.gp { color: var(--c0); font-weight: bold; } /* Generic.Prompt */
+</span><span class="add">+.gs { font-weight: bold; } /* Generic.Strong */
+</span><span class="add">+.gu { color: var(--c0); font-weight: bold; } /* Generic.Subheading */
+</span><span class="add">+.gt { color: var(--c0); } /* Generic.Traceback */
+</span><span class="add">+.k  { color: var(--c3); } /* Keyword */
+</span><span class="add">+.kc { color: var(--c3); font-weight: bold } /* Keyword.Constant */
+</span><span class="add">+.kd { color: var(--c3); font-weight: bold } /* Keyword.Declaration */
+</span><span class="add">+.kn { color: var(--c3); font-weight: bold } /* Keyword.Namespace */
+</span><span class="add">+.kp { color: var(--c3); font-weight: bold } /* Keyword.Pseudo */
+</span><span class="add">+.kr { color: var(--c3); font-weight: bold } /* Keyword.Reserved */
+</span><span class="add">+.kt { color: var(--c3); font-weight: bold } /* Keyword.Type */
+</span><span class="add">+.n  { color: var(--text); } /* Name */
+</span><span class="add">+.na { color: var(--c3); } /* Name.Attribute */
+</span><span class="add">+.nb { color: var(--c3); } /* Name.Builtin */
+</span><span class="add">+.nc { color: var(--c2); font-weight: bold; } /* Name.Class */
+</span><span class="add">+.no { color: var(--c2); font-weight: bold; } /* Name.Constant */
+</span><span class="add">+.nd { color: var(--c2); font-weight: bold; } /* Name.Decorator */
+</span><span class="add">+.ni { color: var(--c2); font-weight: bold; } /* Name.Entity */
+</span><span class="add">+.ne { color: var(--c2); font-weight: bold; } /* Name.Exception */
+</span><span class="add">+.nf { color: var(--c2); } /* Name.Function - used in conf code blocks */
+</span><span class="add">+.nl { color: var(--c2); font-weight: bold; } /* Name.Label */
+</span><span class="add">+.nn { color: var(--c2); font-weight: bold; } /* Name.Namespace */
+</span><span class="add">+.nt { color: var(--text); } /* Name.Tag */
+</span><span class="add">+.nv { color: var(--text); } /* Name.Variable */
+</span><span class="add">+.ow { color: #000000; font-weight: bold; } /* Operator.Word */
+</span><span class="add">+.w  { } /* Text.Whitespace */
+</span><span class="add">+.s  { color: var(--c5); } /* Literal.String */
+</span><span class="add">+.m  { color: var(--c3); } /* Literal.Number */
+</span><span class="add">+.mb { color: var(--c3); } /* Literal.Number.Bin */
+</span><span class="add">+.mf { color: var(--c3); } /* Literal.Number.Float */
+</span><span class="add">+.mh { color: var(--c3); } /* Literal.Number.Hex */
+</span><span class="add">+.mi { color: var(--c3); } /* Literal.Number.Integer */
+</span><span class="add">+.mo { color: var(--c6); font-weight: bold; } /* Literal.Number.Oct */
+</span><span class="add">+.sa { background-color: var(--c5) } /* Literal.String.Affix */
+</span><span class="add">+.sb { background-color: var(--c5) } /* Literal.String.Backtick */
+</span><span class="add">+.sc { color: var(--c5) } /* Literal.String.Char */
+</span><span class="add">+.dl { background-color: var(--c2) } /* Literal.String.Delimiter */
+</span><span class="add">+.sd { color: var(--c5); } /* Literal.String.Doc */
+</span><span class="add">+.s2 { color: var(--c5) } /* Literal.String.Double */
+</span><span class="add">+.se { color: var(--c5) font-weight: bold; } /* Literal.String.Escape */
+</span><span class="add">+.sh { color: var(--c5)} /* Literal.String.Heredoc */
+</span><span class="add">+.si { color: var(--c4); } /* Literal.String.Interpol */
+</span><span class="add">+.sx { color: var(--c4); } /* Literal.String.Other */
+</span><span class="add">+.sr { color: var(--c4); } /* Literal.String.Regex */
+</span><span class="add">+.s1 { color: var(--c4); } /* Literal.String.Single */
+</span><span class="add">+.ss { color: var(--c4); } /* Literal.String.Symbol */
+</span><span class="add">+.bp { color: var(--c2) } /* Name.Builtin.Pseudo */
+</span><span class="add">+.fm { color: var(--c2); font-weight: bold } /* Name.Function.Magic */
+</span><span class="add">+.vc { color: var(--c2) } /* Name.Variable.Class */
+</span><span class="add">+.vg { color: var(--c2); font-weight: bold } /* Name.Variable.Global */
+</span><span class="add">+.vi { color: var(--c2) } /* Name.Variable.Instance */
+</span><span class="add">+.vm { color: var(--c2) } /* Name.Variable.Magic */
+</span><span class="add">+.il { color: var(--c2); font-weight: bold } /* Literal.Number.Integer.Long */
+</span></pre>
+</div></div>
+  </body>
+</html>

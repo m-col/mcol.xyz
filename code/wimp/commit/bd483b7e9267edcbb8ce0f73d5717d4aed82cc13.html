@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - feed absolute cursor movements (with X backend) into relative movement code</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/bd483b7e9267edcbb8ce0f73d5717d4aed82cc13.html">bd483b7e9267edcbb8ce0f73d5717d4aed82cc13</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/2a74e038048162fbc53dcb6990fb62be1e8330d8.html">2a74e038048162fbc53dcb6990fb62be1e8330d8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 15:23:01 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 15:23:01 +0000
+
+feed absolute cursor movements (with X backend) into relative movement code
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -395,8 +395,17 @@
+<span class="def"> 
+</span><span class="def"> static void on_cursor_motion_absolute(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_event_pointer_motion_absolute *event = data;
+</span><span class="sub">-    wlr_cursor_warp_absolute(wimp.cursor, event-&gt;device, event-&gt;x, event-&gt;y);
+</span><span class="sub">-    process_cursor_motion(event-&gt;time_msec, 0, 0);
+</span><span class="add">+    double lx, ly;
+</span><span class="add">+    wlr_cursor_absolute_to_layout_coords(
+</span><span class="add">+	wimp.cursor, event-&gt;device, event-&gt;x, event-&gt;y, &amp;lx, &amp;ly
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    struct wlr_event_pointer_motion relative = {
+</span><span class="add">+	.device = event-&gt;device,
+</span><span class="add">+	.delta_x = lx - wimp.cursor-&gt;x,
+</span><span class="add">+	.delta_y = ly - wimp.cursor-&gt;y,
+</span><span class="add">+    };
+</span><span class="add">+    on_cursor_motion(NULL, &amp;relative);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add things</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/39f765d8f5677e3cd01fc4932cf148904e9bb25f.html">39f765d8f5677e3cd01fc4932cf148904e9bb25f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/93897239f7f931ad2633cd5d17c2075e2cc41e08.html">93897239f7f931ad2633cd5d17c2075e2cc41e08</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-09-23 20:24:04 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2024-10-14 23:41:44 +0100
+
+add things
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -63,8 +63,8 @@
+<span class="def">     EDITOR=nvim \
+</span><span class="def">     AUR_PAGER=ranger \
+</span><span class="def">     TERM=xterm \
+</span><span class="sub">-    LANG=en_US.UTF-8 \
+</span><span class="sub">-    LC_CTYPE=en_US.UTF-8 \
+</span><span class="add">+    LANG=en_GB.UTF-8 \
+</span><span class="add">+    LC_CTYPE=en_GB.UTF-8 \
+</span><span class="def">     PAGER=&quot;less --mouse&quot; \
+</span><span class="def">     RANGER_LOAD_DEFAULT_RC=FALSE
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -64,7 +64,12 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> rec_screen() {
+</span><span class="sub">-    ffmpeg -f x11grab -r 30 -s 1920x1080 -i $DISPLAY -pix_fmt yuv420p out.mp4
+</span><span class="add">+    if [[ -n &quot;$WAYLAND_DISPLAY&quot; ]]
+</span><span class="add">+    then
+</span><span class="add">+	wf-recorder
+</span><span class="add">+    else
+</span><span class="add">+	ffmpeg -f x11grab -r 30 -s 1920x1080 -i $DISPLAY -pix_fmt yuv420p out.mp4
+</span><span class="add">+    fi
+</span><span class="def"> }
+</span><span class="def"> rec_screen_mic() {
+</span><span class="def">     ffmpeg -f x11grab -r 30 -s 1920x1080 -i $DISPLAY -f pulse -ac 2 -i default out.mkv
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,6 +9,7 @@
+<span class="def"> alias l=&apos;ls -lhFv&apos;
+</span><span class="def"> alias lc=&apos;ls -c1&apos;
+</span><span class="def"> alias tmp=&apos;cd /tmp; l&apos;
+</span><span class="add">+alias gtmp=&apos;cd `mktemp -d`&apos;
+</span><span class="def"> alias _=&apos;sudo&apos;
+</span><span class="def"> alias p=&apos;ps aux  | grep -v grep | grep -i&apos;
+</span><span class="def"> alias import=&apos;echo you forgot to enter python&apos;
+</span>@@ -60,6 +61,7 @@
+<span class="def"> alias dns=&apos;cat /etc/resolv.conf&apos;
+</span><span class="def"> alias wnet=&apos;sudo netstat -nputw&apos;
+</span><span class="def"> alias wnetl=&apos;sudo netstat -nputlw&apos;
+</span><span class="add">+alias scrn=&apos;sudo systemctl restart NetworkManager&apos;
+</span><span class="def"> 
+</span><span class="def"> # launchers
+</span><span class="def"> alias ra=&apos;ranger&apos;
+</span>@@ -101,6 +103,7 @@
+<span class="def"> alias rs=&apos;git restore&apos;
+</span><span class="def"> alias rsp=&apos;git restore --patch&apos;
+</span><span class="def"> alias rss=&apos;git restore --staged&apos;
+</span><span class="add">+alias rssp=&apos;git restore --staged --patch&apos;
+</span><span class="def"> alias st=&apos;git stash&apos;
+</span><span class="def"> alias stl=&apos;git stash list&apos;
+</span><span class="def"> alias stp=&apos;git stash pop&apos;
+</span>@@ -142,4 +145,5 @@
+<span class="def"> 
+</span><span class="def"> alias c=&apos;cargo&apos;
+</span><span class="def"> alias cw=&apos;cargo-watch -c -q -x run&apos;
+</span><span class="add">+alias cb=&apos;cargo build --&apos;
+</span><span class="def"> alias cf=&apos;cargo fmt&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

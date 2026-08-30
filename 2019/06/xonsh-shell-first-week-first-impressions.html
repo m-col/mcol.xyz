@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / xonsh shell: first week, first impressions</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2019/06/xonsh-shell-first-week-first-impressions.html>xonsh shell: first week, first impressions</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>If you've ever said &quot;Oh boy I wish I could use all that cool pythonic syntax
+and algebra in my shell!&quot; then <a class="reference external" href="https://github.com/xonsh/xonsh">xonsh</a> is
+definitely worth checking out.</p>
+<p>For the past week or so I've been using xonsh, a &quot;python-powered,
+cross-platform, Unix-gazing shell language and command prompt&quot; as my main
+shell. Exploring it has been an adventure and I've learnt much, but after one
+week I can tell I've only scratched the surface.</p>
+<p>It is a superset of Python, extending it to include many aspects of shell
+syntax and behaviour. This makes for a very powerful yet flexible and usable
+language.</p>
+<p>First let me say it is awesome and worth a play if you like Python, but,
+unfortunately, it doesn't quite feel as stable as bash or zsh. However, the
+<a class="reference external" href="https://xon.sh/">docs</a> and github issues are fantastic resources to
+configure and extend it to be just as (if not more) usable as other shells.</p>
+<div class="section" id="powerful-cli-syntax">
+<h2>powerful cli syntax</h2>
+<p>If you've ever gone from bash to zsh, it was likely a seamless change. In
+contrast, the first time playing with xonsh's syntax requires one eye on the
+docs. This is understandable, as it was clearly no easy feat creating the
+lovechild of bash and python. Check this out:</p>
+<div class="highlight"><pre><span></span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$HOME</span><span class="w"> </span>+<span class="w"> </span><span class="s1">&#39;/.xonshrc&#39;</span>
+<span class="k">if</span><span class="w"> </span>not<span class="w"> </span>!<span class="o">(</span><span class="nb">test</span><span class="w"> </span>-f<span class="w"> </span>@<span class="o">(</span>path<span class="o">))</span>:
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s1">&#39;Error: %s not found.&#39;</span><span class="w"> </span>%<span class="w"> </span>path
+</pre></div>
+<p>Variables are pythonic; dollar signs are not required, but they prefix
+environmental variables by convention. As demonstrated above, we can modify
+variables, perform tests and format strings as in python.</p>
+<p>What's cool here are the syntax blocks we see on the second line:</p>
+<ul class="simple">
+<li><code>&#64;(...)</code> treats its contents more like python, so &#64;(path) expands to
+the path string.</li>
+<li><code>!(...)</code> treats its contents with a shell syntax. The result from a
+<code>!(...)</code> block can be used in tests based on its return code, as above,
+but the object also contains the standard out and error streams, process id,
+and some other information.</li>
+</ul>
+<p>This illustrates a central idea in xonsh: a contextual distinction between
+python-like (<em>python-mode</em>) and shell-like (<em>subprocess-mode</em>) executions.</p>
+<p>xonsh also uses python's logical keywords, which act as drop in replacements
+for <code>&amp;&amp;</code> and <code>||</code>:</p>
+<div class="highlight"><pre><span></span>a<span class="w"> </span>&gt;<span class="w"> </span><span class="m">10</span><span class="w"> </span>and<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;a is greater than 10&quot;</span>
+</pre></div>
+<p>This is only a tiny sample but you get the idea. The shell-like syntax is very
+comfortable, and it feels natural to use it alongside python code.</p>
+</div>
+<div class="section" id="setup">
+<h2>setup</h2>
+<p>Much like zsh, the first time it is run, a wizard will guide you through
+initial setup and then get out of the way. This wizard generates your
+<code>~/.xonshrc</code> file which is run when you launch xonsh.</p>
+<p>The first step is 'Foreign Shell Setup'. This feature aims to help users use
+pre-existing bash or zsh configs in xonsh, though currently there are some
+limitations. For example, imported aliases that 'cd /some/path' don't seem to
+propagate their directory change to the shell. Surfing the github issues it
+seems there are a couple of other minor bugs that prevent use of things like
+<code>;</code> or <code>&amp;&amp;</code> in aliases.</p>
+<p>The wizard next helps you set up other useful features and behaviour you see in
+other shells:</p>
+<ul class="simple">
+<li>syntax highlighting</li>
+<li>command completion</li>
+<li>vi-mode</li>
+<li>prompts</li>
+<li>plugins</li>
+</ul>
+<p>Most of these are simply controlled by variables set in your <code>.xonshrc</code>.
+Overall the xonsh initial setup is painless.</p>
+</div>
+<div class="section" id="plugins">
+<h2>plugins</h2>
+<p>xonsh's plugin framework allows for easy extension with xonsh or pure python
+scripts called <em>xontribs</em>. Some xontribs come pre-packaged but you can download
+or create more.</p>
+<p>I was pleased to find that the zsh plugin <a class="reference external" href="https://github.com/rupa/z">z</a> had
+been <a class="reference external" href="https://github.com/astronouth7303/xontrib-z">ported</a> to xonsh, and a
+read of its code makes it clear that porting other zsh plugins would be
+relatively straightforward.</p>
+<p>xontribs can do anything you want, such as hooking functions to events, adding
+more blocks that can be used in your prompt, adding functional aliases, you
+name it.</p>
+<p>For example, we can create new aliases like this:</p>
+<div class="highlight"><pre><span></span>def<span class="w"> </span>_copy<span class="o">(</span><span class="nv">args</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">stdin</span><span class="o">=</span>None<span class="o">)</span>:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot; Copy stdin or args to the clipboard &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="nv">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>stdin.read<span class="o">()</span><span class="w"> </span><span class="k">if</span><span class="w"> </span>stdin<span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39; &#39;</span>.join<span class="o">(</span>args<span class="o">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span>@<span class="o">(</span>text.strip<span class="o">())</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xclip<span class="w"> </span>-selection<span class="w"> </span>clipboard
+<span class="w">    </span><span class="k">return</span>
+
+aliases<span class="o">[</span><span class="s1">&#39;copy&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>_copy
+</pre></div>
+<p>Aliases like this send the argument list and stdin to the function as the first
+two arguments. This allows us to use shell-like syntax to call the function,
+i.e.:</p>
+<div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;this will be copied&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>copy
+copy<span class="w"> </span><span class="s1">&#39;so will this&#39;</span>
+</pre></div>
+<p>This seems much more natural in a shell.</p>
+<p>Setting up a comfy environment in xonsh has led to me reading all about
+<a class="reference external" href="https://github.com/prompt-toolkit/python-prompt-toolkit">prompt_toolkit</a>.
+prompt_toolkit is a really powerful python library for controlling what appears
+in the terminal window, and does the heavy lifting for xonsh when it comes to
+drawing prompts, watching for key bindings, and more. For these reasons, it is
+often useful to use its tools directly, rather than xonsh, to extend your xonsh
+setup.</p>
+</div>
+<div class="section" id="thoughts">
+<h2>thoughts</h2>
+<p>Overall I think xonsh is awesome and I'm excited to see how xonsh develops in
+the future. It's a powerful concept, and the motivation appears to be there -
+from both core devs and contibuting users - to iron out any issues and improve
+the experience.</p>
+<p>It's pretty cool that you can use python libraries as in python:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pykeyboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">PyKeyboard</span>
+</pre></div>
+<p>Though I haven't actually found a use for that yet!</p>
+<p>It is usable and practical as a daily driver, so I will definitely continue to
+use it and see how deep the rabbit hole goes.</p>
+</div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2019-06-29T00:00:00+00:00">2019-06-29</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

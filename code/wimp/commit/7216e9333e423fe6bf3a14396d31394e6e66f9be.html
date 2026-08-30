@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add basic rendering, based on tinywm</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/7216e9333e423fe6bf3a14396d31394e6e66f9be.html">7216e9333e423fe6bf3a14396d31394e6e66f9be</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/9c9e396f412c7a640613c68e8fb706c43bf11979.html">9c9e396f412c7a640613c68e8fb706c43bf11979</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-05 23:00:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-05 23:00:36 +0000
+
+add basic rendering, based on tinywm
+</pre><div class="diff">
+  <p>
+    <b>src/output.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,6 +12,17 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+struct render_data {
+</span><span class="add">+    struct wlr_output *output;
+</span><span class="add">+    struct wlr_renderer *renderer;
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    struct timespec *when;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void render_surface(
+</span><span class="add">+    struct wlr_surface *surface, int sx, int sy, void *data
+</span><span class="add">+);
+</span><span class="def"> void on_frame(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_new_output(struct wl_listener *listener, void *data);
+</span><span class="def"> void set_up_outputs(struct server *server);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,22 +1,87 @@
+<span class="add">+#include &lt;time.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_matrix.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void render_surface(
+</span><span class="add">+    struct wlr_surface *surface, int sx, int sy, void *data
+</span><span class="add">+) {
+</span><span class="add">+    struct render_data *rdata = data;
+</span><span class="add">+    struct view *view = rdata-&gt;view;
+</span><span class="add">+    struct wlr_output *output = rdata-&gt;output;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_texture *texture = wlr_surface_get_texture(surface);
+</span><span class="add">+    if (texture == NULL) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // get output-relative coordinates
+</span><span class="add">+    double ox = 0, oy = 0;
+</span><span class="add">+    wlr_output_layout_output_coords(
+</span><span class="add">+	view-&gt;server-&gt;output_layout, output, &amp;ox, &amp;oy
+</span><span class="add">+    );
+</span><span class="add">+    ox += view-&gt;x + sx, oy += view-&gt;y + sy;
+</span><span class="add">+
+</span><span class="add">+    // scale for HiDPI
+</span><span class="add">+    struct wlr_box box = {
+</span><span class="add">+	.x = ox * output-&gt;scale,
+</span><span class="add">+	.y = oy * output-&gt;scale,
+</span><span class="add">+	.width = surface-&gt;current.width * output-&gt;scale,
+</span><span class="add">+	.height = surface-&gt;current.height * output-&gt;scale,
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    // this is where any rendering magic might happen
+</span><span class="add">+    float matrix[9];
+</span><span class="add">+    enum wl_output_transform transform =
+</span><span class="add">+	wlr_output_transform_invert(surface-&gt;current.transform);
+</span><span class="add">+    wlr_matrix_project_box(matrix, &amp;box, transform, 0,
+</span><span class="add">+	output-&gt;transform_matrix);
+</span><span class="add">+
+</span><span class="add">+    wlr_render_texture_with_matrix(rdata-&gt;renderer, texture, matrix, 1);
+</span><span class="add">+    wlr_surface_send_frame_done(surface, rdata-&gt;when);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void on_frame(struct wl_listener *listener, void *data) {
+</span><span class="sub">-	struct output *output = wl_container_of(listener, output, frame_listener);
+</span><span class="sub">-	struct wlr_output *wlr_output = output-&gt;wlr_output;
+</span><span class="add">+    struct output *output = wl_container_of(listener, output, frame_listener);
+</span><span class="add">+    struct wlr_renderer *renderer = output-&gt;server-&gt;renderer;
+</span><span class="add">+
+</span><span class="add">+    struct timespec now;
+</span><span class="add">+    clock_gettime(CLOCK_MONOTONIC, &amp;now);
+</span><span class="add">+
+</span><span class="add">+    if (!wlr_output_attach_render(output-&gt;wlr_output, NULL)) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	wlr_output_attach_render(wlr_output, NULL);
+</span><span class="add">+    int width, height;
+</span><span class="add">+    wlr_output_effective_resolution(output-&gt;wlr_output, &amp;width, &amp;height);
+</span><span class="add">+    wlr_renderer_begin(renderer, width, height);
+</span><span class="def"> 
+</span><span class="sub">-	struct wlr_renderer *renderer =
+</span><span class="sub">-	    wlr_backend_get_renderer(wlr_output-&gt;backend);
+</span><span class="add">+    float color[4] = {0.3, 0.05, 0.7, 1.0};  // background
+</span><span class="add">+    wlr_renderer_clear(renderer, color);
+</span><span class="add">+
+</span><span class="add">+    struct view *view;
+</span><span class="add">+    wl_list_for_each_reverse(view, &amp;output-&gt;server-&gt;views, link) {
+</span><span class="add">+	if (!view-&gt;is_mapped) {
+</span><span class="add">+	    continue;
+</span><span class="add">+	}
+</span><span class="add">+	struct render_data rdata = {
+</span><span class="add">+	    .output = output-&gt;wlr_output,
+</span><span class="add">+	    .view = view,
+</span><span class="add">+	    .renderer = renderer,
+</span><span class="add">+	    .when = &amp;now,
+</span><span class="add">+	};
+</span><span class="add">+	wlr_xdg_surface_for_each_surface(
+</span><span class="add">+	    view-&gt;surface, render_surface, &amp;rdata
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-	wlr_renderer_begin(renderer, wlr_output-&gt;width, wlr_output-&gt;height);
+</span><span class="sub">-	wlr_renderer_clear(renderer, (float[]){0, 0, 0, 1});
+</span><span class="sub">-	wlr_renderer_end(renderer);
+</span><span class="sub">-	wlr_output_commit(wlr_output);
+</span><span class="add">+    wlr_output_render_software_cursors(output-&gt;wlr_output, NULL);  // no-op with HW cursors
+</span><span class="add">+    wlr_renderer_end(renderer);
+</span><span class="add">+    wlr_output_commit(output-&gt;wlr_output);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

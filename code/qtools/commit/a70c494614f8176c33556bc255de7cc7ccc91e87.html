@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Add mpc plugin</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/a70c494614f8176c33556bc255de7cc7ccc91e87.html">a70c494614f8176c33556bc255de7cc7ccc91e87</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/151052ebbefcc67434dadda5efce5f3e626c411b.html">151052ebbefcc67434dadda5efce5f3e626c411b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-09 21:13:07 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-09 21:13:07 +0000
+
+Add mpc plugin
+</pre><div class="diff">
+  <p>
+    <b>mpc/mpc.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,92 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile plugin to control Music Player Daemon using musicpd or mpd2 library
+</span><span class="add">+
+</span><span class="add">+Example usage:
+</span><span class="add">+
+</span><span class="add">+    import qtools.mpc as mpc
+</span><span class="add">+    mpc_client = mpc.Client()
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;&lt;XF86AudioPlay&gt;&apos;:  lazy.function(mpc_local.toggle),
+</span><span class="add">+        &apos;&lt;XF86AudioNext&gt;&apos;:  lazy.function(mpc_local.next),
+</span><span class="add">+        &apos;&lt;XF86AudioPrev&gt;&apos;:  lazy.function(mpc_local.previous),
+</span><span class="add">+        &apos;&lt;XF86AudioPlay&gt;&apos;:  lazy.function(mpc_local.stop),
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+try:
+</span><span class="add">+    from musicpd import ConnectionError, MPDClient
+</span><span class="add">+except ImportError:
+</span><span class="add">+    from mpd import ConnectionError, MPDClient
+</span><span class="add">+
+</span><span class="add">+import gi
+</span><span class="add">+gi.require_version(&apos;Notify&apos;, &apos;0.7&apos;)
+</span><span class="add">+from gi.repository import Notify
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+Notify.init(&apos;Music&apos;)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def _wrap(func):
+</span><span class="add">+    def _inner(self, qtile):
+</span><span class="add">+        try:
+</span><span class="add">+            self.client.connect()
+</span><span class="add">+        except ConnectionError:
+</span><span class="add">+            pass
+</span><span class="add">+        self.notifier.update(&apos;Music&apos;, func(self))
+</span><span class="add">+        self.notifier.show()
+</span><span class="add">+        self.client.disconnect()
+</span><span class="add">+    return _inner
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Client:
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    The host and port are 127.0.0.1 and 6600 by default but can be set by passing these
+</span><span class="add">+    when initiating the client.
+</span><span class="add">+
+</span><span class="add">+    The notification timeout can be changed by setting Client.timeout to milliseconds
+</span><span class="add">+    (int) or -1, which then uses the notification server&apos;s default timeout.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    def __init__(self, host=&apos;127.0.0.1&apos;, port=&apos;6600&apos;):
+</span><span class="add">+        self.client = MPDClient()
+</span><span class="add">+        self.client.host = host
+</span><span class="add">+        self.client.port = port
+</span><span class="add">+        self.notifier = Notify.Notification.new(&apos;Music&apos;, &apos;body&apos;)
+</span><span class="add">+        self._timeout = -1
+</span><span class="add">+        self.notifier.set_timeout(self._timeout)
+</span><span class="add">+
+</span><span class="add">+    @property
+</span><span class="add">+    def timeout(self):
+</span><span class="add">+        return self._timeout
+</span><span class="add">+
+</span><span class="add">+    @timeout.setter
+</span><span class="add">+    def timeout(self, timeout):
+</span><span class="add">+        self.notifier.set_timeout(timeout)
+</span><span class="add">+        self._timeout = timeout
+</span><span class="add">+
+</span><span class="add">+    @_wrap
+</span><span class="add">+    def toggle(self):
+</span><span class="add">+        if self.client.status()[&apos;state&apos;] == &apos;play&apos;:
+</span><span class="add">+            self.client.pause()
+</span><span class="add">+            return &apos;Paused&apos;
+</span><span class="add">+        else:
+</span><span class="add">+            self.client.play()
+</span><span class="add">+            return &apos;Playing&apos;
+</span><span class="add">+
+</span><span class="add">+    @_wrap
+</span><span class="add">+    def next(self):
+</span><span class="add">+        self.client.next()
+</span><span class="add">+        current = self.client.currentsong()
+</span><span class="add">+        return f&quot;{current[&apos;artist&apos;]} - {current[&apos;title&apos;]}&quot;
+</span><span class="add">+
+</span><span class="add">+    @_wrap
+</span><span class="add">+    def previous(self):
+</span><span class="add">+        self.client.previous()
+</span><span class="add">+        current = self.client.currentsong()
+</span><span class="add">+        return f&quot;{current[&apos;artist&apos;]} - {current[&apos;title&apos;]}&quot;
+</span><span class="add">+
+</span><span class="add">+    @_wrap
+</span><span class="add">+    def stop(self):
+</span><span class="add">+        self.client.stop()
+</span><span class="add">+        return &apos;Stopped&apos;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>mpc/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+from .mpc import Client
+</span></pre>
+</div></div>
+  </body>
+</html>

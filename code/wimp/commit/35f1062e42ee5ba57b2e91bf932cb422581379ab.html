@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Complete fullscreen implementation</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/35f1062e42ee5ba57b2e91bf932cb422581379ab.html">35f1062e42ee5ba57b2e91bf932cb422581379ab</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/04f47ac77b7cb1e6dde281eb18693841e0a95fb6.html">04f47ac77b7cb1e6dde281eb18693841e0a95fb6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-20 20:52:15 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-20 20:52:15 +0000
+
+Complete fullscreen implementation
+</pre><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,7 @@
+<span class="def"> void map_view(struct view *view);
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface);
+</span><span class="def"> void fullscreen_xdg_surface(
+</span><span class="sub">-    struct server *server, struct wlr_xdg_surface *xdg_surface, struct wlr_output *output
+</span><span class="add">+    struct view *view, struct wlr_xdg_surface *xdg_surface, struct wlr_output *output
+</span><span class="def"> );
+</span><span class="def"> void set_up_shell(struct server *server);
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,16 +44,17 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void fullscreen_xdg_surface(
+</span><span class="sub">-    struct server *server, struct wlr_xdg_surface *xdg_surface, struct wlr_output *output
+</span><span class="add">+    struct view *view, struct wlr_xdg_surface *xdg_surface, struct wlr_output *output
+</span><span class="def"> ) {
+</span><span class="add">+    struct server *server = view-&gt;server;
+</span><span class="add">+    struct wlr_box *saved_geo = &amp;server-&gt;current_desk-&gt;fullscreened_saved_geo;
+</span><span class="add">+
+</span><span class="def">     struct wlr_xdg_surface *prev_surface = server-&gt;current_desk-&gt;fullscreened;
+</span><span class="def">     if (prev_surface) {
+</span><span class="def"> 	wlr_xdg_toplevel_set_fullscreen(prev_surface, false);
+</span><span class="sub">-	wlr_xdg_toplevel_set_size(
+</span><span class="sub">-	    prev_surface,
+</span><span class="sub">-	    server-&gt;current_desk-&gt;fullscreened_saved_geo.width,
+</span><span class="sub">-	    server-&gt;current_desk-&gt;fullscreened_saved_geo.height
+</span><span class="sub">-	);
+</span><span class="add">+	wlr_xdg_toplevel_set_size(prev_surface, saved_geo-&gt;width, saved_geo-&gt;height);
+</span><span class="add">+	view-&gt;x = saved_geo-&gt;x;
+</span><span class="add">+	view-&gt;y = saved_geo-&gt;y;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     if (prev_surface == xdg_surface) {
+</span>@@ -73,8 +74,11 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     server-&gt;current_desk-&gt;fullscreened = xdg_surface;
+</span><span class="sub">-    server-&gt;current_desk-&gt;fullscreened_saved_geo.width = xdg_surface-&gt;geometry.width;
+</span><span class="sub">-    server-&gt;current_desk-&gt;fullscreened_saved_geo.height = xdg_surface-&gt;geometry.height;
+</span><span class="add">+    saved_geo-&gt;x = view-&gt;x;
+</span><span class="add">+    saved_geo-&gt;y = view-&gt;y;
+</span><span class="add">+    view-&gt;x = view-&gt;y = 0;
+</span><span class="add">+    saved_geo-&gt;width = xdg_surface-&gt;geometry.width;
+</span><span class="add">+    saved_geo-&gt;height = xdg_surface-&gt;geometry.height;
+</span><span class="def">     wlr_xdg_toplevel_set_fullscreen(xdg_surface, true);
+</span><span class="def">     wlr_xdg_toplevel_set_size(xdg_surface, output-&gt;width, output-&gt;height);
+</span><span class="def"> }
+</span>@@ -144,7 +148,7 @@
+<span class="def"> void on_request_fullscreen(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_xdg_toplevel_set_fullscreen_event *event = data;
+</span><span class="def">     struct view *view = wl_container_of(listener, view, request_fullscreen_listener);
+</span><span class="sub">-    fullscreen_xdg_surface(view-&gt;server, event-&gt;surface, event-&gt;output);
+</span><span class="add">+    fullscreen_xdg_surface(view, event-&gt;surface, event-&gt;output);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -197,5 +197,6 @@
+<span class="def">     if (!surface)
+</span><span class="def"> 	return;
+</span><span class="def">     struct wlr_xdg_surface *xdg_surface = wlr_xdg_surface_from_wlr_surface(surface);
+</span><span class="sub">-    fullscreen_xdg_surface(server, xdg_surface, NULL);
+</span><span class="add">+    struct view *view = wl_container_of(server-&gt;current_desk-&gt;views.next, view, link);
+</span><span class="add">+    fullscreen_xdg_surface(view, xdg_surface, NULL);
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,6 +18,5 @@
+<span class="def">  - xdg-decoration protocol
+</span><span class="def">  - functions to shift focus
+</span><span class="def">  - functions to shift desk view
+</span><span class="sub">- - handle fullscreening
+</span><span class="def">  - pinch gestures for desk zooming
+</span><span class="def">  - draw rect with mouse when zoomed out to set new view
+</span></pre>
+</div></div>
+  </body>
+</html>

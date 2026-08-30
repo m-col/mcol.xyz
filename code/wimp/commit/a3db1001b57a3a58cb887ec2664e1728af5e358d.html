@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - simplify view_at</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/a3db1001b57a3a58cb887ec2664e1728af5e358d.html">a3db1001b57a3a58cb887ec2664e1728af5e358d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/8b7237a5a68d848184ea37b6e3b9faf6ec3c08df.html">8b7237a5a68d848184ea37b6e3b9faf6ec3c08df</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-28 23:59:53 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-28 23:59:53 +0000
+
+simplify view_at
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -45,36 +45,25 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool _view_at(
+</span><span class="sub">-    struct view *view, double lx, double ly, struct wlr_surface **surface,
+</span><span class="sub">-    double *sx, double *sy
+</span><span class="sub">-) {
+</span><span class="sub">-    double view_sx = lx - view-&gt;x;
+</span><span class="sub">-    double view_sy = ly - view-&gt;y;
+</span><span class="sub">-
+</span><span class="sub">-    double _sx, _sy;
+</span><span class="sub">-    struct wlr_surface *_surface = NULL;
+</span><span class="sub">-    _surface = wlr_xdg_surface_surface_at(
+</span><span class="sub">-	view-&gt;surface, view_sx, view_sy, &amp;_sx, &amp;_sy
+</span><span class="sub">-    );
+</span><span class="sub">-    if (_surface != NULL) {
+</span><span class="sub">-	*sx = _sx;
+</span><span class="sub">-	*sy = _sy;
+</span><span class="sub">-	*surface = _surface;
+</span><span class="sub">-	return true;
+</span><span class="sub">-    }
+</span><span class="sub">-    return false;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> struct view *view_at(
+</span><span class="def">     double lx, double ly, struct wlr_surface **surface, double *sx, double *sy
+</span><span class="def"> ) {
+</span><span class="def">     struct view *view;
+</span><span class="def">     lx /= wimp.current_desk-&gt;zoom;
+</span><span class="def">     ly /= wimp.current_desk-&gt;zoom;
+</span><span class="add">+    double _sx, _sy;
+</span><span class="add">+
+</span><span class="def">     wl_list_for_each(view, &amp;wimp.current_desk-&gt;views, link) {
+</span><span class="sub">-	if (_view_at(view, lx, ly, surface, sx, sy)) {
+</span><span class="add">+	double view_sx = lx - view-&gt;x;
+</span><span class="add">+	double view_sy = ly - view-&gt;y;
+</span><span class="add">+	struct wlr_surface *_surface = NULL;
+</span><span class="add">+	_surface = wlr_xdg_surface_surface_at(
+</span><span class="add">+	    view-&gt;surface, view_sx, view_sy, &amp;_sx, &amp;_sy
+</span><span class="add">+	);
+</span><span class="add">+	if (_surface != NULL) {
+</span><span class="add">+	    *sx = _sx;
+</span><span class="add">+	    *sy = _sy;
+</span><span class="add">+	    *surface = _surface;
+</span><span class="def"> 	    return view;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span></pre>
+</div></div>
+  </body>
+</html>

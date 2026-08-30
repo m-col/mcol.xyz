@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - remove socket when starting up</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/a9235752ae540d0f96073c83b8a690f5c9e58f34.html">a9235752ae540d0f96073c83b8a690f5c9e58f34</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/5bee7ec4312ac7afbcfd55469500d2e93456a7ae.html">5bee7ec4312ac7afbcfd55469500d2e93456a7ae</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-21 21:34:03 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-21 21:34:03 +0000
+
+remove socket when starting up
+</pre><div class="diff">
+  <p>
+    <b>src/ipc.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,7 +21,7 @@
+<span class="def">     if (mask &amp; WL_EVENT_READABLE) {
+</span><span class="def"> 	int fd = accept(sock, NULL, NULL);
+</span><span class="def"> 	if (fd == -1) {
+</span><span class="sub">-	    wlr_log(WLR_ERROR, &quot;Failed accept connection from client.&quot;);
+</span><span class="add">+	    wlr_log(WLR_ERROR, &quot;Failed to accept connection from client.&quot;);
+</span><span class="def"> 	    return 0;
+</span><span class="def"> 	}
+</span><span class="def"> 	ssize_t len = recv(fd, buffer, sizeof(buffer) - 1, 0);
+</span>@@ -46,6 +46,7 @@
+<span class="def">     struct sockaddr_un addr;
+</span><span class="def">     snprintf(addr.sun_path, sizeof(addr.sun_path), SOCKET_PATH, display);
+</span><span class="def">     addr.sun_family = AF_UNIX;
+</span><span class="add">+    unlink(addr.sun_path);
+</span><span class="def"> 
+</span><span class="def">     if (bind(sock, (struct sockaddr *) &amp;addr, sizeof(addr)) == -1) {
+</span><span class="def"> 	wlr_log(WLR_ERROR, &quot;Failed to bind IPC socket.&quot;);
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tide - silenced all mappings</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/tide">tide</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/tide">https://github.com/m-col/tide</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/tide/tree.html">Files</a> | <a href="https://mcol.xyz/code/tide/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/tide/file/README.md.html">Readme</a>     | <a href="https://mcol.xyz/code/tide/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/tide/commit/00e8aeabbe4bedcd1f16d35ea0a4fef0fb65f05d.html">00e8aeabbe4bedcd1f16d35ea0a4fef0fb65f05d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/tide/commit/e1136b422dcce741aff8cc23e2789be9e08427ca.html">e1136b422dcce741aff8cc23e2789be9e08427ca</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-09 11:06:09 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-09 11:06:09 +0000
+
+silenced all mappings
+</pre><div class="diff">
+  <p>
+    <b>plugin/tide.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -98,17 +98,17 @@
+<span class="def"> command! -nargs=0 -complete=command TmuxSendSection call s:TmuxSendSection()
+</span><span class="def"> command! -nargs=0 -complete=command -range TmuxSendLines call s:TmuxSendLines(&lt;line1&gt;, &lt;line2&gt;)
+</span><span class="def"> 
+</span><span class="sub">-xnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendVisual :&lt;C-u&gt;TmuxSendVisual&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendParagraph :TmuxSendParagraph&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendLine :TmuxSendLine&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendWord :call TmuxSendKeysEnter(expand(&quot;&lt;cword&gt;&quot;))&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendSection :TmuxSendSection&lt;CR&gt;
+</span><span class="add">+silent! xnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendVisual :&lt;C-u&gt;TmuxSendVisual&lt;CR&gt;
+</span><span class="add">+silent! nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendParagraph :TmuxSendParagraph&lt;CR&gt;
+</span><span class="add">+silent! nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendLine :TmuxSendLine&lt;CR&gt;
+</span><span class="add">+silent! nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendWord :call TmuxSendKeysEnter(expand(&quot;&lt;cword&gt;&quot;))&lt;CR&gt;
+</span><span class="add">+silent! nnoremap &lt;unique&gt; &lt;silent&gt; &lt;script&gt; &lt;Plug&gt;TmuxSendSection :TmuxSendSection&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; default keybindings
+</span><span class="def"> if !exists(&quot;g:tide_no_default_keys&quot;)
+</span><span class="sub">-    xmap &lt;unique&gt; &lt;F9&gt; &lt;Plug&gt;TmuxSendVisual
+</span><span class="sub">-    nmap &lt;unique&gt; &lt;silent&gt; &lt;F9&gt; &lt;Plug&gt;TmuxSendParagraph
+</span><span class="sub">-    nmap &lt;unique&gt; &lt;silent&gt; &lt;F8&gt; &lt;Plug&gt;TmuxSendLine
+</span><span class="sub">-    nmap &lt;unique&gt; &lt;silent&gt; &lt;F7&gt; &lt;Plug&gt;TmuxSendWord
+</span><span class="sub">-    nmap &lt;unique&gt; &lt;silent&gt; &lt;F4&gt; &lt;Plug&gt;TmuxSendSection
+</span><span class="add">+    silent! xmap &lt;unique&gt; &lt;silent&gt; &lt;F9&gt; &lt;Plug&gt;TmuxSendVisual
+</span><span class="add">+    silent! nmap &lt;unique&gt; &lt;silent&gt; &lt;F9&gt; &lt;Plug&gt;TmuxSendParagraph
+</span><span class="add">+    silent! nmap &lt;unique&gt; &lt;silent&gt; &lt;F8&gt; &lt;Plug&gt;TmuxSendLine
+</span><span class="add">+    silent! nmap &lt;unique&gt; &lt;silent&gt; &lt;F7&gt; &lt;Plug&gt;TmuxSendWord
+</span><span class="add">+    silent! nmap &lt;unique&gt; &lt;silent&gt; &lt;F4&gt; &lt;Plug&gt;TmuxSendSection
+</span><span class="def"> endif
+</span></pre>
+</div></div>
+  </body>
+</html>

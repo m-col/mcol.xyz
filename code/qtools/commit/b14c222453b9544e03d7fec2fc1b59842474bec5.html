@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Notification Server will respect replace_id and can scroll history</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/b14c222453b9544e03d7fec2fc1b59842474bec5.html">b14c222453b9544e03d7fec2fc1b59842474bec5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/44424a42f940c0ed0a8fc5223670a099e5115e9d.html">44424a42f940c0ed0a8fc5223670a099e5115e9d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-25 17:45:06 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-25 17:45:06 +0000
+
+Notification Server will respect replace_id and can scroll history
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -33,7 +33,7 @@
+<span class="def">     TODO:
+</span><span class="def">         - overflow
+</span><span class="def">         - spacing between lines
+</span><span class="sub">-        - replace_id
+</span><span class="add">+
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     defaults = [
+</span><span class="def">         (&apos;format&apos;, &apos;{summary}\n{body}&apos;, &apos;Text format.&apos;),
+</span>@@ -71,18 +71,20 @@
+<span class="def">             &apos;How to deal with too much text: extend_x, extend_y or trim.&apos;,
+</span><span class="def">         ),
+</span><span class="def">         (&apos;max_windows&apos;, 2, &apos;Maximum number of windows to show at once.&apos;),
+</span><span class="sub">-        (&apos;gap&apos;, 18, &apos;Vertical gap between popup windows.&apos;),
+</span><span class="add">+        (&apos;gap&apos;, 12, &apos;Vertical gap between popup windows.&apos;),
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def">     def __init__(self, **config):
+</span><span class="def">         configurable.Configurable.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Server.defaults)
+</span><span class="def">         self.qtile = None
+</span><span class="sub">-        self._popups = []
+</span><span class="def">         self._hidden = []
+</span><span class="def">         self._shown = []
+</span><span class="def">         self._queue = []
+</span><span class="def">         self._positions = []
+</span><span class="add">+        self._scroll_popup = None
+</span><span class="add">+        self._current_id = 0
+</span><span class="add">+        self._notif_id = None
+</span><span class="def"> 
+</span><span class="def">         self._make_attr_list(&apos;foreground&apos;)
+</span><span class="def">         self._make_attr_list(&apos;background&apos;)
+</span>@@ -130,19 +132,35 @@
+<span class="def"> 
+</span><span class="def">         for win in range(self.max_windows):
+</span><span class="def">             popup = Popup(self.qtile, **self._popup_config)
+</span><span class="sub">-            self._popups.append(popup)
+</span><span class="add">+            popup.win.handle_ButtonPress = self._buttonpress(popup)
+</span><span class="add">+            popup.replaces_id = None
+</span><span class="def">             self._hidden.append(popup)
+</span><span class="def">             self._positions.append(
+</span><span class="sub">-                (self.x, self.y + win * (self.height + self.border_width * 3 + self.gap))
+</span><span class="add">+                (self.x, self.y + win * (self.height + 2 * self.border_width +
+</span><span class="add">+                 self.gap))
+</span><span class="def">             )
+</span><span class="def"> 
+</span><span class="def">         notifier.register(self._notify)
+</span><span class="def"> 
+</span><span class="add">+    def _buttonpress(self, popup):
+</span><span class="add">+        def _(event):
+</span><span class="add">+            if event.detail == 1:
+</span><span class="add">+                self._close(popup)
+</span><span class="add">+        return _
+</span><span class="add">+
+</span><span class="def">     def _notify(self, notif):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         This method is registered with the NotificationManager to handle notifications
+</span><span class="def">         received via dbus. They will either be drawn now or queued to be drawn soon.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="add">+        if notif.replaces_id:
+</span><span class="add">+            for popup in self._shown:
+</span><span class="add">+                if notif.replaces_id == popup.replaces_id:
+</span><span class="add">+                    self._shown.remove(popup)
+</span><span class="add">+                    self._send(notif, popup)
+</span><span class="add">+                    self._reposition()
+</span><span class="add">+                    return
+</span><span class="add">+
+</span><span class="def">         if self._hidden:
+</span><span class="def">             self._send(notif, self._hidden.pop())
+</span><span class="def">         else:
+</span>@@ -160,7 +178,11 @@
+<span class="def">             body = pangocffi.markup_escape_text(notif.body)
+</span><span class="def">         urgency = notif.hints.get(&apos;urgency&apos;, 1)
+</span><span class="def"> 
+</span><span class="sub">-        popup.x, popup.y = self._positions[len(self._shown)]
+</span><span class="add">+        self._current_id += 1
+</span><span class="add">+        popup.id = self._current_id
+</span><span class="add">+        if popup not in self._shown:
+</span><span class="add">+            self._shown.append(popup)
+</span><span class="add">+        popup.x, popup.y = self._positions[len(self._shown) - 1]
+</span><span class="def">         popup.background = self.background[urgency]
+</span><span class="def">         popup.foreground = self.foreground[urgency]
+</span><span class="def">         popup.text = self.format.format(summary=summary, body=body)
+</span>@@ -171,30 +193,36 @@
+<span class="def">         popup.place()
+</span><span class="def">         popup.unhide()
+</span><span class="def">         popup.draw_window()
+</span><span class="sub">-        popup.id = notif.id
+</span><span class="add">+        popup.replaces_id = notif.replaces_id
+</span><span class="def"> 
+</span><span class="def">         if notif.timeout is None or notif.timeout &lt; 0:
+</span><span class="def">             timeout = self.timeout[urgency]
+</span><span class="def">         else:
+</span><span class="def">             timeout = notif.timeout
+</span><span class="def">         if timeout &gt; 0:
+</span><span class="sub">-            self.qtile.call_later(timeout / 1000, self._close, popup, notif.id)
+</span><span class="sub">-        self._shown.append(popup)
+</span><span class="add">+            self.qtile.call_later(
+</span><span class="add">+                timeout / 1000, self._close, popup, self._current_id
+</span><span class="add">+            )
+</span><span class="def"> 
+</span><span class="def">     def _close(self, popup, nid=None):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         Close the specified Popup instance.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         if popup in self._shown:
+</span><span class="sub">-            self._shown.remove(popup)
+</span><span class="def">             if nid is not None and popup.id != nid:
+</span><span class="def">                 return
+</span><span class="add">+            self._shown.remove(popup)
+</span><span class="add">+            if self._scroll_popup is popup:
+</span><span class="add">+                self._scroll_popup = None
+</span><span class="add">+                self._notif_id = None
+</span><span class="def">             popup.hide()
+</span><span class="def">             if self._queue:
+</span><span class="def">                 self._send(self._queue.pop(0), popup)
+</span><span class="def">             else:
+</span><span class="def">                 self._hidden.append(popup)
+</span><span class="add">+        self._reposition()
+</span><span class="def"> 
+</span><span class="add">+    def _reposition(self):
+</span><span class="def">         for index, shown in enumerate(self._shown):
+</span><span class="def">             shown.x, shown.y = self._positions[index]
+</span><span class="def">             shown.place()
+</span>@@ -211,11 +239,31 @@
+<span class="def">         Close all popup windows.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         self._queue.clear()
+</span><span class="sub">-        for popup in self._shown:
+</span><span class="sub">-            self._close(popup)
+</span><span class="add">+        while self._shown:
+</span><span class="add">+            self._close(self._shown[0])
+</span><span class="def"> 
+</span><span class="sub">-    #def prev(self, qtile=None):
+</span><span class="sub">-    #    self._notify(notifier.notifications[self._current_id])
+</span><span class="add">+    def prev(self, qtile=None):
+</span><span class="add">+        if notifier.notifications:
+</span><span class="add">+            if self._scroll_popup is None:
+</span><span class="add">+                if self._hidden:
+</span><span class="add">+                    self._scroll_popup = self._hidden.pop(0)
+</span><span class="add">+                else:
+</span><span class="add">+                    self._scroll_popup = self._shown[0]
+</span><span class="add">+                self._notif_id = len(notifier.notifications)
+</span><span class="add">+            if self._notif_id &gt; 0:
+</span><span class="add">+                self._notif_id -= 1
+</span><span class="add">+            self._send(
+</span><span class="add">+                notifier.notifications[self._notif_id],
+</span><span class="add">+                self._scroll_popup,
+</span><span class="add">+            )
+</span><span class="def"> 
+</span><span class="sub">-    #def next(self, qtile=None):
+</span><span class="sub">-    #    self._notify(notifier.notifications[self._current_id])
+</span><span class="add">+    def next(self, qtile=None):
+</span><span class="add">+        if self._scroll_popup:
+</span><span class="add">+            if self._notif_id &lt; len(notifier.notifications) - 1:
+</span><span class="add">+                self._notif_id += 1
+</span><span class="add">+            if self._scroll_popup in self._shown:
+</span><span class="add">+                self._shown.remove(self._scroll_popup)
+</span><span class="add">+            self._send(
+</span><span class="add">+                notifier.notifications[self._notif_id],
+</span><span class="add">+                self._scroll_popup,
+</span><span class="add">+            )
+</span></pre>
+</div></div>
+  </body>
+</html>

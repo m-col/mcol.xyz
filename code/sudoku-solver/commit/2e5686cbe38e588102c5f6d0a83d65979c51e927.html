@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sudoku-solver - Clear terminal when printing current stage</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/sudoku-solver">sudoku-solver</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A small haskell script to solve sudoku puzzles</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/sudoku-solver">https://github.com/m-col/sudoku-solver</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/sudoku-solver/tree.html">Files</a> | <a href="https://mcol.xyz/code/sudoku-solver/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/sudoku-solver/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/2e5686cbe38e588102c5f6d0a83d65979c51e927.html">2e5686cbe38e588102c5f6d0a83d65979c51e927</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/bb01110c3e4ada856768e4b50615d50ab46b4d58.html">bb01110c3e4ada856768e4b50615d50ab46b4d58</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-03 16:23:56 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-03 16:23:56 +0100
+
+Clear terminal when printing current stage
+</pre><div class="diff">
+  <p>
+    <b>sudoku.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -91,7 +91,7 @@
+<span class="def"> Graphically represent the puzzle layout.
+</span><span class="def"> -}
+</span><span class="def"> showPuzzle :: Puzzle -&gt; String
+</span><span class="sub">-showPuzzle = (&lt;&gt;) &quot; &quot; . unwords . map organise . assocs . fmap render
+</span><span class="add">+showPuzzle = (&lt;&gt;) &quot;\ESC[2J &quot; . unwords . map organise . assocs . fmap render
+</span><span class="def">   where
+</span><span class="def">     render Nothing = &quot; &quot;
+</span><span class="def">     render (Just v) = show . (+) 1 . fromEnum $ v
+</span></pre>
+</div></div>
+  </body>
+</html>

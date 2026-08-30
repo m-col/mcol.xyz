@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - lower case most of default config</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/43f91dbc14ea3aca770855084a249abe5d0327c7.html">43f91dbc14ea3aca770855084a249abe5d0327c7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/95d1885459fb41d4932d305a9dc55eab42ef008b.html">95d1885459fb41d4932d305a9dc55eab42ef008b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-24 23:05:16 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-24 23:05:16 +0000
+
+lower case most of default config
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -51,35 +51,35 @@
+<span class="def"> # Focus when moving the pointer over a window
+</span><span class="def"> #wimptool set auto_focus on
+</span><span class="def"> 
+</span><span class="sub">-## Key bindings
+</span><span class="add">+# Primary modifier be one of: shift, caps, ctrl, alt, mod2, mod3, logo, mod5
+</span><span class="add">+#wimptool set mod logo
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="sub">-# Can be one of: Shift, Caps, Ctrl, Alt, Mod2, Mod3, Logo, Mod5
+</span><span class="sub">-#wimptool set mod Logo
+</span><span class="add">+## Key bindings
+</span><span class="def"> 
+</span><span class="def"> # additional modifiers, key, action
+</span><span class="sub">-wimptool bind	Ctrl	Escape		terminate
+</span><span class="sub">-wimptool bind	Ctrl	r		reload_config
+</span><span class="add">+wimptool bind	ctrl	escape		terminate
+</span><span class="def"> 
+</span><span class="def"> # These actions act on windows
+</span><span class="sub">-wimptool bind	Ctrl	q		close_window
+</span><span class="add">+wimptool bind	ctrl	q		close_window
+</span><span class="def"> wimptool bind		j		focus down
+</span><span class="def"> wimptool bind		k		focus up
+</span><span class="def"> wimptool bind		h		focus left
+</span><span class="def"> wimptool bind		l		focus right
+</span><span class="def"> wimptool bind		f		toggle_fullscreen
+</span><span class="sub">-wimptool bind	Shift	m		maximize
+</span><span class="sub">-wimptool bind	Shift	1		send_to_desk 1
+</span><span class="sub">-wimptool bind	Shift	2		send_to_desk 2
+</span><span class="add">+wimptool bind	shift	m		maximize
+</span><span class="add">+wimptool bind	shift	1		send_to_desk 1
+</span><span class="add">+wimptool bind	shift	2		send_to_desk 2
+</span><span class="def"> 
+</span><span class="def"> # These give the focussed window half of the screen
+</span><span class="sub">-wimptool bind	Shift	j		halfimize down
+</span><span class="sub">-wimptool bind	Shift	k		halfimize up
+</span><span class="sub">-wimptool bind	Shift	h		halfimize left
+</span><span class="sub">-wimptool bind	Shift	l		halfimize right
+</span><span class="add">+wimptool bind	shift	j		halfimize down
+</span><span class="add">+wimptool bind	shift	k		halfimize up
+</span><span class="add">+wimptool bind	shift	h		halfimize left
+</span><span class="add">+wimptool bind	shift	l		halfimize right
+</span><span class="def"> 
+</span><span class="def"> # And these act on desks
+</span><span class="sub">-wimptool bind		Tab		next_desk
+</span><span class="sub">-wimptool bind		ISO_Left_Tab	prev_desk
+</span><span class="add">+wimptool bind		tab		next_desk
+</span><span class="add">+wimptool bind	shift	tab		prev_desk
+</span><span class="def"> wimptool bind		i		zoom 15
+</span><span class="def"> wimptool bind		o		zoom -15
+</span><span class="def"> wimptool bind		r		reset_zoom
+</span>@@ -91,13 +91,13 @@
+<span class="def"> wimptool bind		d		pan_desk 40 0
+</span><span class="def"> 
+</span><span class="def"> # The line after &apos;exec&apos; is executed by /bin/sh
+</span><span class="sub">-wimptool bind		Return		exec gnome-terminal
+</span><span class="add">+wimptool bind		return		exec gnome-terminal
+</span><span class="def"> 
+</span><span class="def"> # We can execute windows as scratchpads with a fixed geometry like this, where
+</span><span class="def"> # the geometry is specified as &lt;width&gt;x&lt;height&gt;+&lt;x&gt;+&lt;y&gt;
+</span><span class="sub">-wimptool bind	Ctrl	e		scratchpad 1000x800+20+20 footclient mutt
+</span><span class="add">+wimptool bind	ctrl	e		scratchpad 1000x800+20+20 footclient mutt
+</span><span class="def"> # A percentage of the used output can also be requested:
+</span><span class="sub">-wimptool bind	Ctrl	t		scratchpad 50%+50%+0+0 footclient tmux
+</span><span class="add">+wimptool bind	ctrl	t		scratchpad 50%+50%+0+0 footclient tmux
+</span><span class="def"> 
+</span><span class="def"> wimptool bind		s		exec wimptool to_region \`slurp -f %wx%h+%x+%y\`
+</span><span class="def"> 
+</span>@@ -112,5 +112,5 @@
+<span class="def"> # Possible mouse bindings: motion, scroll, pinch, drag{1,2,3} (+ additional modifiers)
+</span><span class="def"> wimptool bind		scroll		pan_desk
+</span><span class="def"> wimptool bind		pinch		zoom
+</span><span class="sub">-wimptool bind	Shift	scroll		zoom
+</span><span class="add">+wimptool bind	shift	scroll		zoom
+</span><span class="def"> wimptool bind		drag1		move_window
+</span></pre>
+</div></div>
+  </body>
+</html>

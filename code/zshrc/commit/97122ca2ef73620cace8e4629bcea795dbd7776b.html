@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - ban thene</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/97122ca2ef73620cace8e4629bcea795dbd7776b.html">97122ca2ef73620cace8e4629bcea795dbd7776b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/6f26a2c35833921961242ce9c74ee41a3da16036.html">6f26a2c35833921961242ce9c74ee41a3da16036</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 13:15:56 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 13:15:56 +0000
+
+ban thene
+</pre><div class="diff">
+  <p>
+    <b>themes/ban.zsh-theme</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -124,16 +124,22 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+if $is_ssh
+</span><span class="add">+then
+</span><span class="add">+    tmux_following_colour=green
+</span><span class="add">+else
+</span><span class="add">+    tmux_following_colour=magenta
+</span><span class="add">+fi
+</span><span class="def"> prompt_tmux() {
+</span><span class="def">     local tmux_indicator
+</span><span class="add">+    local SEGMENT_SEPARATOR=&apos;&apos;
+</span><span class="def">     if [[ -n &quot;$TMUX&quot; ]]
+</span><span class="def">     then
+</span><span class="sub">-	prompt_segment 11 magenta &apos;&apos;
+</span><span class="sub">-	SEGMENT_SEPARATOR=$&apos;\ue0b0&apos; prompt_segment magenta 11 &apos;&apos;
+</span><span class="add">+	tmux_indicator=$&apos;\ue0b0&apos;
+</span><span class="def">     else
+</span><span class="sub">-	prompt_segment black magenta &apos;&apos;
+</span><span class="sub">-	SEGMENT_SEPARATOR=&apos;&apos; prompt_segment magenta 11 &apos;&apos;
+</span><span class="add">+	tmux_indicator=&apos;&apos;
+</span><span class="def">     fi
+</span><span class="add">+    [[ -n &quot;$tmux_indicator&quot; ]] &amp;&amp; prompt_segment $tmux_following_colour 11 &quot;$tmux_indicator&quot;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

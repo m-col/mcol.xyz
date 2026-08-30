@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - don&apos;t run run_script twice</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/441f398acb4b0bc817b6610d28901da8e78d6482.html">441f398acb4b0bc817b6610d28901da8e78d6482</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/12d0d18f070cbf4b2042eded10c7e82d19d91fff.html">12d0d18f070cbf4b2042eded10c7e82d19d91fff</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-12 22:56:34 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-12 22:56:34 +0100
+
+don&apos;t run run_script twice
+</pre><div class="diff">
+  <p>
+    <b>install/welcome</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,8 +16,6 @@
+<span class="def"> 
+</span><span class="def">     add_file &quot;/usr/lib/initcpio/hooks/encrypt&quot; &quot;/welcome-decrypt&quot; 755
+</span><span class="def"> 
+</span><span class="sub">-    add_runscript
+</span><span class="sub">-
+</span><span class="def">     # This is pretty ugly but we want the &apos;build&apos; function in the encrypt hook
+</span><span class="def">     # and we want it called from a file called &apos;welcome&apos; as it calls
+</span><span class="def">     # &apos;add_runscript&apos; which reads the filename.
+</span></pre>
+</div></div>
+  </body>
+</html>

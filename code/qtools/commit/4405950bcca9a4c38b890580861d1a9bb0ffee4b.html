@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - let arbitrary selection of backlight sys device</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/4405950bcca9a4c38b890580861d1a9bb0ffee4b.html">4405950bcca9a4c38b890580861d1a9bb0ffee4b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/51a7a75d15e858c1f9484b17f64337e9129bedc7.html">51a7a75d15e858c1f9484b17f64337e9129bedc7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-02-15 17:36:57 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-02-15 17:36:57 +0000
+
+let arbitrary selection of backlight sys device
+</pre><div class="diff">
+  <p>
+    <b>qtools/backlight/backlight.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,9 +19,6 @@
+<span class="def"> from qtools import Notifier
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-_transition = 80
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> class Backlight(Notifier):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     This class controls screen backlight by directly reading and writing to the
+</span>@@ -30,22 +27,27 @@
+<span class="def">     defaults = [
+</span><span class="def">         (&apos;summary&apos;, &apos;Backlight&apos;, &apos;Notification summary.&apos;),
+</span><span class="def">         (&apos;interval&apos;, 10, &apos;Percentage interval by which to change backlight&apos;),
+</span><span class="add">+        (&apos;name&apos;, &apos;/sys/class/backlight/nv_backlight&apos;, &apos;Full path to backlight device.&apos;),
+</span><span class="def">         (&apos;smooth&apos;, True, &apos;Whether to smoothly change brightness level.&apos;),
+</span><span class="sub">-        (
+</span><span class="sub">-            &apos;path&apos;,
+</span><span class="sub">-            &apos;/sys/class/backlight/nv_backlight/brightness&apos;,
+</span><span class="sub">-            &apos;Full path to backlight device.&apos;
+</span><span class="sub">-        ),
+</span><span class="add">+        (&apos;transition&apos;, 0.04, &apos;Step size in seconds when smoothly transitioning&apos;),
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def">     def __init__(self, **config):
+</span><span class="def">         Notifier.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Backlight.defaults)
+</span><span class="sub">-        self.transition = _transition / self.interval / 1000
+</span><span class="def"> 
+</span><span class="sub">-        if not os.path.isfile(self.path):
+</span><span class="add">+        if os.path.isdir(self.name):
+</span><span class="add">+            self.file = os.path.join(self.name, &apos;brightness&apos;)
+</span><span class="add">+            with open(os.path.join(self.name, &apos;max_brightness&apos;), &apos;r&apos;) as f:
+</span><span class="add">+                self.max = int(f.read())
+</span><span class="add">+
+</span><span class="add">+        else:
+</span><span class="def">             logger.error(&apos;Path passed to Backlight plugin is invalid&apos;)
+</span><span class="sub">-            self.path = &apos;/dev/null&apos;
+</span><span class="add">+            self.name = &apos;/dev/null&apos;
+</span><span class="add">+            self.max = 100
+</span><span class="add">+
+</span><span class="add">+        self.interval = self.max * self.interval /100
+</span><span class="add">+        self.smooth_step = int(self.max / 100)
+</span><span class="def"> 
+</span><span class="def">     def inc_brightness(self, qtile=None):
+</span><span class="def">         self.change(1)
+</span>@@ -56,30 +58,31 @@
+<span class="def">     def change(self, direction):
+</span><span class="def">         start = self.get_brightness()
+</span><span class="def">         end = self.check_value(start + self.interval * direction)
+</span><span class="sub">-        self.show(end)
+</span><span class="add">+        self.show(int(100 * end / self.max))
+</span><span class="def"> 
+</span><span class="def">         if self.smooth:
+</span><span class="def">             for i in range(
+</span><span class="def">                 start + direction,
+</span><span class="def">                 end + direction,
+</span><span class="sub">-                direction
+</span><span class="add">+                direction * self.smooth_step,
+</span><span class="def">             ):
+</span><span class="sub">-                with open(self.path, &apos;w&apos;) as f:
+</span><span class="add">+                with open(self.file, &apos;w&apos;) as f:
+</span><span class="def">                     f.write(str(i))
+</span><span class="def">                 time.sleep(self.transition)
+</span><span class="add">+                logger.warning(&apos;brightness&apos;)
+</span><span class="def">         else:
+</span><span class="sub">-            with open(self.path, &apos;w&apos;) as f:
+</span><span class="add">+            with open(self.file, &apos;w&apos;) as f:
+</span><span class="def">                 f.write(str(end))
+</span><span class="def"> 
+</span><span class="def">     def get_brightness(self):
+</span><span class="sub">-        with open(self.path, &apos;r&apos;) as f:
+</span><span class="add">+        with open(self.file, &apos;r&apos;) as f:
+</span><span class="def">             return int(f.read())
+</span><span class="def"> 
+</span><span class="def">     def check_value(self, value):
+</span><span class="sub">-        if value &gt; 100:
+</span><span class="sub">-            value = 100
+</span><span class="add">+        if value &gt; self.max:
+</span><span class="add">+            value = self.max
+</span><span class="def">         elif value &lt; 0:
+</span><span class="def">             value = 0
+</span><span class="def">         elif value % self.interval:
+</span><span class="def">             value = self.interval * round(value / self.interval)
+</span><span class="sub">-        return value
+</span><span class="add">+        return int(value)
+</span></pre>
+</div></div>
+  </body>
+</html>

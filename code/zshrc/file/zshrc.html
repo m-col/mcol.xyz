@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - zshrc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- zshrc</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> #
+<a href="#l2" class="line" id="l2">      2</a> # zshrc
+<a href="#l3" class="line" id="l3">      3</a> #
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> if [[ -n &quot;$SSH_CLIENT&quot; ]] || [[ -n &quot;$SSH_TTY&quot; ]]
+<a href="#l6" class="line" id="l6">      6</a> then
+<a href="#l7" class="line" id="l7">      7</a>     export IS_SSH=true
+<a href="#l8" class="line" id="l8">      8</a> else
+<a href="#l9" class="line" id="l9">      9</a>     export IS_SSH=false
+<a href="#l10" class="line" id="l10">     10</a> fi
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> if [[ -n &quot;$TMUX&quot; ]]
+<a href="#l13" class="line" id="l13">     13</a> then
+<a href="#l14" class="line" id="l14">     14</a>     export IS_TMUX=true
+<a href="#l15" class="line" id="l15">     15</a> else
+<a href="#l16" class="line" id="l16">     16</a>     export IS_TMUX=false
+<a href="#l17" class="line" id="l17">     17</a> fi
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> export IS_DOCKER=${IS_DOCKER:-false}
+<a href="#l20" class="line" id="l20">     20</a> 
+<a href="#l21" class="line" id="l21">     21</a> # zsh settings
+<a href="#l22" class="line" id="l22">     22</a> local ZSH=&quot;$HOME/.zsh&quot;
+<a href="#l23" class="line" id="l23">     23</a> HYPHEN_INSENSITIVE=&quot;true&quot;
+<a href="#l24" class="line" id="l24">     24</a> COMPLETION_WAITING_DOTS=&quot;true&quot;
+<a href="#l25" class="line" id="l25">     25</a> ZSH_COMPDUMP=&quot;$HOME/.zcompdump&quot;
+<a href="#l26" class="line" id="l26">     26</a> setopt NO_nomatch
+<a href="#l27" class="line" id="l27">     27</a> fpath=(~/.zfunc $ZSH/zfunc $fpath)
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a> # zsh history
+<a href="#l30" class="line" id="l30">     30</a> HISTFILE=&quot;$HOME/.zsh_history&quot;
+<a href="#l31" class="line" id="l31">     31</a> HISTSIZE=12000
+<a href="#l32" class="line" id="l32">     32</a> SAVEHIST=8000
+<a href="#l33" class="line" id="l33">     33</a> #setopt SHARE_HISTORY
+<a href="#l34" class="line" id="l34">     34</a> setopt HIST_IGNORE_ALL_DUPS
+<a href="#l35" class="line" id="l35">     35</a> setopt HIST_REDUCE_BLANKS
+<a href="#l36" class="line" id="l36">     36</a> 
+<a href="#l37" class="line" id="l37">     37</a> # plugins
+<a href="#l38" class="line" id="l38">     38</a> for plugin ($ZSH/oh-my-zsh/*.zsh $ZSH/*.zsh(N))
+<a href="#l39" class="line" id="l39">     39</a> do
+<a href="#l40" class="line" id="l40">     40</a>     source $plugin
+<a href="#l41" class="line" id="l41">     41</a> done
+<a href="#l42" class="line" id="l42">     42</a> 
+<a href="#l43" class="line" id="l43">     43</a> so () { [[ -e $1 ]] &amp;&amp; source $1 }
+<a href="#l44" class="line" id="l44">     44</a> 
+<a href="#l45" class="line" id="l45">     45</a> so $ZSH/aliases		    # common
+<a href="#l46" class="line" id="l46">     46</a> so $HOME/.config/aliases    # machine-specific
+<a href="#l47" class="line" id="l47">     47</a> 
+<a href="#l48" class="line" id="l48">     48</a> ZSH_THEME=&quot;ban&quot;
+<a href="#l49" class="line" id="l49">     49</a> so $ZSH/themes/$ZSH_THEME.zsh-theme
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> _Z_DATA=$ZSH/z_data
+<a href="#l52" class="line" id="l52">     52</a> so $ZSH/z/z.sh
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a> ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+<a href="#l55" class="line" id="l55">     55</a> so $ZSH/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+<a href="#l56" class="line" id="l56">     56</a> 
+<a href="#l57" class="line" id="l57">     57</a> LESSHISTFILE=-
+<a href="#l58" class="line" id="l58">     58</a> 
+<a href="#l59" class="line" id="l59">     59</a> bindkey &apos;^A&apos; autosuggest-execute
+<a href="#l60" class="line" id="l60">     60</a> 
+<a href="#l61" class="line" id="l61">     61</a> export \
+<a href="#l62" class="line" id="l62">     62</a>     SUDO_EDITOR=nvim \
+<a href="#l63" class="line" id="l63">     63</a>     EDITOR=nvim \
+<a href="#l64" class="line" id="l64">     64</a>     AUR_PAGER=ranger \
+<a href="#l65" class="line" id="l65">     65</a>     TERM=xterm-256color \
+<a href="#l66" class="line" id="l66">     66</a>     LANG=en_GB.UTF-8 \
+<a href="#l67" class="line" id="l67">     67</a>     LC_CTYPE=en_GB.UTF-8 \
+<a href="#l68" class="line" id="l68">     68</a>     PAGER=&quot;less --mouse&quot; \
+<a href="#l69" class="line" id="l69">     69</a>     RANGER_LOAD_DEFAULT_RC=FALSE \
+<a href="#l70" class="line" id="l70">     70</a>     PYTHONSTARTUP=~/.zsh/pythonrc.py
+<a href="#l71" class="line" id="l71">     71</a> 
+<a href="#l72" class="line" id="l72">     72</a> # ensure that the prompt is redrawn when the terminal size changes.
+<a href="#l73" class="line" id="l73">     73</a> TRAPWINCH () { zle &amp;&amp;  zle -R }
+<a href="#l74" class="line" id="l74">     74</a> 
+<a href="#l75" class="line" id="l75">     75</a> # If being executed via the &apos;2&apos; script
+<a href="#l76" class="line" id="l76">     76</a> if [[ -n &quot;$DO2&quot; ]]
+<a href="#l77" class="line" id="l77">     77</a> then
+<a href="#l78" class="line" id="l78">     78</a>     z $DO2
+<a href="#l79" class="line" id="l79">     79</a>     unset DO2
+<a href="#l80" class="line" id="l80">     80</a> fi
+<a href="#l81" class="line" id="l81">     81</a> 
+</pre>
+  </div>
+  </body>
+</html>

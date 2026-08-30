@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Fix tests</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/db8f23aa8db5142276a60a5227a95a28de63558d.html">db8f23aa8db5142276a60a5227a95a28de63558d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/b6e820c57cb8101f56a2c42ef92c19f871690bd7.html">b6e820c57cb8101f56a2c42ef92c19f871690bd7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-26 16:30:01 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-26 16:30:01 +0000
+
+Fix tests
+
+Some test files were not being checked
+
+Also removes branches from tests - the CI runs on a detached HEAD
+</pre><div class="diff">
+  <p>
+    <b>test/test.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -32,7 +32,9 @@
+<span class="def">     &quot;index.html&quot;
+</span><span class="def">     &quot;style.css&quot;
+</span><span class="def">     &quot;static/a_nice_file&quot;
+</span><span class="add">+    &quot;gitserve/index.html&quot;
+</span><span class="def">     &quot;gitserve/commit/0292014748caae952bbc8dd6225680d83c0a5135.html&quot;
+</span><span class="add">+    &quot;gitserve/file/test.templates.html&quot;
+</span><span class="def">     &quot;gitserve/file/test.templates.style.css.html&quot;
+</span><span class="def"> )
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/templates/repo/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,8 +10,8 @@
+<span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: {{ branches }}
+</span><span class="sub">-    branches[0].name: {{ branches[0].name }}
+</span><span class="add">+branches: (skipped)
+</span><span class="add">+    branches[0].name: (skipped)
+</span><span class="def"> readme.path: {{ readme.path }}
+</span><span class="def"> license.path: {{ license.path }}
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/templates/repo/file.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,8 +22,8 @@
+<span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: {{ branches }}
+</span><span class="sub">-    branches[0].name: {{ branches[0].name }}
+</span><span class="add">+branches: (skipped)
+</span><span class="add">+    branches[0].name: (skipped)
+</span><span class="def"> readme.path: {{ readme.path }}
+</span><span class="def"> license.path: {{ license.path }}
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/gitserve/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,11 +4,10 @@
+<span class="def"> repos: gitserve
+</span><span class="def"> name: gitserve
+</span><span class="def"> description: 🐙 Templated web page generator for your git repositories
+</span><span class="sub">-
+</span><span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: master
+</span><span class="sub">-    branches[0].name: master
+</span><span class="add">+branches: (skipped)
+</span><span class="add">+    branches[0].name: (skipped)
+</span><span class="def"> readme.path: README.rst
+</span><span class="def"> license.path: LICENSE
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/gitserve/file/test.templates.style.css.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,7 @@
+<span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: master
+</span><span class="sub">-    branches[0].name: master
+</span><span class="add">+branches: (skipped)
+</span><span class="add">+    branches[0].name: (skipped)
+</span><span class="def"> readme.path: README.rst
+</span><span class="def"> license.path: LICENSE
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/gitserve/file/test.templates.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,7 @@
+<span class="def"> commits: (skipped)
+</span><span class="def"> tree: (skipped)
+</span><span class="def"> tags: (skipped)
+</span><span class="sub">-branches: master
+</span><span class="sub">-    branches[0].name: master
+</span><span class="add">+branches: (skipped)
+</span><span class="add">+    branches[0].name: (skipped)
+</span><span class="def"> readme.path: README.rst
+</span><span class="def"> license.path: LICENSE
+</span></pre>
+</div></div>
+  </body>
+</html>

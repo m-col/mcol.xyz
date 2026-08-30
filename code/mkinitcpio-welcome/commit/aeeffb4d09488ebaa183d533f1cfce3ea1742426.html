@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - add poscursor hook</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/aeeffb4d09488ebaa183d533f1cfce3ea1742426.html">aeeffb4d09488ebaa183d533f1cfce3ea1742426</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/bfd7ef9564851bce16d4da42ce920355f1207d4c.html">bfd7ef9564851bce16d4da42ce920355f1207d4c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-29 20:40:21 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-29 20:40:21 +0100
+
+add poscursor hook
+</pre><div class="diff">
+  <p>
+    <b>install/poscursor</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,11 @@
+<span class="add">+#!/bin/bash
+</span><span class="add">+
+</span><span class="add">+build() {
+</span><span class="add">+    add_runscript
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+help() {
+</span><span class="add">+    cat &lt;&lt;HELPEOF
+</span><span class="add">+Moves the cursor the second line of the input box to position fsck output
+</span><span class="add">+HELPEOF
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>hooks/poscursor</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,7 @@
+<span class="add">+#!/usr/bin/ash
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+run_hook() {
+</span><span class="add">+    # Reposition cursor to second line of input box for the output of fsck
+</span><span class="add">+    echo -ne &quot;\x1b[33;81H&quot;
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

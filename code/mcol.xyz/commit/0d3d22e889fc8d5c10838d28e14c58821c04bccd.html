@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Use actions/checkout for gitja and stop duplicating the repo list</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/0d3d22e889fc8d5c10838d28e14c58821c04bccd.html">0d3d22e889fc8d5c10838d28e14c58821c04bccd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/4d467e8002faadbc51d8aca9b8cc785b6e1a7074.html">4d467e8002faadbc51d8aca9b8cc785b6e1a7074</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 18:48:32 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 18:48:32 +0000
+
+Use actions/checkout for gitja and stop duplicating the repo list
+
+- Check out gitja itself via actions/checkout (repository:/path:) instead
+  of a raw git clone, matching how the workflow checks out everything else.
+- Split the repo list out of config.dhall into gitja/repos.dhall, which
+  config.dhall now imports. The workflow&apos;s clone step parses repos.dhall
+  directly instead of carrying its own hardcoded copy of the list, so
+  adding/removing/renaming a repo is a one-file change.
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_012RfZTyHvxLyVp4yaWmNvhN
+</pre><div class="diff">
+  <p>
+    <b>gitja/repos.dhall</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,24 @@
+<span class="add">+-- The single source of truth for which repos appear on /code. Imported by
+</span><span class="add">+-- ./config.dhall, and parsed directly by .github/workflows/deploy.yaml to
+</span><span class="add">+-- know which repos to clone - so this is the only place to edit when
+</span><span class="add">+-- adding, removing or renaming a repo.
+</span><span class="add">+
+</span><span class="add">+let repos = &quot;..&quot;
+</span><span class="add">+
+</span><span class="add">+in  [ &quot;${repos}/bdf2flf&quot;
+</span><span class="add">+    , &quot;${repos}/gitja&quot;
+</span><span class="add">+    , &quot;${repos}/mcol.xyz&quot;
+</span><span class="add">+    , &quot;${repos}/mini-theme&quot;
+</span><span class="add">+    , &quot;${repos}/mkinitcpio-welcome&quot;
+</span><span class="add">+    , &quot;${repos}/pelican-microfeed&quot;
+</span><span class="add">+    , &quot;${repos}/pelican-minify-fontawesome&quot;
+</span><span class="add">+    , &quot;${repos}/qtile-config&quot;
+</span><span class="add">+    , &quot;${repos}/qtools&quot;
+</span><span class="add">+    , &quot;${repos}/sudoku-solver&quot;
+</span><span class="add">+    , &quot;${repos}/tide&quot;
+</span><span class="add">+    , &quot;${repos}/vim-misc&quot;
+</span><span class="add">+    , &quot;${repos}/wimp&quot;
+</span><span class="add">+    , &quot;${repos}/xanadu&quot;
+</span><span class="add">+    , &quot;${repos}/xoop&quot;
+</span><span class="add">+    , &quot;${repos}/zshrc&quot;
+</span><span class="add">+    ]
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/config.dhall</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,31 +1,12 @@
+<span class="def"> -- gitja config for generating the /code section of mcol.xyz.
+</span><span class="def"> --
+</span><span class="sub">--- This expects to be run from the mcol.xyz repo root, with the repos below
+</span><span class="sub">--- checked out as sibling directories of that checkout (see
+</span><span class="sub">--- .github/workflows/deploy.yaml), mirroring gitja&apos;s own CI setup. Paths
+</span><span class="sub">--- here are resolved relative to the working directory gitja is invoked
+</span><span class="sub">--- from, not relative to this file.
+</span><span class="add">+-- This expects to be run from the mcol.xyz repo root, with the repos
+</span><span class="add">+-- listed in ./repos.dhall checked out as sibling directories of that
+</span><span class="add">+-- checkout (see .github/workflows/deploy.yaml), mirroring gitja&apos;s own CI
+</span><span class="add">+-- setup. Paths here are resolved relative to the working directory gitja
+</span><span class="add">+-- is invoked from, not relative to this file.
+</span><span class="def"> 
+</span><span class="sub">-let repos = &quot;..&quot;
+</span><span class="sub">-
+</span><span class="sub">-let folders =
+</span><span class="sub">-    [ &quot;${repos}/bdf2flf&quot;
+</span><span class="sub">-    , &quot;${repos}/gitja&quot;
+</span><span class="sub">-    , &quot;${repos}/mcol.xyz&quot;
+</span><span class="sub">-    , &quot;${repos}/mini-theme&quot;
+</span><span class="sub">-    , &quot;${repos}/mkinitcpio-welcome&quot;
+</span><span class="sub">-    , &quot;${repos}/pelican-microfeed&quot;
+</span><span class="sub">-    , &quot;${repos}/pelican-minify-fontawesome&quot;
+</span><span class="sub">-    , &quot;${repos}/qtile-config&quot;
+</span><span class="sub">-    , &quot;${repos}/qtools&quot;
+</span><span class="sub">-    , &quot;${repos}/sudoku-solver&quot;
+</span><span class="sub">-    , &quot;${repos}/tide&quot;
+</span><span class="sub">-    , &quot;${repos}/vim-misc&quot;
+</span><span class="sub">-    , &quot;${repos}/wimp&quot;
+</span><span class="sub">-    , &quot;${repos}/xanadu&quot;
+</span><span class="sub">-    , &quot;${repos}/xoop&quot;
+</span><span class="sub">-    , &quot;${repos}/zshrc&quot;
+</span><span class="sub">-    ]
+</span><span class="add">+let folders = ./repos.dhall
+</span><span class="def"> 
+</span><span class="def"> let config =
+</span><span class="def">     { repos = folders
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.github/workflows/deploy.yaml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -34,8 +34,11 @@
+<span class="def">         with:
+</span><span class="def">           enable-stack: true
+</span><span class="def"> 
+</span><span class="sub">-      - name: Clone gitja
+</span><span class="sub">-        run: git clone --depth 1 https://github.com/m-col/gitja gitja-src
+</span><span class="add">+      - name: Checkout gitja
+</span><span class="add">+        uses: actions/checkout@v4
+</span><span class="add">+        with:
+</span><span class="add">+          repository: m-col/gitja
+</span><span class="add">+          path: gitja-src
+</span><span class="def"> 
+</span><span class="def">       - uses: actions/cache@v4
+</span><span class="def">         with:
+</span>@@ -50,15 +53,13 @@
+<span class="def"> 
+</span><span class="def">       - name: Clone repos listed on /code
+</span><span class="def">         run: |
+</span><span class="add">+          repos=$(grep -oP &apos;\$\{repos\}/\K[^&quot;]+&apos; gitja/repos.dhall)
+</span><span class="def">           cd ..
+</span><span class="sub">-          for repo in bdf2flf mini-theme mkinitcpio-welcome pelican-microfeed \
+</span><span class="sub">-                      pelican-minify-fontawesome qtile-config qtools \
+</span><span class="sub">-                      sudoku-solver tide vim-misc wimp xanadu xoop zshrc; do
+</span><span class="add">+          for repo in $repos; do
+</span><span class="add">+            # mcol.xyz is already checked out here as this workflow&apos;s own repo.
+</span><span class="add">+            [ &quot;$repo&quot; = &quot;mcol.xyz&quot; ] &amp;&amp; continue
+</span><span class="def">             git clone --depth 100 &quot;https://github.com/m-col/$repo&quot; &quot;$repo&quot;
+</span><span class="def">           done
+</span><span class="sub">-          # mcol.xyz itself is already checked out as this workflow&apos;s own repo,
+</span><span class="sub">-          # already sitting in the right sibling location for config.dhall&apos;s
+</span><span class="sub">-          # &quot;repos = ..&quot; to find it.
+</span><span class="def"> 
+</span><span class="def">       - name: Write repo descriptions
+</span><span class="def">         run: python3 gitja/descriptions.py
+</span></pre>
+</div></div>
+  </body>
+</html>

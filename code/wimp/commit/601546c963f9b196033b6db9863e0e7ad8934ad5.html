@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - neaten up getting values from config options</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/601546c963f9b196033b6db9863e0e7ad8934ad5.html">601546c963f9b196033b6db9863e0e7ad8934ad5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/4a95d09e3629f944c1611b905718e64397e021ab.html">4a95d09e3629f944c1611b905718e64397e021ab</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-23 12:39:34 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-23 12:39:34 +0000
+
+neaten up getting values from config options
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,6 +13,8 @@
+<span class="def"> 
+</span><span class="def"> #define is_decimal(s) (strspn(s, &quot;0123456789.&quot;) == strlen(s))
+</span><span class="def"> 
+</span><span class="add">+#define LEN(array) (int)(sizeof(array) / sizeof(*(array)))
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> static const char *DEFAULT_CONFIG =  &quot;\n\
+</span><span class="def"> zoom_min 0.5\n\
+</span>@@ -25,37 +27,65 @@
+<span class="def"> &quot;;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-enum wlr_keyboard_modifier modifier_by_name(char *mod) {
+</span><span class="sub">-    if (strcasecmp(mod, &quot;shift&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_SHIFT;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;caps&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_CAPS;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;ctrl&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_CTRL;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;alt&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_ALT;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;mod2&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_MOD2;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;mod3&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_MOD3;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;logo&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_LOGO;
+</span><span class="sub">-    if (strcasecmp(mod, &quot;mod5&quot;) == 0)
+</span><span class="sub">-	return WLR_MODIFIER_MOD5;
+</span><span class="add">+static const struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    enum wlr_keyboard_modifier mod;
+</span><span class="add">+} modifier_by_name_map[] = {
+</span><span class="add">+    { &quot;shift&quot;, WLR_MODIFIER_SHIFT },
+</span><span class="add">+    { &quot;caps&quot;, WLR_MODIFIER_CAPS },
+</span><span class="add">+    { &quot;ctrl&quot;, WLR_MODIFIER_CTRL },
+</span><span class="add">+    { &quot;alt&quot;, WLR_MODIFIER_ALT },
+</span><span class="add">+    { &quot;mod2&quot;, WLR_MODIFIER_MOD2 },
+</span><span class="add">+    { &quot;mod3&quot;, WLR_MODIFIER_MOD3 },
+</span><span class="add">+    { &quot;logo&quot;, WLR_MODIFIER_LOGO },
+</span><span class="add">+    { &quot;mod5&quot;, WLR_MODIFIER_MOD5 },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+enum wlr_keyboard_modifier modifier_by_name(const char *name) {
+</span><span class="add">+    for (int i = 0; i &lt; LEN(modifier_by_name_map); i++) {
+</span><span class="add">+	if (strcasecmp(modifier_by_name_map[i].name, name) == 0)
+</span><span class="add">+	    return modifier_by_name_map[i].mod;
+</span><span class="add">+    }
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static const struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    enum direction dir;
+</span><span class="add">+} direction_by_name_map[] = {
+</span><span class="add">+    { &quot;up&quot;, UP },
+</span><span class="add">+    { &quot;right&quot;, RIGHT },
+</span><span class="add">+    { &quot;down&quot;, DOWN },
+</span><span class="add">+    { &quot;left&quot;, LEFT },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+enum direction direction_by_name(char *name) {
+</span><span class="add">+    for (int i = 0; i &lt; LEN(direction_by_name_map); i++) {
+</span><span class="add">+	if (strcasecmp(direction_by_name_map[i].name, name) == 0)
+</span><span class="add">+	    return direction_by_name_map[i].dir;
+</span><span class="add">+    }
+</span><span class="def">     return 0;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-enum direction direction_from_name(char *name) {
+</span><span class="sub">-    if (strcasecmp(name, &quot;up&quot;) == 0)
+</span><span class="sub">-	return UP;
+</span><span class="sub">-    if (strcasecmp(name, &quot;right&quot;) == 0)
+</span><span class="sub">-	return RIGHT;
+</span><span class="sub">-    if (strcasecmp(name, &quot;down&quot;) == 0)
+</span><span class="sub">-	return DOWN;
+</span><span class="sub">-    if (strcasecmp(name, &quot;left&quot;) == 0)
+</span><span class="sub">-	return LEFT;
+</span><span class="sub">-    return NONE;
+</span><span class="add">+static const struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    enum mouse_keys key;
+</span><span class="add">+} mouse_key_by_name_map[] = {
+</span><span class="add">+    { &quot;motion&quot;, MOTION },
+</span><span class="add">+    { &quot;scroll&quot;, SCROLL },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+enum mouse_keys mouse_key_by_name(char *name) {
+</span><span class="add">+    for (int i = 0; i &lt; LEN(mouse_key_by_name_map); i++) {
+</span><span class="add">+	if (strcasecmp(mouse_key_by_name_map[i].name, name) == 0)
+</span><span class="add">+	    return mouse_key_by_name_map[i].key;
+</span><span class="add">+    }
+</span><span class="add">+    return 0;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -70,7 +100,7 @@
+<span class="def">     else if (strcasecmp(name, &quot;focus&quot;) == 0) {
+</span><span class="def"> 	kb-&gt;action = &amp;focus_in_direction;
+</span><span class="def"> 	kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="sub">-	*(enum direction *)(kb-&gt;data) = direction_from_name(data);
+</span><span class="add">+	*(enum direction *)(kb-&gt;data) = direction_by_name(data);
+</span><span class="def">     }
+</span><span class="def">     else if (strcasecmp(name, &quot;next_desk&quot;) == 0)
+</span><span class="def"> 	kb-&gt;action = &amp;next_desk;
+</span>@@ -106,22 +136,13 @@
+<span class="def">     else if (strcasecmp(name, &quot;halfimize&quot;) == 0) {
+</span><span class="def"> 	kb-&gt;action = &amp;halfimize;
+</span><span class="def"> 	kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="sub">-	*(enum direction *)(kb-&gt;data) = direction_from_name(data);
+</span><span class="add">+	*(enum direction *)(kb-&gt;data) = direction_by_name(data);
+</span><span class="def">     }
+</span><span class="def">     else if (strcasecmp(name, &quot;reload_config&quot;) == 0)
+</span><span class="def"> 	kb-&gt;action = &amp;reload_config;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-enum mouse_keys mouse_key_from_name(char *name) {
+</span><span class="sub">-    if (strcasecmp(name, &quot;motion&quot;) == 0)
+</span><span class="sub">-	return MOTION;
+</span><span class="sub">-    else if (strcasecmp(name, &quot;scroll&quot;) == 0)
+</span><span class="sub">-	return SCROLL;
+</span><span class="sub">-    return 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void free_binding(struct binding *kb) {
+</span><span class="def">     if (kb-&gt;data)
+</span><span class="def"> 	free(kb-&gt;data);
+</span>@@ -152,7 +173,7 @@
+<span class="def"> 	kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_CASE_INSENSITIVE);
+</span><span class="def"> 
+</span><span class="def">     if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="sub">-	kb-&gt;key = mouse_key_from_name(s);
+</span><span class="add">+	kb-&gt;key = mouse_key_by_name(s);
+</span><span class="def"> 	if (kb-&gt;key == 0) {
+</span><span class="def"> 	    wlr_log(WLR_ERROR, &quot;Config line %i: No such key &apos;%s&apos;.&quot;, line, s);
+</span><span class="def"> 	    free(kb);
+</span></pre>
+</div></div>
+  </body>
+</html>

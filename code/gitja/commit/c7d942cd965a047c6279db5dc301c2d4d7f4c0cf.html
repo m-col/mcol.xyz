@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add makefile for convenience</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/c7d942cd965a047c6279db5dc301c2d4d7f4c0cf.html">c7d942cd965a047c6279db5dc301c2d4d7f4c0cf</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/6aab808c286bf022b308d712eea740f2f7c34445.html">6aab808c286bf022b308d712eea740f2f7c34445</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-22 20:22:55 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-22 20:22:55 +0000
+
+Add makefile for convenience
+</pre><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,25 @@
+<span class="add">+.DEFAULT_GOAL := build
+</span><span class="add">+
+</span><span class="add">+.PHONY: build
+</span><span class="add">+build: ## Compile the binary (Default)
+</span><span class="add">+	@stack build
+</span><span class="add">+
+</span><span class="add">+.PHONY: help
+</span><span class="add">+help: ## Show this help
+</span><span class="add">+	@awk &apos;BEGIN {FS = &quot;:.*?## &quot;} /^[a-zA-Z_-]+:.*?## / {printf &quot;\033[1m%-15s\033[0m %s\n&quot;, $$1, $$2}&apos; $(MAKEFILE_LIST)
+</span><span class="add">+
+</span><span class="add">+.PHONY: lint
+</span><span class="add">+lint: ## Check the source code
+</span><span class="add">+	@hlint src
+</span><span class="add">+
+</span><span class="add">+.PHONY: format
+</span><span class="add">+format: ## Check the source code
+</span><span class="add">+	@fourmolu -m inplace src/*
+</span><span class="add">+
+</span><span class="add">+.PHONY: install
+</span><span class="add">+install: ## Clean generated files
+</span><span class="add">+	@stack install
+</span><span class="add">+
+</span><span class="add">+.PHONY: clean
+</span><span class="add">+clean: ## Clean generated files
+</span><span class="add">+	@stack clean
+</span></pre>
+</div></div>
+  </body>
+</html>

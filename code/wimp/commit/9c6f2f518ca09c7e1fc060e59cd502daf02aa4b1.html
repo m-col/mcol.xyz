@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Take into account zoom when panning to view</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/9c6f2f518ca09c7e1fc060e59cd502daf02aa4b1.html">9c6f2f518ca09c7e1fc060e59cd502daf02aa4b1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/0612dc453a2e54d6ce0d7c048cb95662d4f999c5.html">0612dc453a2e54d6ce0d7c048cb95662d4f999c5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 17:52:13 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 17:52:13 +0000
+
+Take into account zoom when panning to view
+
+Fixes #20
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -50,6 +50,7 @@
+<span class="def">     double width = view-&gt;surface-&gt;geometry.width + border_width * 2;
+</span><span class="def">     double height = view-&gt;surface-&gt;geometry.height + border_width * 2;
+</span><span class="def">     struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span><span class="add">+    double zoom = wimp.current_desk-&gt;zoom;
+</span><span class="def">     struct motion motion = {
+</span><span class="def"> 	.dx = 0,
+</span><span class="def"> 	.dy = 0,
+</span>@@ -57,14 +58,14 @@
+<span class="def">     };
+</span><span class="def"> 
+</span><span class="def">     if (x &lt; 0) {
+</span><span class="sub">-	motion.dx = x;
+</span><span class="sub">-    } else if (x + width &gt; extents-&gt;width) {
+</span><span class="sub">-	motion.dx = x + width - extents-&gt;width;
+</span><span class="add">+	motion.dx = x * zoom;
+</span><span class="add">+    } else if (x + width &gt; extents-&gt;width / zoom) {
+</span><span class="add">+	motion.dx = (x + width) * zoom - extents-&gt;width;
+</span><span class="def">     }
+</span><span class="def">     if (y &lt; 0) {
+</span><span class="sub">-	motion.dy = y;
+</span><span class="sub">-    } else if (y + height &gt; extents-&gt;height) {
+</span><span class="sub">-	motion.dy = y + height - extents-&gt;height;
+</span><span class="add">+	motion.dy = y * zoom;
+</span><span class="add">+    } else if (y + height &gt; extents-&gt;height / zoom) {
+</span><span class="add">+	motion.dy = (y + height) * zoom - extents-&gt;height;
+</span><span class="def">     }
+</span><span class="def">     pan_desk(&amp;motion);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

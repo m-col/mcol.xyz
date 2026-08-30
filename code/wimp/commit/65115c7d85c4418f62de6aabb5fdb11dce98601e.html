@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add wlr_data_device_manager_create</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/65115c7d85c4418f62de6aabb5fdb11dce98601e.html">65115c7d85c4418f62de6aabb5fdb11dce98601e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/bfd1ffe1c387f50d9e56dfa44fc570c46e147cbd.html">bfd1ffe1c387f50d9e56dfa44fc570c46e147cbd</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-05 22:54:49 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-05 22:57:55 +0000
+
+add wlr_data_device_manager_create
+</pre><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> #include &lt;wlr/backend.h&gt;
+</span><span class="def"> #include &lt;wlr/render/wlr_renderer.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span>@@ -20,6 +21,7 @@
+<span class="def">     server.renderer = wlr_backend_get_renderer(server.backend);
+</span><span class="def">     wlr_renderer_init_wl_display(server.renderer, server.display);
+</span><span class="def">     wlr_compositor_create(server.display, server.renderer);
+</span><span class="add">+    wlr_data_device_manager_create(server.display);
+</span><span class="def">     return server;
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

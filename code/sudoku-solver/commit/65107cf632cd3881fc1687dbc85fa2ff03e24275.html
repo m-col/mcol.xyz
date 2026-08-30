@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sudoku-solver - hlint</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/sudoku-solver">sudoku-solver</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A small haskell script to solve sudoku puzzles</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/sudoku-solver">https://github.com/m-col/sudoku-solver</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/sudoku-solver/tree.html">Files</a> | <a href="https://mcol.xyz/code/sudoku-solver/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/sudoku-solver/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/65107cf632cd3881fc1687dbc85fa2ff03e24275.html">65107cf632cd3881fc1687dbc85fa2ff03e24275</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/7697d0092a5a1a4a3c80ae35c2d201767b50bbc8.html">7697d0092a5a1a4a3c80ae35c2d201767b50bbc8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-03 17:35:03 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-03 17:35:03 +0100
+
+hlint
+</pre><div class="diff">
+  <p>
+    <b>sudoku.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,7 @@
+<span class="def"> #!/usr/bin/env runhaskell
+</span><span class="def"> 
+</span><span class="add">+{-# LANGUAGE TupleSections #-}
+</span><span class="add">+
+</span><span class="def"> {-
+</span><span class="def"> sudoku-solver script. Copyright Matt Colligan 2022.
+</span><span class="def"> -}
+</span>@@ -41,15 +43,15 @@
+<span class="def"> isValid p = all (goodSet p) blocks
+</span><span class="def">   where
+</span><span class="def">     goodSet :: Puzzle -&gt; [Index] -&gt; Bool
+</span><span class="sub">-    goodSet p = noRepeats . catMaybes . map ((!) p)
+</span><span class="add">+    goodSet p = noRepeats . mapMaybe (p !)
+</span><span class="def"> 
+</span><span class="def">     noRepeats cs = length cs == length (nub cs)
+</span><span class="def"> 
+</span><span class="def">     blocks :: [[Index]]
+</span><span class="def">     blocks = concat [rows, cols, boxes]
+</span><span class="sub">-    rows = map (\r -&gt; map ((,) r) set) set
+</span><span class="sub">-    cols = map (\c -&gt; map (flip (,) c) set) set
+</span><span class="sub">-    boxes = map makeBox [(r, c) | r &lt;- [One, Four, Seven], c &lt;- [One, Four, Seven]]
+</span><span class="add">+    rows = map (\r -&gt; map (r,) set) set
+</span><span class="add">+    cols = map (\c -&gt; map (,c) set) set
+</span><span class="add">+    boxes = [makeBox (r, c) | r &lt;- [One, Four, Seven], c &lt;- [One, Four, Seven]]
+</span><span class="def"> 
+</span><span class="def">     makeBox :: Index -&gt; [Index]
+</span><span class="def">     makeBox (r, c) = [(r, c) | r &lt;- [r .. succ . succ $ r], c &lt;- [c .. succ . succ $ c]]
+</span></pre>
+</div></div>
+  </body>
+</html>

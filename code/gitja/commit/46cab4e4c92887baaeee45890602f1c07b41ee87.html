@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Sort repos on example template index pages</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/46cab4e4c92887baaeee45890602f1c07b41ee87.html">46cab4e4c92887baaeee45890602f1c07b41ee87</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/ef3c779b5d0b4e3d3336c09f370d591110568f2f.html">ef3c779b5d0b4e3d3336c09f370d591110568f2f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-12-04 01:11:34 +0300
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-12-04 01:11:34 +0300
+
+Sort repos on example template index pages
+</pre><div class="diff">
+  <p>
+    <b>templates/stagit/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,7 +19,7 @@
+<span class="def">     &lt;/thead&gt;
+</span><span class="def"> 
+</span><span class="def">     &lt;tbody&gt;
+</span><span class="sub">-      {% for repo in repositories %}
+</span><span class="add">+      {% for repo in sort(repositories, by=&quot;updated&quot;, reverse=1) %}
+</span><span class="def">       &lt;tr&gt;&lt;td&gt;&lt;a href=&quot;{{ repo.name }}&quot;&gt;{{ repo.name }}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;{{ repo.description }}&lt;/td&gt;&lt;td&gt;{{ repo.updated[:16] }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="def">       {% endfor %}
+</span><span class="def">     &lt;/tbody&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>templates/base/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -27,7 +27,7 @@
+<span class="def">   &lt;/thead&gt;
+</span><span class="def"> 
+</span><span class="def">   &lt;tbody&gt;
+</span><span class="sub">-    {% for repo in repositories %}
+</span><span class="add">+    {% for repo in sort(repositories, by=&quot;updated&quot;, reverse=1) %}
+</span><span class="def">     &lt;tr&gt;
+</span><span class="def">       &lt;td&gt;&lt;a href=&quot;{{ host }}/{{ repo.name }}&quot;&gt;{{ repo.name }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="def">       &lt;td&gt;{{ repo.description }}&lt;/td&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Drop redundant list-comprehension brackets in stagit article</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/cd6205a30a1540186f03d4ef68366a01b22bf6f2.html">cd6205a30a1540186f03d4ef68366a01b22bf6f2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/50d4c753466dc5c6e183aa8bd75230c2cf388947.html">50d4c753466dc5c6e183aa8bd75230c2cf388947</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 17:20:21 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 17:39:37 +0000
+
+Drop redundant list-comprehension brackets in stagit article
+
+extend()&apos;s parens already enclose the generator expression, so the list
+brackets around it were unnecessary.
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_012RfZTyHvxLyVp4yaWmNvhN
+</pre><div class="diff">
+  <p>
+    <b>content/posts/foss/bye_cgit_hello_stagit.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -72,7 +72,7 @@
+<span class="def">             (git.Repo(path.parent).head.commit.committed_date, path.parent)
+</span><span class="def">         )
+</span><span class="def"> 
+</span><span class="sub">-    COMMAND.extend([x for _, x in sorted(REPOS, key=lambda i: i[0], reverse=True)])
+</span><span class="add">+    COMMAND.extend(x for _, x in sorted(REPOS, key=lambda i: i[0], reverse=True))
+</span><span class="def">     subprocess.call(COMMAND)
+</span><span class="def"> 
+</span><span class="def"> Then all I need to do is run this little script and the index page will display
+</span></pre>
+</div></div>
+  </body>
+</html>

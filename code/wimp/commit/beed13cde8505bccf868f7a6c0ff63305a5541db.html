@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - if focussed layer shell is unmapped, focus top view</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/beed13cde8505bccf868f7a6c0ff63305a5541db.html">beed13cde8505bccf868f7a6c0ff63305a5541db</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/a70ba044975c98144424d02b54c2aacfd07a05ca.html">a70ba044975c98144424d02b54c2aacfd07a05ca</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-30 19:38:37 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-30 19:38:37 +0000
+
+if focussed layer shell is unmapped, focus top view
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -62,6 +62,7 @@
+<span class="def"> 
+</span><span class="def">     struct wlr_layer_shell_v1 *layer_shell;
+</span><span class="def">     struct wl_listener layer_shell_surface_listener;
+</span><span class="add">+    struct layer_view *focussed_layer_view;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/layer_shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -71,6 +71,7 @@
+<span class="def"> 		    wimp.seat, lview-&gt;surface-&gt;surface, keyboard-&gt;keycodes,
+</span><span class="def"> 		    keyboard-&gt;num_keycodes, &amp;keyboard-&gt;modifiers
+</span><span class="def"> 		);
+</span><span class="add">+		wimp.focussed_layer_view = lview;
+</span><span class="def"> 		return;
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span>@@ -95,7 +96,16 @@
+<span class="def">     struct layer_view *lview = wl_container_of(listener, lview, unmap_listener);
+</span><span class="def">     lview-&gt;surface-&gt;mapped = false;
+</span><span class="def">     layer(lview-&gt;output);
+</span><span class="sub">-    wlr_surface_send_enter(lview-&gt;surface-&gt;surface, lview-&gt;surface-&gt;output);
+</span><span class="add">+
+</span><span class="add">+    if (wimp.focussed_layer_view == lview) {
+</span><span class="add">+	struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(wimp.seat);
+</span><span class="add">+	struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="add">+	wlr_seat_keyboard_notify_enter(
+</span><span class="add">+	    wimp.seat, view-&gt;surface-&gt;surface, keyboard-&gt;keycodes,
+</span><span class="add">+	    keyboard-&gt;num_keycodes, &amp;keyboard-&gt;modifiers
+</span><span class="add">+	);
+</span><span class="add">+	wimp.focussed_layer_view = NULL;
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -103,6 +113,7 @@
+<span class="def">     struct layer_view *lview = wl_container_of(listener, lview, map_listener);
+</span><span class="def">     lview-&gt;surface-&gt;mapped = true;
+</span><span class="def">     layer(lview-&gt;output);
+</span><span class="add">+    wlr_surface_send_enter(lview-&gt;surface-&gt;surface, lview-&gt;surface-&gt;output);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

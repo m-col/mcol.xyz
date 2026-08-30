@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - added user systemd aliases, and terminal window title setting hook</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/25556159573f1152ce60fd0909216c0f23ba6f54.html">25556159573f1152ce60fd0909216c0f23ba6f54</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/e8f266a30beecdfee1ae633a3d84841b415180b7.html">e8f266a30beecdfee1ae633a3d84841b415180b7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-03-30 19:02:37 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-03-30 19:02:37 +0000
+
+added user systemd aliases, and terminal window title setting hook
+</pre><div class="diff">
+  <p>
+    <b>set_titles.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,12 @@
+<span class="add">+#
+</span><span class="add">+# Set terminal window titles
+</span><span class="add">+#
+</span><span class="add">+
+</span><span class="add">+function _set_title() {
+</span><span class="add">+    local a=&quot;%20&gt;...&gt;zsh&quot;
+</span><span class="add">+    local b=&quot;%20&lt;...&lt;%~&quot;
+</span><span class="add">+    printf &apos;\33]2;%s:%s\007&apos; ${(%)a} ${(%)b}
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+autoload -Uz add-zsh-hook
+</span><span class="add">+add-zsh-hook precmd _set_title
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -650,6 +650,8 @@
+<span class="def"> map gD cd ~/Downloads
+</span><span class="def"> map gz cd ~/.zsh
+</span><span class="def"> map gB cd ~/.local/share/Trash/files
+</span><span class="add">+map gq cd /usr/lib/python3.7/site-packages/libqtile
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> # git
+</span><span class="def"> map bd shell git diff --color=always %s | less -r
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,7 @@
+<span class="def"> alias sc=&apos;systemctl&apos;
+</span><span class="def"> alias scs=&apos;systemctl status&apos;
+</span><span class="def"> alias scsta=&apos;systemctl start&apos;
+</span><span class="sub">-alias scsto=&apos;systemctl start&apos;
+</span><span class="add">+alias scsto=&apos;systemctl stop&apos;
+</span><span class="def"> alias scr=&apos;systemctl restart&apos;
+</span><span class="def"> alias sce=&apos;systemctl enable&apos;
+</span><span class="def"> alias scen=&apos;systemctl enable --now&apos;
+</span>@@ -25,10 +25,19 @@
+<span class="def"> alias scdr=&apos;systemctl daemon-reload&apos;
+</span><span class="def"> alias scc=&apos;systemctl cat&apos;
+</span><span class="def"> 
+</span><span class="add">+alias uscs=&apos;systemctl --user status&apos;
+</span><span class="add">+alias uscsta=&apos;systemctl --user start&apos;
+</span><span class="add">+alias uscsto=&apos;systemctl --user stop&apos;
+</span><span class="add">+alias uscr=&apos;systemctl --user restart&apos;
+</span><span class="add">+alias usce=&apos;systemctl --user enable&apos;
+</span><span class="add">+alias uscen=&apos;systemctl --user enable --now&apos;
+</span><span class="add">+alias uscd=&apos;systemctl --user disable&apos;
+</span><span class="add">+alias uscdr=&apos;systemctl --user daemon-reload&apos;
+</span><span class="add">+
+</span><span class="def"> alias ssc=&apos;sudo systemctl&apos;
+</span><span class="def"> alias sscs=&apos;sudo systemctl status&apos;
+</span><span class="def"> alias sscsta=&apos;sudo systemctl start&apos;
+</span><span class="sub">-alias sscsto=&apos;sudo systemctl start&apos;
+</span><span class="add">+alias sscsto=&apos;sudo systemctl stop&apos;
+</span><span class="def"> alias sscr=&apos;sudo systemctl restart&apos;
+</span><span class="def"> alias ssce=&apos;sudo systemctl enable&apos;
+</span><span class="def"> alias sscen=&apos;sudo systemctl enable --now&apos;
+</span>@@ -45,7 +54,7 @@
+<span class="def"> # launchers
+</span><span class="def"> alias ra=&quot;ranger&quot;
+</span><span class="def"> alias nc=&apos;ncmpcpp&apos;
+</span><span class="sub">-alias vi=&quot;vim&quot;
+</span><span class="add">+alias v=&quot;vim&quot;
+</span><span class="def"> alias tmux=&quot;tmux -u&quot;
+</span><span class="def"> alias ta=&quot;tmux attach&quot;
+</span><span class="def"> 
+</span>@@ -58,6 +67,7 @@
+<span class="def"> alias pl=&quot;git pull&quot;
+</span><span class="def"> alias grm=&quot;git rm&quot;
+</span><span class="def"> alias br=&quot;git branch&quot;
+</span><span class="add">+alias brs=&quot;git branch -v&quot;
+</span><span class="def"> alias ch=&quot;git checkout&quot;
+</span><span class="def"> alias dif=&quot;git diff&quot;
+</span><span class="def"> 
+</span>@@ -77,6 +87,7 @@
+<span class="def"> 
+</span><span class="def"> # shortcuts
+</span><span class="def"> alias gc=&apos;cd $HOME/.config; l&apos;
+</span><span class="add">+alias gcs=&apos;cd $HOME/.config/systemd/user; ranger&apos;
+</span><span class="def"> alias gh=&apos;cd $HOME; ls&apos;
+</span><span class="def"> alias gd=&apos;cd $HOME/documents&apos;
+</span><span class="def"> alias gD=&apos;cd $HOME/Downloads&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

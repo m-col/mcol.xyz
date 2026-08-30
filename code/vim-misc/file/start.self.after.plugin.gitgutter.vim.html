@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - start/self/after/plugin/gitgutter.vim</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- start/self/after/plugin/gitgutter.vim</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &quot;&quot;turn off realtime updates for gitgutter but update upon write
+<a href="#l2" class="line" id="l2">      2</a> &quot;let g:gitgutter_enabled = 0
+<a href="#l3" class="line" id="l3">      3</a> &quot;autocmd! gitgutter CursorHold,CursorHoldI
+<a href="#l4" class="line" id="l4">      4</a> &quot;autocmd BufWritePost * GitGutter
+<a href="#l5" class="line" id="l5">      5</a> &quot;
+<a href="#l6" class="line" id="l6">      6</a> &quot;&quot; gitgutter
+<a href="#l7" class="line" id="l7">      7</a> &quot;nmap &lt;localleader&gt;g :GitGutterToggle&lt;CR&gt;
+<a href="#l8" class="line" id="l8">      8</a> &quot;nmap gp &lt;Plug&gt;(GitGutterPreviewHunk)
+<a href="#l9" class="line" id="l9">      9</a> &quot;nmap gs &lt;Plug&gt;(GitGutterStageHunk)
+<a href="#l10" class="line" id="l10">     10</a> &quot;nmap gu &lt;Plug&gt;(GitGutterUndoHunk)
+<a href="#l11" class="line" id="l11">     11</a> &quot;nmap [g &lt;Plug&gt;(GitGutterPrevHunk)
+<a href="#l12" class="line" id="l12">     12</a> &quot;nmap ]g &lt;Plug&gt;(GitGutterNextHunk)
+<a href="#l13" class="line" id="l13">     13</a> &quot;omap ig &lt;Plug&gt;(GitGutterTextObjectInnerPending)
+<a href="#l14" class="line" id="l14">     14</a> &quot;omap ag &lt;Plug&gt;(GitGutterTextObjectOuterPending)
+<a href="#l15" class="line" id="l15">     15</a> &quot;xmap ig &lt;Plug&gt;(GitGutterTextObjectInnerVisual)
+<a href="#l16" class="line" id="l16">     16</a> &quot;xmap ag &lt;Plug&gt;(GitGutterTextObjectOuterVisual)
+<a href="#l17" class="line" id="l17">     17</a> 
+</pre>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - update ranger</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/806413d63219c548a270fddacabe6e335ee4a35e.html">806413d63219c548a270fddacabe6e335ee4a35e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/1a20497a4049b514d48521055ee60ca7b4d4bd63.html">1a20497a4049b514d48521055ee60ca7b4d4bd63</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-07-28 20:43:33 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-07-28 20:43:33 +0100
+
+update ranger
+</pre><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -85,7 +85,7 @@
+<span class="def"> # * urxvt-full:
+</span><span class="def"> #   The same as urxvt but utilizing not only the preview pane but the
+</span><span class="def"> #   whole terminal window.
+</span><span class="sub">-set preview_images_method w3m
+</span><span class="add">+set preview_images_method ueberzug
+</span><span class="def"> 
+</span><span class="def"> # Use a unicode &quot;...&quot; character to mark cut-off filenames?
+</span><span class="def"> set unicode_ellipsis true
+</span>@@ -614,13 +614,15 @@
+<span class="def"> map r3 shell mogrify -rotate 270 %s
+</span><span class="def"> 
+</span><span class="def"> # drag files
+</span><span class="sub">-map &lt;C-d&gt; shell dragon-drag-and-drop -a -x %p &amp;&gt; /dev/null &amp;
+</span><span class="add">+#map &lt;C-d&gt; shell dragon-drag-and-drop -a -x %p &amp;&gt; /dev/null &amp;
+</span><span class="add">+map &lt;C-d&gt; shell cp %s /tmp/%s &amp;&amp; dragon-drag-and-drop -a -x /tmp/%s &amp;&gt; /dev/null &amp;
+</span><span class="def"> 
+</span><span class="def"> # filter while finding
+</span><span class="def"> map f console scout -ftsea%space
+</span><span class="def"> 
+</span><span class="sub">-# open split in tmux
+</span><span class="sub">-map L eval import shlex; fm.run(&quot;tmux splitw -h rifle &quot; + shlex.quote(fm.thisfile.basename))
+</span><span class="add">+# open file in split
+</span><span class="add">+map &quot; eval import shlex; fm.run(&quot;tmux splitw -v rifle &quot; + shlex.quote(fm.thisfile.basename))
+</span><span class="add">+map | eval import shlex; fm.run(&quot;tmux splitw -h rifle &quot; + shlex.quote(fm.thisfile.basename))
+</span><span class="def"> 
+</span><span class="def"> # shortcuts
+</span><span class="def"> map gh cd ~
+</span>@@ -634,7 +636,6 @@
+<span class="def"> map gS cd /etc/systemd/system
+</span><span class="def"> 
+</span><span class="def"> map gg cd ~/git
+</span><span class="sub">-map gC cd ~/git/custom-packages
+</span><span class="def"> map gu cd ~/.cache/aurutils/sync
+</span><span class="def"> 
+</span><span class="def"> map gc cd ~/.config
+</span>@@ -644,7 +645,7 @@
+<span class="def"> map gP cd ~/pictures
+</span><span class="def"> map gw cd ~/work
+</span><span class="def"> map ga cd ~/work/analysis
+</span><span class="sub">-map gp cd ~/work/phd/papers/pdfs
+</span><span class="add">+map gp cd ~/git/phd/papers/pdfs
+</span><span class="def"> map gf cd ~/work/analysis/Figures
+</span><span class="def"> map gW cd ~/work/research/research.wiki
+</span><span class="def"> map gr cd ~/work/analysis/rochefort-tools
+</span>@@ -667,3 +668,6 @@
+<span class="def"> map bl shell git pull | less -r
+</span><span class="def"> map bt shell tig
+</span><span class="def"> map bg shell gita add $(git rev-parse --show-toplevel) | less
+</span><span class="add">+# a plugin that adds file glyphs / icon support to Ranger:
+</span><span class="add">+# https://github.com/alexanderjeurissen/ranger_devicons
+</span><span class="add">+default_linemode devicons
+</span></pre>
+</div></div>
+  </body>
+</html>

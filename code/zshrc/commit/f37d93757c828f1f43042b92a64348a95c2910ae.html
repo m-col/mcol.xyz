@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - update aliases</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/f37d93757c828f1f43042b92a64348a95c2910ae.html">f37d93757c828f1f43042b92a64348a95c2910ae</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/cf80d8f458a62bcbca36303eeeaa255ad1c87736.html">cf80d8f458a62bcbca36303eeeaa255ad1c87736</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-03-01 00:15:55 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-03-01 00:15:55 +0000
+
+update aliases
+</pre><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,7 +10,6 @@
+<span class="def"> alias lc=&apos;ls -c1&apos;
+</span><span class="def"> alias tmp=&apos;cd /tmp; l&apos;
+</span><span class="def"> alias _=&apos;sudo&apos;
+</span><span class="sub">-alias grep=&apos;grep --exclude-dir=&quot;__pycache__&quot;&apos;
+</span><span class="def"> alias p=&apos;ps aux  | grep -v grep | grep -i&apos;
+</span><span class="def"> alias import=&apos;echo you forgot to enter python&apos;
+</span><span class="def"> alias rg=&apos;grep -r&apos;
+</span>@@ -23,6 +22,8 @@
+<span class="def">     alias copy=&apos;wl-copy&apos;
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="add">+alias grep=&apos;grep --exclude-dir=__pycache__ --exclude-dir=.git --exclude-dir=.tox --exclude-dir=.eggs --exclude-dir=.mypy_cache&apos;
+</span><span class="add">+
+</span><span class="def"> # systemd
+</span><span class="def"> alias sc=&apos;systemctl&apos;
+</span><span class="def"> alias scs=&apos;systemctl status&apos;
+</span>@@ -62,6 +63,7 @@
+<span class="def"> alias co=&apos;git commit&apos;
+</span><span class="def"> alias cm=&apos;git commit -m&apos;
+</span><span class="def"> alias ca=&apos;git commit --amend&apos;
+</span><span class="add">+alias cmf=&apos;git commit --fixup&apos;
+</span><span class="def"> alias psh=&apos;git push&apos;
+</span><span class="def"> alias pshs=&apos;git push &amp;&gt; /dev/null &amp;&apos;
+</span><span class="def"> alias fe=&apos;git fetch &amp;&amp; git status&apos;
+</span>@@ -69,9 +71,9 @@
+<span class="def"> alias rb=&apos;git pull --rebase upstream master || git pull --rebase upstream main&apos;
+</span><span class="def"> alias rbi=&apos;git rebase -i&apos;
+</span><span class="def"> alias rbc=&apos;git rebase --continue&apos;
+</span><span class="add">+alias rba=&apos;git rebase --abort&apos;
+</span><span class="def"> rbh() { git rebase -i HEAD~$1; }
+</span><span class="sub">-alias br=&apos;git branch&apos;
+</span><span class="sub">-alias brs=&apos;git branch -v&apos;
+</span><span class="add">+alias br=&apos;git branch -v&apos;
+</span><span class="def"> alias ch=&apos;git checkout&apos;
+</span><span class="def"> alias dif=&apos;git diff&apos;
+</span><span class="def"> alias diff=&apos;git diff --&apos;
+</span>@@ -84,6 +86,7 @@
+<span class="def"> alias stp=&apos;git stash pop&apos;
+</span><span class="def"> pr() { git fetch upstream pull/$1/head:$1 &amp;&amp; git checkout $1; }
+</span><span class="def"> lg() { git log -${1:-1}; }
+</span><span class="add">+lgo()  { git log --oneline -${1:-1}; }
+</span><span class="def"> alias lgc=&quot;git log -1 | head -1 | awk &apos;{print \$2}&apos; | copy -n&quot;
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span>@@ -93,6 +96,7 @@
+<span class="def"> alias psiu=&apos;python setup.py -q install --user&apos;
+</span><span class="def"> alias m=make
+</span><span class="def"> alias mc=&apos;make clean&apos;
+</span><span class="add">+alias time=&apos;hyperfine&apos;
+</span><span class="def"> 
+</span><span class="def"> # quick edits
+</span><span class="def"> alias modalia=&apos;vim $HOME/.config/aliases &amp;&amp; source $HOME/.config/aliases&apos;
+</span>@@ -113,3 +117,7 @@
+<span class="def"> alias gvm=&apos;cd $HOME/.vim/bundle/vim-misc; ra&apos;
+</span><span class="def"> alias gz=&apos;cd $HOME/.zsh; l&apos;
+</span><span class="def"> alias gR=&apos;cd $HOME/reach&apos;
+</span><span class="add">+
+</span><span class="add">+alias c=&apos;cargo&apos;
+</span><span class="add">+alias cw=&apos;cargo-watch -c -q -x run&apos;
+</span><span class="add">+alias cf=&apos;cargo fmt&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

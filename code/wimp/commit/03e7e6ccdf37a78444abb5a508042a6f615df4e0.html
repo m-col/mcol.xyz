@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - just always load defaults prior to loading config</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/03e7e6ccdf37a78444abb5a508042a6f615df4e0.html">03e7e6ccdf37a78444abb5a508042a6f615df4e0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/58e796b69bf3f9205404d2cec9210a942c95f336.html">58e796b69bf3f9205404d2cec9210a942c95f336</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-23 00:24:02 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-23 00:24:02 +0000
+
+just always load defaults prior to loading config
+</pre><div class="diff">
+  <p>
+    <b>src/deskwm.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -87,9 +87,8 @@
+<span class="def">     server.current_desk = wl_container_of(server.desks.next, server.current_desk, link);
+</span><span class="def"> 
+</span><span class="def">     // configure
+</span><span class="sub">-    load_defaults(&amp;server);
+</span><span class="def">     locate_config(&amp;server);
+</span><span class="sub">-    load_config(&amp;server, NULL);
+</span><span class="add">+    load_config(&amp;server);
+</span><span class="def">     set_up_outputs(&amp;server);
+</span><span class="def">     set_up_shell(&amp;server);
+</span><span class="def">     set_up_cursor(&amp;server);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,8 +4,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> void assign_colour(char *hex, float dest[4]);
+</span><span class="sub">-void load_defaults(struct server *server);
+</span><span class="sub">-void load_config(struct server *server, FILE *stream);
+</span><span class="add">+void load_config(struct server *server);
+</span><span class="def"> void locate_config(struct server *server);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -298,24 +298,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void load_defaults(struct server *server) {
+</span><span class="sub">-    char *buffer = NULL;
+</span><span class="sub">-    size_t size = 0;
+</span><span class="sub">-    FILE *stream = open_memstream(&amp;buffer, &amp;size);
+</span><span class="sub">-    fprintf(stream, DEFAULT_CONFIG);
+</span><span class="sub">-    rewind(stream);
+</span><span class="sub">-    load_config(server, stream);
+</span><span class="sub">-    free(buffer);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void load_config(struct server *server, FILE *stream) {
+</span><span class="sub">-    if (stream == NULL) {
+</span><span class="sub">-	if (server-&gt;config_file == NULL) {
+</span><span class="sub">-	    return;
+</span><span class="sub">-	}
+</span><span class="sub">-	stream = fopen(server-&gt;config_file, &quot;r&quot;);
+</span><span class="sub">-    }
+</span><span class="add">+void parse_config(struct server *server, FILE *stream) {
+</span><span class="def">     char *s;
+</span><span class="def">     char linebuf[1024];
+</span><span class="def">     int line = 0;
+</span>@@ -357,8 +340,28 @@
+<span class="def"> 		server-&gt;vt_switching = false;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void load_config(struct server *server) {
+</span><span class="add">+    FILE *stream;
+</span><span class="add">+
+</span><span class="add">+    // load defaults
+</span><span class="add">+    char *buffer = NULL;
+</span><span class="add">+    size_t size = 0;
+</span><span class="add">+    stream = open_memstream(&amp;buffer, &amp;size);
+</span><span class="add">+    fprintf(stream, DEFAULT_CONFIG);
+</span><span class="add">+    rewind(stream);
+</span><span class="add">+    parse_config(server, stream);
+</span><span class="add">+    free(buffer);
+</span><span class="def">     fclose(stream);
+</span><span class="def"> 
+</span><span class="add">+    // load custom configuration file
+</span><span class="add">+    if (server-&gt;config_file) {
+</span><span class="add">+	stream = fopen(server-&gt;config_file, &quot;r&quot;);
+</span><span class="add">+	fclose(stream);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     setup_vt_switching(server);
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -294,6 +294,5 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void reload_config(struct server *server, void *data) {
+</span><span class="sub">-    load_defaults(server);
+</span><span class="sub">-    load_config(server, NULL);
+</span><span class="add">+    load_config(server);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

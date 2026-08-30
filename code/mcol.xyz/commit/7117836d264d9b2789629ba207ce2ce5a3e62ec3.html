@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Add CI build check; drop fontforge dependency for icons</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/7117836d264d9b2789629ba207ce2ce5a3e62ec3.html">7117836d264d9b2789629ba207ce2ce5a3e62ec3</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/29f9117bc59ac66358013476bf1e14d95ec81a73.html">29f9117bc59ac66358013476bf1e14d95ec81a73</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 16:17:09 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 16:17:09 +0000
+
+Add CI build check; drop fontforge dependency for icons
+
+pelican-minify-fontawesome required fontforge, a system package with no
+pip wheel and no way to make it visible to uv&apos;s self-contained Python
+builds (they never share site-packages with the OS interpreter apt
+installs against, regardless of version). Rather than fight that in CI,
+replace the plugin with a small local one (fontawesome_roles) that keeps
+the same :fas:/:far:/:fab: RST roles and rendered markup, just without
+the build-time font subsetting. Icon CSS now loads from the Font Awesome
+CDN instead of a locally-minified file.
+
+Also make the SCREENSHOTS setting tolerate a missing content/screenshots
+directory (gitignored, populated locally) so a fresh checkout builds.
+
+Add .github/workflows/build.yml: installs uv and just, then runs
+`just publish` on every push to master and every PR, so a broken build
+fails CI instead of surfacing only when someone attempts to deploy.
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_017Q252PHwe4uGEP1eLj3RPU
+</pre><div class="diff">
+  <p>
+    <b>plugins/pelican-minify-fontawesome/readme.rst</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,75 +0,0 @@
+<span class="sub">-minify-fontawesome - pelican plugin
+</span><span class="sub">-===================================
+</span><span class="sub">-
+</span><span class="sub">-minify-fontawesome is a plugin for the `pelican
+</span><span class="sub">-&lt;https://github.com/getpelican/pelican&gt;`_ static site generator that copies
+</span><span class="sub">-fontawesome fonts and css into your output folder, *excluding* those that are
+</span><span class="sub">-not found in your site.
+</span><span class="sub">-
+</span><span class="sub">-If you only use a small number of icons it can reduce fontawesome CSS from
+</span><span class="sub">-~70KB to ~5KB, and fonts from ~90KB to ~2KB.
+</span><span class="sub">-
+</span><span class="sub">-At the end of site generation, the plugin identifies which icons are being used
+</span><span class="sub">-and copies the CSS and font definitions of these icons into
+</span><span class="sub">-*output_path/static/css/fa.css* and *output_path/static/webfonts/*
+</span><span class="sub">-respectively.
+</span><span class="sub">-
+</span><span class="sub">-To enable, `download fontawesome &lt;https://fontawesome.com/download&gt;`_ and set
+</span><span class="sub">-this variable in your pelicanconf.py to the path where fontawesome is saved
+</span><span class="sub">-(for example):
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: python
+</span><span class="sub">-
+</span><span class="sub">-   MINIFY_FONTAWESOME = &apos;/home/user/fontawesome-free-5.11.2-web&apos;
+</span><span class="sub">-
+</span><span class="sub">-Fontforge must be installed, and is available in many linux distribution
+</span><span class="sub">-repositories.
+</span><span class="sub">-
+</span><span class="sub">-Much like with normal fontawesome usage, the CSS file should be linked in html
+</span><span class="sub">-headers, i.e. put this into page templates:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: html
+</span><span class="sub">-
+</span><span class="sub">-    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ SITEURL }}/theme/css/fa.css&quot;/&gt;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-Additional icons
+</span><span class="sub">-----------------
+</span><span class="sub">-
+</span><span class="sub">-Additional icons that aren&apos;t found in your articles can be added using a list
+</span><span class="sub">-of their corresponding CSS references and this variable name:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: python
+</span><span class="sub">-
+</span><span class="sub">-   FONTAWESOME_EXTRA = [&apos;fa-rss&apos;, &apos;fa-poo-storm&apos;]
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-RST roles
+</span><span class="sub">----------
+</span><span class="sub">-
+</span><span class="sub">-This plugin also adds 3 small RST roles that can be used to include font
+</span><span class="sub">-awesome icons in RST drafts:
+</span><span class="sub">-
+</span><span class="sub">-.. code-block:: RST
+</span><span class="sub">-
+</span><span class="sub">-   Here is a solid icon :fas:`blender-phone`
+</span><span class="sub">-   Here is a regular icon :far:`meh-rolling-eyes`
+</span><span class="sub">-   Here is a brand icon :fab:`github`
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-Troubleshooting
+</span><span class="sub">----------------
+</span><span class="sub">-
+</span><span class="sub">-If you are writing using the local devserver and new fonts are not showing in
+</span><span class="sub">-your draft, your browser has likely cached an older version of the generated
+</span><span class="sub">-font. Many browsers have a way to force a refresh of all requests, including
+</span><span class="sub">-fonts, which will fix this. In Firefox this is Ctrl-F5 instead of just F5 to
+</span><span class="sub">-refresh.
+</span><span class="sub">-
+</span><span class="sub">-This plugin has only been tested with fontawesome-free-5.11.2-web so far.
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-Contact
+</span><span class="sub">--------
+</span><span class="sub">-
+</span><span class="sub">-Email me @ mcol@posteo.net for questions or contributions.
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugins/pelican-minify-fontawesome/minify_fontawesome.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,157 +0,0 @@
+<span class="sub">-# -*- coding: utf-8 -*-
+</span><span class="sub">-#
+</span><span class="sub">-# pelican-minify-fontawesome
+</span><span class="sub">-#
+</span><span class="sub">-# Copyright (C) 2019 mcol@posteo.net
+</span><span class="sub">-#
+</span><span class="sub">-# This program is free software: you can redistribute it and/or modify
+</span><span class="sub">-# it under the terms of the GNU General Public License as published by
+</span><span class="sub">-# the Free Software Foundation, either version 3 of the License, or
+</span><span class="sub">-# (at your option) any later version.
+</span><span class="sub">-#
+</span><span class="sub">-# This program is distributed in the hope that it will be useful,
+</span><span class="sub">-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+</span><span class="sub">-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+</span><span class="sub">-# GNU General Public License for more details.
+</span><span class="sub">-#
+</span><span class="sub">-# You should have received a copy of the GNU General Public License
+</span><span class="sub">-# along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-import fontforge
+</span><span class="sub">-import os
+</span><span class="sub">-import re
+</span><span class="sub">-
+</span><span class="sub">-from docutils import nodes
+</span><span class="sub">-from docutils.parsers.rst import roles
+</span><span class="sub">-from pelican import signals
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def copy_glyphs(source, dest, css_blocks):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    Copy only used icons from the font files into the output folder.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    icons = []
+</span><span class="sub">-    for block in css_blocks:
+</span><span class="sub">-        match = re.findall(&apos;\.fa-(.*?):&apos;, block)
+</span><span class="sub">-        icons.append(match[0])
+</span><span class="sub">-
+</span><span class="sub">-    if not os.path.isdir(dest):
+</span><span class="sub">-        os.mkdir(dest)
+</span><span class="sub">-    for root, dirs, files in os.walk(source):
+</span><span class="sub">-        for f in files:
+</span><span class="sub">-            if f.endswith(&apos;woff&apos;):
+</span><span class="sub">-                font = fontforge.open(os.path.join(root, f))
+</span><span class="sub">-
+</span><span class="sub">-                selected = False
+</span><span class="sub">-                for icon in icons:
+</span><span class="sub">-                    try:
+</span><span class="sub">-                        font.selection.select((&quot;more&quot;,), icon)
+</span><span class="sub">-                        selected = True
+</span><span class="sub">-                    except ValueError:
+</span><span class="sub">-                        pass
+</span><span class="sub">-
+</span><span class="sub">-                if selected:
+</span><span class="sub">-                    font.selection.invert()
+</span><span class="sub">-                    font.clear()
+</span><span class="sub">-                    font.generate(os.path.join(dest, f))
+</span><span class="sub">-                font.close()
+</span><span class="sub">-
+</span><span class="sub">-    print(f&apos;Font Awesome icons incorporated: {icons}&apos;)
+</span><span class="sub">-
+</span><span class="sub">-def get_classes(folder, extra_icons):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    Gets a list of font awesome CSS classes defined in all html files within a
+</span><span class="sub">-    folder i.e. those beginning with &apos;fa&apos;.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    fa_classes = extra_icons if extra_icons else []
+</span><span class="sub">-    all_classes = []
+</span><span class="sub">-
+</span><span class="sub">-    for root, dirs, files in os.walk(folder):
+</span><span class="sub">-        for f in files:
+</span><span class="sub">-            if f.endswith(&apos;html&apos;):
+</span><span class="sub">-                with open(os.path.join(root, f), &quot;r&quot;) as fd:
+</span><span class="sub">-                    matches = re.findall(&apos;class=[\&apos;&quot;](.*?)[\&apos;&quot;]&apos;, fd.read())
+</span><span class="sub">-                    if matches:
+</span><span class="sub">-                        for match in matches:
+</span><span class="sub">-                            all_classes.extend(match.split())
+</span><span class="sub">-
+</span><span class="sub">-    for cls in set(all_classes):
+</span><span class="sub">-        if cls.startswith(&apos;fa&apos;):
+</span><span class="sub">-            fa_classes.append(cls)
+</span><span class="sub">-
+</span><span class="sub">-    return fa_classes
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def copy_css(output_path, css_file, extra_icons):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    Copy css for only used icons over to output folder. Returns the css blocks
+</span><span class="sub">-    corresponding to these icons so we know which icons to copy from the font
+</span><span class="sub">-    files.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    with open(css_file, &apos;r&apos;) as fd:
+</span><span class="sub">-        contents = fd.read()
+</span><span class="sub">-
+</span><span class="sub">-    base_css = re.sub(&apos;\.fa-[\w-]+:before.*?}&apos;, &apos;&apos;, contents)
+</span><span class="sub">-    for string in [&apos;brands-400&apos;, &apos;regular-400&apos;, &apos;solid-900&apos;]:
+</span><span class="sub">-        base_css = re.sub(
+</span><span class="sub">-            f&apos;src:url\(\.\./webfonts/fa-{string}\.eot\).*?\}}&apos;,
+</span><span class="sub">-            f&apos;src:url(../webfonts/fa-{string}.woff) format(&quot;woff&quot;)}}&apos;,
+</span><span class="sub">-            base_css
+</span><span class="sub">-        )
+</span><span class="sub">-
+</span><span class="sub">-    css_blocks = []
+</span><span class="sub">-    for cls in get_classes(output_path, extra_icons):
+</span><span class="sub">-        match = re.search(f&apos;\.{cls}:before.*?}}&apos;, contents)
+</span><span class="sub">-        if match:
+</span><span class="sub">-            css_blocks.append(match.group(0))
+</span><span class="sub">-
+</span><span class="sub">-    css = base_css + &apos;&apos;.join(css_blocks)
+</span><span class="sub">-    css_file = os.path.join(output_path, &apos;theme&apos;, &apos;css&apos;, &apos;fa.css&apos;)
+</span><span class="sub">-    with open(css_file, &apos;w&apos;) as fd:
+</span><span class="sub">-        fd.write(css)
+</span><span class="sub">-
+</span><span class="sub">-    return css_blocks
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def output_font(instance):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    Main function that identifies used icons and copies their CSS and font
+</span><span class="sub">-    definitions into the output folder.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    FONT_PATH = instance.settings.get(&apos;MINIFY_FONTAWESOME&apos;, None)
+</span><span class="sub">-    if not FONT_PATH or not os.path.isdir(FONT_PATH):
+</span><span class="sub">-        return
+</span><span class="sub">-
+</span><span class="sub">-    output_path = instance.output_path
+</span><span class="sub">-    css_file = os.path.join(FONT_PATH, &apos;css&apos;, &apos;all.min.css&apos;)
+</span><span class="sub">-
+</span><span class="sub">-    css_blocks = copy_css(
+</span><span class="sub">-        output_path,
+</span><span class="sub">-        css_file,
+</span><span class="sub">-        instance.settings.get(&apos;FONTAWESOME_EXTRA&apos;, None)
+</span><span class="sub">-    )
+</span><span class="sub">-
+</span><span class="sub">-    copy_glyphs(
+</span><span class="sub">-        os.path.join(FONT_PATH, &apos;webfonts&apos;),
+</span><span class="sub">-        os.path.join(output_path, &apos;theme&apos;, &apos;webfonts&apos;),
+</span><span class="sub">-        css_blocks,
+</span><span class="sub">-    )
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def rst_span(name, rawtext, text, lineno, inliner, options={}, content=[]):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    A RST role that replaces inline glyphs e.g. :fas:`cat` with the appropriate
+</span><span class="sub">-    HTML span tag.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    return [nodes.raw(&apos;&apos;, f&apos;&lt;span class=&quot;{name} fa-{text}&quot;&gt;&lt;/span&gt;&apos;, format=&apos;html&apos;)], []
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def register():
+</span><span class="sub">-    # Register main program
+</span><span class="sub">-    signals.finalized.connect(output_font)
+</span><span class="sub">-
+</span><span class="sub">-    # Register font awesome RST roles
+</span><span class="sub">-    roles.register_local_role(&apos;fas&apos;, rst_span)
+</span><span class="sub">-    roles.register_local_role(&apos;far&apos;, rst_span)
+</span><span class="sub">-    roles.register_local_role(&apos;fab&apos;, rst_span)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugins/pelican-minify-fontawesome/__init__.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,2 +0,0 @@
+<span class="sub">-# -*- coding: utf-8 -*-
+</span><span class="sub">-from .minify_fontawesome import *
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugins/pelican-minify-fontawesome/.gitignore</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +0,0 @@
+<span class="sub">-*.egg-info
+</span><span class="sub">-*.pyc
+</span><span class="sub">-*.pyo
+</span><span class="sub">-.DS_Store
+</span><span class="sub">-MANIFEST
+</span><span class="sub">-build
+</span><span class="sub">-dist
+</span><span class="sub">-__pycache__
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugins/fontawesome_roles/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,20 @@
+<span class="add">+# -*- coding: utf-8 -*-
+</span><span class="add">+#
+</span><span class="add">+# fontawesome_roles
+</span><span class="add">+#
+</span><span class="add">+# Registers the :fas:/:far:/:fab: RST roles used in posts to embed inline
+</span><span class="add">+# Font Awesome icons, e.g. :fas:`envelope` -&gt; &lt;span class=&quot;fas fa-envelope&quot;&gt;.
+</span><span class="add">+# The icon font/CSS itself is loaded separately (see EXTRAHEAD).
+</span><span class="add">+
+</span><span class="add">+from docutils import nodes
+</span><span class="add">+from docutils.parsers.rst import roles
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def rst_span(name, rawtext, text, lineno, inliner, options={}, content=[]):
+</span><span class="add">+    return [nodes.raw(&quot;&quot;, f&apos;&lt;span class=&quot;{name} fa-{text}&quot;&gt;&lt;/span&gt;&apos;, format=&quot;html&quot;)], []
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def register():
+</span><span class="add">+    roles.register_local_role(&quot;fas&quot;, rst_span)
+</span><span class="add">+    roles.register_local_role(&quot;far&quot;, rst_span)
+</span><span class="add">+    roles.register_local_role(&quot;fab&quot;, rst_span)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -61,17 +61,20 @@
+<span class="def"> AVATAR = &quot;/avatar.png&quot;
+</span><span class="def"> HOME1 = &quot;One more person&apos;s notes on FOSS, code and unix toys&quot;
+</span><span class="def"> HOME2 = &quot;Welcome&quot;
+</span><span class="sub">-EXTRAHEAD = &quot;&lt;link rel=stylesheet href=/theme/css/fa.css /&gt;&quot;
+</span><span class="add">+EXTRAHEAD = &apos;&lt;link rel=stylesheet href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css&quot;&gt;&apos;
+</span><span class="def"> EXTRATAIL = &quot;&quot;
+</span><span class="def"> ARTICLE_FEEDBACK = &quot;&quot;&quot;If you have any thoughts, comments, criticisms, feel free to reach
+</span><span class="def"> out on &lt;a href=&quot;https://fosstodon.org/@mcol&quot;&gt;mastodon&lt;/a&gt; or by &lt;a
+</span><span class="def"> href=&quot;mailto:mcol@posteo.net&quot;&gt;email&lt;/a&gt; ʕ•ᴥ•ʔ&quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="sub">-SCREENSHOTS = reversed([escape(i) for i in os.listdir(&quot;content/screenshots&quot;)])
+</span><span class="add">+SCREENSHOTS_DIR = &quot;content/screenshots&quot;
+</span><span class="add">+if os.path.isdir(SCREENSHOTS_DIR):
+</span><span class="add">+    SCREENSHOTS = reversed([escape(i) for i in os.listdir(SCREENSHOTS_DIR)])
+</span><span class="add">+else:
+</span><span class="add">+    SCREENSHOTS = []
+</span><span class="def"> 
+</span><span class="sub">-# minify-fontawesome
+</span><span class="sub">-PLUGINS.append(&quot;pelican-minify-fontawesome&quot;)
+</span><span class="sub">-MINIFY_FONTAWESOME = os.path.join(BASE_DIR, &quot;fontawesome-free-5.11.2-web&quot;)
+</span><span class="add">+# fontawesome icons (:fas:/:far:/:fab: RST roles), served via CDN
+</span><span class="add">+PLUGINS.append(&quot;fontawesome_roles&quot;)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # development settings
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,5 @@
+<span class="def"> __pycache__
+</span><span class="def"> drafts
+</span><span class="sub">-fontawesome-*
+</span><span class="def"> output
+</span><span class="def"> content/screenshots
+</span><span class="def"> .venv
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.github/workflows/build.yml</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,26 @@
+<span class="add">+name: build
+</span><span class="add">+
+</span><span class="add">+on:
+</span><span class="add">+  push:
+</span><span class="add">+    branches: [master]
+</span><span class="add">+  pull_request:
+</span><span class="add">+
+</span><span class="add">+jobs:
+</span><span class="add">+  build:
+</span><span class="add">+    runs-on: ubuntu-latest
+</span><span class="add">+    steps:
+</span><span class="add">+      - uses: actions/checkout@v4
+</span><span class="add">+
+</span><span class="add">+      - name: Install uv
+</span><span class="add">+        uses: astral-sh/setup-uv@v4
+</span><span class="add">+        with:
+</span><span class="add">+          enable-cache: true
+</span><span class="add">+
+</span><span class="add">+      - name: Install just
+</span><span class="add">+        uses: extractions/setup-just@v2
+</span><span class="add">+
+</span><span class="add">+      - name: Install dependencies
+</span><span class="add">+        run: uv sync --locked
+</span><span class="add">+
+</span><span class="add">+      - name: Build site
+</span><span class="add">+        run: just publish
+</span></pre>
+</div></div>
+  </body>
+</html>

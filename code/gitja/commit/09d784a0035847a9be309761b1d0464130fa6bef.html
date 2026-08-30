@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - remove unnecessary lines from test script</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/09d784a0035847a9be309761b1d0464130fa6bef.html">09d784a0035847a9be309761b1d0464130fa6bef</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/982da1b9be002de5e4bd94f07f7ec62ddd2bc91a.html">982da1b9be002de5e4bd94f07f7ec62ddd2bc91a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-26 23:30:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-26 23:30:52 +0000
+
+remove unnecessary lines from test script
+</pre><div class="diff">
+  <p>
+    <b>test/test.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,7 +23,7 @@
+<span class="def">     exit 1
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="sub">-let errors=&quot;0&quot; &quot;1&quot;
+</span><span class="add">+let errors=&quot;0&quot;
+</span><span class="def"> EXPECTED=&quot;test/expected&quot;
+</span><span class="def"> RESULT=&quot;test/result&quot;
+</span><span class="def"> rm -fr &quot;$RESULT&quot;
+</span>@@ -39,12 +39,7 @@
+<span class="def">     &quot;gitserve/file/test.templates.style.css.html&quot;
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="sub">-finish() {
+</span><span class="sub">-    rm -r &quot;$RESULT&quot;
+</span><span class="sub">-    exit $1
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-stack run -- -c test/config.dhall -q || finish 1
+</span><span class="add">+stack run -- -c test/config.dhall -q || exit 1
+</span><span class="def"> 
+</span><span class="def"> for test in &quot;${TESTS[@]}&quot;
+</span><span class="def"> do
+</span>@@ -63,10 +58,11 @@
+<span class="def"> case &quot;$errors&quot; in
+</span><span class="def">     0)
+</span><span class="def"> 	echo &quot;All good!&quot;
+</span><span class="sub">-	finish 0
+</span><span class="def"> 	;;
+</span><span class="def">     *)
+</span><span class="def"> 	echo &quot;Had this many errors: $errors&quot;
+</span><span class="sub">-	finish $errors
+</span><span class="def"> 	;;
+</span><span class="def"> esac
+</span><span class="add">+
+</span><span class="add">+rm -r &quot;$RESULT&quot;
+</span><span class="add">+exit $errors
+</span></pre>
+</div></div>
+  </body>
+</html>

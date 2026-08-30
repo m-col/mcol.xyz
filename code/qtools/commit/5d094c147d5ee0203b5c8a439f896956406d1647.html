@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - move package into subfolder within repo</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/5d094c147d5ee0203b5c8a439f896956406d1647.html">5d094c147d5ee0203b5c8a439f896956406d1647</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/8dbf615a323b1de2242c2a6405f3209c4d7bcf5a.html">8dbf615a323b1de2242c2a6405f3209c4d7bcf5a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-11 13:23:26 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-11 13:23:26 +0000
+
+move package into subfolder within repo
+</pre><div class="diff">
+  <p>
+    <b>xresources/xresources.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,54 +0,0 @@
+<span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-Qtile helper to get X resources from the root window.
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-import xcffib
+</span><span class="sub">-import xcffib.xproto
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def get(DISPLAY, defaults={}):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    Get the X resources in an X servers resource manager.
+</span><span class="sub">-
+</span><span class="sub">-    Parameters
+</span><span class="sub">-    ==========
+</span><span class="sub">-    DISPLAY : str
+</span><span class="sub">-        DISPLAY name to query.
+</span><span class="sub">-    
+</span><span class="sub">-    defaults : dict (optional)
+</span><span class="sub">-        Default values to act as a fallback for missing values or in the event of a
+</span><span class="sub">-        failed connection.
+</span><span class="sub">-
+</span><span class="sub">-    Returns
+</span><span class="sub">-    =======
+</span><span class="sub">-    resources: dict
+</span><span class="sub">-        Dictionary containing all (available) X resources. Resources that are specified
+</span><span class="sub">-        in an Xresources/Xdefaults file as wildcards e.g. &apos;*.color1&apos; have the leading
+</span><span class="sub">-        &apos;*.&apos; stripped.
+</span><span class="sub">-
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    try:
+</span><span class="sub">-        conn = xcffib.connect(display=DISPLAY)
+</span><span class="sub">-    except xcffib.ConnectionException:
+</span><span class="sub">-        return defaults
+</span><span class="sub">-
+</span><span class="sub">-    root = conn.get_setup().roots[0].root
+</span><span class="sub">-    atom = conn.core.InternAtom(False, 16, &apos;RESOURCE_MANAGER&apos;).reply().atom
+</span><span class="sub">-
+</span><span class="sub">-    reply = conn.core.GetProperty(
+</span><span class="sub">-        False, root, atom,
+</span><span class="sub">-        xcffib.xproto.Atom.STRING,
+</span><span class="sub">-        0, (2 ** 32) - 1
+</span><span class="sub">-    ).reply()
+</span><span class="sub">-    conn.disconnect()
+</span><span class="sub">-
+</span><span class="sub">-    resource_string = reply.value.buf().decode(&quot;utf-8&quot;)
+</span><span class="sub">-    resource_list = filter(None, resource_string.split(&apos;\n&apos;))
+</span><span class="sub">-    resources = {}
+</span><span class="sub">-
+</span><span class="sub">-    for resource in resource_list:
+</span><span class="sub">-        key, value = resource.split(&apos;:\t&apos;)
+</span><span class="sub">-        resources[key.strip(&apos;*.&apos;)] = value
+</span><span class="sub">-
+</span><span class="sub">-    return resources
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>xresources/__init__.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-from .xresources import get
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/xresources/xresources.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,54 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile helper to get X resources from the root window.
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import xcffib
+</span><span class="add">+import xcffib.xproto
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def get(DISPLAY, defaults={}):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Get the X resources in an X servers resource manager.
+</span><span class="add">+
+</span><span class="add">+    Parameters
+</span><span class="add">+    ==========
+</span><span class="add">+    DISPLAY : str
+</span><span class="add">+        DISPLAY name to query.
+</span><span class="add">+    
+</span><span class="add">+    defaults : dict (optional)
+</span><span class="add">+        Default values to act as a fallback for missing values or in the event of a
+</span><span class="add">+        failed connection.
+</span><span class="add">+
+</span><span class="add">+    Returns
+</span><span class="add">+    =======
+</span><span class="add">+    resources: dict
+</span><span class="add">+        Dictionary containing all (available) X resources. Resources that are specified
+</span><span class="add">+        in an Xresources/Xdefaults file as wildcards e.g. &apos;*.color1&apos; have the leading
+</span><span class="add">+        &apos;*.&apos; stripped.
+</span><span class="add">+
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    try:
+</span><span class="add">+        conn = xcffib.connect(display=DISPLAY)
+</span><span class="add">+    except xcffib.ConnectionException:
+</span><span class="add">+        return defaults
+</span><span class="add">+
+</span><span class="add">+    root = conn.get_setup().roots[0].root
+</span><span class="add">+    atom = conn.core.InternAtom(False, 16, &apos;RESOURCE_MANAGER&apos;).reply().atom
+</span><span class="add">+
+</span><span class="add">+    reply = conn.core.GetProperty(
+</span><span class="add">+        False, root, atom,
+</span><span class="add">+        xcffib.xproto.Atom.STRING,
+</span><span class="add">+        0, (2 ** 32) - 1
+</span><span class="add">+    ).reply()
+</span><span class="add">+    conn.disconnect()
+</span><span class="add">+
+</span><span class="add">+    resource_string = reply.value.buf().decode(&quot;utf-8&quot;)
+</span><span class="add">+    resource_list = filter(None, resource_string.split(&apos;\n&apos;))
+</span><span class="add">+    resources = {}
+</span><span class="add">+
+</span><span class="add">+    for resource in resource_list:
+</span><span class="add">+        key, value = resource.split(&apos;:\t&apos;)
+</span><span class="add">+        resources[key.strip(&apos;*.&apos;)] = value
+</span><span class="add">+
+</span><span class="add">+    return resources
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/xresources/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+from .xresources import get
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/mpc/mpc.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,83 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile plugin to control Music Player Daemon using musicpd or mpd2 library
+</span><span class="add">+
+</span><span class="add">+Example usage:
+</span><span class="add">+
+</span><span class="add">+    import qtools.mpc
+</span><span class="add">+    mpc = qtools.mpc.Client()
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;&lt;XF86AudioPlay&gt;&apos;:  mpc.lazy_toggle,
+</span><span class="add">+        &apos;&lt;XF86AudioNext&gt;&apos;:  mpc.lazy_next,
+</span><span class="add">+        &apos;&lt;XF86AudioPrev&gt;&apos;:  mpc.lazy_previous,
+</span><span class="add">+        &apos;&lt;XF86AudioPlay&gt;&apos;:  mpc.lazy_stop,
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+from functools import wraps
+</span><span class="add">+
+</span><span class="add">+try:
+</span><span class="add">+    from musicpd import ConnectionError, MPDClient
+</span><span class="add">+except ImportError:
+</span><span class="add">+    from mpd import ConnectionError, MPDClient
+</span><span class="add">+from qtools import Notifier
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def _client_func(func):
+</span><span class="add">+    @wraps(func)
+</span><span class="add">+    def _inner(self, qtile):
+</span><span class="add">+        try:
+</span><span class="add">+            self.client.connect()
+</span><span class="add">+        except ConnectionError:
+</span><span class="add">+            pass
+</span><span class="add">+        self.show(func(self))
+</span><span class="add">+        self.client.disconnect()
+</span><span class="add">+    return _inner
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Client(Notifier):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    The host and port are 127.0.0.1 and 6600 by default but can be set by passing these
+</span><span class="add">+    when initiating the client.
+</span><span class="add">+
+</span><span class="add">+    The notification timeout can be changed by setting Client.timeout to milliseconds
+</span><span class="add">+    (int) or -1, which then uses the notification server&apos;s default timeout.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;summary&apos;, &apos;Music&apos;, &apos;Notification summary.&apos;),
+</span><span class="add">+        (&apos;host&apos;, &apos;127.0.0.1&apos;, &apos;IP address of MPD server.&apos;),
+</span><span class="add">+        (&apos;port&apos;, &apos;6600&apos;, &apos;Port of MPD server.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        Notifier.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Client.defaults)
+</span><span class="add">+
+</span><span class="add">+        self.client = MPDClient()
+</span><span class="add">+        self.client.host = self.host
+</span><span class="add">+        self.client.port = self.port
+</span><span class="add">+
+</span><span class="add">+    @_client_func
+</span><span class="add">+    def toggle(self):
+</span><span class="add">+        if self.client.status()[&apos;state&apos;] == &apos;play&apos;:
+</span><span class="add">+            self.client.pause()
+</span><span class="add">+            return &apos;Paused&apos;
+</span><span class="add">+        else:
+</span><span class="add">+            self.client.play()
+</span><span class="add">+            return &apos;Playing&apos;
+</span><span class="add">+
+</span><span class="add">+    @_client_func
+</span><span class="add">+    def next(self):
+</span><span class="add">+        self.client.next()
+</span><span class="add">+        current = self.client.currentsong()
+</span><span class="add">+        return f&quot;{current[&apos;artist&apos;]} - {current[&apos;title&apos;]}&quot;
+</span><span class="add">+
+</span><span class="add">+    @_client_func
+</span><span class="add">+    def previous(self):
+</span><span class="add">+        self.client.previous()
+</span><span class="add">+        current = self.client.currentsong()
+</span><span class="add">+        return f&quot;{current[&apos;artist&apos;]} - {current[&apos;title&apos;]}&quot;
+</span><span class="add">+
+</span><span class="add">+    @_client_func
+</span><span class="add">+    def stop(self):
+</span><span class="add">+        self.client.stop()
+</span><span class="add">+        return &apos;Stopped&apos;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/mpc/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+from .mpc import Client
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/backlight/backlight.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,63 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile plugin to control the screen backlight.
+</span><span class="add">+
+</span><span class="add">+Example usage:
+</span><span class="add">+
+</span><span class="add">+    import qtools.backlight
+</span><span class="add">+    backlight = qtools.backlight.Backlight()
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;&lt;XF86MonBrightnessUp&gt;&apos;:    backlight.lazy_inc_brightness,
+</span><span class="add">+        &apos;&lt;XF86MonBrightnessDown&gt;&apos;:  backlight.lazy_dec_brightness,
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+import os
+</span><span class="add">+
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from qtools import Notifier
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Backlight(Notifier):
+</span><span class="add">+
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;summary&apos;, &apos;Backlight&apos;, &apos;Notification summary.&apos;),
+</span><span class="add">+        (&apos;interval&apos;, 10, &apos;Percentage interval by which to change backlight&apos;),
+</span><span class="add">+        (
+</span><span class="add">+            &apos;path&apos;,
+</span><span class="add">+            &apos;/sys/class/backlight/nv_backlight/brightness&apos;,
+</span><span class="add">+            &apos;Full path to backlight device.&apos;
+</span><span class="add">+        ),
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        Notifier.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Backlight.defaults)
+</span><span class="add">+
+</span><span class="add">+        if not os.path.isfile(self.path):
+</span><span class="add">+            logger.error(&apos;Path passed to Backlight plugin is invalid&apos;)
+</span><span class="add">+            self.path = &apos;/dev/null&apos;
+</span><span class="add">+
+</span><span class="add">+    @property
+</span><span class="add">+    def brightness(self):
+</span><span class="add">+        with open(self.path, &apos;r&apos;) as f:
+</span><span class="add">+            return int(f.read())
+</span><span class="add">+
+</span><span class="add">+    @brightness.setter
+</span><span class="add">+    def brightness(self, value):
+</span><span class="add">+        if value &gt; 100:
+</span><span class="add">+            value = 100
+</span><span class="add">+        elif value &lt; 0:
+</span><span class="add">+            value = 0
+</span><span class="add">+        elif value % self.interval:
+</span><span class="add">+            value = self.interval * round(value / self.interval)
+</span><span class="add">+
+</span><span class="add">+        with open(self.path, &apos;w&apos;) as f:
+</span><span class="add">+            f.write(str(value))
+</span><span class="add">+        self.show(value)
+</span><span class="add">+
+</span><span class="add">+    def inc_brightness(self, qtile=None):
+</span><span class="add">+        self.brightness += self.interval
+</span><span class="add">+
+</span><span class="add">+    def dec_brightness(self, qtile=None):
+</span><span class="add">+        self.brightness -= self.interval
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/backlight/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+from .backlight import Backlight
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/amixer/amixer.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,70 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Qtile plugin to control an ALSA device volume level.
+</span><span class="add">+
+</span><span class="add">+Example usage:
+</span><span class="add">+
+</span><span class="add">+    import qtools.amixer
+</span><span class="add">+    vol = qtools.amixer.Volume()
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;&lt;XF86AudioMute&gt;&apos;:        vol.lazy_mute,
+</span><span class="add">+        &apos;&lt;XF86AudioRaiseVolume&gt;&apos;: vol.lazy_increase,
+</span><span class="add">+        &apos;&lt;XF86AudioLowerVolume&gt;&apos;: vol.lazy_decrease,
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import subprocess
+</span><span class="add">+
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="add">+from qtools import Notifier
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Volume(Notifier):
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;summary&apos;, &apos;Volume&apos;, &apos;Notification summary.&apos;),
+</span><span class="add">+        (&apos;mixer&apos;, &apos;Master&apos;, &apos;ALSA mixer to control.&apos;),
+</span><span class="add">+        (&apos;interval&apos;, 5, &apos;Percentage interval to change volume by.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        Notifier.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Volume.defaults)
+</span><span class="add">+
+</span><span class="add">+    def increase(self, qtile=None):
+</span><span class="add">+        volume = self._run(f&apos;{self.interval}%+&apos;)
+</span><span class="add">+        self.show(self.interval * round(volume/self.interval))
+</span><span class="add">+
+</span><span class="add">+    def decrease(self, qtile=None):
+</span><span class="add">+        volume = self._run(f&apos;{self.interval}%-&apos;)
+</span><span class="add">+        self.show(self.interval * round(volume/self.interval))
+</span><span class="add">+
+</span><span class="add">+    def toggle(self, qtile=None):
+</span><span class="add">+        volume = self._run(&apos;toggle&apos;)
+</span><span class="add">+        self.show(self.interval * round(volume/self.interval))
+</span><span class="add">+
+</span><span class="add">+    def mute(self, qtile=None):
+</span><span class="add">+        self._run(&apos;mute&apos;)
+</span><span class="add">+        self.show(&apos;Muted&apos;)
+</span><span class="add">+
+</span><span class="add">+    def unmute(self, qtile=None):
+</span><span class="add">+        volume = self._run(&apos;unmute&apos;)
+</span><span class="add">+        self.show(volume)
+</span><span class="add">+
+</span><span class="add">+    def _run(self, setting):
+</span><span class="add">+        try:
+</span><span class="add">+            output = subprocess.run(
+</span><span class="add">+                [&apos;amixer&apos;, &apos;set&apos;, self.mixer, setting],
+</span><span class="add">+                stdout=subprocess.PIPE,
+</span><span class="add">+            )
+</span><span class="add">+            stdout = output.stdout.splitlines()
+</span><span class="add">+        except subprocess.CalledProcessError as err:
+</span><span class="add">+            logger.error(err.output.decode())
+</span><span class="add">+            return
+</span><span class="add">+
+</span><span class="add">+        if len(stdout) == 5:
+</span><span class="add">+            volume = int(stdout[4].decode().split()[3][1:-2])
+</span><span class="add">+        elif len(stdout) == 7:
+</span><span class="add">+            volume = int(stdout[5].decode().split()[4][1:-2])
+</span><span class="add">+        else:
+</span><span class="add">+            logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="add">+        return volume
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/amixer/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+from .amixer import Volume
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,63 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+Simple base classes that can be used for multiple plugins.
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+import gi
+</span><span class="add">+gi.require_version(&apos;Notify&apos;, &apos;0.7&apos;)
+</span><span class="add">+from gi.repository import Notify
+</span><span class="add">+
+</span><span class="add">+from libqtile.configurable import Configurable
+</span><span class="add">+from libqtile.command import lazy
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Notifier(Configurable):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    This is a base class for classes with methods that are to be executed upon key
+</span><span class="add">+    presses and that generate pop-up notifications.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    _is_initted = False
+</span><span class="add">+
+</span><span class="add">+    defaults = [
+</span><span class="add">+        (&apos;summary&apos;, &apos;Notifier&apos;, &apos;Notification summary.&apos;),
+</span><span class="add">+        (&apos;timeout&apos;, -1, &apos;Timeout for notifications.&apos;),
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+    def __init__(self, **config):
+</span><span class="add">+        if not Notifier._is_initted:
+</span><span class="add">+            Notifier._is_initted = True
+</span><span class="add">+            Notify.init(&apos;Qtile&apos;)
+</span><span class="add">+
+</span><span class="add">+        Configurable.__init__(self, **config)
+</span><span class="add">+        self.add_defaults(Notifier.defaults)
+</span><span class="add">+        self.notifier = Notify.Notification.new(
+</span><span class="add">+            config.get(&apos;summary&apos;, &apos;Notifier&apos;), &apos;&apos;
+</span><span class="add">+        )
+</span><span class="add">+        self.timeout = config.get(&apos;timeout&apos;, -1)
+</span><span class="add">+
+</span><span class="add">+    def __getattr__(self, name):
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        Using this, we can get e.g. Mpc.lazy_toggle which is the equivalent of
+</span><span class="add">+        lazy.function(Mpc.toggle), which is more convenient for setting keybindings.
+</span><span class="add">+        &quot;&quot;&quot;
+</span><span class="add">+        if name.startswith(&apos;lazy_&apos;):
+</span><span class="add">+            return lazy.function(getattr(self, name[5:]))
+</span><span class="add">+        return Configurable.__getattr__(self, name)
+</span><span class="add">+
+</span><span class="add">+    @property
+</span><span class="add">+    def timeout(self):
+</span><span class="add">+        return self._timeout
+</span><span class="add">+
+</span><span class="add">+    @timeout.setter
+</span><span class="add">+    def timeout(self, value):
+</span><span class="add">+        self.notifier.set_timeout(value)
+</span><span class="add">+        self._timeout = value
+</span><span class="add">+
+</span><span class="add">+    def show(self, body):
+</span><span class="add">+        if not isinstance(body, str):
+</span><span class="add">+            body = str(body)
+</span><span class="add">+        self.notifier.update(self.summary, body)
+</span><span class="add">+        self.notifier.show()
+</span><span class="add">+
+</span><span class="add">+    def hide(self):
+</span><span class="add">+        self.notifier.hide()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>mpc/mpc.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,83 +0,0 @@
+<span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-Qtile plugin to control Music Player Daemon using musicpd or mpd2 library
+</span><span class="sub">-
+</span><span class="sub">-Example usage:
+</span><span class="sub">-
+</span><span class="sub">-    import qtools.mpc
+</span><span class="sub">-    mpc = qtools.mpc.Client()
+</span><span class="sub">-    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="sub">-        &apos;&lt;XF86AudioPlay&gt;&apos;:  mpc.lazy_toggle,
+</span><span class="sub">-        &apos;&lt;XF86AudioNext&gt;&apos;:  mpc.lazy_next,
+</span><span class="sub">-        &apos;&lt;XF86AudioPrev&gt;&apos;:  mpc.lazy_previous,
+</span><span class="sub">-        &apos;&lt;XF86AudioPlay&gt;&apos;:  mpc.lazy_stop,
+</span><span class="sub">-    }.items()])
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-from functools import wraps
+</span><span class="sub">-
+</span><span class="sub">-try:
+</span><span class="sub">-    from musicpd import ConnectionError, MPDClient
+</span><span class="sub">-except ImportError:
+</span><span class="sub">-    from mpd import ConnectionError, MPDClient
+</span><span class="sub">-from qtools import Notifier
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-def _client_func(func):
+</span><span class="sub">-    @wraps(func)
+</span><span class="sub">-    def _inner(self, qtile):
+</span><span class="sub">-        try:
+</span><span class="sub">-            self.client.connect()
+</span><span class="sub">-        except ConnectionError:
+</span><span class="sub">-            pass
+</span><span class="sub">-        self.show(func(self))
+</span><span class="sub">-        self.client.disconnect()
+</span><span class="sub">-    return _inner
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-class Client(Notifier):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    The host and port are 127.0.0.1 and 6600 by default but can be set by passing these
+</span><span class="sub">-    when initiating the client.
+</span><span class="sub">-
+</span><span class="sub">-    The notification timeout can be changed by setting Client.timeout to milliseconds
+</span><span class="sub">-    (int) or -1, which then uses the notification server&apos;s default timeout.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    defaults = [
+</span><span class="sub">-        (&apos;summary&apos;, &apos;Music&apos;, &apos;Notification summary.&apos;),
+</span><span class="sub">-        (&apos;host&apos;, &apos;127.0.0.1&apos;, &apos;IP address of MPD server.&apos;),
+</span><span class="sub">-        (&apos;port&apos;, &apos;6600&apos;, &apos;Port of MPD server.&apos;),
+</span><span class="sub">-    ]
+</span><span class="sub">-    def __init__(self, **config):
+</span><span class="sub">-        Notifier.__init__(self, **config)
+</span><span class="sub">-        self.add_defaults(Client.defaults)
+</span><span class="sub">-
+</span><span class="sub">-        self.client = MPDClient()
+</span><span class="sub">-        self.client.host = self.host
+</span><span class="sub">-        self.client.port = self.port
+</span><span class="sub">-
+</span><span class="sub">-    @_client_func
+</span><span class="sub">-    def toggle(self):
+</span><span class="sub">-        if self.client.status()[&apos;state&apos;] == &apos;play&apos;:
+</span><span class="sub">-            self.client.pause()
+</span><span class="sub">-            return &apos;Paused&apos;
+</span><span class="sub">-        else:
+</span><span class="sub">-            self.client.play()
+</span><span class="sub">-            return &apos;Playing&apos;
+</span><span class="sub">-
+</span><span class="sub">-    @_client_func
+</span><span class="sub">-    def next(self):
+</span><span class="sub">-        self.client.next()
+</span><span class="sub">-        current = self.client.currentsong()
+</span><span class="sub">-        return f&quot;{current[&apos;artist&apos;]} - {current[&apos;title&apos;]}&quot;
+</span><span class="sub">-
+</span><span class="sub">-    @_client_func
+</span><span class="sub">-    def previous(self):
+</span><span class="sub">-        self.client.previous()
+</span><span class="sub">-        current = self.client.currentsong()
+</span><span class="sub">-        return f&quot;{current[&apos;artist&apos;]} - {current[&apos;title&apos;]}&quot;
+</span><span class="sub">-
+</span><span class="sub">-    @_client_func
+</span><span class="sub">-    def stop(self):
+</span><span class="sub">-        self.client.stop()
+</span><span class="sub">-        return &apos;Stopped&apos;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>mpc/__init__.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-from .mpc import Client
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>backlight/backlight.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,63 +0,0 @@
+<span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-Qtile plugin to control the screen backlight.
+</span><span class="sub">-
+</span><span class="sub">-Example usage:
+</span><span class="sub">-
+</span><span class="sub">-    import qtools.backlight
+</span><span class="sub">-    backlight = qtools.backlight.Backlight()
+</span><span class="sub">-    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="sub">-        &apos;&lt;XF86MonBrightnessUp&gt;&apos;:    backlight.lazy_inc_brightness,
+</span><span class="sub">-        &apos;&lt;XF86MonBrightnessDown&gt;&apos;:  backlight.lazy_dec_brightness,
+</span><span class="sub">-    }.items()])
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-import os
+</span><span class="sub">-
+</span><span class="sub">-from libqtile.log_utils import logger
+</span><span class="sub">-from qtools import Notifier
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-class Backlight(Notifier):
+</span><span class="sub">-
+</span><span class="sub">-    defaults = [
+</span><span class="sub">-        (&apos;summary&apos;, &apos;Backlight&apos;, &apos;Notification summary.&apos;),
+</span><span class="sub">-        (&apos;interval&apos;, 10, &apos;Percentage interval by which to change backlight&apos;),
+</span><span class="sub">-        (
+</span><span class="sub">-            &apos;path&apos;,
+</span><span class="sub">-            &apos;/sys/class/backlight/nv_backlight/brightness&apos;,
+</span><span class="sub">-            &apos;Full path to backlight device.&apos;
+</span><span class="sub">-        ),
+</span><span class="sub">-    ]
+</span><span class="sub">-
+</span><span class="sub">-    def __init__(self, **config):
+</span><span class="sub">-        Notifier.__init__(self, **config)
+</span><span class="sub">-        self.add_defaults(Backlight.defaults)
+</span><span class="sub">-
+</span><span class="sub">-        if not os.path.isfile(self.path):
+</span><span class="sub">-            logger.error(&apos;Path passed to Backlight plugin is invalid&apos;)
+</span><span class="sub">-            self.path = &apos;/dev/null&apos;
+</span><span class="sub">-
+</span><span class="sub">-    @property
+</span><span class="sub">-    def brightness(self):
+</span><span class="sub">-        with open(self.path, &apos;r&apos;) as f:
+</span><span class="sub">-            return int(f.read())
+</span><span class="sub">-
+</span><span class="sub">-    @brightness.setter
+</span><span class="sub">-    def brightness(self, value):
+</span><span class="sub">-        if value &gt; 100:
+</span><span class="sub">-            value = 100
+</span><span class="sub">-        elif value &lt; 0:
+</span><span class="sub">-            value = 0
+</span><span class="sub">-        elif value % self.interval:
+</span><span class="sub">-            value = self.interval * round(value / self.interval)
+</span><span class="sub">-
+</span><span class="sub">-        with open(self.path, &apos;w&apos;) as f:
+</span><span class="sub">-            f.write(str(value))
+</span><span class="sub">-        self.show(value)
+</span><span class="sub">-
+</span><span class="sub">-    def inc_brightness(self, qtile=None):
+</span><span class="sub">-        self.brightness += self.interval
+</span><span class="sub">-
+</span><span class="sub">-    def dec_brightness(self, qtile=None):
+</span><span class="sub">-        self.brightness -= self.interval
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>backlight/__init__.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-from .backlight import Backlight
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>amixer/amixer.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,70 +0,0 @@
+<span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-Qtile plugin to control an ALSA device volume level.
+</span><span class="sub">-
+</span><span class="sub">-Example usage:
+</span><span class="sub">-
+</span><span class="sub">-    import qtools.amixer
+</span><span class="sub">-    vol = qtools.amixer.Volume()
+</span><span class="sub">-    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="sub">-        &apos;&lt;XF86AudioMute&gt;&apos;:        vol.lazy_mute,
+</span><span class="sub">-        &apos;&lt;XF86AudioRaiseVolume&gt;&apos;: vol.lazy_increase,
+</span><span class="sub">-        &apos;&lt;XF86AudioLowerVolume&gt;&apos;: vol.lazy_decrease,
+</span><span class="sub">-    }.items()])
+</span><span class="sub">-
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-import subprocess
+</span><span class="sub">-
+</span><span class="sub">-from libqtile.log_utils import logger
+</span><span class="sub">-from qtools import Notifier
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-class Volume(Notifier):
+</span><span class="sub">-    defaults = [
+</span><span class="sub">-        (&apos;summary&apos;, &apos;Volume&apos;, &apos;Notification summary.&apos;),
+</span><span class="sub">-        (&apos;mixer&apos;, &apos;Master&apos;, &apos;ALSA mixer to control.&apos;),
+</span><span class="sub">-        (&apos;interval&apos;, 5, &apos;Percentage interval to change volume by.&apos;),
+</span><span class="sub">-    ]
+</span><span class="sub">-    def __init__(self, **config):
+</span><span class="sub">-        Notifier.__init__(self, **config)
+</span><span class="sub">-        self.add_defaults(Volume.defaults)
+</span><span class="sub">-
+</span><span class="sub">-    def increase(self, qtile=None):
+</span><span class="sub">-        volume = self._run(f&apos;{self.interval}%+&apos;)
+</span><span class="sub">-        self.show(self.interval * round(volume/self.interval))
+</span><span class="sub">-
+</span><span class="sub">-    def decrease(self, qtile=None):
+</span><span class="sub">-        volume = self._run(f&apos;{self.interval}%-&apos;)
+</span><span class="sub">-        self.show(self.interval * round(volume/self.interval))
+</span><span class="sub">-
+</span><span class="sub">-    def toggle(self, qtile=None):
+</span><span class="sub">-        volume = self._run(&apos;toggle&apos;)
+</span><span class="sub">-        self.show(self.interval * round(volume/self.interval))
+</span><span class="sub">-
+</span><span class="sub">-    def mute(self, qtile=None):
+</span><span class="sub">-        self._run(&apos;mute&apos;)
+</span><span class="sub">-        self.show(&apos;Muted&apos;)
+</span><span class="sub">-
+</span><span class="sub">-    def unmute(self, qtile=None):
+</span><span class="sub">-        volume = self._run(&apos;unmute&apos;)
+</span><span class="sub">-        self.show(volume)
+</span><span class="sub">-
+</span><span class="sub">-    def _run(self, setting):
+</span><span class="sub">-        try:
+</span><span class="sub">-            output = subprocess.run(
+</span><span class="sub">-                [&apos;amixer&apos;, &apos;set&apos;, self.mixer, setting],
+</span><span class="sub">-                stdout=subprocess.PIPE,
+</span><span class="sub">-            )
+</span><span class="sub">-            stdout = output.stdout.splitlines()
+</span><span class="sub">-        except subprocess.CalledProcessError as err:
+</span><span class="sub">-            logger.error(err.output.decode())
+</span><span class="sub">-            return
+</span><span class="sub">-
+</span><span class="sub">-        if len(stdout) == 5:
+</span><span class="sub">-            volume = int(stdout[4].decode().split()[3][1:-2])
+</span><span class="sub">-        elif len(stdout) == 7:
+</span><span class="sub">-            volume = int(stdout[5].decode().split()[4][1:-2])
+</span><span class="sub">-        else:
+</span><span class="sub">-            logger.warning(&apos;Output from amixer needs decoding&apos;)
+</span><span class="sub">-        return volume
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>amixer/__init__.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-from .amixer import Volume
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>__init__.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,63 +0,0 @@
+<span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-Simple base classes that can be used for multiple plugins.
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-import gi
+</span><span class="sub">-gi.require_version(&apos;Notify&apos;, &apos;0.7&apos;)
+</span><span class="sub">-from gi.repository import Notify
+</span><span class="sub">-
+</span><span class="sub">-from libqtile.configurable import Configurable
+</span><span class="sub">-from libqtile.command import lazy
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-class Notifier(Configurable):
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    This is a base class for classes with methods that are to be executed upon key
+</span><span class="sub">-    presses and that generate pop-up notifications.
+</span><span class="sub">-    &quot;&quot;&quot;
+</span><span class="sub">-    _is_initted = False
+</span><span class="sub">-
+</span><span class="sub">-    defaults = [
+</span><span class="sub">-        (&apos;summary&apos;, &apos;Notifier&apos;, &apos;Notification summary.&apos;),
+</span><span class="sub">-        (&apos;timeout&apos;, -1, &apos;Timeout for notifications.&apos;),
+</span><span class="sub">-    ]
+</span><span class="sub">-
+</span><span class="sub">-    def __init__(self, **config):
+</span><span class="sub">-        if not Notifier._is_initted:
+</span><span class="sub">-            Notifier._is_initted = True
+</span><span class="sub">-            Notify.init(&apos;Qtile&apos;)
+</span><span class="sub">-
+</span><span class="sub">-        Configurable.__init__(self, **config)
+</span><span class="sub">-        self.add_defaults(Notifier.defaults)
+</span><span class="sub">-        self.notifier = Notify.Notification.new(
+</span><span class="sub">-            config.get(&apos;summary&apos;, &apos;Notifier&apos;), &apos;&apos;
+</span><span class="sub">-        )
+</span><span class="sub">-        self.timeout = config.get(&apos;timeout&apos;, -1)
+</span><span class="sub">-
+</span><span class="sub">-    def __getattr__(self, name):
+</span><span class="sub">-        &quot;&quot;&quot;
+</span><span class="sub">-        Using this, we can get e.g. Mpc.lazy_toggle which is the equivalent of
+</span><span class="sub">-        lazy.function(Mpc.toggle), which is more convenient for setting keybindings.
+</span><span class="sub">-        &quot;&quot;&quot;
+</span><span class="sub">-        if name.startswith(&apos;lazy_&apos;):
+</span><span class="sub">-            return lazy.function(getattr(self, name[5:]))
+</span><span class="sub">-        return Configurable.__getattr__(self, name)
+</span><span class="sub">-
+</span><span class="sub">-    @property
+</span><span class="sub">-    def timeout(self):
+</span><span class="sub">-        return self._timeout
+</span><span class="sub">-
+</span><span class="sub">-    @timeout.setter
+</span><span class="sub">-    def timeout(self, value):
+</span><span class="sub">-        self.notifier.set_timeout(value)
+</span><span class="sub">-        self._timeout = value
+</span><span class="sub">-
+</span><span class="sub">-    def show(self, body):
+</span><span class="sub">-        if not isinstance(body, str):
+</span><span class="sub">-            body = str(body)
+</span><span class="sub">-        self.notifier.update(self.summary, body)
+</span><span class="sub">-        self.notifier.show()
+</span><span class="sub">-
+</span><span class="sub">-    def hide(self):
+</span><span class="sub">-        self.notifier.hide()
+</span></pre>
+</div></div>
+  </body>
+</html>

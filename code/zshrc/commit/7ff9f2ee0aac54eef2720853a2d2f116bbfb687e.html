@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - alias</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/7ff9f2ee0aac54eef2720853a2d2f116bbfb687e.html">7ff9f2ee0aac54eef2720853a2d2f116bbfb687e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/ee2659019562bf1fddc95115797b1560fe1e9fb6.html">ee2659019562bf1fddc95115797b1560fe1e9fb6</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2026-04-29 12:39:27 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2026-04-29 12:39:27 +0100
+
+alias
+</pre><div class="diff">
+  <p>
+    <b>claude-context/plugin.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,54 @@
+<span class="add">+cw() {
+</span><span class="add">+    local suffix=&quot;&quot;
+</span><span class="add">+    [[ -n &quot;$CLAUDE_CONTEXT_ID&quot; ]] &amp;&amp; suffix=&quot;.$CLAUDE_CONTEXT_ID&quot;
+</span><span class="add">+    local wt_file=&quot;$HOME/.local/share/claude/worktree${suffix}&quot;
+</span><span class="add">+    [[ -f &quot;$wt_file&quot; ]] || return 1
+</span><span class="add">+    local wt
+</span><span class="add">+    wt=$(&lt;&quot;$wt_file&quot;)
+</span><span class="add">+    [[ -d &quot;$wt&quot; ]] || return 1
+</span><span class="add">+    cd &quot;$wt&quot;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+_zsh_autosuggest_strategy_claude() {
+</span><span class="add">+    emulate -L zsh
+</span><span class="add">+    setopt EXTENDED_GLOB
+</span><span class="add">+
+</span><span class="add">+    typeset -g suggestion
+</span><span class="add">+    local suffix=&quot;&quot;
+</span><span class="add">+    [[ -n &quot;$CLAUDE_CONTEXT_ID&quot; ]] &amp;&amp; suffix=&quot;.$CLAUDE_CONTEXT_ID&quot;
+</span><span class="add">+    local context_file=&quot;$HOME/.local/share/claude/context-files${suffix}&quot;
+</span><span class="add">+    [[ -f &quot;$context_file&quot; ]] || return
+</span><span class="add">+
+</span><span class="add">+    local buffer=&quot;$1&quot;
+</span><span class="add">+    local cmd partial
+</span><span class="add">+
+</span><span class="add">+    [[ &quot;$buffer&quot; =~ &apos;^(v|vi|vim|nvim)( +(.*))?$&apos; ]] || return
+</span><span class="add">+    cmd=&quot;${match[1]}&quot;
+</span><span class="add">+    partial=&quot;${match[3]}&quot;
+</span><span class="add">+
+</span><span class="add">+    local -a files
+</span><span class="add">+    files=(&quot;${(@f)$(&lt; &quot;$context_file&quot;)}&quot;)
+</span><span class="add">+    (( ${#files} )) || return
+</span><span class="add">+
+</span><span class="add">+    local f rel
+</span><span class="add">+
+</span><span class="add">+    if [[ -n &quot;$partial&quot; ]]; then
+</span><span class="add">+        for f in &quot;${(@Oa)files}&quot;; do
+</span><span class="add">+            [[ -f &quot;$f&quot; ]] || continue
+</span><span class="add">+            rel=&quot;${f#$PWD/}&quot;
+</span><span class="add">+            [[ &quot;$rel&quot; == ${partial}* ]] &amp;&amp; { suggestion=&quot;$cmd $rel&quot;; return }
+</span><span class="add">+        done
+</span><span class="add">+        for f in &quot;${(@Oa)files}&quot;; do
+</span><span class="add">+            [[ -f &quot;$f&quot; ]] || continue
+</span><span class="add">+            rel=&quot;${f#$PWD/}&quot;
+</span><span class="add">+            [[ &quot;$rel&quot; == *${partial}* ]] &amp;&amp; { suggestion=&quot;$cmd $rel&quot;; return }
+</span><span class="add">+        done
+</span><span class="add">+    else
+</span><span class="add">+        for f in &quot;${(@Oa)files}&quot;; do
+</span><span class="add">+            [[ -f &quot;$f&quot; ]] || continue
+</span><span class="add">+            rel=&quot;${f#$PWD/}&quot;
+</span><span class="add">+            suggestion=&quot;$cmd $rel&quot;
+</span><span class="add">+            return
+</span><span class="add">+        done
+</span><span class="add">+    fi
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>claude-context/hook.sh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,55 @@
+<span class="add">+#!/bin/bash
+</span><span class="add">+input=$(cat)
+</span><span class="add">+tool_name=$(echo &quot;$input&quot; | jq -r &apos;.tool_name // empty&apos;)
+</span><span class="add">+
+</span><span class="add">+suffix=&quot;&quot;
+</span><span class="add">+[ -n &quot;$CLAUDE_CONTEXT_ID&quot; ] &amp;&amp; suffix=&quot;.$CLAUDE_CONTEXT_ID&quot;
+</span><span class="add">+base=&quot;$HOME/.local/share/claude&quot;
+</span><span class="add">+mkdir -p &quot;$base&quot;
+</span><span class="add">+wt_file=&quot;${base}/worktree${suffix}&quot;
+</span><span class="add">+
+</span><span class="add">+if [ &quot;$tool_name&quot; = &quot;ExitWorktree&quot; ]; then
+</span><span class="add">+    rm -f &quot;$wt_file&quot;
+</span><span class="add">+    exit 0
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+if [ &quot;$tool_name&quot; = &quot;EnterWorktree&quot; ]; then
+</span><span class="add">+    cwd=$(echo &quot;$input&quot; | jq -r &apos;.cwd // empty&apos;)
+</span><span class="add">+    [ -n &quot;$cwd&quot; ] &amp;&amp; [ -d &quot;$cwd&quot; ] &amp;&amp; echo &quot;$cwd&quot; &gt; &quot;$wt_file&quot;
+</span><span class="add">+    exit 0
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+check_worktree() {
+</span><span class="add">+    local dir=&quot;$1&quot;
+</span><span class="add">+    [ -z &quot;$dir&quot; ] &amp;&amp; return
+</span><span class="add">+    local toplevel
+</span><span class="add">+    toplevel=$(git -C &quot;$dir&quot; rev-parse --show-toplevel 2&gt;/dev/null)
+</span><span class="add">+    if [ -n &quot;$toplevel&quot; ] &amp;&amp; [ -f &quot;$toplevel/.git&quot; ]; then
+</span><span class="add">+        echo &quot;$toplevel&quot; &gt; &quot;$wt_file&quot;
+</span><span class="add">+    fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+if [ &quot;$tool_name&quot; = &quot;Bash&quot; ]; then
+</span><span class="add">+    cwd=$(echo &quot;$input&quot; | jq -r &apos;.cwd // empty&apos;)
+</span><span class="add">+    check_worktree &quot;$cwd&quot;
+</span><span class="add">+    exit 0
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+file_path=$(echo &quot;$input&quot; | jq -r &apos;.tool_input.file_path // empty&apos;)
+</span><span class="add">+[ -z &quot;$file_path&quot; ] &amp;&amp; exit 0
+</span><span class="add">+[ -f &quot;$file_path&quot; ] || exit 0
+</span><span class="add">+
+</span><span class="add">+context_file=&quot;${base}/context-files${suffix}&quot;
+</span><span class="add">+tmp=&quot;${context_file}.$$&quot;
+</span><span class="add">+if [ -f &quot;$context_file&quot; ]; then
+</span><span class="add">+    grep -v -F -x &quot;$file_path&quot; &quot;$context_file&quot; &gt; &quot;$tmp&quot; 2&gt;/dev/null || : &gt; &quot;$tmp&quot;
+</span><span class="add">+else
+</span><span class="add">+    : &gt; &quot;$tmp&quot;
+</span><span class="add">+fi
+</span><span class="add">+echo &quot;$file_path&quot; &gt;&gt; &quot;$tmp&quot;
+</span><span class="add">+tail -50 &quot;$tmp&quot; &gt; &quot;$context_file&quot;
+</span><span class="add">+rm -f &quot;$tmp&quot;
+</span><span class="add">+
+</span><span class="add">+check_worktree &quot;$(dirname &quot;$file_path&quot;)&quot;
+</span><span class="add">+
+</span><span class="add">+exit 0
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -78,6 +78,7 @@
+<span class="def"> alias gs=&apos;git status&apos;
+</span><span class="def"> alias ad=&apos;git add&apos;
+</span><span class="def"> alias adp=&apos;git add --patch&apos;
+</span><span class="add">+alias adn=&apos;git add -A -N&apos;
+</span><span class="def"> alias co=&apos;git commit&apos;
+</span><span class="def"> alias cm=&apos;git commit -m&apos;
+</span><span class="def"> alias ca=&apos;git commit --amend&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add actions to halfmize windows to take half screen area</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/85060cb7f371ff1c70764a67860652511920bff2.html">85060cb7f371ff1c70764a67860652511920bff2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/7ffd559a6022b659e94cd54970cdf04f7a4f2af9.html">7ffd559a6022b659e94cd54970cdf04f7a4f2af9</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-22 00:18:26 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-22 00:18:26 +0000
+
+add actions to halfmize windows to take half screen area
+</pre><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -92,6 +92,11 @@
+<span class="def">     }
+</span><span class="def">     else if (strcasecmp(name, &quot;toggle_fullscreen&quot;) == 0)
+</span><span class="def"> 	kb-&gt;action = &amp;toggle_fullscreen;
+</span><span class="add">+    else if (strcasecmp(name, &quot;halfimize&quot;) == 0) {
+</span><span class="add">+	kb-&gt;action = &amp;halfimize;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="add">+	*(enum direction *)(kb-&gt;data) = direction_from_name(data);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -121,7 +126,10 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // key
+</span><span class="sub">-    kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_CASE_INSENSITIVE);
+</span><span class="add">+    kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_NO_FLAGS);
+</span><span class="add">+    if (kb-&gt;key == XKB_KEY_NoSymbol)
+</span><span class="add">+	kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_CASE_INSENSITIVE);
+</span><span class="add">+
+</span><span class="def">     if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="def"> 	kb-&gt;key = mouse_key_from_name(s);
+</span><span class="def"> 	if (kb-&gt;key == 0) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,5 +19,6 @@
+<span class="def"> void go_to_mark(struct server *server, void *data);
+</span><span class="def"> void actually_go_to_mark(struct server *server, const xkb_keysym_t sym);
+</span><span class="def"> void toggle_fullscreen(struct server *server, void *data);
+</span><span class="add">+void halfimize(struct server *server, void *data);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -268,3 +268,54 @@
+<span class="def">     struct view *view = wl_container_of(server-&gt;current_desk-&gt;views.next, view, link);
+</span><span class="def">     fullscreen_xdg_surface(view, xdg_surface, NULL);
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void halfimize(struct server *server, void *data) {
+</span><span class="add">+    struct view *view = wl_container_of(server-&gt;current_desk-&gt;views.next, view, link);
+</span><span class="add">+    if (!view)
+</span><span class="add">+	return;
+</span><span class="add">+
+</span><span class="add">+    if  (server-&gt;current_desk-&gt;fullscreened == view-&gt;surface)
+</span><span class="add">+	fullscreen_xdg_surface(view, view-&gt;surface, NULL);
+</span><span class="add">+
+</span><span class="add">+    enum direction dir = *(enum direction*)data;
+</span><span class="add">+    double vx = view-&gt;x + view-&gt;surface-&gt;geometry.width / 2;
+</span><span class="add">+    double vy = view-&gt;y + view-&gt;surface-&gt;geometry.height / 2;
+</span><span class="add">+    double x, y, width, height;
+</span><span class="add">+    wlr_output_layout_closest_point(server-&gt;output_layout, NULL, vx, vy, &amp;x, &amp;y);
+</span><span class="add">+    struct wlr_output *output = wlr_output_layout_output_at(server-&gt;output_layout, x, y);
+</span><span class="add">+
+</span><span class="add">+    switch (dir) {
+</span><span class="add">+	case RIGHT:
+</span><span class="add">+	    x = output-&gt;width / 2;
+</span><span class="add">+	    y = 0;
+</span><span class="add">+	    width = output-&gt;width / 2;
+</span><span class="add">+	    height = output-&gt;height;
+</span><span class="add">+	    break;
+</span><span class="add">+	case LEFT:
+</span><span class="add">+	    x = 0;
+</span><span class="add">+	    y = 0;
+</span><span class="add">+	    width = output-&gt;width / 2;
+</span><span class="add">+	    height = output-&gt;height;
+</span><span class="add">+	    break;
+</span><span class="add">+	case UP:
+</span><span class="add">+	    x = 0;
+</span><span class="add">+	    y = 0;
+</span><span class="add">+	    width = output-&gt;width;
+</span><span class="add">+	    height = output-&gt;height / 2;
+</span><span class="add">+	    break;
+</span><span class="add">+	case DOWN:
+</span><span class="add">+	    x = 0;
+</span><span class="add">+	    y = output-&gt;height / 2;
+</span><span class="add">+	    width = output-&gt;width;
+</span><span class="add">+	    height = output-&gt;height / 2;
+</span><span class="add">+	    break;
+</span><span class="add">+	case NONE:
+</span><span class="add">+	    return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    double zoom = server-&gt;current_desk-&gt;zoom;
+</span><span class="add">+    view-&gt;x = (x - view-&gt;surface-&gt;geometry.x) / zoom;
+</span><span class="add">+    view-&gt;y = (y - view-&gt;surface-&gt;geometry.y) / zoom;
+</span><span class="add">+    wlr_xdg_toplevel_set_size(view-&gt;surface, width / zoom, height / zoom);
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,6 +18,7 @@
+<span class="def">  - make configuration much nicer and remove all the strcmps
+</span><span class="def">  - read default configuration as string
+</span><span class="def">     - then add action to read config
+</span><span class="add">+ - fix issue where Shift-using key bindings require pre-shifted key in config
+</span><span class="def">  - xwayland
+</span><span class="def">  - functions to shift desk view
+</span><span class="def">  - pinch gestures for desk zooming
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,6 +44,12 @@
+<span class="def"> bind		l		focus right
+</span><span class="def"> bind		f		toggle_fullscreen
+</span><span class="def"> 
+</span><span class="add">+# These give the focussed window half of the screen
+</span><span class="add">+bind	Shift	J		halfimize down
+</span><span class="add">+bind	Shift	K		halfimize up
+</span><span class="add">+bind	Shift	H		halfimize left
+</span><span class="add">+bind	Shift	L		halfimize right
+</span><span class="add">+
+</span><span class="def"> # And these act on desks
+</span><span class="def"> bind		Tab		next_desk
+</span><span class="def"> bind		ISO_Left_Tab	prev_desk
+</span></pre>
+</div></div>
+  </body>
+</html>

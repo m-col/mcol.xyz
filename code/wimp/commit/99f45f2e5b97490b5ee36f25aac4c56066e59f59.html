@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add rudimentary damage tracking</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/99f45f2e5b97490b5ee36f25aac4c56066e59f59.html">99f45f2e5b97490b5ee36f25aac4c56066e59f59</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/da7a19f94fd2bb82e51b67e3f32254f9d776f015.html">da7a19f94fd2bb82e51b67e3f32254f9d776f015</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-07 23:01:29 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-07 23:01:29 +0000
+
+add rudimentary damage tracking
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -123,11 +123,13 @@
+<span class="def">     struct wlr_xdg_surface *surface;
+</span><span class="def">     struct wl_listener map_listener;
+</span><span class="def">     struct wl_listener unmap_listener;
+</span><span class="add">+    struct wl_listener commit_listener;
+</span><span class="def">     struct wl_listener destroy_listener;
+</span><span class="def">     struct wl_listener request_move_listener;
+</span><span class="def">     struct wl_listener request_resize_listener;
+</span><span class="def">     struct wl_listener request_fullscreen_listener;
+</span><span class="def">     double x, y;
+</span><span class="add">+    int width, height;
+</span><span class="def">     bool is_scratchpad;
+</span><span class="def"> };
+</span><span class="def"> 
+</span>@@ -135,6 +137,7 @@
+<span class="def">     struct wl_list link;
+</span><span class="def">     struct wl_list layer_views[4];
+</span><span class="def">     struct wlr_output *wlr_output;
+</span><span class="add">+    struct wlr_output_damage *wlr_output_damage;
+</span><span class="def">     struct wl_listener frame_listener;
+</span><span class="def">     struct wl_listener destroy_listener;
+</span><span class="def"> };
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +1,9 @@
+<span class="add">+#include &lt;wlr/types/wlr_output_damage.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/edges.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;action.h&quot;
+</span><span class="add">+#include &quot;output.h&quot;
+</span><span class="def"> #include &quot;scratchpad.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span>@@ -19,6 +21,7 @@
+<span class="def"> void focus_view(struct view *view, struct wlr_surface *surface) {
+</span><span class="def">     if (view == NULL) {
+</span><span class="def"> 	wlr_seat_keyboard_notify_clear_focus(wimp.seat);
+</span><span class="add">+	damage_all_outputs();
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="def">     struct wlr_seat *seat = wimp.seat;
+</span>@@ -47,6 +50,7 @@
+<span class="def"> 	seat, view-&gt;surface-&gt;surface, keyboard-&gt;keycodes,
+</span><span class="def"> 	keyboard-&gt;num_keycodes, &amp;keyboard-&gt;modifiers
+</span><span class="def">     );
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -75,13 +79,15 @@
+<span class="def"> 	motion.dy = (y + height) * zoom - extents-&gt;height;
+</span><span class="def">     }
+</span><span class="def">     pan_desk(&amp;motion);
+</span><span class="add">+
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void fullscreen_xdg_surface(
+</span><span class="sub">-    struct view *view, struct wlr_xdg_surface *xdg_surface, struct wlr_output *output
+</span><span class="add">+    struct view *view, struct wlr_xdg_surface *xdg_surface, struct wlr_output *wlr_output
+</span><span class="def"> ) {
+</span><span class="sub">-    /* output can be NULL, in which case it is calculated using the surface&apos;s position */
+</span><span class="add">+    /* wlr_output can be NULL, in which case it is calculated using the surface&apos;s position */
+</span><span class="def">     struct wlr_box *saved_geo = &amp;wimp.current_desk-&gt;fullscreened_saved_geo;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_xdg_surface *prev_surface = wimp.current_desk-&gt;fullscreened;
+</span>@@ -100,12 +106,12 @@
+<span class="def">     if (xdg_surface-&gt;role != WLR_XDG_SURFACE_ROLE_TOPLEVEL)
+</span><span class="def"> 	return;
+</span><span class="def"> 
+</span><span class="sub">-    if (!output) {
+</span><span class="add">+    if (!wlr_output) {
+</span><span class="def"> 	double x = view-&gt;x + xdg_surface-&gt;geometry.width / 2;
+</span><span class="def"> 	double y = view-&gt;y + xdg_surface-&gt;geometry.height / 2;
+</span><span class="def"> 	double lx, ly;
+</span><span class="def"> 	wlr_output_layout_closest_point(wimp.output_layout, NULL, x, y, &amp;lx, &amp;ly);
+</span><span class="sub">-	output = wlr_output_layout_output_at(wimp.output_layout, lx, ly);
+</span><span class="add">+	wlr_output = wlr_output_layout_output_at(wimp.output_layout, lx, ly);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     wimp.current_desk-&gt;fullscreened = xdg_surface;
+</span>@@ -116,7 +122,9 @@
+<span class="def">     saved_geo-&gt;height = xdg_surface-&gt;geometry.height;
+</span><span class="def">     wlr_xdg_toplevel_set_fullscreen(xdg_surface, true);
+</span><span class="def">     double zoom = wimp.current_desk-&gt;zoom;
+</span><span class="sub">-    wlr_xdg_toplevel_set_size(xdg_surface, output-&gt;width / zoom, output-&gt;height / zoom);
+</span><span class="add">+    wlr_xdg_toplevel_set_size(xdg_surface, wlr_output-&gt;width / zoom, wlr_output-&gt;height / zoom);
+</span><span class="add">+    struct output *output = wlr_output-&gt;data;
+</span><span class="add">+    wlr_output_damage_add_whole(output-&gt;wlr_output_damage);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -127,9 +135,39 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void on_commit(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct view *view = wl_container_of(listener, view, commit_listener);
+</span><span class="add">+
+</span><span class="add">+    struct wlr_box new;
+</span><span class="add">+    wlr_xdg_surface_get_geometry(view-&gt;surface, &amp;new);
+</span><span class="add">+
+</span><span class="add">+    if (new.width != view-&gt;width || new.height != view-&gt;height) {
+</span><span class="add">+       struct wlr_box old = {
+</span><span class="add">+           .x = view-&gt;x,
+</span><span class="add">+           .y = view-&gt;x,
+</span><span class="add">+           .width = view-&gt;width,
+</span><span class="add">+           .height = view-&gt;height,
+</span><span class="add">+       };
+</span><span class="add">+       if (new.width &gt; old.width || new.height &gt; old.height) {
+</span><span class="add">+           damage_box(&amp;new, true);
+</span><span class="add">+       } else if (new.width &lt;= old.width || new.height &lt;= old.height) {
+</span><span class="add">+           damage_box(&amp;old, true);
+</span><span class="add">+       }
+</span><span class="add">+       view-&gt;width = new.width;
+</span><span class="add">+       view-&gt;height = new.height;
+</span><span class="add">+
+</span><span class="add">+    } else {
+</span><span class="add">+       damage_by_view(view, false);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void on_map(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, map_listener);
+</span><span class="def"> 
+</span><span class="add">+    view-&gt;commit_listener.notify = on_commit;
+</span><span class="add">+    wl_signal_add(&amp;view-&gt;surface-&gt;surface-&gt;events.commit, &amp;view-&gt;commit_listener);
+</span><span class="add">+
+</span><span class="def">     if (view-&gt;is_scratchpad) {
+</span><span class="def"> 	struct scratchpad *scratchpad = scratchpad_from_view(view);
+</span><span class="def"> 	scratchpad_apply_geo(scratchpad);
+</span>@@ -139,6 +177,7 @@
+<span class="def">     focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> static void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, unmap_listener);
+</span><span class="def">     struct scratchpad *scratchpad;
+</span>@@ -151,6 +190,8 @@
+<span class="def"> 	wl_list_insert(wimp.current_desk-&gt;views.prev, &amp;view-&gt;link);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    wl_list_remove(&amp;view-&gt;commit_listener.link);
+</span><span class="add">+
+</span><span class="def">     if (view-&gt;surface-&gt;surface != wimp.seat-&gt;keyboard_state.focused_surface) {
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,5 +4,8 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> void set_up_outputs();
+</span><span class="add">+void damage_box(struct wlr_box *geo, bool add_borders);
+</span><span class="add">+void damage_by_view(struct view *view, bool with_borders);
+</span><span class="add">+void damage_all_outputs();
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +1,9 @@
+<span class="def"> #include &lt;time.h&gt;
+</span><span class="add">+#include &lt;pixman.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_gamma_control_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_layer_shell_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_matrix.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_output_damage.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_management_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xdg_output_v1.h&gt;
+</span>@@ -72,16 +74,25 @@
+<span class="def"> 
+</span><span class="def"> static void on_frame(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct output *output = wl_container_of(listener, output, frame_listener);
+</span><span class="add">+
+</span><span class="add">+    bool needs_frame;
+</span><span class="add">+    pixman_region32_t damage;
+</span><span class="add">+    pixman_region32_init(&amp;damage);
+</span><span class="add">+
+</span><span class="add">+    if (!wlr_output_damage_attach_render(output-&gt;wlr_output_damage, &amp;needs_frame, &amp;damage)) {
+</span><span class="add">+	goto finish;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (!needs_frame) {
+</span><span class="add">+	wlr_output_rollback(output-&gt;wlr_output);
+</span><span class="add">+	goto finish;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     struct wlr_renderer *renderer = wimp.renderer;
+</span><span class="def">     struct desk *desk = wimp.current_desk;
+</span><span class="sub">-
+</span><span class="def">     struct timespec now;
+</span><span class="def">     clock_gettime(CLOCK_MONOTONIC, &amp;now);
+</span><span class="def"> 
+</span><span class="sub">-    if (!wlr_output_attach_render(output-&gt;wlr_output, NULL)) {
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="def">     int width, height;
+</span><span class="def">     double zoom = desk-&gt;zoom;
+</span><span class="def">     wlr_output_effective_resolution(output-&gt;wlr_output, &amp;width, &amp;height);
+</span>@@ -204,6 +215,51 @@
+<span class="def">     wlr_output_render_software_cursors(output-&gt;wlr_output, NULL);  // no-op with HW cursors
+</span><span class="def">     wlr_renderer_end(renderer);
+</span><span class="def">     wlr_output_commit(output-&gt;wlr_output);
+</span><span class="add">+
+</span><span class="add">+finish:
+</span><span class="add">+    pixman_region32_fini(&amp;damage);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void damage_box(struct wlr_box *geo, bool add_borders) {
+</span><span class="add">+
+</span><span class="add">+    struct wlr_box damaged;
+</span><span class="add">+    memcpy(&amp;damaged, geo, sizeof(struct wlr_box));
+</span><span class="add">+
+</span><span class="add">+    if (add_borders) {
+</span><span class="add">+	int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="add">+	damaged.x -= border_width;
+</span><span class="add">+	damaged.y -= border_width;
+</span><span class="add">+	damaged.width += border_width * 2;
+</span><span class="add">+	damaged.height += border_width * 2;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct output *output;
+</span><span class="add">+    wl_list_for_each(output, &amp;wimp.outputs, link) {
+</span><span class="add">+	wlr_output_damage_add_box(output-&gt;wlr_output_damage, &amp;damaged);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void damage_by_view(struct view *view, bool with_borders) {
+</span><span class="add">+    double zoom = wimp.current_desk-&gt;zoom;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_box geo = {
+</span><span class="add">+	.x = view-&gt;x,
+</span><span class="add">+	.y = view-&gt;y,
+</span><span class="add">+	.width = view-&gt;width * zoom,
+</span><span class="add">+	.height = view-&gt;height * zoom,
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    damage_box(&amp;geo, with_borders);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void damage_all_outputs() {
+</span><span class="add">+    struct output *output;
+</span><span class="add">+    wl_list_for_each(output, &amp;wimp.outputs, link) {
+</span><span class="add">+	wlr_output_damage_add_whole(output-&gt;wlr_output_damage);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -243,10 +299,11 @@
+<span class="def">     struct output *output = calloc(1, sizeof(struct output));
+</span><span class="def">     output-&gt;wlr_output = wlr_output;
+</span><span class="def">     wlr_output-&gt;data = output;
+</span><span class="add">+    output-&gt;wlr_output_damage = wlr_output_damage_create(wlr_output);
+</span><span class="def"> 
+</span><span class="def">     output-&gt;frame_listener.notify = on_frame;
+</span><span class="def">     output-&gt;destroy_listener.notify = on_destroy;
+</span><span class="sub">-    wl_signal_add(&amp;wlr_output-&gt;events.frame, &amp;output-&gt;frame_listener);
+</span><span class="add">+    wl_signal_add(&amp;output-&gt;wlr_output_damage-&gt;events.frame, &amp;output-&gt;frame_listener);
+</span><span class="def">     wl_signal_add(&amp;wlr_output-&gt;events.destroy, &amp;output-&gt;destroy_listener);
+</span><span class="def"> 
+</span><span class="def">     wl_list_insert(&amp;wimp.outputs, &amp;output-&gt;link);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/layer_shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,5 @@
+<span class="def"> #include &lt;wlr/types/wlr_layer_shell_v1.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_output_damage.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;layer_shell.h&quot;
+</span><span class="def"> 
+</span>@@ -76,6 +77,8 @@
+<span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+
+</span><span class="add">+    wlr_output_damage_add_whole(output-&gt;wlr_output_damage);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,6 @@
+<span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;output.h&quot;
+</span><span class="def"> #include &quot;scratchpad.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span>@@ -75,6 +76,8 @@
+<span class="def"> 	struct view *view = wl_container_of(desk-&gt;views.next, view, link);
+</span><span class="def"> 	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="def">     }
+</span><span class="add">+
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,6 +7,7 @@
+<span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;cursor.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;output.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span>@@ -149,6 +150,7 @@
+<span class="def">     }
+</span><span class="def">     desk-&gt;panned_x -= dx;
+</span><span class="def">     desk-&gt;panned_y -= dy;
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -170,6 +172,7 @@
+<span class="def">     desk-&gt;panned_x -= fx;
+</span><span class="def">     desk-&gt;panned_y -= fy;
+</span><span class="def">     desk-&gt;zoom = 1;
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -195,6 +198,7 @@
+<span class="def">     }
+</span><span class="def">     desk-&gt;panned_x -= fx;
+</span><span class="def">     desk-&gt;panned_y -= fy;
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -230,6 +234,7 @@
+<span class="def">     mark-&gt;key = 0;
+</span><span class="def">     wimp.mark_waiting = true;
+</span><span class="def">     wl_list_insert(&amp;wimp.marks, &amp;mark-&gt;link);
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -363,6 +368,7 @@
+<span class="def">     height -= border_width * 2;
+</span><span class="def">     wlr_xdg_toplevel_set_size(view-&gt;surface, width / zoom, height / zoom);
+</span><span class="def">     wlr_xdg_toplevel_set_tiled(view-&gt;surface, true);
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -386,6 +392,7 @@
+<span class="def">     double height = (output-&gt;height - border_width * 2) / zoom;
+</span><span class="def">     wlr_xdg_toplevel_set_size(view-&gt;surface, width, height);
+</span><span class="def">     wlr_xdg_toplevel_set_tiled(view-&gt;surface, true);
+</span><span class="add">+    damage_all_outputs();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,7 +5,8 @@
+<span class="def"> LDFLAGS	+= $(shell pkg-config --cflags --libs wlroots) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs wayland-server) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs xkbcommon) \
+</span><span class="sub">-	    $(shell pkg-config --cflags --libs cairo)
+</span><span class="add">+	    $(shell pkg-config --cflags --libs cairo) \
+</span><span class="add">+	    $(shell pkg-config --cflags --libs pixman-1)
+</span><span class="def"> 
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span></pre>
+</div></div>
+  </body>
+</html>

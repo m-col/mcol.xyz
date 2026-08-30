@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - subclass Columns so i have more nicely display &apos;foot&apos;</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/fbec80f801aa52555eaa96f4663fbbe944219a43.html">fbec80f801aa52555eaa96f4663fbbe944219a43</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/67681210520c3d30e2e513bb463e26b2bd190f7d.html">67681210520c3d30e2e513bb463e26b2bd190f7d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-08-24 06:14:44 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-08-24 06:14:44 +0100
+
+subclass Columns so i have more nicely display &apos;foot&apos;
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -268,8 +268,62 @@
+<span class="def"> border_focus = [colours[5]]
+</span><span class="def"> border_normal = &quot;001122&quot;
+</span><span class="def"> 
+</span><span class="add">+class MyColumns(layout.Columns):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    I only override this method so I can make &apos;foot&apos; have wide margins at each side if
+</span><span class="add">+    it&apos;s the only window open.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    def configure(self, client, screen_rect):
+</span><span class="add">+        pos = 0
+</span><span class="add">+        for col in self.columns:
+</span><span class="add">+            if client in col:
+</span><span class="add">+                break
+</span><span class="add">+            pos += col.width
+</span><span class="add">+        else:
+</span><span class="add">+            client.hide()
+</span><span class="add">+            return
+</span><span class="add">+        if client.has_focus:
+</span><span class="add">+            color = self.border_focus if col.split else self.border_focus_stack
+</span><span class="add">+        else:
+</span><span class="add">+            color = self.border_normal if col.split else self.border_normal_stack
+</span><span class="add">+        border = self.border_width
+</span><span class="add">+        margin_size = self.margin
+</span><span class="add">+        if len(self.columns) == 1 and (len(col) == 1 or not col.split):
+</span><span class="add">+            if not self.border_on_single:
+</span><span class="add">+                border = 0
+</span><span class="add">+            if &quot;foot&quot; in client.get_wm_class():
+</span><span class="add">+                margin_size = [0, 200, 0, 200]
+</span><span class="add">+        width = int(0.5 + col.width * screen_rect.width * 0.01 / len(self.columns))
+</span><span class="add">+        x = screen_rect.x + int(0.5 + pos * screen_rect.width * 0.01 / len(self.columns))
+</span><span class="add">+        if col.split:
+</span><span class="add">+            pos = 0
+</span><span class="add">+            for c in col:
+</span><span class="add">+                if client == c:
+</span><span class="add">+                    break
+</span><span class="add">+                pos += col.heights[c]
+</span><span class="add">+            height = int(0.5 + col.heights[client] * screen_rect.height * 0.01 / len(col))
+</span><span class="add">+            y = screen_rect.y + int(0.5 + pos * screen_rect.height * 0.01 / len(col))
+</span><span class="add">+            client.place(
+</span><span class="add">+                x, y, width - 2 * border, height - 2 * border, border, color, margin=margin_size
+</span><span class="add">+            )
+</span><span class="add">+            client.unhide()
+</span><span class="add">+        elif client == col.cw:
+</span><span class="add">+            client.place(
+</span><span class="add">+                x,
+</span><span class="add">+                screen_rect.y,
+</span><span class="add">+                width - 2 * border,
+</span><span class="add">+                screen_rect.height - 2 * border,
+</span><span class="add">+                border,
+</span><span class="add">+                color,
+</span><span class="add">+                margin=margin_size,
+</span><span class="add">+            )
+</span><span class="add">+            client.unhide()
+</span><span class="add">+        else:
+</span><span class="add">+            client.hide()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> layouts = [
+</span><span class="sub">-    layout.Columns(
+</span><span class="add">+    MyColumns(
+</span><span class="def">         insert_position=1,
+</span><span class="def">         border_width=5,
+</span><span class="def">         border_focus=border_focus,
+</span></pre>
+</div></div>
+  </body>
+</html>

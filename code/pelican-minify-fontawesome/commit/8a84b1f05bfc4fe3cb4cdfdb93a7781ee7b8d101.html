@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - generate subfont into pelican output from used glyphs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/8a84b1f05bfc4fe3cb4cdfdb93a7781ee7b8d101.html">8a84b1f05bfc4fe3cb4cdfdb93a7781ee7b8d101</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/a5e9660092709115462c9ac5224881486def9dcf.html">a5e9660092709115462c9ac5224881486def9dcf</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-14 23:52:44 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-14 23:52:44 +0100
+
+generate subfont into pelican output from used glyphs
+</pre><div class="diff">
+  <p>
+    <b>minify_fontawesome.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,7 +18,7 @@
+<span class="def"> # along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-import fontforge as ff
+</span><span class="add">+import fontforge
+</span><span class="def"> import os
+</span><span class="def"> from pelican import signals
+</span><span class="def"> import re
+</span>@@ -28,26 +28,28 @@
+<span class="def">     &quot;&quot;&quot;
+</span><span class="def">     Copy only used icons from the font files into the output folder.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-    used_icons = []
+</span><span class="add">+    icons = []
+</span><span class="def">     for block in css_blocks:
+</span><span class="sub">-        used_icons.append(re.search(&apos;content:&quot;(.*?)&quot;&apos;, block).group(0))
+</span><span class="add">+        match = re.findall(&apos;\.fa-(.*?):&apos;, block)
+</span><span class="add">+        icons.append(match[0])
+</span><span class="def"> 
+</span><span class="sub">-    return  #TODO
+</span><span class="add">+    os.mkdir(dest)
+</span><span class="add">+    icons = [&apos;rss&apos;]
+</span><span class="def">     for root, dirs, files in os.walk(source):
+</span><span class="def">         for f in files:
+</span><span class="def">             if f.endswith(&apos;woff&apos;):
+</span><span class="sub">-                font = ff.open(os.path.join(root, f))
+</span><span class="sub">-                for icon in used_icons:
+</span><span class="sub">-                    if font.findEncodingSlot(icon):
+</span><span class="sub">-                        font.selection.select(
+</span><span class="sub">-                            (&quot;more&quot;, None),
+</span><span class="sub">-                            icon,
+</span><span class="sub">-                        )
+</span><span class="sub">-                font.copy()
+</span><span class="sub">-                new_font = ff.font()
+</span><span class="sub">-                new_font.paste()
+</span><span class="sub">-                new_font.fontname = font.fontname
+</span><span class="sub">-                new_font.generate(os.path.join(dest, f))
+</span><span class="add">+                font = fontforge.open(os.path.join(root, f))
+</span><span class="add">+
+</span><span class="add">+                try:
+</span><span class="add">+                    font.selection.select((&quot;more&quot;,), *icons)
+</span><span class="add">+                except ValueError:
+</span><span class="add">+                    font.close()
+</span><span class="add">+                    continue
+</span><span class="add">+
+</span><span class="add">+                font.selection.invert()
+</span><span class="add">+                font.clear()
+</span><span class="add">+                font.generate(os.path.join(dest, f))
+</span><span class="add">+                font.close()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> def get_classes(folder):
+</span>@@ -113,7 +115,7 @@
+<span class="def"> 
+</span><span class="def">     copy_glyphs(
+</span><span class="def">         os.path.join(FONT_PATH, &apos;webfonts&apos;),
+</span><span class="sub">-        os.path.join(output_path, &apos;static&apos;, &apos;webfonts&apos;),
+</span><span class="add">+        os.path.join(output_path, &apos;theme&apos;, &apos;webfonts&apos;),
+</span><span class="def">         css_blocks,
+</span><span class="def">     )
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

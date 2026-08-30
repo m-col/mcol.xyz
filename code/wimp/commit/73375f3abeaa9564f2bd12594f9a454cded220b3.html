@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Warp cursor to centre of output layout upon start</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/73375f3abeaa9564f2bd12594f9a454cded220b3.html">73375f3abeaa9564f2bd12594f9a454cded220b3</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/26b55b94179193b45c29e7255526dc82e2aab275.html">26b55b94179193b45c29e7255526dc82e2aab275</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-10 22:28:31 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-10 22:28:31 +0000
+
+Warp cursor to centre of output layout upon start
+
+closes #28
+</pre><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -182,6 +182,7 @@
+<span class="def">     setenv(&quot;WAYLAND_DISPLAY&quot;, socket, true);
+</span><span class="def">     wlr_log(WLR_INFO, &quot;Starting with WAYLAND_DISPLAY=%s&quot;, socket);
+</span><span class="def">     schedule_auto_start();
+</span><span class="add">+    centre_cursor();
+</span><span class="def">     wl_display_run(wimp.display);
+</span><span class="def"> 
+</span><span class="def">     // stop
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+void centre_cursor();
+</span><span class="def"> void *under_pointer(struct wlr_surface **surface, double *sx, double *sy, bool *is_layer);
+</span><span class="def"> void set_up_cursor();
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,6 +12,16 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void centre_cursor() {
+</span><span class="add">+    struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span><span class="add">+    double cx, cy;
+</span><span class="add">+    wlr_output_layout_closest_point(
+</span><span class="add">+	wimp.output_layout, NULL, extents-&gt;width / 2, extents-&gt;height / 2, &amp;cx, &amp;cy
+</span><span class="add">+    );
+</span><span class="add">+    wlr_cursor_warp_closest(wimp.cursor, NULL, cx, cy);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void process_cursor_move(uint32_t time, double zoom) {
+</span><span class="def">     wimp.grabbed_view-&gt;x = (wimp.cursor-&gt;x - wimp.grab_x) / zoom;
+</span><span class="def">     wimp.grabbed_view-&gt;y = (wimp.cursor-&gt;y - wimp.grab_y) / zoom;
+</span></pre>
+</div></div>
+  </body>
+</html>

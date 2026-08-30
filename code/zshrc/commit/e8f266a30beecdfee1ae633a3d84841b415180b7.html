@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - updated aliases</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/e8f266a30beecdfee1ae633a3d84841b415180b7.html">e8f266a30beecdfee1ae633a3d84841b415180b7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/f27a43c99abf22982889ab02b96ca2613a0f7c3d.html">f27a43c99abf22982889ab02b96ca2613a0f7c3d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-03-24 00:40:25 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-03-24 00:40:25 +0000
+
+updated aliases
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -39,7 +39,6 @@
+<span class="def"> so () { [[ -e $1 ]] &amp;&amp; source $1 }
+</span><span class="def"> 
+</span><span class="def"> so $ZSH/aliases		    # general aliases
+</span><span class="sub">-so $HOME/.aliases	    # machine-specific aliases
+</span><span class="def"> so $HOME/.config/aliases    # machine-specific aliases
+</span><span class="def"> 
+</span><span class="def"> ZSH_THEME=&quot;ban&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -634,6 +634,7 @@
+<span class="def"> map gS cd /etc/systemd/system
+</span><span class="def"> 
+</span><span class="def"> map gg cd ~/git
+</span><span class="add">+map gC cd ~/git/custom-packages
+</span><span class="def"> map gc cd ~/.config
+</span><span class="def"> map gx cd ~/.Xresources.d
+</span><span class="def"> map gm cd ~/media
+</span>@@ -646,7 +647,6 @@
+<span class="def"> map gW cd ~/work/research/research.wiki
+</span><span class="def"> map gr cd ~/work/analysis/rochefort-tools
+</span><span class="def"> map gv cd ~/.vim
+</span><span class="sub">-map gC cd ~/documents/C
+</span><span class="def"> map gD cd ~/Downloads
+</span><span class="def"> map gz cd ~/.zsh
+</span><span class="def"> map gB cd ~/.local/share/Trash/files
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,6 @@
+<span class="def"> #
+</span><span class="def"> # General aliases go here
+</span><span class="sub">-# Machine-specific aliases go in $HOME/.aliases
+</span><span class="add">+# Machine-specific aliases go in $HOME/.config/aliases
+</span><span class="def"> #
+</span><span class="def"> 
+</span><span class="def"> # misc
+</span>@@ -40,12 +40,11 @@
+<span class="def"> alias eduroam=&apos;nmcli con up eduroam&apos;
+</span><span class="def"> alias pinga=&apos;ping archlinux.org&apos;
+</span><span class="def"> alias ip=&quot;ip -c&quot;
+</span><span class="sub">-alias ufw=&quot;sudo ufw&quot;
+</span><span class="def"> alias dns=&quot;cat /etc/resolv.conf&quot;
+</span><span class="sub">-alias pinga=&apos;ping archlinux.org&apos;
+</span><span class="def"> 
+</span><span class="def"> # launchers
+</span><span class="def"> alias ra=&quot;ranger&quot;
+</span><span class="add">+alias nc=&apos;ncmpcpp&apos;
+</span><span class="def"> alias vi=&quot;vim&quot;
+</span><span class="def"> alias tmux=&quot;tmux -u&quot;
+</span><span class="def"> alias ta=&quot;tmux attach&quot;
+</span>@@ -64,12 +63,11 @@
+<span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&quot;rsync -avPzh --delete&quot;
+</span><span class="sub">-alias cl=&apos;clear; cd $HOME&apos;
+</span><span class="sub">-alias sc=&quot;sudo systemctl&quot;
+</span><span class="add">+alias cl=&apos;clear&apos;
+</span><span class="def"> alias removespaces=&quot;for run in {1..20}; do; find . -type f -name \&quot;* *\&quot; -exec rename \&quot; \&quot; \&quot;_\&quot; {} \; ; done&quot;
+</span><span class="def"> 
+</span><span class="def"> # quick edits
+</span><span class="sub">-alias modalia=&apos;vim $HOME/.aliases &amp;&amp; source $HOME/.aliases&apos;
+</span><span class="add">+alias modalia=&apos;vim $HOME/.config/aliases &amp;&amp; source $HOME/.config/aliases&apos;
+</span><span class="def"> alias modaliaz=&apos;vim $ZSH/aliases &amp;&amp; source $ZSH/aliases&apos;
+</span><span class="def"> alias vimrc=&apos;vim $HOME/.vim/bundle/vim-misc/vimrc&apos;
+</span><span class="def"> alias vimkeys=&apos;vim $HOME/.vim/bundle/vim-misc/plugin/keybindings.vim&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - remove THIS definition</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/96e20bbc3c799275a645bf3b3f6bae3501f8f0b8.html">96e20bbc3c799275a645bf3b3f6bae3501f8f0b8</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/850120639ceb282769bad0e24577c867ff4ca6d8.html">850120639ceb282769bad0e24577c867ff4ca6d8</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 22:13:08 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 22:13:08 +0000
+
+remove THIS definition
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,7 +15,6 @@
+<span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span><span class="sub">-#define THIS &quot;wimp&quot;
+</span><span class="def"> 
+</span><span class="def"> enum cursor_mode {
+</span><span class="def">     CURSOR_PASSTHROUGH,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -36,7 +36,7 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static const char usage[] =
+</span><span class="sub">-    &quot;usage: &quot; THIS &quot; [options...]\n&quot;
+</span><span class="add">+    &quot;usage: wimp [options...]\n&quot;
+</span><span class="def">     &quot;    -h         show this help message\n&quot;
+</span><span class="def">     &quot;    -c &lt;file&gt;  specify config file\n&quot;
+</span><span class="def">     &quot;    -d         set logging to debug mode\n&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,8 +12,8 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> #define is_number(s) (strspn(s, &quot;0123456789.-&quot;) == strlen(s))
+</span><span class="sub">-#define CONFIG_HOME &quot;$HOME/.config/&quot; THIS &quot;.conf&quot;
+</span><span class="sub">-#define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/.config/&quot; THIS &quot;.conf&quot;
+</span><span class="add">+#define CONFIG_HOME &quot;$HOME/.config/wimp.conf&quot;
+</span><span class="add">+#define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/.config/wimp.conf&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static const char *DEFAULT_CONFIG =  &quot;\n\
+</span>@@ -90,19 +90,18 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static void motion_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    kb-&gt;data = calloc(1, sizeof(struct motion));
+</span><span class="def">     char *s;
+</span><span class="def">     if (!data)
+</span><span class="sub">-	goto fail;
+</span><span class="add">+	return;
+</span><span class="def"> 
+</span><span class="def">     s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="def">     if (!is_number(s) || !data)
+</span><span class="sub">-	goto fail;
+</span><span class="add">+	return;
+</span><span class="def">     int x = atoi(s);
+</span><span class="def"> 
+</span><span class="def">     s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def">     if (!is_number(s))
+</span><span class="sub">-	goto fail;
+</span><span class="add">+	return;
+</span><span class="def">     int y = atoi(s);
+</span><span class="def"> 
+</span><span class="def">     struct motion motion = {
+</span>@@ -110,11 +109,8 @@
+<span class="def"> 	.dy = y,
+</span><span class="def"> 	.is_percentage = true,
+</span><span class="def">     };
+</span><span class="add">+    kb-&gt;data = calloc(1, sizeof(struct motion));
+</span><span class="def">     *(struct motion *)(kb-&gt;data) = motion;
+</span><span class="sub">-    return;
+</span><span class="sub">-
+</span><span class="sub">-fail:
+</span><span class="sub">-    free(kb-&gt;data);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - startup script: only spawn processes if they dont exist</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/a96f482ec2bac0e0f53dac5b335a7010b744f10e.html">a96f482ec2bac0e0f53dac5b335a7010b744f10e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/c3b82bacf695b1bb981c0868fbbd08b8925f7266.html">c3b82bacf695b1bb981c0868fbbd08b8925f7266</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-07-29 18:51:04 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-07-29 18:51:04 +0100
+
+startup script: only spawn processes if they dont exist
+</pre><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,7 @@
+<span class="def"> 
+</span><span class="def"> {
+</span><span class="def">     foot --server &amp;
+</span><span class="sub">-    swaybg -c &apos;#1B2021&apos; &amp;
+</span><span class="add">+    #swaybg -c &apos;#1B2021&apos; &amp;
+</span><span class="def"> } &amp;&gt; /dev/null
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -22,11 +22,15 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # TTY session only
+</span><span class="add">+
+</span><span class="add">+run_if_new() { ps aux | grep -v grep | grep -q $1 || $@; }
+</span><span class="add">+
+</span><span class="def"> [[ -z &quot;$QTILE_XEPHYR&quot; ]] &amp;&amp; {
+</span><span class="sub">-    keepassxc &amp;
+</span><span class="sub">-    firefox &amp;
+</span><span class="sub">-    kanshi &amp;
+</span><span class="def">     wlsunset -t 3100 -T 5700 -l 55.7 -L -3.1 &amp;
+</span><span class="add">+    kanshi &amp;
+</span><span class="add">+    run_if_new keepassxc &amp;
+</span><span class="add">+    run_if_new firefox &amp;
+</span><span class="add">+    run_if_new irc &amp;
+</span><span class="def"> 
+</span><span class="def">     sleep 3
+</span><span class="def">     check_systemd
+</span></pre>
+</div></div>
+  </body>
+</html>

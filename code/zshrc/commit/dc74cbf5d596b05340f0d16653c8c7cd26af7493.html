@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - added shebangpy functions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/dc74cbf5d596b05340f0d16653c8c7cd26af7493.html">dc74cbf5d596b05340f0d16653c8c7cd26af7493</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/25556159573f1152ce60fd0909216c0f23ba6f54.html">25556159573f1152ce60fd0909216c0f23ba6f54</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-04-05 08:59:28 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-04-05 08:59:28 +0100
+
+added shebangpy functions
+</pre><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -146,5 +146,11 @@
+<span class="def">     echo -e &quot;#!/usr/bin/env bash\n&quot; &gt; $1
+</span><span class="def">     vim +2 $1
+</span><span class="def"> }
+</span><span class="add">+shebangpy() { # create new file, add shebang, and vim
+</span><span class="add">+    touch $1
+</span><span class="add">+    chmod +x $1
+</span><span class="add">+    echo -e &quot;#!/usr/bin/env python3\n&quot; &gt; $1
+</span><span class="add">+    vim +2 $1
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="def"> # vim: ft=sh
+</span></pre>
+</div></div>
+  </body>
+</html>

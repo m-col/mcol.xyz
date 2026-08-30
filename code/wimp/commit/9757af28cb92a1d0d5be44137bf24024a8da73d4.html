@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add output damage upon layer shell surface commit</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/9757af28cb92a1d0d5be44137bf24024a8da73d4.html">9757af28cb92a1d0d5be44137bf24024a8da73d4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/2f4254d2c071d1bcc0fa2fb948a2b4c660ef0c19.html">2f4254d2c071d1bcc0fa2fb948a2b4c660ef0c19</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-11 23:13:32 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-11 23:13:32 +0000
+
+add output damage upon layer shell surface commit
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -147,6 +147,7 @@
+<span class="def">     struct wlr_layer_surface_v1 *surface;
+</span><span class="def">     struct wl_listener map_listener;
+</span><span class="def">     struct wl_listener unmap_listener;
+</span><span class="add">+    struct wl_listener commit_listener;
+</span><span class="def">     struct wl_listener destroy_listener;
+</span><span class="def">     struct output *output;
+</span><span class="def">     struct wlr_box geo;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/layer_shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_output_damage.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;layer_shell.h&quot;
+</span><span class="add">+#include &quot;output.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static void layer(struct output *output) {
+</span>@@ -12,10 +13,6 @@
+<span class="def">     wlr_output_effective_resolution(output-&gt;wlr_output, &amp;width, &amp;height);
+</span><span class="def"> 
+</span><span class="def">     for (int i = 0; i &lt; 4; i++) {
+</span><span class="sub">-	if (wl_list_empty(&amp;output-&gt;layer_views[i])) {
+</span><span class="sub">-	    continue;
+</span><span class="sub">-	}
+</span><span class="sub">-
+</span><span class="def"> 	wl_list_for_each(lview, &amp;output-&gt;layer_views[i], link) {
+</span><span class="def"> 	    surface = lview-&gt;surface;
+</span><span class="def"> 	    state = &amp;surface-&gt;current;
+</span>@@ -53,7 +50,7 @@
+<span class="def"> 		wlr_layer_surface_v1_close(surface);
+</span><span class="def"> 		continue;
+</span><span class="def"> 	    }
+</span><span class="sub">-	    lview-&gt;geo = box;
+</span><span class="add">+	    memcpy(&amp;lview-&gt;geo, &amp;box, sizeof(struct wlr_box));
+</span><span class="def"> 	    wlr_layer_surface_v1_configure(surface, box.width, box.height);
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span>@@ -73,7 +70,7 @@
+<span class="def"> 		    keyboard-&gt;num_keycodes, &amp;keyboard-&gt;modifiers
+</span><span class="def"> 		);
+</span><span class="def"> 		wimp.focussed_layer_view = lview;
+</span><span class="sub">-		return;
+</span><span class="add">+		break;
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span>@@ -95,6 +92,12 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void on_commit(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct layer_view *lview = wl_container_of(listener, lview, commit_listener);
+</span><span class="add">+    damage_box(&amp;lview-&gt;geo, false);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct layer_view *lview = wl_container_of(listener, lview, unmap_listener);
+</span><span class="def">     lview-&gt;surface-&gt;mapped = false;
+</span>@@ -130,9 +133,11 @@
+<span class="def">     lview-&gt;map_listener.notify = on_map;
+</span><span class="def">     lview-&gt;unmap_listener.notify = on_unmap;
+</span><span class="def">     lview-&gt;destroy_listener.notify = on_destroy;
+</span><span class="add">+    lview-&gt;commit_listener.notify = on_commit;
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.map, &amp;lview-&gt;map_listener);
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.unmap, &amp;lview-&gt;unmap_listener);
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.destroy, &amp;lview-&gt;destroy_listener);
+</span><span class="add">+    wl_signal_add(&amp;surface-&gt;surface-&gt;events.commit, &amp;lview-&gt;commit_listener);
+</span><span class="def"> 
+</span><span class="def">     if (!surface-&gt;output) {
+</span><span class="def"> 	surface-&gt;output = wlr_output_layout_output_at(
+</span>@@ -142,13 +147,7 @@
+<span class="def">     struct output *output = surface-&gt;output-&gt;data;
+</span><span class="def">     lview-&gt;output = output;
+</span><span class="def">     wl_list_insert(&amp;output-&gt;layer_views[surface-&gt;client_pending.layer], &amp;lview-&gt;link);
+</span><span class="sub">-
+</span><span class="sub">-    // Temporarily set the layer&apos;s current state to client_pending
+</span><span class="sub">-    // So that we can easily arrange it
+</span><span class="sub">-    struct wlr_layer_surface_v1_state old_state = surface-&gt;current;
+</span><span class="sub">-    surface-&gt;current = surface-&gt;client_pending;
+</span><span class="def">     layer(lview-&gt;output);
+</span><span class="sub">-    surface-&gt;current = old_state;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

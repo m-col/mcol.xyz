@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - remove redundant directory parse</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/8ba4cbfe7f06ed441920a74315705f7a24a09984.html">8ba4cbfe7f06ed441920a74315705f7a24a09984</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/204319857a29ad6307c8b11e3366000cb79e0b47.html">204319857a29ad6307c8b11e3366000cb79e0b47</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-06-04 19:24:04 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-06-04 19:24:04 +0100
+
+remove redundant directory parse
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -131,10 +131,10 @@
+<span class="def"> 
+</span><span class="def">                 withRunInIO \runInIO -&gt; do
+</span><span class="def">                     -- Create the destination folders --
+</span><span class="sub">-                    commitDir &lt;- parseRelDir &quot;commit&quot;
+</span><span class="sub">-                    fileDir &lt;- parseRelDir &quot;file&quot;
+</span><span class="sub">-                    ensureDir $ directory &lt;/&gt; commitDir
+</span><span class="sub">-                    ensureDir $ directory &lt;/&gt; fileDir
+</span><span class="add">+                    commitDir &lt;- (directory &lt;/&gt;) &lt;$&gt; parseRelDir &quot;commit&quot;
+</span><span class="add">+                    fileDir &lt;- (directory &lt;/&gt;) &lt;$&gt; parseRelDir &quot;file&quot;
+</span><span class="add">+                    ensureDir commitDir
+</span><span class="add">+                    ensureDir fileDir
+</span><span class="def"> 
+</span><span class="def">                     -- Run the generator --
+</span><span class="def">                     let quiet = envQuiet env
+</span>@@ -144,12 +144,10 @@
+<span class="def">                     mapM_ (generate scope runInIO quiet directory) (envRepoTemplates env)
+</span><span class="def"> 
+</span><span class="def">                     whenJust (envCommitTemplate env) \commitT -&gt; do
+</span><span class="sub">-                        output&apos; &lt;- fmap (directory &lt;/&gt;) . parseRelDir $ &quot;commit&quot;
+</span><span class="sub">-                        mapM_ (gen commitT &quot;commit&quot; output&apos; commitHref) commits
+</span><span class="add">+                        mapM_ (gen commitT &quot;commit&quot; commitDir commitHref) commits
+</span><span class="def"> 
+</span><span class="def">                     whenJust (envFileTemplate env) \fileT -&gt; do
+</span><span class="sub">-                        output&apos; &lt;- fmap (directory &lt;/&gt;) . parseRelDir $ &quot;file&quot;
+</span><span class="sub">-                        mapM_ (gen fileT &quot;file&quot; output&apos; fileHref) tree -- TODO: detect file changes
+</span><span class="add">+                        mapM_ (gen fileT &quot;file&quot; fileDir fileHref) tree -- TODO: detect file changes
+</span><span class="def"> 
+</span><span class="def">                     -- Copy any static files/folders into the output directory --
+</span><span class="def">                     envRepoCopyStatics env directory
+</span></pre>
+</div></div>
+  </body>
+</html>

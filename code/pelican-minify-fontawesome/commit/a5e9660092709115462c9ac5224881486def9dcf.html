@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - add readme and script-top license</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/a5e9660092709115462c9ac5224881486def9dcf.html">a5e9660092709115462c9ac5224881486def9dcf</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/4bbf5e7eb952d08a813af71948711d33f1580a02.html">4bbf5e7eb952d08a813af71948711d33f1580a02</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-13 23:18:19 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-13 23:18:19 +0100
+
+add readme and script-top license
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,31 @@
+<span class="add">+minify-fontawesome - pelican plugin
+</span><span class="add">+===================================
+</span><span class="add">+
+</span><span class="add">+minify-fontawesome is a plugin for the `pelican
+</span><span class="add">+&lt;https://github.com/getpelican/pelican&gt;`_ static site generator that extracts
+</span><span class="add">+only icons used in your website from fontawesome source files upon site
+</span><span class="add">+generation. If you only use a small number of icons it reduces served CSS from
+</span><span class="add">+around 70KB to around 5KB.
+</span><span class="add">+
+</span><span class="add">+At the end of site generation, the plugin identifies which icons are being used
+</span><span class="add">+and copies the CSS and font definitions of these icons into
+</span><span class="add">+*output_path/static/css/fa.css* and *output_path/static/webfonts/*
+</span><span class="add">+respectively.
+</span><span class="add">+
+</span><span class="add">+To enable, `download fontawesome &lt;https://fontawesome.com/download&gt;`_ and set
+</span><span class="add">+this variable in your pelicanconf.py to the path where fontawesome is saved
+</span><span class="add">+(for example):
+</span><span class="add">+
+</span><span class="add">+.. code-block:: python
+</span><span class="add">+
+</span><span class="add">+   MINIFY_FONTAWESOME = &apos;/home/user/fontawesome-free-5.11.2-web&apos;
+</span><span class="add">+
+</span><span class="add">+Fontforge must be installed, and is available in many linux distribution
+</span><span class="add">+repositories.
+</span><span class="add">+
+</span><span class="add">+Much like with normal fontawesome usage, the CSS file should be linked in html
+</span><span class="add">+headers, i.e. put this into page templates:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: html
+</span><span class="add">+
+</span><span class="add">+    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ SITEURL }}/theme/css/fa.css&quot;/&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>minify_fontawesome.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,22 +1,21 @@
+<span class="def"> # -*- coding: utf-8 -*-
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="sub">-minify-fontawesome - A plugin for the pelican static site generator that
+</span><span class="sub">-extracts only icons used in your website from fontawesome source files to
+</span><span class="sub">-copies them to the output folder to lighten served fontawesome files.
+</span><span class="sub">-
+</span><span class="sub">-To use, set MINIFY_FONTAWESOME in your pelican config to a locally downloaded
+</span><span class="sub">-fontawesome icon folder (e.g. &apos;/home/user/fontawesome-free-5.11.2-web&apos;).
+</span><span class="sub">-
+</span><span class="sub">-These can be downloaded from https://fontawesome.com/download (the web fonts).
+</span><span class="sub">-
+</span><span class="sub">-It also requires that fontforge is installed.
+</span><span class="sub">-
+</span><span class="sub">-This will save the css file into output_path/static/css/fa.css, and fonts into
+</span><span class="sub">-output_path/static/webfonts/.
+</span><span class="sub">-
+</span><span class="sub">-To use it, something like this should be added to html headers:
+</span><span class="sub">-    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ SITEURL }}/theme/css/fa.css&quot;/&gt;
+</span><span class="sub">-&quot;&quot;&quot;
+</span><span class="add">+#
+</span><span class="add">+# pelican-minify-fontawesome
+</span><span class="add">+# 
+</span><span class="add">+# Copyright (C) 2019 mcol@posteo.net
+</span><span class="add">+# 
+</span><span class="add">+# This program is free software: you can redistribute it and/or modify
+</span><span class="add">+# it under the terms of the GNU General Public License as published by
+</span><span class="add">+# the Free Software Foundation, either version 3 of the License, or
+</span><span class="add">+# (at your option) any later version.
+</span><span class="add">+# 
+</span><span class="add">+# This program is distributed in the hope that it will be useful,
+</span><span class="add">+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+</span><span class="add">+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+</span><span class="add">+# GNU General Public License for more details.
+</span><span class="add">+# 
+</span><span class="add">+# You should have received a copy of the GNU General Public License
+</span><span class="add">+# along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> import fontforge as ff
+</span></pre>
+</div></div>
+  </body>
+</html>

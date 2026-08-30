@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bdf2flf - Don&apos;t get stuck looking for required characters if they are&apos;t there</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/bdf2flf">bdf2flf</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Convert BDF bitmap fonts to flf fonts for figlet</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/bdf2flf">https://github.com/m-col/bdf2flf</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/bdf2flf/tree.html">Files</a> | <a href="https://mcol.xyz/code/bdf2flf/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/bdf2flf/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/bdf2flf/commit/26b662454b730acfbcf49eb3fa19df5eefaa9403.html">26b662454b730acfbcf49eb3fa19df5eefaa9403</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/bdf2flf/commit/c70a21514c3464c9e0bdd2ef411086c546a9ef9d.html">c70a21514c3464c9e0bdd2ef411086c546a9ef9d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-27 14:18:56 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-27 14:18:56 +0000
+
+Don&apos;t get stuck looking for required characters if they are&apos;t there
+</pre><div class="diff">
+  <p>
+    <b>bdf2flf.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -173,6 +173,7 @@
+<span class="def">     // print required characters first
+</span><span class="def">     n = 0;
+</span><span class="def">     j = &amp;REQUIRED[0];
+</span><span class="add">+    i = 0;
+</span><span class="def">     for (;;) {
+</span><span class="def"> 	if (chars[n].encoding == *j) {
+</span><span class="def"> 	    strncpy(bitmap, chars[n].bitmap, ((width + 7) / 8) * height * 2);
+</span>@@ -181,10 +182,14 @@
+<span class="def"> 	    if (*j == 223)
+</span><span class="def"> 		break;
+</span><span class="def"> 	    j++;
+</span><span class="add">+	    i = 0;
+</span><span class="def"> 	}
+</span><span class="def"> 	n++;
+</span><span class="add">+	i++;
+</span><span class="def"> 	if (n == num_chars)
+</span><span class="def"> 	    n = 0;
+</span><span class="add">+	if (i == num_chars)
+</span><span class="add">+	    break;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // print additional characters second
+</span></pre>
+</div></div>
+  </body>
+</html>

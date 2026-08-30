@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Add tiled state when halfimizing windows</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/2ce713f01ff7ee183cc888677e3534dd5abf8616.html">2ce713f01ff7ee183cc888677e3534dd5abf8616</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/7fab0e5366b2632932b56ba67ad81a7562666c65.html">7fab0e5366b2632932b56ba67ad81a7562666c65</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 00:16:21 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 00:16:21 +0000
+
+Add tiled state when halfimizing windows
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -136,6 +136,7 @@
+<span class="def"> 
+</span><span class="def"> static void on_request_move(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, request_move_listener);
+</span><span class="add">+    wlr_xdg_toplevel_set_tiled(view-&gt;surface, false);
+</span><span class="def">     process_move_resize(view, CURSOR_MOVE, 0);
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -143,6 +144,7 @@
+<span class="def"> static void on_request_resize(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_xdg_toplevel_resize_event *event = data;
+</span><span class="def">     struct view *view = wl_container_of(listener, view, request_resize_listener);
+</span><span class="add">+    wlr_xdg_toplevel_set_tiled(view-&gt;surface, false);
+</span><span class="def">     process_move_resize(view, CURSOR_RESIZE, event-&gt;edges);
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -287,9 +287,10 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     double zoom = server-&gt;current_desk-&gt;zoom;
+</span><span class="sub">-    view-&gt;x = (x - view-&gt;surface-&gt;geometry.x) / zoom;
+</span><span class="sub">-    view-&gt;y = (y - view-&gt;surface-&gt;geometry.y) / zoom;
+</span><span class="add">+    view-&gt;x = x / zoom;
+</span><span class="add">+    view-&gt;y = y / zoom;
+</span><span class="def">     wlr_xdg_toplevel_set_size(view-&gt;surface, width / zoom, height / zoom);
+</span><span class="add">+    wlr_xdg_toplevel_set_tiled(view-&gt;surface, true);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

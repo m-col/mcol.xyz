@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - Initial commit</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/151052ebbefcc67434dadda5efce5f3e626c411b.html">151052ebbefcc67434dadda5efce5f3e626c411b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/.html"></a>
+<b>Author:</b> m-col &lt;<a href="mailto:44536113+m-col@users.noreply.github.com">44536113+m-col@users.noreply.github.com</a>&gt;
+<b>Date:</b> 2020-01-09 20:52:35 +0000
+<b>Committer:</b> GitHub &lt;<a href="mailto:noreply@github.com">noreply@github.com</a>&gt;
+<b>Committed:</b> 2020-01-09 20:52:35 +0000
+
+Initial commit
+</pre><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,129 @@
+<span class="add">+# Byte-compiled / optimized / DLL files
+</span><span class="add">+__pycache__/
+</span><span class="add">+*.py[cod]
+</span><span class="add">+*$py.class
+</span><span class="add">+
+</span><span class="add">+# C extensions
+</span><span class="add">+*.so
+</span><span class="add">+
+</span><span class="add">+# Distribution / packaging
+</span><span class="add">+.Python
+</span><span class="add">+build/
+</span><span class="add">+develop-eggs/
+</span><span class="add">+dist/
+</span><span class="add">+downloads/
+</span><span class="add">+eggs/
+</span><span class="add">+.eggs/
+</span><span class="add">+lib/
+</span><span class="add">+lib64/
+</span><span class="add">+parts/
+</span><span class="add">+sdist/
+</span><span class="add">+var/
+</span><span class="add">+wheels/
+</span><span class="add">+pip-wheel-metadata/
+</span><span class="add">+share/python-wheels/
+</span><span class="add">+*.egg-info/
+</span><span class="add">+.installed.cfg
+</span><span class="add">+*.egg
+</span><span class="add">+MANIFEST
+</span><span class="add">+
+</span><span class="add">+# PyInstaller
+</span><span class="add">+#  Usually these files are written by a python script from a template
+</span><span class="add">+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+</span><span class="add">+*.manifest
+</span><span class="add">+*.spec
+</span><span class="add">+
+</span><span class="add">+# Installer logs
+</span><span class="add">+pip-log.txt
+</span><span class="add">+pip-delete-this-directory.txt
+</span><span class="add">+
+</span><span class="add">+# Unit test / coverage reports
+</span><span class="add">+htmlcov/
+</span><span class="add">+.tox/
+</span><span class="add">+.nox/
+</span><span class="add">+.coverage
+</span><span class="add">+.coverage.*
+</span><span class="add">+.cache
+</span><span class="add">+nosetests.xml
+</span><span class="add">+coverage.xml
+</span><span class="add">+*.cover
+</span><span class="add">+*.py,cover
+</span><span class="add">+.hypothesis/
+</span><span class="add">+.pytest_cache/
+</span><span class="add">+
+</span><span class="add">+# Translations
+</span><span class="add">+*.mo
+</span><span class="add">+*.pot
+</span><span class="add">+
+</span><span class="add">+# Django stuff:
+</span><span class="add">+*.log
+</span><span class="add">+local_settings.py
+</span><span class="add">+db.sqlite3
+</span><span class="add">+db.sqlite3-journal
+</span><span class="add">+
+</span><span class="add">+# Flask stuff:
+</span><span class="add">+instance/
+</span><span class="add">+.webassets-cache
+</span><span class="add">+
+</span><span class="add">+# Scrapy stuff:
+</span><span class="add">+.scrapy
+</span><span class="add">+
+</span><span class="add">+# Sphinx documentation
+</span><span class="add">+docs/_build/
+</span><span class="add">+
+</span><span class="add">+# PyBuilder
+</span><span class="add">+target/
+</span><span class="add">+
+</span><span class="add">+# Jupyter Notebook
+</span><span class="add">+.ipynb_checkpoints
+</span><span class="add">+
+</span><span class="add">+# IPython
+</span><span class="add">+profile_default/
+</span><span class="add">+ipython_config.py
+</span><span class="add">+
+</span><span class="add">+# pyenv
+</span><span class="add">+.python-version
+</span><span class="add">+
+</span><span class="add">+# pipenv
+</span><span class="add">+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+</span><span class="add">+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+</span><span class="add">+#   having no cross-platform support, pipenv may install dependencies that don&apos;t work, or not
+</span><span class="add">+#   install all needed dependencies.
+</span><span class="add">+#Pipfile.lock
+</span><span class="add">+
+</span><span class="add">+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+</span><span class="add">+__pypackages__/
+</span><span class="add">+
+</span><span class="add">+# Celery stuff
+</span><span class="add">+celerybeat-schedule
+</span><span class="add">+celerybeat.pid
+</span><span class="add">+
+</span><span class="add">+# SageMath parsed files
+</span><span class="add">+*.sage.py
+</span><span class="add">+
+</span><span class="add">+# Environments
+</span><span class="add">+.env
+</span><span class="add">+.venv
+</span><span class="add">+env/
+</span><span class="add">+venv/
+</span><span class="add">+ENV/
+</span><span class="add">+env.bak/
+</span><span class="add">+venv.bak/
+</span><span class="add">+
+</span><span class="add">+# Spyder project settings
+</span><span class="add">+.spyderproject
+</span><span class="add">+.spyproject
+</span><span class="add">+
+</span><span class="add">+# Rope project settings
+</span><span class="add">+.ropeproject
+</span><span class="add">+
+</span><span class="add">+# mkdocs documentation
+</span><span class="add">+/site
+</span><span class="add">+
+</span><span class="add">+# mypy
+</span><span class="add">+.mypy_cache/
+</span><span class="add">+.dmypy.json
+</span><span class="add">+dmypy.json
+</span><span class="add">+
+</span><span class="add">+# Pyre type checker
+</span><span class="add">+.pyre/
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tide - update with bad commit message</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/tide">tide</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/tide">https://github.com/m-col/tide</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/tide/tree.html">Files</a> | <a href="https://mcol.xyz/code/tide/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/tide/file/README.md.html">Readme</a>     | <a href="https://mcol.xyz/code/tide/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/tide/commit/9d2c3d784f6de41767f49691ce0cd13b672be729.html">9d2c3d784f6de41767f49691ce0cd13b672be729</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/tide/commit/ce0eb310a31b00fa633fab707b35c870ada69e94.html">ce0eb310a31b00fa633fab707b35c870ada69e94</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-01-06 16:54:29 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-01-06 16:54:29 +0000
+
+update with bad commit message
+</pre><div class="diff">
+  <p>
+    <b>plugin/tide.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,10 +24,10 @@
+<span class="def">     &quot;let l:keys = substitute(l:keys, &apos;!&apos;, &apos;\!&apos;, &apos;g&apos;) &quot;escape esclamation mark
+</span><span class="def">     &quot;let l:keys = escape(l:keys, &apos;!&apos;)
+</span><span class="def">     &quot;let l:keys = substitute(l:keys, &apos;\$&apos;, &apos;\\\$&apos;, &apos;g&apos;) &quot;escape dollar sign
+</span><span class="sub">-    call system(g:tmux_cmd . &quot;-l \&quot;&quot; . l:keys . &quot;\&quot;&quot;)
+</span><span class="add">+    call system(g:tmux_cmd . &quot;-l \&quot;&quot; . l:keys . &quot;\&quot; &amp;&quot;)
+</span><span class="def"> endfunction
+</span><span class="def"> function! s:TmuxSendEnter()
+</span><span class="sub">-    call system(g:tmux_cmd . &quot;C-m&quot;)
+</span><span class="add">+    call system(g:tmux_cmd . &quot;C-m &amp;&quot;)
+</span><span class="def"> endfunction
+</span><span class="def"> function! TmuxSendKeysEnter(keys)
+</span><span class="def">     call TmuxSendKeys(a:keys)
+</span></pre>
+</div></div>
+  </body>
+</html>

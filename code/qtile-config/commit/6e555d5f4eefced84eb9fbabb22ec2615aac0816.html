@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - minor config changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/6e555d5f4eefced84eb9fbabb22ec2615aac0816.html">6e555d5f4eefced84eb9fbabb22ec2615aac0816</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/bd846f48207a9ea650c7ca9aed2229dd7d53978f.html">bd846f48207a9ea650c7ca9aed2229dd7d53978f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-13 13:10:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-13 13:10:52 +0000
+
+minor config changes
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -160,7 +160,7 @@
+<span class="def">         lazy.widget[&apos;mpd2&apos;].function(lambda w: w.button_press(0, 0, 4)),   &quot;Previous song&quot;),
+</span><span class="def"> 
+</span><span class="def">     # Launchers
+</span><span class="sub">-    ([mod],             &apos;d&apos;,        lazy.spawncmd(),                            &quot;Spawn with Prompt&quot;),
+</span><span class="add">+    ([mod],             &apos;d&apos;,        lazy.spawncmd(shell=False),                 &quot;Spawn with Prompt&quot;),
+</span><span class="def">     ([mod],             &apos;Return&apos;,   lazy.spawn(term),                           &quot;Spawn terminal&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;f&apos;,        lazy.spawn(&quot;firefox&quot;),                      &quot;Spawn Firefox&quot;),
+</span><span class="def">     ([],                &apos;Print&apos;,    lazy.spawn(&quot;screenshot copy&quot;),              &quot;Screenshot to clipboard&quot;),
+</span>@@ -275,7 +275,6 @@
+<span class="def">     font=&apos;TamzenForPowerline Bold&apos;,
+</span><span class="def">     update_interval=10,
+</span><span class="def"> )
+</span><span class="sub">-import libqtile.widget.mpd2widget
+</span><span class="def"> mpd2.mouse_buttons = {v:k for k, v in widget.mpd2widget.keys.items()}
+</span><span class="def"> 
+</span><span class="def"> cpugraph = widget.CPUGraph(
+</span>@@ -359,7 +358,10 @@
+<span class="def">     device=None,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="sub">-systray = widget.StatusNotifier(padding=20)
+</span><span class="add">+if IS_WAYLAND:
+</span><span class="add">+    systray = widget.StatusNotifier(padding=20)
+</span><span class="add">+else:
+</span><span class="add">+    systray = widget.Systray(padding=20, icon_size=24)
+</span><span class="def"> 
+</span><span class="def"> wlan = widget.Wlan(
+</span><span class="def">     format=&apos;&apos;,
+</span></pre>
+</div></div>
+  </body>
+</html>

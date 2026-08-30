@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - set _NET_WM_STATE_ABOVE</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/b07a64c91f8d6b403e6e57aec18327eb23bb14df.html">b07a64c91f8d6b403e6e57aec18327eb23bb14df</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/4acab7a180c48965c9ab9aa8c2301b474ccc8493.html">4acab7a180c48965c9ab9aa8c2301b474ccc8493</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-09 23:32:19 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-09 23:32:19 +0100
+
+set _NET_WM_STATE_ABOVE
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -36,7 +36,11 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void set_window_type() {
+</span><span class="sub">-    xcb_intern_atom_reply_t *wm_window_type, *wm_window_type_dock, *wm_desktop;
+</span><span class="add">+    xcb_intern_atom_reply_t *wm_window_type,
+</span><span class="add">+			    *wm_window_type_dock,
+</span><span class="add">+			    *wm_state,
+</span><span class="add">+			    *wm_state_above,
+</span><span class="add">+			    *wm_desktop;
+</span><span class="def"> 
+</span><span class="def">     wm_window_type = xcb_intern_atom_reply(
+</span><span class="def"> 	conn,
+</span>@@ -52,6 +56,20 @@
+<span class="def"> 	conn, XCB_PROP_MODE_REPLACE, wid, wm_window_type-&gt;atom, XCB_ATOM_ATOM, 32, 1, &amp;wm_window_type_dock-&gt;atom
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="add">+    wm_state = xcb_intern_atom_reply(
+</span><span class="add">+	conn,
+</span><span class="add">+	xcb_intern_atom(conn, 0, 13, &quot;_NET_WM_STATE&quot;),
+</span><span class="add">+	NULL
+</span><span class="add">+    );
+</span><span class="add">+    wm_state_above = xcb_intern_atom_reply(
+</span><span class="add">+	conn,
+</span><span class="add">+	xcb_intern_atom(conn, 0, 19, &quot;_NET_WM_STATE_ABOVE&quot;),
+</span><span class="add">+	NULL
+</span><span class="add">+    );
+</span><span class="add">+    xcb_change_property(
+</span><span class="add">+	conn, XCB_PROP_MODE_REPLACE, wid, wm_state-&gt;atom, XCB_ATOM_ATOM, 32, 1, &amp;wm_state_above-&gt;atom
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="def">     wm_desktop = xcb_intern_atom_reply(
+</span><span class="def">         conn,
+</span><span class="def">         xcb_intern_atom(conn, 0, 15, &quot;_NET_WM_DESKTOP&quot;),
+</span></pre>
+</div></div>
+  </body>
+</html>

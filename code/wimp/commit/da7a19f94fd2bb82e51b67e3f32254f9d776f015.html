@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Add early stage output manager</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/da7a19f94fd2bb82e51b67e3f32254f9d776f015.html">da7a19f94fd2bb82e51b67e3f32254f9d776f015</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/9c760692e7c7c004aa1bddd2f1eeecc452ab8567.html">9c760692e7c7c004aa1bddd2f1eeecc452ab8567</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-07 17:56:34 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-07 17:56:34 +0000
+
+Add early stage output manager
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -43,8 +43,12 @@
+<span class="def">     char *auto_start;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_output_layout *output_layout;
+</span><span class="add">+    struct wl_listener output_layout_change_listener;
+</span><span class="def">     struct wl_list outputs;
+</span><span class="def">     struct wl_listener new_output_listener;
+</span><span class="add">+    struct wlr_output_manager_v1 *output_manager;
+</span><span class="add">+    struct wl_listener output_manager_apply_listener;
+</span><span class="add">+    struct wl_listener output_manager_test_listener;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_xdg_shell *shell;
+</span><span class="def">     struct wl_listener new_xdg_surface_listener;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_layer_shell_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_matrix.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_output_management_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xdg_output_v1.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;output.h&quot;
+</span>@@ -258,12 +259,103 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void output_manager_reconfigure(
+</span><span class="add">+    struct wlr_output_configuration_v1 *config, bool commit
+</span><span class="add">+) {
+</span><span class="add">+    struct wlr_output_configuration_head_v1 *config_head;
+</span><span class="add">+    bool ok = 1;
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(config_head, &amp;config-&gt;heads, link) {
+</span><span class="add">+        struct wlr_output *wlr_output = config_head-&gt;state.output;
+</span><span class="add">+
+</span><span class="add">+        wlr_output_enable(wlr_output, config_head-&gt;state.enabled);
+</span><span class="add">+        if (config_head-&gt;state.enabled) {
+</span><span class="add">+            if (config_head-&gt;state.mode) {
+</span><span class="add">+                wlr_output_set_mode(wlr_output, config_head-&gt;state.mode);
+</span><span class="add">+	    } else {
+</span><span class="add">+                wlr_output_set_custom_mode(
+</span><span class="add">+		    wlr_output,
+</span><span class="add">+		    config_head-&gt;state.custom_mode.width,
+</span><span class="add">+		    config_head-&gt;state.custom_mode.height,
+</span><span class="add">+		    config_head-&gt;state.custom_mode.refresh
+</span><span class="add">+		);
+</span><span class="add">+	    }
+</span><span class="add">+
+</span><span class="add">+            wlr_output_layout_move(
+</span><span class="add">+		wimp.output_layout, wlr_output, config_head-&gt;state.x, config_head-&gt;state.y
+</span><span class="add">+	    );
+</span><span class="add">+            wlr_output_set_transform(wlr_output, config_head-&gt;state.transform);
+</span><span class="add">+            wlr_output_set_scale(wlr_output, config_head-&gt;state.scale);
+</span><span class="add">+        }
+</span><span class="add">+
+</span><span class="add">+        ok = wlr_output_test(wlr_output);
+</span><span class="add">+        if (!ok) {
+</span><span class="add">+            break;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    wl_list_for_each(config_head, &amp;config-&gt;heads, link) {
+</span><span class="add">+        if (ok &amp;&amp; commit) {
+</span><span class="add">+            wlr_output_commit(config_head-&gt;state.output);
+</span><span class="add">+	} else {
+</span><span class="add">+            wlr_output_rollback(config_head-&gt;state.output);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (ok) {
+</span><span class="add">+        wlr_output_configuration_v1_send_succeeded(config);
+</span><span class="add">+    } else {
+</span><span class="add">+        wlr_output_configuration_v1_send_failed(config);
+</span><span class="add">+    }
+</span><span class="add">+    wlr_output_configuration_v1_destroy(config);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_output_manager_apply(struct wl_listener *listener, void *data) {
+</span><span class="add">+    output_manager_reconfigure(data, true);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_output_manager_test(struct wl_listener *listener, void *data) {
+</span><span class="add">+    output_manager_reconfigure(data, false);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_output_layout_change(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_output_configuration_v1 *config = wlr_output_configuration_v1_create();
+</span><span class="add">+
+</span><span class="add">+    struct output *output;
+</span><span class="add">+    wl_list_for_each(output, &amp;wimp.outputs, link) {
+</span><span class="add">+	struct wlr_output_configuration_head_v1 *config_head =
+</span><span class="add">+	    wlr_output_configuration_head_v1_create(config, output-&gt;wlr_output);
+</span><span class="add">+
+</span><span class="add">+	struct wlr_box *box = wlr_output_layout_get_box(wimp.output_layout, output-&gt;wlr_output);
+</span><span class="add">+	config_head-&gt;state.x = box-&gt;x;
+</span><span class="add">+	config_head-&gt;state.y = box-&gt;y;
+</span><span class="add">+	config_head-&gt;state.enabled = output-&gt;wlr_output-&gt;enabled;
+</span><span class="add">+	config_head-&gt;state.mode = output-&gt;wlr_output-&gt;current_mode;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    wlr_output_manager_v1_set_configuration(wimp.output_manager, config);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void set_up_outputs() {
+</span><span class="def">     wimp.output_layout = wlr_output_layout_create();
+</span><span class="add">+    wimp.output_layout_change_listener.notify = on_output_layout_change;
+</span><span class="add">+    wl_signal_add(&amp;wimp.output_layout-&gt;events.change, &amp;wimp.output_layout_change_listener);
+</span><span class="add">+
+</span><span class="def">     wl_list_init(&amp;wimp.outputs);
+</span><span class="def">     wimp.new_output_listener.notify = on_new_output;
+</span><span class="def">     wl_signal_add(&amp;wimp.backend-&gt;events.new_output, &amp;wimp.new_output_listener);
+</span><span class="def"> 
+</span><span class="def">     wlr_xdg_output_manager_v1_create(wimp.display, wimp.output_layout);
+</span><span class="add">+
+</span><span class="add">+    wimp.output_manager = wlr_output_manager_v1_create(wimp.display);
+</span><span class="add">+    wimp.output_manager_apply_listener.notify = on_output_manager_apply;
+</span><span class="add">+    wimp.output_manager_test_listener.notify = on_output_manager_test;
+</span><span class="add">+    wl_signal_add(&amp;wimp.output_manager-&gt;events.apply, &amp;wimp.output_manager_apply_listener);
+</span><span class="add">+    wl_signal_add(&amp;wimp.output_manager-&gt;events.test, &amp;wimp.output_manager_test_listener);
+</span><span class="add">+
+</span><span class="def">     wlr_gamma_control_manager_v1_create(wimp.display);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - move command interface parsing to parse.{c,h}</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/136ce650d2a24c163a7bd3f41fded1e2e1fcbc03.html">136ce650d2a24c163a7bd3f41fded1e2e1fcbc03</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/b885455b2bf3142bbcece998ed581abd00d92e2a.html">b885455b2bf3142bbcece998ed581abd00d92e2a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-07 11:05:56 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-07 11:05:56 +0000
+
+move command interface parsing to parse.{c,h}
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -237,4 +237,9 @@
+<span class="def">     struct wlr_box geo; // negative values represent a percentage of the output&apos;s geometry
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="add">+struct value_map {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const int value;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/parse.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,16 @@
+<span class="add">+#ifndef WIMP_PARSE_H
+</span><span class="add">+#define WIMP_PARSE_H
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+int _get(struct value_map *values, const int len, const char *name);
+</span><span class="add">+#define get(arr, name) _get(arr, sizeof(arr) / sizeof(arr[0]), name)
+</span><span class="add">+
+</span><span class="add">+bool wlr_box_from_str(char* str, struct wlr_box *box);
+</span><span class="add">+bool dir_handler(void **data, char *args);
+</span><span class="add">+bool str_handler(void **data, char *args);
+</span><span class="add">+bool motion_handler(void **data, char *args);
+</span><span class="add">+bool scratchpad_handler(void **data, char *args);
+</span><span class="add">+bool box_handler(void **data, char *args);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/parse.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,176 @@
+<span class="add">+#include &lt;wlr/types/wlr_box.h&gt;
+</span><span class="add">+
+</span><span class="add">+#include &quot;parse.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+/* To get the length of these arrays we need to calculate that before passing
+</span><span class="add">+ * them to the getter so the macro in the header hides this. */
+</span><span class="add">+int _get(struct value_map *values, const int len, const char *name) {
+</span><span class="add">+    for (int i = 0; i &lt; len; i++) {
+</span><span class="add">+	if (strcasecmp(values[i].name, name) == 0)
+</span><span class="add">+	    return values[i].value;
+</span><span class="add">+    }
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool wlr_box_from_str(char* str, struct wlr_box *box) {
+</span><span class="add">+    // turns e.g. 1920x1800+500+500 into a wlr_box
+</span><span class="add">+    char *w, *h, *x, *y;
+</span><span class="add">+    if (str) {
+</span><span class="add">+	if ((w = strtok(str, &quot;x&quot;)) &amp;&amp; is_number_perc(w)) {
+</span><span class="add">+	    if ((h = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(h)) {
+</span><span class="add">+		if ((x = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(x)) {
+</span><span class="add">+		    if ((y = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number_perc(y)) {
+</span><span class="add">+			if (is_number(w)) {
+</span><span class="add">+			    box-&gt;width = atoi(w);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((w = strtok(w, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;width = - atoi(w);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			if (is_number(h)) {
+</span><span class="add">+			    box-&gt;height = atoi(h);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((h = strtok(h, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;height = - atoi(h);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			if (is_number(x)) {
+</span><span class="add">+			    box-&gt;x = atoi(x);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((x = strtok(x, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;x = - atoi(x);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			if (is_number(y)) {
+</span><span class="add">+			    box-&gt;y = atoi(y);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((y = strtok(y, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;y = - atoi(y);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			return true;
+</span><span class="add">+		    }
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct value_map dirs[] = {
+</span><span class="add">+    { &quot;up&quot;, UP },
+</span><span class="add">+    { &quot;right&quot;, RIGHT },
+</span><span class="add">+    { &quot;down&quot;, DOWN },
+</span><span class="add">+    { &quot;left&quot;, LEFT },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool dir_handler(void **data, char *args) {
+</span><span class="add">+    *data = calloc(1, sizeof(enum direction));
+</span><span class="add">+    *(enum direction *)(*data) = get(dirs, strtok(args, &quot; \t\n\r&quot;));
+</span><span class="add">+    return true;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool str_handler(void **data, char *args) {
+</span><span class="add">+    if (!args) {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    if (is_number(args)) {
+</span><span class="add">+	*data = calloc(1, sizeof(double));
+</span><span class="add">+	*(double *)(*data) = strtod(args, NULL);
+</span><span class="add">+    } else {
+</span><span class="add">+	*data = calloc(strlen(args), sizeof(char));
+</span><span class="add">+	strncpy(*data, args, strlen(args));
+</span><span class="add">+    }
+</span><span class="add">+    return true;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool motion_handler(void **data, char *args) {
+</span><span class="add">+    char *s;
+</span><span class="add">+    if (!args) {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    s = strtok(args, &quot; \t\n\r&quot;);
+</span><span class="add">+    if (!is_number(s) || !args) {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    int x = atoi(s);
+</span><span class="add">+
+</span><span class="add">+    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    if (!is_number(s)) {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    int y = atoi(s);
+</span><span class="add">+
+</span><span class="add">+    struct motion motion = {
+</span><span class="add">+	.dx = x,
+</span><span class="add">+	.dy = y,
+</span><span class="add">+	.is_percentage = true,
+</span><span class="add">+    };
+</span><span class="add">+    *data = calloc(1, sizeof(struct motion));
+</span><span class="add">+    *(struct motion *)(*data) = motion;
+</span><span class="add">+    return true;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static int _scratchpad_id = 0;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool scratchpad_handler(void **data, char *args) {
+</span><span class="add">+    char *geo, *command;
+</span><span class="add">+    struct wlr_box box;
+</span><span class="add">+    if (!args) {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    if (!(geo = strtok(args, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    if (!(command = strtok(NULL, &quot;\n\r&quot;))) {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    if (!wlr_box_from_str(geo, &amp;box)) {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct scratchpad *scratchpad = calloc(1, sizeof(struct scratchpad));
+</span><span class="add">+    wl_list_insert(wimp.scratchpads.prev, &amp;scratchpad-&gt;link);
+</span><span class="add">+    scratchpad-&gt;command = strdup(command);
+</span><span class="add">+    scratchpad-&gt;id = _scratchpad_id;
+</span><span class="add">+    scratchpad-&gt;is_mapped = false;
+</span><span class="add">+    scratchpad-&gt;view = NULL;
+</span><span class="add">+    scratchpad-&gt;geo = box;
+</span><span class="add">+
+</span><span class="add">+    *data = calloc(1, sizeof(int));
+</span><span class="add">+    *(int *)(*data) = _scratchpad_id;
+</span><span class="add">+    _scratchpad_id++;
+</span><span class="add">+    return true;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool box_handler(void **data, char *args) {
+</span><span class="add">+    char *geo;
+</span><span class="add">+    if (!(geo = strtok(args, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    *data = calloc(1, sizeof(struct wlr_box));
+</span><span class="add">+    if (!wlr_box_from_str(geo, *data)) {
+</span><span class="add">+	free(*data);
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    return true;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keybind.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,25 +1,8 @@
+<span class="def"> #include &quot;action.h&quot;
+</span><span class="def"> #include &quot;keybind.h&quot;
+</span><span class="add">+#include &quot;parse.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-struct value_map {
+</span><span class="sub">-    const char *name;
+</span><span class="sub">-    const int value;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-/* To get the length of these arrays we need to calculate that before passing
+</span><span class="sub">- * them to the getter so the macro hides this. */
+</span><span class="sub">-static int _get(struct value_map *values, const int len, const char *name) {
+</span><span class="sub">-    for (int i = 0; i &lt; len; i++) {
+</span><span class="sub">-	if (strcasecmp(values[i].name, name) == 0)
+</span><span class="sub">-	    return values[i].value;
+</span><span class="sub">-    }
+</span><span class="sub">-    return 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-#define get(arr, name) _get(arr, sizeof(arr) / sizeof(arr[0]), name)
+</span><span class="sub">-
+</span><span class="def"> 
+</span><span class="def"> static struct value_map mods[] = {
+</span><span class="def">     { &quot;shift&quot;, WLR_MODIFIER_SHIFT },
+</span>@@ -33,14 +16,6 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static struct value_map dirs[] = {
+</span><span class="sub">-    { &quot;up&quot;, UP },
+</span><span class="sub">-    { &quot;right&quot;, RIGHT },
+</span><span class="sub">-    { &quot;down&quot;, DOWN },
+</span><span class="sub">-    { &quot;left&quot;, LEFT },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> static struct value_map mouse_keys[] = {
+</span><span class="def">     { &quot;motion&quot;, MOTION },
+</span><span class="def">     { &quot;scroll&quot;, SCROLL },
+</span>@@ -51,163 +26,10 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool dir_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="sub">-    *(enum direction *)(kb-&gt;data) = get(dirs, strtok(data, &quot; \t\n\r&quot;));
+</span><span class="sub">-    return true;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool str_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    if (!data) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (is_number(data)) {
+</span><span class="sub">-	kb-&gt;data = calloc(1, sizeof(double));
+</span><span class="sub">-	*(double *)(kb-&gt;data) = strtod(data, NULL);
+</span><span class="sub">-    } else {
+</span><span class="sub">-	kb-&gt;data = calloc(strlen(data), sizeof(char));
+</span><span class="sub">-	strncpy(kb-&gt;data, data, strlen(data));
+</span><span class="sub">-    }
+</span><span class="sub">-    return true;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool motion_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    char *s;
+</span><span class="sub">-    if (!data) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="sub">-    if (!is_number(s) || !data) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    int x = atoi(s);
+</span><span class="sub">-
+</span><span class="sub">-    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-    if (!is_number(s)) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    int y = atoi(s);
+</span><span class="sub">-
+</span><span class="sub">-    struct motion motion = {
+</span><span class="sub">-	.dx = x,
+</span><span class="sub">-	.dy = y,
+</span><span class="sub">-	.is_percentage = true,
+</span><span class="sub">-    };
+</span><span class="sub">-    kb-&gt;data = calloc(1, sizeof(struct motion));
+</span><span class="sub">-    *(struct motion *)(kb-&gt;data) = motion;
+</span><span class="sub">-    return true;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-bool wlr_box_from_str(char* str, struct wlr_box *box) {
+</span><span class="sub">-    // turns e.g. 1920x1800+500+500 into a wlr_box
+</span><span class="sub">-    char *w, *h, *x, *y;
+</span><span class="sub">-    if (str) {
+</span><span class="sub">-	if ((w = strtok(str, &quot;x&quot;)) &amp;&amp; is_number_perc(w)) {
+</span><span class="sub">-	    if ((h = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(h)) {
+</span><span class="sub">-		if ((x = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(x)) {
+</span><span class="sub">-		    if ((y = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number_perc(y)) {
+</span><span class="sub">-			if (is_number(w)) {
+</span><span class="sub">-			    box-&gt;width = atoi(w);
+</span><span class="sub">-			} else {
+</span><span class="sub">-			    if ((w = strtok(w, &quot;%&quot;))) {
+</span><span class="sub">-				box-&gt;width = - atoi(w);
+</span><span class="sub">-			    } else {
+</span><span class="sub">-				return false;
+</span><span class="sub">-			    }
+</span><span class="sub">-			}
+</span><span class="sub">-			if (is_number(h)) {
+</span><span class="sub">-			    box-&gt;height = atoi(h);
+</span><span class="sub">-			} else {
+</span><span class="sub">-			    if ((h = strtok(h, &quot;%&quot;))) {
+</span><span class="sub">-				box-&gt;height = - atoi(h);
+</span><span class="sub">-			    } else {
+</span><span class="sub">-				return false;
+</span><span class="sub">-			    }
+</span><span class="sub">-			}
+</span><span class="sub">-			if (is_number(x)) {
+</span><span class="sub">-			    box-&gt;x = atoi(x);
+</span><span class="sub">-			} else {
+</span><span class="sub">-			    if ((x = strtok(x, &quot;%&quot;))) {
+</span><span class="sub">-				box-&gt;x = - atoi(x);
+</span><span class="sub">-			    } else {
+</span><span class="sub">-				return false;
+</span><span class="sub">-			    }
+</span><span class="sub">-			}
+</span><span class="sub">-			if (is_number(y)) {
+</span><span class="sub">-			    box-&gt;y = atoi(y);
+</span><span class="sub">-			} else {
+</span><span class="sub">-			    if ((y = strtok(y, &quot;%&quot;))) {
+</span><span class="sub">-				box-&gt;y = - atoi(y);
+</span><span class="sub">-			    } else {
+</span><span class="sub">-				return false;
+</span><span class="sub">-			    }
+</span><span class="sub">-			}
+</span><span class="sub">-			return true;
+</span><span class="sub">-		    }
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-    return false;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static int _scratchpad_id = 0;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool scratchpad_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    char *geo, *command;
+</span><span class="sub">-    struct wlr_box box;
+</span><span class="sub">-    if (!data) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (!(command = strtok(NULL, &quot;\n\r&quot;))) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (!wlr_box_from_str(geo, &amp;box)) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    struct scratchpad *scratchpad = calloc(1, sizeof(struct scratchpad));
+</span><span class="sub">-    wl_list_insert(wimp.scratchpads.prev, &amp;scratchpad-&gt;link);
+</span><span class="sub">-    scratchpad-&gt;command = strdup(command);
+</span><span class="sub">-    scratchpad-&gt;id = _scratchpad_id;
+</span><span class="sub">-    scratchpad-&gt;is_mapped = false;
+</span><span class="sub">-    scratchpad-&gt;view = NULL;
+</span><span class="sub">-    scratchpad-&gt;geo = box;
+</span><span class="sub">-
+</span><span class="sub">-    kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="sub">-    *(int *)(kb-&gt;data) = _scratchpad_id;
+</span><span class="sub">-    _scratchpad_id++;
+</span><span class="sub">-    return true;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool box_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    char *geo;
+</span><span class="sub">-    if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    struct wlr_box *box = calloc(1, sizeof(struct wlr_box));
+</span><span class="sub">-    if (!wlr_box_from_str(geo, box)) {
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    kb-&gt;data = box;
+</span><span class="sub">-    return true;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> static struct {
+</span><span class="def">     const char *name;
+</span><span class="def">     const action action;
+</span><span class="sub">-    bool (*data_handler)(struct binding *kb, char *data);
+</span><span class="add">+    bool (*data_handler)(void **data, char *args);
+</span><span class="def"> } action_map[] = {
+</span><span class="def">     { &quot;terminate&quot;, &amp;terminate, NULL },
+</span><span class="def">     { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span>@@ -248,7 +70,7 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool assign_action(const char *name, char *data, struct binding *kb, char * response) {
+</span><span class="add">+static bool assign_action(const char *name, char *args, struct binding *kb, char * response) {
+</span><span class="def">     kb-&gt;action = NULL;
+</span><span class="def">     kb-&gt;data = NULL;
+</span><span class="def">     size_t i;
+</span>@@ -276,7 +98,7 @@
+<span class="def"> 		if (strcmp(action_map[i].name, name) == 0) {
+</span><span class="def"> 		    kb-&gt;action = action_map[i].action;
+</span><span class="def"> 		    if (action_map[i].data_handler != NULL) {
+</span><span class="sub">-			if (!action_map[i].data_handler(kb, data)){
+</span><span class="add">+			if (!action_map[i].data_handler(&amp;kb-&gt;data, args)){
+</span><span class="def"> 			    sprintf(response, &quot;Command malformed/incomplete.&quot;);
+</span><span class="def"> 			    return false;
+</span><span class="def"> 			}
+</span></pre>
+</div></div>
+  </body>
+</html>

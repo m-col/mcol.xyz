@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - convert barrier creation to xcb</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/b8e6b9585da357112e8560c3ab25abc4c03daea3.html">b8e6b9585da357112e8560c3ab25abc4c03daea3</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/e64ec0bd216a7cdb5deca36526c2eecf38b3b32d.html">e64ec0bd216a7cdb5deca36526c2eecf38b3b32d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-06 15:11:49 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-06 15:11:49 +0100
+
+convert barrier creation to xcb
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -25,32 +25,26 @@
+<span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> #include &lt;xcb/randr.h&gt;
+</span><span class="sub">-#include &lt;xcb/shape.h&gt;
+</span><span class="def"> #include &lt;xcb/xcb.h&gt;
+</span><span class="def"> #include &lt;xcb/xcb_event.h&gt;
+</span><span class="def"> #include &lt;xcb/xfixes.h&gt;
+</span><span class="def"> #include &lt;xcb/xinput.h&gt;
+</span><span class="sub">-#include &lt;X11/Xlib-xcb.h&gt;
+</span><span class="sub">-#include &lt;X11/extensions/Xfixes.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #define PROGNAME &quot;xoop&quot;
+</span><span class="def"> 
+</span><span class="sub">-Display                 *dpy;
+</span><span class="def"> xcb_connection_t	*conn;
+</span><span class="def"> xcb_screen_t		*screen;
+</span><span class="def"> xcb_input_device_id_t	deviceid;
+</span><span class="sub">-PointerBarrier          barriers[4];
+</span><span class="add">+xcb_xfixes_barrier_t    barriers[4];
+</span><span class="def"> 
+</span><span class="sub">-int num_barriers = 0;
+</span><span class="def"> int debug = 0;
+</span><span class="def"> int axis = 0;
+</span><span class="def"> const int BOTH_AXES = 0;
+</span><span class="def"> const int X_ONLY = 1;
+</span><span class="def"> const int Y_ONLY = 2;
+</span><span class="sub">-int fixes_opcode, fixes_event_base, fixes_error_base;
+</span><span class="def"> uint8_t op_randr = 0;
+</span><span class="add">+uint8_t op_xfixes = 0;
+</span><span class="def"> uint8_t op_xinput = 0;
+</span><span class="sub">-
+</span><span class="def"> int16_t width, height;
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -62,26 +56,40 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void create_barrier(xcb_xfixes_barrier_t *barrier, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
+</span><span class="add">+{
+</span><span class="add">+    xcb_generic_error_t *error;
+</span><span class="add">+    *barrier = xcb_generate_id(conn);
+</span><span class="add">+    xcb_void_cookie_t cookie = xcb_xfixes_create_pointer_barrier_checked(
+</span><span class="add">+	conn, *barrier, screen-&gt;root, x1, y1, x2, y2, 0, 0, NULL
+</span><span class="add">+    );
+</span><span class="add">+    if ((error = xcb_request_check(conn, cookie))) {
+</span><span class="add">+	free(error);
+</span><span class="add">+	exit_angrily(&quot;Could not create barriers.\n&quot;);
+</span><span class="add">+    }
+</span><span class="add">+    free(error);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void create_barriers()
+</span><span class="def"> {
+</span><span class="sub">-    int x1 = 0;
+</span><span class="sub">-    int y1 = 0;
+</span><span class="sub">-    int x2 = (int)width;
+</span><span class="sub">-    int y2 = (int)height;
+</span><span class="add">+    uint16_t x1 = 0;
+</span><span class="add">+    uint16_t y1 = 0;
+</span><span class="add">+    uint16_t x2 = width;
+</span><span class="add">+    uint16_t y2 = height;
+</span><span class="def"> 
+</span><span class="def">     if (debug)
+</span><span class="def"> 	printf(&quot;Creating barriers: %i %i %i %i\n&quot;, x1, y1, x2, y2);
+</span><span class="def"> 
+</span><span class="def">     if (axis == X_ONLY || axis == BOTH_AXES) {
+</span><span class="sub">-	barriers[0] = XFixesCreatePointerBarrier(dpy, DefaultRootWindow(dpy), x1, y1, x1, y2, 0, 0, NULL);
+</span><span class="sub">-	barriers[1] = XFixesCreatePointerBarrier(dpy, DefaultRootWindow(dpy), x2, y1, x2, y2, 0, 0, NULL);
+</span><span class="add">+	create_barrier(&amp;barriers[0], x1, y1, x1, y2);
+</span><span class="add">+	create_barrier(&amp;barriers[1], x2, y1, x2, y2);
+</span><span class="def">     };
+</span><span class="def"> 
+</span><span class="def">     if (axis == Y_ONLY || axis == BOTH_AXES) {
+</span><span class="sub">-	barriers[2] = XFixesCreatePointerBarrier(dpy, DefaultRootWindow(dpy), x1, y1, x2, y1, 0, 0, NULL);
+</span><span class="sub">-	barriers[3] = XFixesCreatePointerBarrier(dpy, DefaultRootWindow(dpy), x1, y2, x2, y2, 0, 0, NULL);
+</span><span class="add">+	create_barrier(&amp;barriers[2], x1, y1, x2, y1);
+</span><span class="add">+	create_barrier(&amp;barriers[3], x1, y2, x2, y2);
+</span><span class="def">     };
+</span><span class="sub">-    XSync(dpy, False);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -90,7 +98,8 @@
+<span class="def">     for (int i = 0; i &lt; 4; i++) {
+</span><span class="def"> 	if (debug)
+</span><span class="def"> 	    printf(&quot;Deleting barrier: %i/4\n&quot;, i + 1);
+</span><span class="sub">-        XFixesDestroyPointerBarrier(dpy, barriers[i]);
+</span><span class="add">+
+</span><span class="add">+	xcb_xfixes_delete_pointer_barrier(conn, barriers[i]);
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -105,10 +114,13 @@
+<span class="def"> 
+</span><span class="def"> void check_xfixes()
+</span><span class="def"> {
+</span><span class="sub">-    if (
+</span><span class="sub">-	!XQueryExtension(dpy, &quot;XFIXES&quot;, &amp;fixes_opcode, &amp;fixes_event_base, &amp;fixes_error_base)
+</span><span class="sub">-    )
+</span><span class="sub">-	exit_angrily(&quot;XFixes extension not available.\n&quot;);
+</span><span class="add">+    xcb_xfixes_query_version(conn, 5, 0);
+</span><span class="add">+    const xcb_query_extension_reply_t *ext = xcb_get_extension_data(conn, &amp;xcb_xfixes_id);
+</span><span class="add">+    if (!ext || !ext-&gt;present) {
+</span><span class="add">+        printf(&quot;XFixes extension not available.\n&quot;);
+</span><span class="add">+	exit(EXIT_FAILURE);
+</span><span class="add">+    }
+</span><span class="add">+    op_xfixes = ext-&gt;first_event;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -240,8 +252,7 @@
+<span class="def">     if (axis == 3)
+</span><span class="def"> 	axis = BOTH_AXES;
+</span><span class="def"> 
+</span><span class="sub">-    dpy = XOpenDisplay(NULL);
+</span><span class="sub">-    conn = XGetXCBConnection(dpy);
+</span><span class="add">+    conn = xcb_connect(NULL, NULL);
+</span><span class="def">     if (xcb_connection_has_error(conn))
+</span><span class="def"> 	exit(EXIT_FAILURE);
+</span><span class="def"> 
+</span>@@ -268,6 +279,6 @@
+<span class="def"> 
+</span><span class="def">     event_loop();
+</span><span class="def"> 
+</span><span class="sub">-    exit_nicely(EXIT_SUCCESS);
+</span><span class="add">+    exit_nicely();
+</span><span class="def">     return 0;
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +1,6 @@
+<span class="def"> OUT        = xoop
+</span><span class="def"> SRC 	   = xoop.c
+</span><span class="sub">-CFLAGS 	  += -Wall -Wextra -pedantic \
+</span><span class="sub">-	     -lxcb -lxcb-shape -lxcb-randr -lxcb-xinput -lxcb-xfixes \
+</span><span class="sub">-	     -lX11 -lX11-xcb -lXfixes
+</span><span class="add">+CFLAGS 	  += -Wall -Wextra -pedantic -lxcb -lxcb-randr -lxcb-xinput -lxcb-xfixes
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

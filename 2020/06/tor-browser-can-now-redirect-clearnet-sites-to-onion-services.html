@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / tor browser can now redirect clearnet sites to onion services</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2020/06/tor-browser-can-now-redirect-clearnet-sites-to-onion-services.html>tor browser can now redirect clearnet sites to onion services</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>On Monday the Tor Project <a class="reference external" href="https://blog.torproject.org/new-release-tor-browser-95">released</a> version 9.5 of the tor browser and with it
+a long-awaited new feature. The update will tell you if a website you visit in
+the browser has a corresponding onion service.</p>
+<p>Initially, when you visit one of these websites (such as this one), the URL bar
+will display this label:</p>
+<img alt="Tor Browser displaying '.onion available' in URL bar." src="/static/onion_location.png" />
+<p>Clicking on this label will take you to the onion service version of the
+website.</p>
+<p>And the cool part: you can set tor browser to always redirect you to these
+onion services, by finding this preference and setting it to 'Always':</p>
+<img alt="Tor Browser onion-location pref" src="/static/onion_location_pref.png" />
+<p>This functionality depends on websites setting a <code>Onion-Location</code> HTTP
+header containing the link to their onion service. For example, all I had to do
+was add this line into my nginx.conf in my clearnet site's server block:</p>
+<div class="highlight"><pre><span></span>add_header<span class="w"> </span>Onion-Location<span class="w"> </span>http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion<span class="nv">$request_uri</span><span class="p">;</span>
+</pre></div>
+<p>That header is all it takes for tor browser users to use onions by default on
+all sites that host them, removing any need for manual identification of
+whether websites that they visit host onion services.</p>
+<p>By improving awareness and accessibility of onion services in this way, not
+only can we discover more onions for popular websites that may have them, but
+we legitimise and encourage the use of onion services as a simple means of
+making the web more accessible for those who experience internet censorship.</p>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2020-06-03T00:00:00+00:00">2020-06-03</time>
+in <a href="/category/privacy.html">privacy</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

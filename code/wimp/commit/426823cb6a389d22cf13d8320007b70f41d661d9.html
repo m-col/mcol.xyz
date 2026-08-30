@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add snap_box config option</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/426823cb6a389d22cf13d8320007b70f41d661d9.html">426823cb6a389d22cf13d8320007b70f41d661d9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/3bb55e389df3dc851fc83eb5ac0b0fd40bf6a876.html">3bb55e389df3dc851fc83eb5ac0b0fd40bf6a876</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 00:38:39 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 00:38:39 +0000
+
+add snap_box config option
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -114,6 +114,7 @@
+<span class="def"> 
+</span><span class="def">     bool can_snap;
+</span><span class="def">     struct wlr_box snap_geobox;
+</span><span class="add">+    float snapbox_colour[4];
+</span><span class="def"> 
+</span><span class="def">     struct wl_list scratchpads;
+</span><span class="def">     pid_t scratchpad_waiting;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -255,7 +255,7 @@
+<span class="def">     // paint snap box
+</span><span class="def">     if (wimp.can_snap) {
+</span><span class="def"> 	wlr_render_rect(
+</span><span class="sub">-	    renderer, &amp;wimp.snap_geobox, wimp.mark_indicator.colour,
+</span><span class="add">+	    renderer, &amp;wimp.snap_geobox, wimp.snapbox_colour,
+</span><span class="def"> 	    output-&gt;wlr_output-&gt;transform_matrix
+</span><span class="def"> 	);
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -69,6 +69,7 @@
+<span class="def"> 	&quot;set desk 2 borders normal #31475c&quot;,
+</span><span class="def"> 	&quot;set desk 2 corners normal #3e5973&quot;,
+</span><span class="def"> 	&quot;set mark_indicator #47315c&quot;,
+</span><span class="add">+	&quot;set snap_box #47315c&quot;,
+</span><span class="def"> 	&quot;set mod Logo&quot;,
+</span><span class="def"> 	&quot;set vt_switching on&quot;,
+</span><span class="def"> 	&quot;bind Ctrl Escape terminate&quot;,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -201,6 +201,11 @@
+<span class="def"> 	wimp.mark_indicator.box.y = 0;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    // snap_box #rrggbb
+</span><span class="add">+    else if (!strcasecmp(s, &quot;snap_box&quot;)) {
+</span><span class="add">+	assign_colour(strtok(NULL, &quot; \t\n\r&quot;), wimp.snapbox_colour);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     // vt_switching [off|on]
+</span><span class="def">     else if (!strcasecmp(s, &quot;vt_switching&quot;)) {
+</span><span class="def"> 	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span>@@ -210,7 +215,7 @@
+<span class="def"> 	    setup_vt_switching();
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    // scroll_direciton [natural|reverse]
+</span><span class="add">+    // scroll_direction [natural|reverse]
+</span><span class="def">     else if (!strcasecmp(s, &quot;scroll_direction&quot;)) {
+</span><span class="def"> 	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def"> 	if (!strcasecmp(s, &quot;natural&quot;))
+</span></pre>
+</div></div>
+  </body>
+</html>

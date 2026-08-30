@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - qtools/focus/focus.py</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- qtools/focus/focus.py</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &quot;&quot;&quot;
+<a href="#l2" class="line" id="l2">      2</a> This plugin exports four functions - up, down, left and right - that when called will
+<a href="#l3" class="line" id="l3">      3</a> move window focus to the first window in that general direction. Focussing is based
+<a href="#l4" class="line" id="l4">      4</a> entirely on position and geometry, so is independent of screens, layouts and whether
+<a href="#l5" class="line" id="l5">      5</a> windows are floating or tiled. It can also move focus to and from empty screens.
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a> Example usage:
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a>     import qtools.focus
+<a href="#l10" class="line" id="l10">     10</a>     keys.extend([EzKey(k, v) for k, v in {
+<a href="#l11" class="line" id="l11">     11</a>         &apos;M-k&apos;: lazy.function(qtools.focus.up)
+<a href="#l12" class="line" id="l12">     12</a>         &apos;M-j&apos;: lazy.function(qtools.focus.down)
+<a href="#l13" class="line" id="l13">     13</a>         &apos;M-h&apos;: lazy.function(qtools.focus.left)
+<a href="#l14" class="line" id="l14">     14</a>         &apos;M-l&apos;: lazy.function(qtools.focus.right)
+<a href="#l15" class="line" id="l15">     15</a>     }.items()])
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a> &quot;&quot;&quot;
+<a href="#l18" class="line" id="l18">     18</a> 
+<a href="#l19" class="line" id="l19">     19</a> 
+<a href="#l20" class="line" id="l20">     20</a> from libqtile.config import Screen
+<a href="#l21" class="line" id="l21">     21</a> from xcffib.xproto import StackMode
+<a href="#l22" class="line" id="l22">     22</a> 
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> def up(qtile):
+<a href="#l25" class="line" id="l25">     25</a>     _focus_window(qtile, -1, &apos;y&apos;)
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> 
+<a href="#l28" class="line" id="l28">     28</a> def down(qtile):
+<a href="#l29" class="line" id="l29">     29</a>     _focus_window(qtile, 1, &apos;y&apos;)
+<a href="#l30" class="line" id="l30">     30</a> 
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> def left(qtile):
+<a href="#l33" class="line" id="l33">     33</a>     _focus_window(qtile, -1, &apos;x&apos;)
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a> 
+<a href="#l36" class="line" id="l36">     36</a> def right(qtile):
+<a href="#l37" class="line" id="l37">     37</a>     _focus_window(qtile, 1, &apos;x&apos;)
+<a href="#l38" class="line" id="l38">     38</a> 
+<a href="#l39" class="line" id="l39">     39</a> 
+<a href="#l40" class="line" id="l40">     40</a> def _focus_window(qtile, dir, axis):
+<a href="#l41" class="line" id="l41">     41</a>     win = None
+<a href="#l42" class="line" id="l42">     42</a>     win_wide = None
+<a href="#l43" class="line" id="l43">     43</a>     dist = 10000
+<a href="#l44" class="line" id="l44">     44</a>     dist_wide = 10000
+<a href="#l45" class="line" id="l45">     45</a>     cur = qtile.current_window
+<a href="#l46" class="line" id="l46">     46</a>     if not cur:
+<a href="#l47" class="line" id="l47">     47</a>         cur = qtile.current_screen
+<a href="#l48" class="line" id="l48">     48</a> 
+<a href="#l49" class="line" id="l49">     49</a>     if axis == &apos;x&apos;:
+<a href="#l50" class="line" id="l50">     50</a>         dim = &apos;width&apos;
+<a href="#l51" class="line" id="l51">     51</a>         band_axis = &apos;y&apos;
+<a href="#l52" class="line" id="l52">     52</a>         band_dim = &apos;height&apos;
+<a href="#l53" class="line" id="l53">     53</a>         cur_pos = cur.x
+<a href="#l54" class="line" id="l54">     54</a>         band_min = cur.y
+<a href="#l55" class="line" id="l55">     55</a>         band_max = cur.y + cur.height
+<a href="#l56" class="line" id="l56">     56</a>     else:
+<a href="#l57" class="line" id="l57">     57</a>         dim = &apos;height&apos;
+<a href="#l58" class="line" id="l58">     58</a>         band_axis = &apos;x&apos;
+<a href="#l59" class="line" id="l59">     59</a>         band_dim = &apos;width&apos;
+<a href="#l60" class="line" id="l60">     60</a>         band_min = cur.x
+<a href="#l61" class="line" id="l61">     61</a>         cur_pos = cur.y
+<a href="#l62" class="line" id="l62">     62</a>         band_max = cur.x + cur.width
+<a href="#l63" class="line" id="l63">     63</a> 
+<a href="#l64" class="line" id="l64">     64</a>     cur_pos += getattr(cur, dim) / 2
+<a href="#l65" class="line" id="l65">     65</a> 
+<a href="#l66" class="line" id="l66">     66</a>     windows = [w for g in qtile.groups if g.screen for w in g.windows]
+<a href="#l67" class="line" id="l67">     67</a>     windows.extend([s for s in qtile.screens if not s.group.windows])
+<a href="#l68" class="line" id="l68">     68</a> 
+<a href="#l69" class="line" id="l69">     69</a>     if cur in windows:
+<a href="#l70" class="line" id="l70">     70</a>         windows.remove(cur)
+<a href="#l71" class="line" id="l71">     71</a> 
+<a href="#l72" class="line" id="l72">     72</a>     for w in windows:
+<a href="#l73" class="line" id="l73">     73</a>         if isinstance(w, Screen) or not w.minimized:
+<a href="#l74" class="line" id="l74">     74</a>             pos = getattr(w, axis) + getattr(w, dim) / 2
+<a href="#l75" class="line" id="l75">     75</a>             gap = dir * (pos - cur_pos)
+<a href="#l76" class="line" id="l76">     76</a>             if gap &gt; 5:
+<a href="#l77" class="line" id="l77">     77</a>                 band_pos = getattr(w, band_axis) + getattr(w, band_dim) / 2
+<a href="#l78" class="line" id="l78">     78</a>                 if band_min &lt; band_pos &lt; band_max:
+<a href="#l79" class="line" id="l79">     79</a>                     if gap &lt; dist:
+<a href="#l80" class="line" id="l80">     80</a>                         dist = gap
+<a href="#l81" class="line" id="l81">     81</a>                         win = w
+<a href="#l82" class="line" id="l82">     82</a>                 else:
+<a href="#l83" class="line" id="l83">     83</a>                     if gap &lt; dist_wide:
+<a href="#l84" class="line" id="l84">     84</a>                         dist_wide = gap
+<a href="#l85" class="line" id="l85">     85</a>                         win_wide = w
+<a href="#l86" class="line" id="l86">     86</a> 
+<a href="#l87" class="line" id="l87">     87</a>     if not win:
+<a href="#l88" class="line" id="l88">     88</a>         win = win_wide
+<a href="#l89" class="line" id="l89">     89</a>     if win:
+<a href="#l90" class="line" id="l90">     90</a>         qtile.focus_screen(win.group.screen.index)
+<a href="#l91" class="line" id="l91">     91</a>         win.group.focus(win, True)
+<a href="#l92" class="line" id="l92">     92</a>         if not isinstance(win, Screen):
+<a href="#l93" class="line" id="l93">     93</a>             win.window.configure(stackmode=StackMode.Above)
+<a href="#l94" class="line" id="l94">     94</a>             win.focus(False)
+<a href="#l95" class="line" id="l95">     95</a> 
+</pre>
+  </div>
+  </body>
+</html>

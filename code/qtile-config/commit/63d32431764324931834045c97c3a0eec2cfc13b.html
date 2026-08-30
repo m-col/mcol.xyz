@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Move some more stuff into backend files</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/63d32431764324931834045c97c3a0eec2cfc13b.html">63d32431764324931834045c97c3a0eec2cfc13b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/8335202bd0462ba37354f81c8f0503b700bfb110.html">8335202bd0462ba37354f81c8f0503b700bfb110</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-16 00:19:25 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-16 00:19:25 +0100
+
+Move some more stuff into backend files
+</pre><div class="diff">
+  <p>
+    <b>x11.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,6 +4,7 @@
+<span class="def"> 
+</span><span class="def"> import os
+</span><span class="def"> 
+</span><span class="add">+from libqtile import hook
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> 
+</span><span class="def"> IS_XEPHYR = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0))
+</span>@@ -22,3 +23,11 @@
+<span class="def">     ([mod, &apos;shift&apos;],    &apos;x&apos;,    lazy.spawn(&apos;set_monitors&apos;),                 &quot;Configure monitors&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;i&apos;,    lazy.spawn(&apos;slock systemctl suspend -i&apos;),   &quot;Suspend system and lock&quot;),
+</span><span class="def"> ])
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+# Auto-float some windows
+</span><span class="add">+@hook.subscribe.client_new
+</span><span class="add">+def _(window):
+</span><span class="add">+    hints = window.window.get_wm_normal_hints()
+</span><span class="add">+    if hints and 0 &lt; hints[&apos;max_width&apos;] &lt; 1920:
+</span><span class="add">+        window.floating = True
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,10 +2,15 @@
+<span class="def"> Wayland-specific configuration
+</span><span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="add">+import asyncio
+</span><span class="def"> import os
+</span><span class="add">+import subprocess
+</span><span class="def"> 
+</span><span class="add">+from libqtile import hook, qtile
+</span><span class="def"> from libqtile.backend.wayland import InputConfig
+</span><span class="add">+from libqtile.backend.wayland.window import Window
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="add">+from libqtile.log_utils import logger
+</span><span class="def"> 
+</span><span class="def"> IS_XEPHYR = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0))
+</span><span class="def"> mod = &quot;mod1&quot; if IS_XEPHYR else &quot;mod4&quot;
+</span>@@ -35,3 +40,41 @@
+<span class="def"> wayland_libinput_config = {
+</span><span class="def">     &quot;type:pointer&quot;: InputConfig(drag=True, tap=True)
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+@hook.subscribe.client_new
+</span><span class="add">+def _(window):
+</span><span class="add">+    # Auto-float some windows
+</span><span class="add">+    if type(window) is Window:
+</span><span class="add">+        state = window.surface.toplevel._ptr.current
+</span><span class="add">+        if 0 &lt; state.max_width &lt; 1920:
+</span><span class="add">+            window.floating = True
+</span><span class="add">+        else:
+</span><span class="add">+            # Just incase I find something new I want to auto-float
+</span><span class="add">+            logger.warning(
+</span><span class="add">+                (window.name, window.get_wm_class(), (state.min_width, state.max_width))
+</span><span class="add">+            )
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+@hook.subscribe.startup_once
+</span><span class="add">+async def _():
+</span><span class="add">+    # Run a startup script
+</span><span class="add">+    env = os.environ.copy()
+</span><span class="add">+    env[&quot;WOB_HEIGHT&quot;] = &quot;32&quot;
+</span><span class="add">+    env[&quot;WOB_WIDTH&quot;] = &quot;1920&quot;
+</span><span class="add">+    env[&quot;WOB_MARGIN&quot;] = &quot;0&quot;
+</span><span class="add">+    env[&quot;WOB_OFFSET&quot;] = &quot;0&quot;
+</span><span class="add">+    env[&quot;WOB_BORDER&quot;] = &quot;0&quot;
+</span><span class="add">+    env[&quot;WOB_PADDING&quot;] = &quot;0&quot;
+</span><span class="add">+    env[&quot;WOB_BACKGROUND&quot;] = &quot;#00000000&quot;
+</span><span class="add">+    env[&quot;WOB_BAR&quot;] = &quot;#ffCFCCD6&quot;
+</span><span class="add">+    HOME = os.path.expanduser(&apos;~&apos;)
+</span><span class="add">+    subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True, env=env)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+if IS_XEPHYR:
+</span><span class="add">+    # To adapt to whatever window size it was given
+</span><span class="add">+    @hook.subscribe.startup_once
+</span><span class="add">+    async def _():
+</span><span class="add">+        await asyncio.sleep(0.5)
+</span><span class="add">+        qtile.cmd_reconfigure_screens()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -28,7 +28,6 @@
+<span class="def">     from libqtile.core.manager import Qtile
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-HOME: str = os.path.expanduser(&apos;~&apos;)
+</span><span class="def"> IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+</span><span class="def"> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span><span class="def"> 
+</span>@@ -85,6 +84,8 @@
+<span class="def"> # My keybindings - they are converted at the bottom of this file
+</span><span class="def"> my_keys: List[Tuple[List[str], str, Any, str]] = []
+</span><span class="def"> my_keys.extend(keys_backend)
+</span><span class="add">+my_keys.extend(keys_group)
+</span><span class="add">+my_keys.extend(keys_scratchpad)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> def float_to_front(qtile: Qtile) -&gt; None:
+</span>@@ -287,7 +288,8 @@
+<span class="def">             self.text = &apos;&apos;
+</span><span class="def">         # drawing here crashes Wayland
+</span><span class="def"> 
+</span><span class="sub">-        self.wob = &quot;/tmp/wob-&quot; + qtile.core.display_name
+</span><span class="add">+        if IS_WAYLAND:
+</span><span class="add">+            self.wob = &quot;/tmp/wob-&quot; + qtile.core.display_name
+</span><span class="def"> 
+</span><span class="def">     def _update_drawer(self):
+</span><span class="def">         if self.volume &lt;= 0:
+</span>@@ -299,8 +301,10 @@
+<span class="def">         else:
+</span><span class="def">             self.text = &apos;&apos;
+</span><span class="def">         self.draw()
+</span><span class="sub">-        with open(self.wob, &apos;a&apos;) as f:
+</span><span class="sub">-            f.write(str(self.volume) + &quot;\n&quot;)
+</span><span class="add">+
+</span><span class="add">+        if IS_WAYLAND:
+</span><span class="add">+            with open(self.wob, &apos;a&apos;) as f:
+</span><span class="add">+                f.write(str(self.volume) + &quot;\n&quot;)
+</span><span class="def"> 
+</span><span class="def">     def cmd_increase_vol(self):
+</span><span class="def">         subprocess.call(&apos;amixer set PCM 4%+&apos;.split())
+</span>@@ -454,55 +458,6 @@
+<span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-# Hooks
+</span><span class="sub">-
+</span><span class="sub">-if IS_WAYLAND:
+</span><span class="sub">-    from libqtile.backend.wayland.window import Window
+</span><span class="sub">-    @hook.subscribe.client_new
+</span><span class="sub">-    def _(window):
+</span><span class="sub">-        # Auto-float windows
+</span><span class="sub">-        if type(window) is Window:
+</span><span class="sub">-            state = window.surface.toplevel._ptr.current
+</span><span class="sub">-            if 0 &lt; state.max_width &lt; 1920:
+</span><span class="sub">-                window.floating = True
+</span><span class="sub">-            else:
+</span><span class="sub">-                # Just incase I find something new I want to auto-float
+</span><span class="sub">-                logger.warning(
+</span><span class="sub">-                    (window.name, window.get_wm_class(), (state.min_width, state.max_width))
+</span><span class="sub">-                )
+</span><span class="sub">-
+</span><span class="sub">-else:
+</span><span class="sub">-    @hook.subscribe.client_new
+</span><span class="sub">-    def _(window):
+</span><span class="sub">-        # Auto-float windows
+</span><span class="sub">-        hints = window.window.get_wm_normal_hints()
+</span><span class="sub">-        if hints and 0 &lt; hints[&apos;max_width&apos;] &lt; 1920:
+</span><span class="sub">-            window.floating = True
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-## Startup script for Wayland
+</span><span class="sub">-if IS_WAYLAND:
+</span><span class="sub">-    @hook.subscribe.startup_once
+</span><span class="sub">-    async def _():
+</span><span class="sub">-        env = os.environ.copy()
+</span><span class="sub">-        env[&quot;WOB_HEIGHT&quot;] = &quot;32&quot;
+</span><span class="sub">-        env[&quot;WOB_WIDTH&quot;] = &quot;1920&quot;
+</span><span class="sub">-        env[&quot;WOB_MARGIN&quot;] = &quot;0&quot;
+</span><span class="sub">-        env[&quot;WOB_OFFSET&quot;] = &quot;0&quot;
+</span><span class="sub">-        env[&quot;WOB_BORDER&quot;] = &quot;0&quot;
+</span><span class="sub">-        env[&quot;WOB_PADDING&quot;] = &quot;0&quot;
+</span><span class="sub">-        env[&quot;WOB_BACKGROUND&quot;] = &quot;#00000000&quot;
+</span><span class="sub">-        env[&quot;WOB_BAR&quot;] = &quot;#ff&quot; + foreground[1:]
+</span><span class="sub">-        subprocess.Popen(f&quot;{HOME}/.config/qtile/startup.sh&quot;, shell=True, env=env)
+</span><span class="sub">-
+</span><span class="sub">-    if IS_XEPHYR:
+</span><span class="sub">-        # To adapt to whatever window size it was given
+</span><span class="sub">-        @hook.subscribe.startup_once
+</span><span class="sub">-        async def _():
+</span><span class="sub">-            await asyncio.sleep(0.5)
+</span><span class="sub">-            qtile.cmd_reconfigure_screens()
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> ## Config variables
+</span><span class="def"> reconfigure_screens = True
+</span><span class="def"> follow_mouse_focus = True
+</span>@@ -510,8 +465,5 @@
+<span class="def"> cursor_warp = False
+</span><span class="def"> auto_fullscreen = True
+</span><span class="def"> focus_on_window_activation = &apos;smart&apos;
+</span><span class="sub">-groups.append(scratchpad)
+</span><span class="sub">-
+</span><span class="sub">-my_keys.extend(keys_group)
+</span><span class="sub">-my_keys.extend(keys_scratchpad)
+</span><span class="def"> keys = [Key(mods, key, cmd, desc=desc) for mods, key, cmd, desc in my_keys]
+</span><span class="add">+groups.append(scratchpad)
+</span></pre>
+</div></div>
+  </body>
+</html>

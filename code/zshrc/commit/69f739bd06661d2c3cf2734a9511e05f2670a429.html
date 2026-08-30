@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - more</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/69f739bd06661d2c3cf2734a9511e05f2670a429.html">69f739bd06661d2c3cf2734a9511e05f2670a429</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/b02a2019ad2d47fef06a0c06e7db2d3be151fbdb.html">b02a2019ad2d47fef06a0c06e7db2d3be151fbdb</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2026-05-10 18:27:18 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2026-05-10 18:27:18 +0100
+
+more
+</pre><div class="diff">
+  <p>
+    <b>new-cc-session.sh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,36 @@
+<span class="add">+#!/usr/bin/env bash
+</span><span class="add">+
+</span><span class="add">+title=&quot;$@&quot;
+</span><span class="add">+
+</span><span class="add">+# prompt for title interactively if not passed as an arg (used by zellij keybinding)
+</span><span class="add">+if [[ -z &quot;$title&quot; ]]; then
+</span><span class="add">+    printf &quot;Title: &quot;
+</span><span class="add">+    read title
+</span><span class="add">+    [[ -z &quot;$title&quot; ]] &amp;&amp; exit 1
+</span><span class="add">+fi
+</span><span class="add">+
+</span><span class="add">+ctx_id=$(uuidgen | tr &apos;[:upper:]&apos; &apos;[:lower:]&apos; | cut -c1-8)
+</span><span class="add">+
+</span><span class="add">+#exec alacritty msg create-window \
+</span><span class="add">+#    --working-directory ~/git \
+</span><span class="add">+#    --command /bin/zsh -c \
+</span><span class="add">+#	&apos;/opt/homebrew/bin/tmux new-session -s &quot;&apos;&quot;$title&quot;&apos;&quot; -e CLAUDE_CONTEXT_ID=&apos;&quot;$ctx_id&quot;&apos; \; split-window -h &quot;/opt/homebrew/bin/claude --dangerously-skip-permissions; zsh&quot; \; select-pane -t 1&apos;
+</span><span class="add">+
+</span><span class="add">+# Rio can&apos;t launch in new tab
+</span><span class="add">+#exec rio \
+</span><span class="add">+#    --working-dir ~/git \
+</span><span class="add">+#    --title-placeholder &quot;$title&quot; \
+</span><span class="add">+#    --command /bin/zsh -c \
+</span><span class="add">+#	&apos;/opt/homebrew/bin/tmux new-session -s &quot;&apos;&quot;$title&quot;&apos;&quot; -e CLAUDE_CONTEXT_ID=&apos;&quot;$ctx_id&quot;&apos; \; split-window -h &quot;/opt/homebrew/bin/claude --dangerously-skip-permissions; zsh&quot; \; select-pane -t 1&apos;
+</span><span class="add">+
+</span><span class="add">+#exec wezterm start \
+</span><span class="add">+#    --cwd ~/git \
+</span><span class="add">+#    --new-tab \
+</span><span class="add">+#    /bin/zsh -c \
+</span><span class="add">+#	&apos;/opt/homebrew/bin/tmux new-session -s &quot;&apos;&quot;$title&quot;&apos;&quot; -e CLAUDE_CONTEXT_ID=&apos;&quot;$ctx_id&quot;&apos; \; split-window -h &quot;/opt/homebrew/bin/claude --dangerously-skip-permissions; zsh&quot; \; select-pane -t 1&apos;
+</span><span class="add">+
+</span><span class="add">+exec wezterm start \
+</span><span class="add">+    --cwd ~/git \
+</span><span class="add">+    --new-tab \
+</span><span class="add">+    /bin/zsh -c &apos;export CLAUDE_CONTEXT_ID=&apos;&quot;$ctx_id&quot;&apos;; exec zellij --session &quot;&apos;&quot;$title&quot;&apos;&quot; --layout cc-session&apos;
+</span><span class="add">+
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -199,6 +199,7 @@
+<span class="def"> alias psi=&apos;python setup.py -q install&apos;
+</span><span class="def"> alias psiu=&apos;python setup.py -q install --user&apos;
+</span><span class="def"> alias m=make
+</span><span class="add">+alias j=just
+</span><span class="def"> alias mc=&apos;make clean&apos;
+</span><span class="def"> alias vimrc=&apos;nvim ~/.vim/pack/vim-misc/start/self/plugin/settings.vim&apos;
+</span><span class="def"> check() { pytest -xs --pdbcls pudb.debugger:Debugger $@; }
+</span></pre>
+</div></div>
+  </body>
+</html>

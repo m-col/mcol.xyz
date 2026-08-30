@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - rename as xoop</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/e55f495331271a372ae1b603d2a94966a995f828.html">e55f495331271a372ae1b603d2a94966a995f828</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/f7d9deef0f47263068cc799c074105e8ae5a6c0f.html">f7d9deef0f47263068cc799c074105e8ae5a6c0f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-18 14:58:52 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-18 14:58:52 +0100
+
+rename as xoop
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,141 @@
+<span class="add">+#include &lt;stdlib.h&gt;
+</span><span class="add">+#include &lt;stdio.h&gt;
+</span><span class="add">+#include &lt;string.h&gt;
+</span><span class="add">+#include &lt;xcb/xcb.h&gt;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+xcb_connection_t    *conn;
+</span><span class="add">+xcb_screen_t	    *screen;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void clip_window(xcb_window_t wid)
+</span><span class="add">+{
+</span><span class="add">+    uint32_t mask;
+</span><span class="add">+    xcb_gcontext_t  gc;
+</span><span class="add">+
+</span><span class="add">+    mask = XCB_GC_CLIP_ORIGIN_X | XCB_GC_CLIP_ORIGIN_Y;// | XCB_GC_CLIP_MASK
+</span><span class="add">+
+</span><span class="add">+    const uint32_t values[] = {
+</span><span class="add">+	1,
+</span><span class="add">+	1,
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    gc = xcb_generate_id(conn);
+</span><span class="add">+    xcb_create_gc(
+</span><span class="add">+	conn,
+</span><span class="add">+	gc,
+</span><span class="add">+	wid,
+</span><span class="add">+	mask,
+</span><span class="add">+	values
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_window_type(xcb_window_t wid) {
+</span><span class="add">+    xcb_intern_atom_cookie_t cookie1, cookie2;
+</span><span class="add">+    xcb_intern_atom_reply_t *reply1, *reply2;
+</span><span class="add">+
+</span><span class="add">+    cookie1 = xcb_intern_atom(conn, 0, 19, &quot;_NET_WM_WINDOW_TYPE&quot;);
+</span><span class="add">+    reply1 = xcb_intern_atom_reply(conn, cookie1, NULL);
+</span><span class="add">+    cookie2 = xcb_intern_atom(conn, 0, 32, &quot;_NET_WM_WINDOW_TYPE_NOTIFICATION&quot;);
+</span><span class="add">+    reply2 = xcb_intern_atom_reply(conn, cookie2, NULL);
+</span><span class="add">+
+</span><span class="add">+    xcb_change_property(
+</span><span class="add">+	conn,
+</span><span class="add">+	XCB_PROP_MODE_REPLACE,
+</span><span class="add">+	wid,
+</span><span class="add">+	reply1-&gt;atom,
+</span><span class="add">+	XCB_ATOM_ATOM,
+</span><span class="add">+	32,
+</span><span class="add">+	1,
+</span><span class="add">+	&amp;reply2-&gt;atom
+</span><span class="add">+    );
+</span><span class="add">+    free(reply1);
+</span><span class="add">+    free(reply2);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+xcb_window_t setup_window()
+</span><span class="add">+{
+</span><span class="add">+    xcb_window_t wid = xcb_generate_id(conn);
+</span><span class="add">+
+</span><span class="add">+    uint32_t mask_val = 0;
+</span><span class="add">+    mask_val |= XCB_EVENT_MASK_ENTER_WINDOW;
+</span><span class="add">+
+</span><span class="add">+    xcb_create_window(
+</span><span class="add">+	conn,
+</span><span class="add">+	XCB_COPY_FROM_PARENT,
+</span><span class="add">+	wid,
+</span><span class="add">+	screen-&gt;root,
+</span><span class="add">+	0,
+</span><span class="add">+	0,
+</span><span class="add">+	1, // screen-&gt;width_in_pixels
+</span><span class="add">+	screen-&gt;height_in_pixels,
+</span><span class="add">+	0,
+</span><span class="add">+	XCB_WINDOW_CLASS_INPUT_ONLY,
+</span><span class="add">+	XCB_COPY_FROM_PARENT,
+</span><span class="add">+	XCB_CW_EVENT_MASK,
+</span><span class="add">+	&amp;mask_val
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    set_window_type(wid);
+</span><span class="add">+    clip_window(wid);
+</span><span class="add">+
+</span><span class="add">+    uint32_t above = XCB_STACK_MODE_ABOVE;
+</span><span class="add">+    xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, &amp;above);
+</span><span class="add">+
+</span><span class="add">+    xcb_change_property(
+</span><span class="add">+	conn,
+</span><span class="add">+	XCB_PROP_MODE_REPLACE,
+</span><span class="add">+	wid,
+</span><span class="add">+	XCB_ATOM_WM_NAME,
+</span><span class="add">+	XCB_ATOM_STRING,
+</span><span class="add">+	8,
+</span><span class="add">+	4,
+</span><span class="add">+	&quot;xoop&quot;
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    xcb_map_window(conn, wid);
+</span><span class="add">+    xcb_flush(conn);
+</span><span class="add">+    return wid;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void event_loop()
+</span><span class="add">+{
+</span><span class="add">+    xcb_generic_event_t *event;
+</span><span class="add">+
+</span><span class="add">+    while((event = xcb_wait_for_event(conn))) {
+</span><span class="add">+	switch (event-&gt;response_type) {
+</span><span class="add">+
+</span><span class="add">+	    case XCB_ENTER_NOTIFY:
+</span><span class="add">+	    printf(&quot;# enter window\n&quot;);
+</span><span class="add">+	    break;
+</span><span class="add">+
+</span><span class="add">+	    default:
+</span><span class="add">+	    printf(&quot;# %d\n&quot;, event-&gt;response_type);
+</span><span class="add">+	    break;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+    free(event);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+int main()
+</span><span class="add">+{
+</span><span class="add">+    xcb_window_t wid;
+</span><span class="add">+
+</span><span class="add">+    conn = xcb_connect(NULL, NULL);
+</span><span class="add">+    if (xcb_connection_has_error(conn))
+</span><span class="add">+	exit(1);
+</span><span class="add">+    screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
+</span><span class="add">+
+</span><span class="add">+    wid = setup_window();
+</span><span class="add">+    event_loop();
+</span><span class="add">+
+</span><span class="add">+    xcb_unmap_window(conn, wid);
+</span><span class="add">+    xcb_disconnect(conn);
+</span><span class="add">+
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>xinf.c</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,141 +0,0 @@
+<span class="sub">-#include &lt;stdlib.h&gt;
+</span><span class="sub">-#include &lt;stdio.h&gt;
+</span><span class="sub">-#include &lt;string.h&gt;
+</span><span class="sub">-#include &lt;xcb/xcb.h&gt;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-xcb_connection_t    *conn;
+</span><span class="sub">-xcb_screen_t	    *screen;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void clip_window(xcb_window_t wid)
+</span><span class="sub">-{
+</span><span class="sub">-    uint32_t mask;
+</span><span class="sub">-    xcb_gcontext_t  gc;
+</span><span class="sub">-
+</span><span class="sub">-    mask = XCB_GC_CLIP_ORIGIN_X | XCB_GC_CLIP_ORIGIN_Y;// | XCB_GC_CLIP_MASK
+</span><span class="sub">-
+</span><span class="sub">-    const uint32_t values[] = {
+</span><span class="sub">-	1,
+</span><span class="sub">-	1,
+</span><span class="sub">-    };
+</span><span class="sub">-
+</span><span class="sub">-    gc = xcb_generate_id(conn);
+</span><span class="sub">-    xcb_create_gc(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	gc,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	mask,
+</span><span class="sub">-	values
+</span><span class="sub">-    );
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void set_window_type(xcb_window_t wid) {
+</span><span class="sub">-    xcb_intern_atom_cookie_t cookie1, cookie2;
+</span><span class="sub">-    xcb_intern_atom_reply_t *reply1, *reply2;
+</span><span class="sub">-
+</span><span class="sub">-    cookie1 = xcb_intern_atom(conn, 0, 19, &quot;_NET_WM_WINDOW_TYPE&quot;);
+</span><span class="sub">-    reply1 = xcb_intern_atom_reply(conn, cookie1, NULL);
+</span><span class="sub">-    cookie2 = xcb_intern_atom(conn, 0, 32, &quot;_NET_WM_WINDOW_TYPE_NOTIFICATION&quot;);
+</span><span class="sub">-    reply2 = xcb_intern_atom_reply(conn, cookie2, NULL);
+</span><span class="sub">-
+</span><span class="sub">-    xcb_change_property(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	XCB_PROP_MODE_REPLACE,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	reply1-&gt;atom,
+</span><span class="sub">-	XCB_ATOM_ATOM,
+</span><span class="sub">-	32,
+</span><span class="sub">-	1,
+</span><span class="sub">-	&amp;reply2-&gt;atom
+</span><span class="sub">-    );
+</span><span class="sub">-    free(reply1);
+</span><span class="sub">-    free(reply2);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-xcb_window_t setup_window()
+</span><span class="sub">-{
+</span><span class="sub">-    xcb_window_t wid = xcb_generate_id(conn);
+</span><span class="sub">-
+</span><span class="sub">-    uint32_t mask_val = 0;
+</span><span class="sub">-    mask_val |= XCB_EVENT_MASK_ENTER_WINDOW;
+</span><span class="sub">-
+</span><span class="sub">-    xcb_create_window(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	XCB_COPY_FROM_PARENT,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	screen-&gt;root,
+</span><span class="sub">-	0,
+</span><span class="sub">-	0,
+</span><span class="sub">-	1, // screen-&gt;width_in_pixels
+</span><span class="sub">-	screen-&gt;height_in_pixels,
+</span><span class="sub">-	0,
+</span><span class="sub">-	XCB_WINDOW_CLASS_INPUT_ONLY,
+</span><span class="sub">-	XCB_COPY_FROM_PARENT,
+</span><span class="sub">-	XCB_CW_EVENT_MASK,
+</span><span class="sub">-	&amp;mask_val
+</span><span class="sub">-    );
+</span><span class="sub">-
+</span><span class="sub">-    set_window_type(wid);
+</span><span class="sub">-    clip_window(wid);
+</span><span class="sub">-
+</span><span class="sub">-    uint32_t above = XCB_STACK_MODE_ABOVE;
+</span><span class="sub">-    xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, &amp;above);
+</span><span class="sub">-
+</span><span class="sub">-    xcb_change_property(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	XCB_PROP_MODE_REPLACE,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	XCB_ATOM_WM_NAME,
+</span><span class="sub">-	XCB_ATOM_STRING,
+</span><span class="sub">-	8,
+</span><span class="sub">-	4,
+</span><span class="sub">-	&quot;xinf&quot;
+</span><span class="sub">-    );
+</span><span class="sub">-
+</span><span class="sub">-    xcb_map_window(conn, wid);
+</span><span class="sub">-    xcb_flush(conn);
+</span><span class="sub">-    return wid;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void event_loop()
+</span><span class="sub">-{
+</span><span class="sub">-    xcb_generic_event_t *event;
+</span><span class="sub">-
+</span><span class="sub">-    while((event = xcb_wait_for_event(conn))) {
+</span><span class="sub">-	switch (event-&gt;response_type) {
+</span><span class="sub">-
+</span><span class="sub">-	    case XCB_ENTER_NOTIFY:
+</span><span class="sub">-	    printf(&quot;# enter window\n&quot;);
+</span><span class="sub">-	    break;
+</span><span class="sub">-
+</span><span class="sub">-	    default:
+</span><span class="sub">-	    printf(&quot;# %d\n&quot;, event-&gt;response_type);
+</span><span class="sub">-	    break;
+</span><span class="sub">-	}
+</span><span class="sub">-
+</span><span class="sub">-    free(event);
+</span><span class="sub">-    }
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-int main()
+</span><span class="sub">-{
+</span><span class="sub">-    xcb_window_t wid;
+</span><span class="sub">-
+</span><span class="sub">-    conn = xcb_connect(NULL, NULL);
+</span><span class="sub">-    if (xcb_connection_has_error(conn))
+</span><span class="sub">-	exit(1);
+</span><span class="sub">-    screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
+</span><span class="sub">-
+</span><span class="sub">-    wid = setup_window();
+</span><span class="sub">-    event_loop();
+</span><span class="sub">-
+</span><span class="sub">-    xcb_unmap_window(conn, wid);
+</span><span class="sub">-    xcb_disconnect(conn);
+</span><span class="sub">-
+</span><span class="sub">-    return 0;
+</span><span class="sub">-}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-OUT        = xinf
+</span><span class="sub">-SRC 	   = xinf.c
+</span><span class="add">+OUT        = xoop
+</span><span class="add">+SRC 	   = xoop.c
+</span><span class="def"> CFLAGS 	  += -Wall -Wextra -pedantic -lxcb
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span>@@ -14,7 +14,7 @@
+<span class="def"> 	cp -pf xinf &quot;$(DESTDIR)$(BINPREFIX)&quot;
+</span><span class="def"> 
+</span><span class="def"> uninstall:
+</span><span class="sub">-	rm -f &quot;$(DESTDIR)$(BINPREFIX)&quot;/xinf
+</span><span class="add">+	rm -f &quot;$(DESTDIR)$(BINPREFIX)&quot;/xoop
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> .PHONY: all clean install uninstall
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1 @@
+<span class="sub">-xinf
+</span><span class="add">+xoop
+</span></pre>
+</div></div>
+  </body>
+</html>

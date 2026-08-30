@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - Reset window shape when screens are changed</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/90671c6b44281f7b83110c3c419ccee9ae0dffa9.html">90671c6b44281f7b83110c3c419ccee9ae0dffa9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/b07a64c91f8d6b403e6e57aec18327eb23bb14df.html">b07a64c91f8d6b403e6e57aec18327eb23bb14df</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-23 16:53:59 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-23 16:53:59 +0100
+
+Reset window shape when screens are changed
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,9 +24,11 @@
+<span class="def"> #include &lt;signal.h&gt;
+</span><span class="def"> #include &lt;stdio.h&gt;
+</span><span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="add">+#include &lt;xcb/randr.h&gt;
+</span><span class="def"> #include &lt;xcb/shape.h&gt;
+</span><span class="def"> #include &lt;xcb/xcb.h&gt;
+</span><span class="sub">-#include &lt;unistd.h&gt;
+</span><span class="add">+#include &lt;xcb/xcb_event.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #define PROGNAME &quot;xoop&quot;
+</span><span class="def"> 
+</span>@@ -34,6 +36,8 @@
+<span class="def"> xcb_screen_t	    *screen;
+</span><span class="def"> xcb_window_t	     wid;
+</span><span class="def"> 
+</span><span class="add">+int randr_base = 0;
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> void set_window_type() {
+</span><span class="def">     xcb_intern_atom_reply_t *wm_window_type,
+</span>@@ -91,40 +95,28 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void set_window_shape()
+</span><span class="add">+void set_window_shape(uint16_t width, uint16_t height)
+</span><span class="def"> {
+</span><span class="def">     xcb_pixmap_t pixmap = xcb_generate_id(conn);
+</span><span class="def">     xcb_gcontext_t gc = xcb_generate_id(conn);
+</span><span class="sub">-    xcb_create_pixmap(
+</span><span class="sub">-	conn, 1, pixmap, wid, screen-&gt;width_in_pixels, screen-&gt;height_in_pixels
+</span><span class="sub">-    );
+</span><span class="add">+    xcb_create_pixmap(conn, 1, pixmap, wid, width, height);
+</span><span class="def">     xcb_create_gc(
+</span><span class="def"> 	conn, gc, pixmap, XCB_GC_FOREGROUND, &amp;screen-&gt;white_pixel
+</span><span class="def">     );
+</span><span class="sub">-    xcb_rectangle_t rect = {
+</span><span class="sub">-	0, 0, screen-&gt;width_in_pixels, screen-&gt;height_in_pixels
+</span><span class="sub">-    };
+</span><span class="sub">-    xcb_poly_fill_rectangle(
+</span><span class="sub">-	conn, pixmap, gc, 1, &amp;rect
+</span><span class="sub">-    );
+</span><span class="add">+    xcb_rectangle_t rect = {0, 0, width, height};
+</span><span class="add">+    xcb_poly_fill_rectangle(conn, pixmap, gc, 1, &amp;rect);
+</span><span class="def">     xcb_shape_mask(
+</span><span class="def"> 	conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_INPUT, wid, 0, 0, pixmap
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     xcb_pixmap_t pixmap2 = xcb_generate_id(conn);
+</span><span class="def">     xcb_gcontext_t gc2 = xcb_generate_id(conn);
+</span><span class="sub">-    xcb_create_pixmap(
+</span><span class="sub">-	conn, 1, pixmap2, wid, screen-&gt;width_in_pixels, screen-&gt;height_in_pixels
+</span><span class="sub">-    );
+</span><span class="add">+    xcb_create_pixmap(conn, 1, pixmap2, wid, width, height);
+</span><span class="def">     xcb_create_gc(
+</span><span class="def"> 	conn, gc2, pixmap2, XCB_GC_FOREGROUND, &amp;screen-&gt;white_pixel
+</span><span class="def">     );
+</span><span class="sub">-    xcb_rectangle_t rect2 = {
+</span><span class="sub">-	1, 1, screen-&gt;width_in_pixels - 2, screen-&gt;height_in_pixels - 2
+</span><span class="sub">-    };
+</span><span class="sub">-    xcb_poly_fill_rectangle(
+</span><span class="sub">-	conn, pixmap2, gc2, 1, &amp;rect2
+</span><span class="sub">-    );
+</span><span class="add">+    xcb_rectangle_t rect2 = {1, 1, width - 2, height - 2};
+</span><span class="add">+    xcb_poly_fill_rectangle(conn, pixmap2, gc2, 1, &amp;rect2);
+</span><span class="def">     xcb_shape_mask(
+</span><span class="def"> 	conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_INPUT, wid, 0, 0, pixmap2
+</span><span class="def">     );
+</span>@@ -173,10 +165,18 @@
+<span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     set_window_type();
+</span><span class="sub">-    set_window_shape();
+</span><span class="sub">-
+</span><span class="add">+    set_window_shape(screen-&gt;width_in_pixels, screen-&gt;height_in_pixels);
+</span><span class="def">     xcb_map_window(conn, wid);
+</span><span class="sub">-    xcb_flush(conn);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void configure_randr()
+</span><span class="add">+{
+</span><span class="add">+    const xcb_query_extension_reply_t *randr = xcb_get_extension_data(conn, &amp;xcb_randr_id);
+</span><span class="add">+    if (randr-&gt;present) {
+</span><span class="add">+	randr_base = randr-&gt;first_event;
+</span><span class="add">+	xcb_randr_select_input(conn, screen-&gt;root, XCB_RANDR_NOTIFY_MASK_SCREEN_CHANGE);
+</span><span class="add">+    };
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -184,21 +184,20 @@
+<span class="def"> {
+</span><span class="def">     xcb_generic_event_t *event;
+</span><span class="def">     xcb_enter_notify_event_t *entry;
+</span><span class="add">+    xcb_randr_screen_change_notify_event_t *change;
+</span><span class="def">     int16_t x = 0;
+</span><span class="def">     int16_t y = 0;
+</span><span class="def"> 
+</span><span class="def">     int16_t far_x = screen-&gt;width_in_pixels - 1;
+</span><span class="def">     int16_t far_y = screen-&gt;height_in_pixels - 1;
+</span><span class="def"> 
+</span><span class="add">+    xcb_flush(conn);
+</span><span class="add">+
+</span><span class="def">     while((event = xcb_wait_for_event(conn))) {
+</span><span class="def"> 	switch (event-&gt;response_type) {
+</span><span class="def"> 
+</span><span class="def"> 	    case XCB_ENTER_NOTIFY:
+</span><span class="def"> 	    entry = (xcb_enter_notify_event_t *)event;
+</span><span class="sub">-
+</span><span class="sub">-#ifdef DEBUG
+</span><span class="sub">-	    printf(&quot;Entry: %d, %d\n&quot;, entry-&gt;event_x, entry-&gt;event_y);
+</span><span class="sub">-#endif
+</span><span class="def"> 	    if (entry-&gt;event_x == 0) {
+</span><span class="def"> 		x = far_x;
+</span><span class="def"> 		y = entry-&gt;event_y;
+</span>@@ -212,18 +211,30 @@
+<span class="def"> 		x = entry-&gt;event_x;
+</span><span class="def"> 		y = 0;
+</span><span class="def"> 	    };
+</span><span class="sub">-	    xcb_warp_pointer(
+</span><span class="sub">-		conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y
+</span><span class="sub">-	    );
+</span><span class="sub">-	    xcb_flush(conn);
+</span><span class="add">+	    xcb_warp_pointer(conn, XCB_NONE, screen-&gt;root, 0, 0, 0, 0, x, y);
+</span><span class="def"> #ifdef DEBUG
+</span><span class="add">+	    printf(&quot;Entry: %d, %d\n&quot;, entry-&gt;event_x, entry-&gt;event_y);
+</span><span class="def"> 	    printf(&quot;Warp: (%d, %d) to (%d, %d)\n&quot;, entry-&gt;event_x, entry-&gt;event_y, x, y);
+</span><span class="def"> #endif
+</span><span class="def"> 	    break;
+</span><span class="sub">-	}
+</span><span class="def"> 
+</span><span class="add">+	    default:
+</span><span class="add">+	    if (event-&gt;response_type == randr_base + XCB_RANDR_SCREEN_CHANGE_NOTIFY) {
+</span><span class="add">+		change = (xcb_randr_screen_change_notify_event_t *)event;
+</span><span class="add">+		set_window_shape(change-&gt;width, change-&gt;height);
+</span><span class="add">+		far_x = change-&gt;width - 1;
+</span><span class="add">+		far_y = change-&gt;height - 1;
+</span><span class="add">+#ifdef DEBUG
+</span><span class="add">+		printf(&quot;Screen changed.\n&quot;);
+</span><span class="add">+#endif
+</span><span class="add">+	    } else {
+</span><span class="add">+		printf(&quot;Unknown event: %d\n&quot;, event-&gt;response_type);
+</span><span class="add">+	    };
+</span><span class="add">+
+</span><span class="add">+	}
+</span><span class="add">+	xcb_flush(conn);
+</span><span class="add">+	free(event);
+</span><span class="def">     }
+</span><span class="sub">-    free(event);
+</span><span class="def">     free(entry);
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -269,6 +280,7 @@
+<span class="def"> 	exit(EXIT_FAILURE);
+</span><span class="def"> 
+</span><span class="def">     screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
+</span><span class="add">+    configure_randr();
+</span><span class="def">     setup_window();
+</span><span class="def"> 
+</span><span class="def">     signal(SIGINT, exit_nicely);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,6 @@
+<span class="def"> OUT        = xoop
+</span><span class="def"> SRC 	   = xoop.c
+</span><span class="sub">-CFLAGS 	  += -Wall -Wextra -pedantic -lxcb -lxcb-shape
+</span><span class="add">+CFLAGS 	  += -Wall -Wextra -pedantic -lxcb -lxcb-shape -lxcb-randr
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

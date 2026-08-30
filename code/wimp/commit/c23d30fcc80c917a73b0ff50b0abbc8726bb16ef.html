@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - implement virtual keyboard protocol</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/c23d30fcc80c917a73b0ff50b0abbc8726bb16ef.html">c23d30fcc80c917a73b0ff50b0abbc8726bb16ef</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/02d45be00ca4a7b66969b6d8ecd2ce34a291dddd.html">02d45be00ca4a7b66969b6d8ecd2ce34a291dddd</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-02 21:41:08 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-02 21:41:08 +0000
+
+implement virtual keyboard protocol
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -88,6 +88,9 @@
+<span class="def">     struct wl_list key_bindings;
+</span><span class="def">     struct wl_list mouse_bindings;
+</span><span class="def"> 
+</span><span class="add">+    struct wlr_virtual_keyboard_manager_v1 *virtual_keyboard;
+</span><span class="add">+    struct wl_listener new_virtual_keyboard_listener;
+</span><span class="add">+
+</span><span class="def">     action on_mouse_motion;
+</span><span class="def">     action on_mouse_scroll;
+</span><span class="def">     action on_drag1;
+</span>@@ -143,6 +146,7 @@
+<span class="def">     struct wlr_input_device *device;
+</span><span class="def">     struct wl_listener modifier_listener;
+</span><span class="def">     struct wl_listener key_listener;
+</span><span class="add">+    struct wl_listener destroy_listener;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> struct wallpaper {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keyboard.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,6 +2,7 @@
+<span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_keyboard.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_virtual_keyboard_v1.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;action.h&quot;
+</span><span class="def"> #include &quot;cursor.h&quot;
+</span>@@ -104,6 +105,20 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void on_keyboard_destroy(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct keyboard *keyboard = wl_container_of(listener, keyboard, destroy_listener);
+</span><span class="add">+
+</span><span class="add">+    wl_list_remove(&amp;keyboard-&gt;link);
+</span><span class="add">+    wl_list_remove(&amp;keyboard-&gt;modifier_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;keyboard-&gt;key_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;keyboard-&gt;destroy_listener.link);
+</span><span class="add">+    free(keyboard);
+</span><span class="add">+
+</span><span class="add">+    keyboard = wl_container_of(wimp.keyboards.next, keyboard, link);
+</span><span class="add">+    wlr_seat_set_keyboard(wimp.seat, keyboard-&gt;device);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void on_new_keyboard(struct wlr_input_device *device) {
+</span><span class="def">     struct keyboard *keyboard = calloc(1, sizeof(struct keyboard));
+</span><span class="def">     keyboard-&gt;device = device;
+</span>@@ -119,10 +134,13 @@
+<span class="def">     xkb_context_unref(context);
+</span><span class="def">     wlr_keyboard_set_repeat_info(device-&gt;keyboard, 25, 600);
+</span><span class="def"> 
+</span><span class="sub">-    keyboard-&gt;modifier_listener.notify = on_modifier;
+</span><span class="sub">-    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.modifiers, &amp;keyboard-&gt;modifier_listener);
+</span><span class="def">     keyboard-&gt;key_listener.notify = on_key;
+</span><span class="add">+    keyboard-&gt;destroy_listener.notify = on_keyboard_destroy;
+</span><span class="add">+    keyboard-&gt;modifier_listener.notify = on_modifier;
+</span><span class="def">     wl_signal_add(&amp;device-&gt;keyboard-&gt;events.key, &amp;keyboard-&gt;key_listener);
+</span><span class="add">+    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.destroy, &amp;keyboard-&gt;destroy_listener);
+</span><span class="add">+    wl_signal_add(&amp;device-&gt;keyboard-&gt;events.modifiers, &amp;keyboard-&gt;modifier_listener);
+</span><span class="add">+
+</span><span class="def">     wlr_seat_set_keyboard(wimp.seat, device);
+</span><span class="def">     wl_list_insert(&amp;wimp.keyboards, &amp;keyboard-&gt;link);
+</span><span class="def"> }
+</span>@@ -167,6 +185,13 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void on_new_virtual_keyboard(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_virtual_keyboard_v1 *keyboard = data;
+</span><span class="add">+    struct wlr_input_device *device = &amp;keyboard-&gt;input_device;
+</span><span class="add">+    on_new_keyboard(device);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void set_up_keyboard() {
+</span><span class="def">     wl_list_init(&amp;wimp.keyboards);
+</span><span class="def"> 
+</span>@@ -180,4 +205,9 @@
+<span class="def">     wimp.request_set_selection_listener.notify = on_request_set_selection;
+</span><span class="def">     wl_signal_add(&amp;wimp.seat-&gt;events.request_set_selection,
+</span><span class="def"> 	&amp;wimp.request_set_selection_listener);
+</span><span class="add">+
+</span><span class="add">+    wimp.virtual_keyboard = wlr_virtual_keyboard_manager_v1_create(wimp.display);
+</span><span class="add">+    wimp.new_virtual_keyboard_listener.notify = on_new_virtual_keyboard;
+</span><span class="add">+    wl_signal_add(&amp;wimp.virtual_keyboard-&gt;events.new_virtual_keyboard,
+</span><span class="add">+	&amp;wimp.new_virtual_keyboard_listener);
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Source description from right path</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/57468a35760f2784135e1f264e9c7a8366034894.html">57468a35760f2784135e1f264e9c7a8366034894</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/7af0c2f1a5b4703f09e02d298c55152ec9ae5ae3.html">7af0c2f1a5b4703f09e02d298c55152ec9ae5ae3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-24 17:05:23 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-24 17:05:23 +0100
+
+Source description from right path
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -53,7 +53,8 @@
+<span class="def"> -- This is split out to make type reasoning a bit easier.
+</span><span class="def"> processRepo&apos; :: [Template] -&gt; Config -&gt; FilePath -&gt; ReaderT LgRepo IO ()
+</span><span class="def"> processRepo&apos; templates config path = do
+</span><span class="sub">-    liftIO $ createDirectoryIfMissing True outPath
+</span><span class="add">+    let name = takeFileName path
+</span><span class="add">+    liftIO $ createDirectoryIfMissing True $ outputDirectory config &lt;/&gt; name
+</span><span class="def">     resolveReference &quot;HEAD&quot; &gt;&gt;= \case
+</span><span class="def">         Nothing -&gt; liftIO . print $ &quot;gitserve: &quot; &lt;&gt; name &lt;&gt; &quot;: Failed to resolve HEAD.&quot;
+</span><span class="def">         Just commitID -&gt; do
+</span>@@ -62,7 +63,7 @@
+<span class="def"> 
+</span><span class="def">             -- description: The description of the repository from repo/description, if
+</span><span class="def">             -- it exists.
+</span><span class="sub">-            description &lt;- liftIO $ getDescription $ outPath &lt;/&gt; &quot;description&quot;
+</span><span class="add">+            description &lt;- liftIO $ getDescription $ path &lt;/&gt; &quot;description&quot;
+</span><span class="def"> 
+</span><span class="def">             -- commits: A list of `Git.Commit` objects to HEAD.
+</span><span class="def">             commits &lt;- getCommits gitHead
+</span>@@ -74,9 +75,6 @@
+<span class="def">             let repo = package config name description commits tree
+</span><span class="def">             liftIO . mapM (generate repo) $ templates
+</span><span class="def">             return ()
+</span><span class="sub">-  where
+</span><span class="sub">-    name = takeFileName path
+</span><span class="sub">-    outPath = outputDirectory config &lt;/&gt; name
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="def"> The role of the function above is to gather information about a git repository and
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>description</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+This is a placeholder respository description used for testing!
+</span></pre>
+</div></div>
+  </body>
+</html>

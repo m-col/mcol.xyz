@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - paint snap box indicator while dragging window</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/3bb55e389df3dc851fc83eb5ac0b0fd40bf6a876.html">3bb55e389df3dc851fc83eb5ac0b0fd40bf6a876</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/155e74f270827dca54ba79af1cc86c1d0093db90.html">155e74f270827dca54ba79af1cc86c1d0093db90</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-01 00:30:34 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-01 00:30:34 +0000
+
+paint snap box indicator while dragging window
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -112,6 +112,9 @@
+<span class="def">     double zoom_min, zoom_max;
+</span><span class="def">     bool auto_focus;
+</span><span class="def"> 
+</span><span class="add">+    bool can_snap;
+</span><span class="add">+    struct wlr_box snap_geobox;
+</span><span class="add">+
+</span><span class="def">     struct wl_list scratchpads;
+</span><span class="def">     pid_t scratchpad_waiting;
+</span><span class="def"> };
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -252,6 +252,14 @@
+<span class="def"> 	);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="add">+    // paint snap box
+</span><span class="add">+    if (wimp.can_snap) {
+</span><span class="add">+	wlr_render_rect(
+</span><span class="add">+	    renderer, &amp;wimp.snap_geobox, wimp.mark_indicator.colour,
+</span><span class="add">+	    output-&gt;wlr_output-&gt;transform_matrix
+</span><span class="add">+	);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     wlr_output_render_software_cursors(output-&gt;wlr_output, NULL);  // no-op with HW cursors
+</span><span class="def">     wlr_renderer_end(renderer);
+</span><span class="def">     wlr_output_commit(output-&gt;wlr_output);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,16 +14,16 @@
+<span class="def"> #define SNAP_WIDTH 42
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void try_snap(struct view *view) {
+</span><span class="add">+bool try_snap() {
+</span><span class="def">     double x = wimp.cursor-&gt;x;
+</span><span class="def">     double y = wimp.cursor-&gt;y;
+</span><span class="def">     struct wlr_box snap_to;
+</span><span class="sub">-    bool snap = false;
+</span><span class="add">+    bool can_snap = false;
+</span><span class="def">     struct wlr_output *output = wlr_output_layout_output_at(wimp.output_layout, x, y);
+</span><span class="def">     struct wlr_box *outgeo = wlr_output_layout_get_box(wimp.output_layout, output);
+</span><span class="def"> 
+</span><span class="def">     if (x &lt; SNAP_WIDTH) {
+</span><span class="sub">-	snap = true;
+</span><span class="add">+	can_snap = true;
+</span><span class="def"> 	snap_to.x = outgeo-&gt;x;
+</span><span class="def"> 	snap_to.width = outgeo-&gt;width / 2;
+</span><span class="def"> 	if (y &lt;= outgeo-&gt;height / 3) {
+</span>@@ -39,7 +39,7 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     else if (x &gt; outgeo-&gt;width - SNAP_WIDTH) {
+</span><span class="sub">-	snap = true;
+</span><span class="add">+	can_snap = true;
+</span><span class="def"> 	snap_to.x = outgeo-&gt;width / 2;
+</span><span class="def"> 	snap_to.width = outgeo-&gt;width / 2;
+</span><span class="def"> 	if (y &lt;= outgeo-&gt;height / 3) {
+</span>@@ -55,7 +55,7 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     else if (y &lt; SNAP_WIDTH) {
+</span><span class="sub">-	snap = true;
+</span><span class="add">+	can_snap = true;
+</span><span class="def"> 	snap_to.y = outgeo-&gt;y;
+</span><span class="def"> 	snap_to.height = outgeo-&gt;height / 2;
+</span><span class="def"> 	if (x &lt;= outgeo-&gt;width / 3) {
+</span>@@ -71,7 +71,7 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     else if (y &gt; outgeo-&gt;height - SNAP_WIDTH) {
+</span><span class="sub">-	snap = true;
+</span><span class="add">+	can_snap = true;
+</span><span class="def"> 	snap_to.y = outgeo-&gt;height / 2;
+</span><span class="def"> 	snap_to.height = outgeo-&gt;height / 2;
+</span><span class="def"> 	if (x &lt;= outgeo-&gt;width / 3) {
+</span>@@ -86,14 +86,8 @@
+<span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    if (snap) {
+</span><span class="sub">-	int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="sub">-	snap_to.x += border_width;
+</span><span class="sub">-	snap_to.y += border_width;
+</span><span class="sub">-	snap_to.width -= border_width * 2;
+</span><span class="sub">-	snap_to.height -= border_width * 2;
+</span><span class="sub">-	view_apply_geometry(view, &amp;snap_to);
+</span><span class="sub">-    }
+</span><span class="add">+    wimp.snap_geobox = snap_to;
+</span><span class="add">+    return can_snap;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -346,6 +340,9 @@
+<span class="def"> 		};
+</span><span class="def"> 		wimp.on_mouse_motion(&amp;motion);
+</span><span class="def"> 	    }
+</span><span class="add">+	    if (wimp.grabbed_view) {
+</span><span class="add">+		wimp.can_snap = try_snap();
+</span><span class="add">+	    }
+</span><span class="def"> 	    break;
+</span><span class="def"> 
+</span><span class="def"> 	case CURSOR_MOVE:
+</span>@@ -414,8 +411,16 @@
+<span class="def"> 	    wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="def"> 	}
+</span><span class="def"> 	if (wimp.grabbed_view) {
+</span><span class="sub">-	    try_snap(wimp.grabbed_view);
+</span><span class="add">+	    if (try_snap()) {
+</span><span class="add">+		int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="add">+		wimp.snap_geobox.x += border_width;
+</span><span class="add">+		wimp.snap_geobox.y += border_width;
+</span><span class="add">+		wimp.snap_geobox.width -= border_width * 2;
+</span><span class="add">+		wimp.snap_geobox.height -= border_width * 2;
+</span><span class="add">+		view_apply_geometry(wimp.grabbed_view, &amp;wimp.snap_geobox);
+</span><span class="add">+	    }
+</span><span class="def"> 	    wimp.grabbed_view = NULL;
+</span><span class="add">+	    wimp.can_snap = false;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - update gitja setup</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/3ae7c0be7c95c4d019e6cf9c35826c659c9048ba.html">3ae7c0be7c95c4d019e6cf9c35826c659c9048ba</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/95f21ca1a397a236a0c37f240e2e1a6b873f5e06.html">95f21ca1a397a236a0c37f240e2e1a6b873f5e06</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-03-05 02:22:44 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-03-05 02:22:44 +0000
+
+update gitja setup
+</pre><div class="diff">
+  <p>
+    <b>gitja_descriptions.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,39 @@
+<span class="add">+#!/usr/bin/env python3
+</span><span class="add">+#
+</span><span class="add">+# Generate a &apos;descriptions&apos; file in each repo folder
+</span><span class="add">+#
+</span><span class="add">+# Make sure to re-run this script after editing any descriptions or adding repos.
+</span><span class="add">+
+</span><span class="add">+from pathlib import Path
+</span><span class="add">+
+</span><span class="add">+repo_dir = Path(&quot;~/git/&quot;).expanduser()
+</span><span class="add">+
+</span><span class="add">+descriptions = {
+</span><span class="add">+    &quot;bdf2flf&quot;: &quot;Convert BDF bitmap fonts to flf fonts for figlet&quot;,
+</span><span class="add">+    &quot;gitja&quot;: &quot;🐙 Templated web page generator for your git repositories&quot;,
+</span><span class="add">+    &quot;mcol.xyz&quot;: &quot;The main content of my blog mcol.xyz&quot;,
+</span><span class="add">+    &quot;mini-theme&quot;: &quot;A mini theme for the pelican static site generator&quot;,
+</span><span class="add">+    &quot;mkinitcpio-welcome&quot;: &apos;mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html&apos;,
+</span><span class="add">+    &quot;pelican-microfeed&quot;: &quot;Pelican plugin to create tiny single-page feeds&quot;,
+</span><span class="add">+    &quot;pelican-minify-fontawesome&quot;: &quot;Pelican plugin to minify fontawesome assets to include used icons.&quot;,
+</span><span class="add">+    &quot;pixels&quot;: &quot;Neuropixels recording data processing and analysis pipeline&quot;,
+</span><span class="add">+    &quot;pywayland&quot;: &quot;Python bindings to libwayland&quot;,
+</span><span class="add">+    &quot;pywlroots&quot;: &quot;Python bindings to the wlroots Wayland library&quot;,
+</span><span class="add">+    &quot;qtile&quot;: &quot;A pure-Python tiling window manager for X11 and Wayland.&quot;,
+</span><span class="add">+    &quot;qtools&quot;: &quot;An (outdated) collection of plugins for Qtile.&quot;,
+</span><span class="add">+    &quot;reach&quot;: &quot;Rodent reaching task control software&quot;,
+</span><span class="add">+    &quot;screenshot-gallery-generator&quot;: &quot;Screenshot gallery generator for nixers&quot;,
+</span><span class="add">+    &quot;sudoku-solver&quot;: &quot;A small haskell script to solve sudoku puzzles&quot;,
+</span><span class="add">+    &quot;tide&quot;: &quot;A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.&quot;,
+</span><span class="add">+    &quot;unix.sexy-react&quot;: &quot;A web app to help you design beautiful desktop environments.&quot;,
+</span><span class="add">+    &quot;vim-misc&quot;: &quot;My vim configuration&quot;,
+</span><span class="add">+    &quot;wimp&quot;: &quot;gimp but for windows: a wayland compositor&quot;,
+</span><span class="add">+    &quot;xanadu&quot;: &quot;Virtual desktop underlay for Wayland and X11&quot;,
+</span><span class="add">+    &quot;xoop&quot;: &quot;Loop your X cursor around the screen 👉😎👉&quot;,
+</span><span class="add">+    &quot;zshrc&quot;: &quot;My zsh configuration&quot;,
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+for name, desc in descriptions.items():
+</span><span class="add">+    path = repo_dir / name / &quot;.git&quot; / &quot;description&quot;
+</span><span class="add">+    with path.open(&quot;w&quot;) as f:
+</span><span class="add">+        f.write(desc)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja.dhall</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,8 +1,8 @@
+<span class="add">+-- After adding repos, make sure to re-run gitja_descriptions.py
+</span><span class="add">+
+</span><span class="def"> let repos = &quot;..&quot;
+</span><span class="def"> 
+</span><span class="sub">-let folders =
+</span><span class="sub">-    [ &quot;${repos}/gitja&quot;
+</span><span class="sub">-    , &quot;${repos}/AUR-qtile-git&quot;
+</span><span class="add">+let folders = [
+</span><span class="def">     , &quot;${repos}/bdf2flf&quot;
+</span><span class="def">     , &quot;${repos}/gitja&quot;
+</span><span class="def">     , &quot;${repos}/mcol.xyz&quot;
+</span>@@ -11,20 +11,20 @@
+<span class="def">     , &quot;${repos}/pelican-microfeed&quot;
+</span><span class="def">     , &quot;${repos}/pelican-minify-fontawesome&quot;
+</span><span class="def">     , &quot;${repos}/pixels&quot;
+</span><span class="sub">-    , &quot;${repos}/pixels-analysis&quot;
+</span><span class="def">     , &quot;${repos}/pywayland&quot;
+</span><span class="def">     , &quot;${repos}/pywlroots&quot;
+</span><span class="def">     , &quot;${repos}/qtile&quot;
+</span><span class="sub">-    , &quot;${repos}/qtile-examples&quot;
+</span><span class="def">     , &quot;${repos}/qtools&quot;
+</span><span class="def">     , &quot;${repos}/reach&quot;
+</span><span class="def">     , &quot;${repos}/screenshot-gallery-generator&quot;
+</span><span class="def">     , &quot;${repos}/sudoku-solver&quot;
+</span><span class="def">     , &quot;${repos}/tide&quot;
+</span><span class="def">     , &quot;${repos}/unix.sexy-react&quot;
+</span><span class="add">+    , &quot;${repos}/vim-misc&quot;
+</span><span class="def">     , &quot;${repos}/wimp&quot;
+</span><span class="def">     , &quot;${repos}/xanadu&quot;
+</span><span class="def">     , &quot;${repos}/xoop&quot;
+</span><span class="add">+    , &quot;${repos}/zshrc&quot;
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def"> let config =
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/repo-table-header.html.include</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,7 +14,7 @@
+<span class="def"> 
+</span><span class="def"> &lt;table&gt;
+</span><span class="def">   &lt;tr&gt;&lt;td&gt;&lt;span class=&quot;desc&quot;&gt;{{ description }}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-  &lt;tr class=&quot;url&quot;&gt;&lt;td&gt;git clone &lt;a href=&quot;{{ host }}/code/{{ name }}&quot;&gt;{{ host }}/code/{{ name }}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+  &lt;tr class=&quot;url&quot;&gt;&lt;td&gt;git clone &lt;a href=&quot;https://github.com/m-col/{{ name }}&quot;&gt;https://github.com/m-col/{{ name }}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="def">   &lt;tr&gt;&lt;td&gt;
+</span><span class="def">     &lt;a href=&quot;{{ host }}/code/{{ name }}/tree.html&quot;&gt;Files&lt;/a&gt; | &lt;a href=&quot;{{ host }}/code/{{ name }}/refs.html&quot;&gt;Refs&lt;/a&gt;
+</span><span class="def">     {% if readme %} | &lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ readme.href }}&quot;&gt;Readme&lt;/a&gt;{% endif %}
+</span></pre>
+</div></div>
+  </body>
+</html>

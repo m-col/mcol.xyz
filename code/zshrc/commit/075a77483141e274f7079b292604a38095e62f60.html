@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - add more git ranger aliases, and netstat aliases</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/075a77483141e274f7079b292604a38095e62f60.html">075a77483141e274f7079b292604a38095e62f60</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/741d028590d86cacadaf98ae90299b122df02928.html">741d028590d86cacadaf98ae90299b122df02928</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-05-28 11:28:00 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-05-28 11:28:00 +0100
+
+add more git ranger aliases, and netstat aliases
+</pre><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -657,7 +657,12 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # git
+</span><span class="add">+map bs shell git status | less -r
+</span><span class="add">+map bm console shell git commit -m &apos;
+</span><span class="def"> map bd shell git diff --color=always %s | less -r
+</span><span class="def"> map bD shell git diff --color=always | less -r
+</span><span class="def"> map ba shell git add %s
+</span><span class="add">+map bA shell git add -f %s
+</span><span class="def"> map bc console shell git checkout%space
+</span><span class="add">+map bp shell git push | less -r
+</span><span class="add">+map bl shell git pull | less -r
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -50,7 +50,8 @@
+<span class="def"> alias pinga=&apos;ping archlinux.org&apos;
+</span><span class="def"> alias ip=&quot;ip -c&quot;
+</span><span class="def"> alias dns=&quot;cat /etc/resolv.conf&quot;
+</span><span class="sub">-alias wnet=&quot;sudo netstat -nputwc&quot;
+</span><span class="add">+alias wnet=&quot;sudo netstat -nputw&quot;
+</span><span class="add">+alias wnetl=&quot;sudo netstat -nputlw&quot;
+</span><span class="def"> 
+</span><span class="def"> # launchers
+</span><span class="def"> alias ra=&quot;ranger&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

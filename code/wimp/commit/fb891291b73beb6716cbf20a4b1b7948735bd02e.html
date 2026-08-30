@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add keyboard struct; fix some formatting</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/fb891291b73beb6716cbf20a4b1b7948735bd02e.html">fb891291b73beb6716cbf20a4b1b7948735bd02e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/7216e9333e423fe6bf3a14396d31394e6e66f9be.html">7216e9333e423fe6bf3a14396d31394e6e66f9be</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-05 23:01:16 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-05 23:01:16 +0000
+
+add keyboard struct; fix some formatting
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -66,4 +66,10 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-struct server create_server();
+</span><span class="add">+struct keyboard {
+</span><span class="add">+    struct wl_list link;
+</span><span class="add">+    struct server *server;
+</span><span class="add">+    struct wlr_input_device *device;
+</span><span class="add">+    struct wl_listener modifier_listener;
+</span><span class="add">+    struct wl_listener key_listener;
+</span><span class="add">+};
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,9 +3,11 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void focus_view(struct view *view, struct wlr_surface *surface);
+</span><span class="def"> void on_map(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_unmap(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_surface_destroy(struct wl_listener *listener, void *data);
+</span><span class="add">+void process_move_resize(struct view *view, enum cursor_mode mode, uint32_t edges);
+</span><span class="def"> void on_request_move(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_request_resize(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_new_xdg_surface(struct wl_listener *listener, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,15 +4,15 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void focus_view(struct view *view, struct wlr_surface *surface) {
+</span><span class="add">+void focus_view(struct view *view, struct wlr_surface *surface) {
+</span><span class="def">     if (view == NULL) {
+</span><span class="sub">-	    return;
+</span><span class="add">+	return;
+</span><span class="def">     }
+</span><span class="def">     struct server *server = view-&gt;server;
+</span><span class="def">     struct wlr_seat *seat = server-&gt;seat;
+</span><span class="def">     struct wlr_surface *prev_surface = seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     if (prev_surface == surface) {
+</span><span class="sub">-	    return;
+</span><span class="add">+	return;
+</span><span class="def">     }
+</span><span class="def">     if (prev_surface) {
+</span><span class="def"> 	struct wlr_xdg_surface *previous = wlr_xdg_surface_from_wlr_surface(
+</span>@@ -32,6 +32,7 @@
+<span class="def">     );
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> void on_map(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, map_listener);
+</span><span class="def">     view-&gt;is_mapped = true;
+</span>@@ -98,30 +99,30 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void on_new_xdg_surface(struct wl_listener *listener, void *data) {
+</span><span class="sub">-	struct server *server = wl_container_of(listener, server, new_xdg_surface_listener);
+</span><span class="sub">-	struct wlr_xdg_surface *surface = data;
+</span><span class="sub">-	if (surface-&gt;role != WLR_XDG_SURFACE_ROLE_TOPLEVEL) {
+</span><span class="sub">-		return;
+</span><span class="sub">-	}
+</span><span class="sub">-
+</span><span class="sub">-	struct view *view = calloc(1, sizeof(struct view));
+</span><span class="sub">-	view-&gt;server = server;
+</span><span class="sub">-	view-&gt;surface = surface;
+</span><span class="sub">-
+</span><span class="sub">-	view-&gt;map_listener.notify = on_map;
+</span><span class="sub">-	wl_signal_add(&amp;surface-&gt;events.map, &amp;view-&gt;map_listener);
+</span><span class="sub">-	view-&gt;unmap_listener.notify = on_unmap;
+</span><span class="sub">-	wl_signal_add(&amp;surface-&gt;events.unmap, &amp;view-&gt;unmap_listener);
+</span><span class="sub">-	view-&gt;destroy_listener.notify = on_surface_destroy;
+</span><span class="sub">-	wl_signal_add(&amp;surface-&gt;events.destroy, &amp;view-&gt;destroy_listener);
+</span><span class="sub">-
+</span><span class="sub">-	struct wlr_xdg_toplevel *toplevel = surface-&gt;toplevel;
+</span><span class="sub">-	view-&gt;request_move_listener.notify = on_request_move;
+</span><span class="sub">-	wl_signal_add(&amp;toplevel-&gt;events.request_move, &amp;view-&gt;request_move_listener);
+</span><span class="sub">-	view-&gt;request_resize_listener.notify = on_request_resize;
+</span><span class="sub">-	wl_signal_add(&amp;toplevel-&gt;events.request_resize, &amp;view-&gt;request_resize_listener);
+</span><span class="sub">-
+</span><span class="sub">-	wl_list_insert(&amp;server-&gt;views, &amp;view-&gt;link);
+</span><span class="add">+    struct server *server = wl_container_of(listener, server, new_xdg_surface_listener);
+</span><span class="add">+    struct wlr_xdg_surface *surface = data;
+</span><span class="add">+    if (surface-&gt;role != WLR_XDG_SURFACE_ROLE_TOPLEVEL) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct view *view = calloc(1, sizeof(struct view));
+</span><span class="add">+    view-&gt;server = server;
+</span><span class="add">+    view-&gt;surface = surface;
+</span><span class="add">+
+</span><span class="add">+    view-&gt;map_listener.notify = on_map;
+</span><span class="add">+    wl_signal_add(&amp;surface-&gt;events.map, &amp;view-&gt;map_listener);
+</span><span class="add">+    view-&gt;unmap_listener.notify = on_unmap;
+</span><span class="add">+    wl_signal_add(&amp;surface-&gt;events.unmap, &amp;view-&gt;unmap_listener);
+</span><span class="add">+    view-&gt;destroy_listener.notify = on_surface_destroy;
+</span><span class="add">+    wl_signal_add(&amp;surface-&gt;events.destroy, &amp;view-&gt;destroy_listener);
+</span><span class="add">+
+</span><span class="add">+    struct wlr_xdg_toplevel *toplevel = surface-&gt;toplevel;
+</span><span class="add">+    view-&gt;request_move_listener.notify = on_request_move;
+</span><span class="add">+    wl_signal_add(&amp;toplevel-&gt;events.request_move, &amp;view-&gt;request_move_listener);
+</span><span class="add">+    view-&gt;request_resize_listener.notify = on_request_resize;
+</span><span class="add">+    wl_signal_add(&amp;toplevel-&gt;events.request_resize, &amp;view-&gt;request_resize_listener);
+</span><span class="add">+
+</span><span class="add">+    wl_list_insert(&amp;server-&gt;views, &amp;view-&gt;link);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -130,4 +131,4 @@
+<span class="def">     server-&gt;shell = wlr_xdg_shell_create(server-&gt;display);
+</span><span class="def">     server-&gt;new_xdg_surface_listener.notify = on_new_xdg_surface;
+</span><span class="def">     wl_signal_add(&amp;server-&gt;shell-&gt;events.new_surface, &amp;server-&gt;new_xdg_surface_listener);
+</span><span class="sub">-};
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

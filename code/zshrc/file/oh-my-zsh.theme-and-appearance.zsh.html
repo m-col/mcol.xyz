@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - oh-my-zsh/theme-and-appearance.zsh</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- oh-my-zsh/theme-and-appearance.zsh</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> # ls colors
+<a href="#l2" class="line" id="l2">      2</a> autoload -U colors &amp;&amp; colors
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> # Enable ls colors
+<a href="#l5" class="line" id="l5">      5</a> export LSCOLORS=&quot;Gxfxcxdxbxegedabagacad&quot;
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a> # TODO organise this chaotic logic
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> if [[ &quot;$DISABLE_LS_COLORS&quot; != &quot;true&quot; ]]; then
+<a href="#l10" class="line" id="l10">     10</a>   # Find the option for using colors in ls, depending on the version
+<a href="#l11" class="line" id="l11">     11</a>   if [[ &quot;$OSTYPE&quot; == netbsd* ]]; then
+<a href="#l12" class="line" id="l12">     12</a>     # On NetBSD, test if &quot;gls&quot; (GNU ls) is installed (this one supports colors);
+<a href="#l13" class="line" id="l13">     13</a>     # otherwise, leave ls as is, because NetBSD&apos;s ls doesn&apos;t support -G
+<a href="#l14" class="line" id="l14">     14</a>     gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+<a href="#l15" class="line" id="l15">     15</a>   elif [[ &quot;$OSTYPE&quot; == openbsd* ]]; then
+<a href="#l16" class="line" id="l16">     16</a>     # On OpenBSD, &quot;gls&quot; (ls from GNU coreutils) and &quot;colorls&quot; (ls from base,
+<a href="#l17" class="line" id="l17">     17</a>     # with color and multibyte support) are available from ports.  &quot;colorls&quot;
+<a href="#l18" class="line" id="l18">     18</a>     # will be installed on purpose and can&apos;t be pulled in by installing
+<a href="#l19" class="line" id="l19">     19</a>     # coreutils, so prefer it to &quot;gls&quot;.
+<a href="#l20" class="line" id="l20">     20</a>     gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+<a href="#l21" class="line" id="l21">     21</a>     colorls -G -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;colorls -G&apos;
+<a href="#l22" class="line" id="l22">     22</a>   elif [[ &quot;$OSTYPE&quot; == darwin* ]]; then
+<a href="#l23" class="line" id="l23">     23</a>     # this is a good alias, it works by default just using $LSCOLORS
+<a href="#l24" class="line" id="l24">     24</a>     ls -G . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls -G&apos;
+<a href="#l25" class="line" id="l25">     25</a> 
+<a href="#l26" class="line" id="l26">     26</a>     # only use coreutils ls if there is a dircolors customization present ($LS_COLORS or .dircolors file)
+<a href="#l27" class="line" id="l27">     27</a>     # otherwise, gls will use the default color scheme which is ugly af
+<a href="#l28" class="line" id="l28">     28</a>     [[ -n &quot;$LS_COLORS&quot; || -f &quot;$HOME/.dircolors&quot; ]] &amp;&amp; gls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;gls --color=tty&apos;
+<a href="#l29" class="line" id="l29">     29</a>   else
+<a href="#l30" class="line" id="l30">     30</a>     # For GNU ls, we use the default ls color theme. They can later be overwritten by themes.
+<a href="#l31" class="line" id="l31">     31</a>     if [[ -z &quot;$LS_COLORS&quot; ]]; then
+<a href="#l32" class="line" id="l32">     32</a>       (( $+commands[dircolors] )) &amp;&amp; eval &quot;$(dircolors -b)&quot;
+<a href="#l33" class="line" id="l33">     33</a>     fi
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a>     ls --color -d . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls --color=tty&apos; || { ls -G . &amp;&gt;/dev/null &amp;&amp; alias ls=&apos;ls -G&apos; }
+<a href="#l36" class="line" id="l36">     36</a> 
+<a href="#l37" class="line" id="l37">     37</a>     # Take advantage of $LS_COLORS for completion as well.
+<a href="#l38" class="line" id="l38">     38</a>     zstyle &apos;:completion:*&apos; list-colors &quot;${(s.:.)LS_COLORS}&quot;
+<a href="#l39" class="line" id="l39">     39</a>   fi
+<a href="#l40" class="line" id="l40">     40</a> fi
+<a href="#l41" class="line" id="l41">     41</a> 
+<a href="#l42" class="line" id="l42">     42</a> setopt auto_cd
+<a href="#l43" class="line" id="l43">     43</a> setopt multios
+<a href="#l44" class="line" id="l44">     44</a> setopt prompt_subst
+<a href="#l45" class="line" id="l45">     45</a> 
+<a href="#l46" class="line" id="l46">     46</a> [[ -n &quot;$WINDOW&quot; ]] &amp;&amp; SCREEN_NO=&quot;%B$WINDOW%b &quot; || SCREEN_NO=&quot;&quot;
+<a href="#l47" class="line" id="l47">     47</a> 
+<a href="#l48" class="line" id="l48">     48</a> # Apply theming defaults
+<a href="#l49" class="line" id="l49">     49</a> #PS1=&quot;%n@%m:%~%# &quot;
+<a href="#l50" class="line" id="l50">     50</a> 
+</pre>
+  </div>
+  </body>
+</html>

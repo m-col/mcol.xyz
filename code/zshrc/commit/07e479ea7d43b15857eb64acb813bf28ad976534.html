@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - moved autosuggest out of ohmyzsh as it isnt</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/07e479ea7d43b15857eb64acb813bf28ad976534.html">07e479ea7d43b15857eb64acb813bf28ad976534</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/40d868b05479327e5fa4e50a3b697f4272a55801.html">40d868b05479327e5fa4e50a3b697f4272a55801</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 01:19:09 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 01:19:09 +0000
+
+moved autosuggest out of ohmyzsh as it isnt
+</pre><div class="diff">
+  <p>
+    <b>zsh-autosuggestions.zsh</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,70 @@
+<span class="add">+# -------------------------------------------------#
+</span><span class="add">+# https://github.com/zsh-users/zsh-autosuggestions #
+</span><span class="add">+# -------------------------------------------------#
+</span><span class="add">+
+</span><span class="add">+[[ ! -e $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &amp;&amp; return
+</span><span class="add">+source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
+</span><span class="add">+
+</span><span class="add">+# More info: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Widgets
+</span><span class="add">+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=&apos;fg=8&apos;
+</span><span class="add">+
+</span><span class="add">+# Prefix to use when saving original versions of bound widgets
+</span><span class="add">+ZSH_AUTOSUGGEST_ORIGINAL_WIDGET_PREFIX=autosuggest-orig-
+</span><span class="add">+
+</span><span class="add">+#ZSH_AUTOSUGGEST_STRATEGY=default
+</span><span class="add">+ZSH_AUTOSUGGEST_STRATEGY=match_prev_cmd
+</span><span class="add">+
+</span><span class="add">+# Widgets that clear the suggestion
+</span><span class="add">+ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(
+</span><span class="add">+	history-search-forward
+</span><span class="add">+	history-search-backward
+</span><span class="add">+	history-beginning-search-forward
+</span><span class="add">+	history-beginning-search-backward
+</span><span class="add">+	history-substring-search-up
+</span><span class="add">+	history-substring-search-down
+</span><span class="add">+	up-line-or-beginning-search
+</span><span class="add">+	down-line-or-beginning-search
+</span><span class="add">+	up-line-or-history
+</span><span class="add">+	down-line-or-history
+</span><span class="add">+	accept-line
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that accept the entire suggestion
+</span><span class="add">+ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(
+</span><span class="add">+	end-of-line
+</span><span class="add">+	vi-end-of-line
+</span><span class="add">+	vi-add-eol
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that accept the entire suggestion and execute it
+</span><span class="add">+ZSH_AUTOSUGGEST_EXECUTE_WIDGETS=(
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that accept the suggestion as far as the cursor moves
+</span><span class="add">+ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
+</span><span class="add">+	vi-forward-char
+</span><span class="add">+	forward-word
+</span><span class="add">+	vi-forward-word
+</span><span class="add">+	vi-forward-word-end
+</span><span class="add">+	vi-forward-blank-word
+</span><span class="add">+	vi-forward-blank-word-end
+</span><span class="add">+	vi-find-next-char
+</span><span class="add">+	vi-find-next-char-skip
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Widgets that should be ignored (globbing supported but must be escaped)
+</span><span class="add">+ZSH_AUTOSUGGEST_IGNORE_WIDGETS=(
+</span><span class="add">+	orig-\*
+</span><span class="add">+	beep
+</span><span class="add">+	run-help
+</span><span class="add">+	set-local-history
+</span><span class="add">+	which-command
+</span><span class="add">+	yank
+</span><span class="add">+	yank-pop
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+# Max size of buffer to trigger autosuggestion. Leave undefined for no upper bound.
+</span><span class="add">+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=
+</span><span class="add">+
+</span><span class="add">+# Pty name for calculating autosuggestions asynchronously
+</span><span class="add">+ZSH_AUTOSUGGEST_ASYNC_PTY_NAME=zsh_autosuggest_pty
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>oh-my-zsh/zsh-autosuggestions.zsh</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,70 +0,0 @@
+<span class="sub">-# -------------------------------------------------#
+</span><span class="sub">-# https://github.com/zsh-users/zsh-autosuggestions #
+</span><span class="sub">-# -------------------------------------------------#
+</span><span class="sub">-
+</span><span class="sub">-[[ ! -e $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &amp;&amp; return
+</span><span class="sub">-source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
+</span><span class="sub">-
+</span><span class="sub">-# More info: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Widgets
+</span><span class="sub">-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=&apos;fg=8&apos;
+</span><span class="sub">-
+</span><span class="sub">-# Prefix to use when saving original versions of bound widgets
+</span><span class="sub">-ZSH_AUTOSUGGEST_ORIGINAL_WIDGET_PREFIX=autosuggest-orig-
+</span><span class="sub">-
+</span><span class="sub">-#ZSH_AUTOSUGGEST_STRATEGY=default
+</span><span class="sub">-ZSH_AUTOSUGGEST_STRATEGY=match_prev_cmd
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that clear the suggestion
+</span><span class="sub">-ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(
+</span><span class="sub">-	history-search-forward
+</span><span class="sub">-	history-search-backward
+</span><span class="sub">-	history-beginning-search-forward
+</span><span class="sub">-	history-beginning-search-backward
+</span><span class="sub">-	history-substring-search-up
+</span><span class="sub">-	history-substring-search-down
+</span><span class="sub">-	up-line-or-beginning-search
+</span><span class="sub">-	down-line-or-beginning-search
+</span><span class="sub">-	up-line-or-history
+</span><span class="sub">-	down-line-or-history
+</span><span class="sub">-	accept-line
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that accept the entire suggestion
+</span><span class="sub">-ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(
+</span><span class="sub">-	end-of-line
+</span><span class="sub">-	vi-end-of-line
+</span><span class="sub">-	vi-add-eol
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that accept the entire suggestion and execute it
+</span><span class="sub">-ZSH_AUTOSUGGEST_EXECUTE_WIDGETS=(
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that accept the suggestion as far as the cursor moves
+</span><span class="sub">-ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
+</span><span class="sub">-	vi-forward-char
+</span><span class="sub">-	forward-word
+</span><span class="sub">-	vi-forward-word
+</span><span class="sub">-	vi-forward-word-end
+</span><span class="sub">-	vi-forward-blank-word
+</span><span class="sub">-	vi-forward-blank-word-end
+</span><span class="sub">-	vi-find-next-char
+</span><span class="sub">-	vi-find-next-char-skip
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Widgets that should be ignored (globbing supported but must be escaped)
+</span><span class="sub">-ZSH_AUTOSUGGEST_IGNORE_WIDGETS=(
+</span><span class="sub">-	orig-\*
+</span><span class="sub">-	beep
+</span><span class="sub">-	run-help
+</span><span class="sub">-	set-local-history
+</span><span class="sub">-	which-command
+</span><span class="sub">-	yank
+</span><span class="sub">-	yank-pop
+</span><span class="sub">-)
+</span><span class="sub">-
+</span><span class="sub">-# Max size of buffer to trigger autosuggestion. Leave undefined for no upper bound.
+</span><span class="sub">-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=
+</span><span class="sub">-
+</span><span class="sub">-# Pty name for calculating autosuggestions asynchronously
+</span><span class="sub">-ZSH_AUTOSUGGEST_ASYNC_PTY_NAME=zsh_autosuggest_pty
+</span></pre>
+</div></div>
+  </body>
+</html>

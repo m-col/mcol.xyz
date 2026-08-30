@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - update startup script</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/3a88369a072e0573b27fa278bb840dc56550292d.html">3a88369a072e0573b27fa278bb840dc56550292d</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/081da40fe20b9ee6dd6cdafcdac3e7b1b5b92923.html">081da40fe20b9ee6dd6cdafcdac3e7b1b5b92923</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-02-16 18:45:39 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-02-16 18:45:39 +0000
+
+update startup script
+</pre><div class="diff">
+  <p>
+    <b>startup.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,49 +2,51 @@
+<span class="def"> #
+</span><span class="def"> # Qtile Wayland startup script
+</span><span class="def"> 
+</span><span class="sub">-{
+</span><span class="sub">-    foot --server &amp;
+</span><span class="add">+foot --server &amp;
+</span><span class="def"> 
+</span><span class="sub">-    # wob
+</span><span class="sub">-    FIFO=/tmp/wob-$WAYLAND_DISPLAY
+</span><span class="sub">-    test -e $FIFO || mkfifo $FIFO
+</span><span class="sub">-    tail -f $FIFO | wob \
+</span><span class="sub">-	-a bottom -M 0 -H 28 -W 1920 -o 0 -b 0 -p 0 \
+</span><span class="sub">-	--background-color &quot;#00000000&quot; --bar-color &quot;#66CFCCD6&quot; -t 800 &amp;
+</span><span class="sub">-
+</span><span class="sub">-} &amp;&gt; /dev/null
+</span><span class="add">+# Wallpaper
+</span><span class="add">+(
+</span><span class="add">+    swww init
+</span><span class="add">+    sleep 1
+</span><span class="add">+    swww img --filter Nearest --transition-step=1 --transition-fps 60 \
+</span><span class="add">+	--transition-duration 12 ~/pictures/Wallpapers/Leuh6wm-slow.gif
+</span><span class="add">+) &amp;
+</span><span class="def"> 
+</span><span class="def"> run_if_new() { ps aux | grep -v grep | grep -q $1 || $@; }
+</span><span class="def"> 
+</span><span class="def"> [[ -z &quot;$QTILE_XEPHYR&quot; ]] &amp;&amp; {
+</span><span class="def">     # Session setup
+</span><span class="def">     systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP &amp;
+</span><span class="sub">-    dbus-update-activation-environment --systemd \
+</span><span class="sub">-	WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=$XDG_CURRENT_DESKTOP &amp;
+</span><span class="add">+    dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP &amp;
+</span><span class="def"> 
+</span><span class="def">     # Services
+</span><span class="sub">-    kanshi &amp;&gt;&gt; ~/.local/share/qtile/qtile.log &amp;
+</span><span class="add">+    kanshi  &amp;
+</span><span class="def">     wlsunset &amp;
+</span><span class="def">     swayidle &amp;
+</span><span class="def">     swaync &amp;
+</span><span class="def">     mpDris2 &amp;
+</span><span class="def">     sway-mpris-idle-inhibit &amp;
+</span><span class="def">     playerctld daemon &amp;
+</span><span class="add">+    nm-applet --indicator &amp;
+</span><span class="def">     #kdeconnect-indicator &amp;
+</span><span class="add">+    darkman run &amp;
+</span><span class="def"> 
+</span><span class="def">     # Startup programs
+</span><span class="sub">-    #run_if_new firefox &amp;
+</span><span class="sub">-    #run_if_new geary &amp;
+</span><span class="add">+    run_if_new keepassxc &amp;
+</span><span class="add">+    sleep 2
+</span><span class="add">+    run_if_new firefox &amp;
+</span><span class="add">+    run_if_new evolution &amp;
+</span><span class="def"> 
+</span><span class="def">     # Notify me if any systemd services failed
+</span><span class="def">     check_systemd &amp;
+</span><span class="sub">-} &amp;&gt; /dev/null
+</span><span class="add">+
+</span><span class="add">+# Send all output to Qtile&apos;s log
+</span><span class="add">+} &amp;&gt;&gt; ~/.local/share/qtile/qtile.log
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Clean up
+</span><span class="def"> clean() {
+</span><span class="def">     pkill -P $$
+</span><span class="sub">-    test -e $FIFO &amp;&amp; rm $FIFO
+</span><span class="def"> }
+</span><span class="def"> trap clean SIGINT SIGTERM
+</span><span class="def"> sleep infinity &amp;
+</span></pre>
+</div></div>
+  </body>
+</html>

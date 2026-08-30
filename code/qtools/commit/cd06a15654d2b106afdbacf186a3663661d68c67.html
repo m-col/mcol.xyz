@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - notification Server callbacks should close the correct notif</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/cd06a15654d2b106afdbacf186a3663661d68c67.html">cd06a15654d2b106afdbacf186a3663661d68c67</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/540af51557d475c82d16227520d2c01090bd7231.html">540af51557d475c82d16227520d2c01090bd7231</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-22 22:47:21 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-22 22:47:21 +0000
+
+notification Server callbacks should close the correct notif
+</pre><div class="diff">
+  <p>
+    <b>qtools/notification/notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,9 +17,8 @@
+<span class="def"> from xcffib.xproto import StackMode
+</span><span class="def"> 
+</span><span class="def"> from libqtile import configurable, pangocffi, window
+</span><span class="sub">-from libqtile.command import lazy
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.notify import notifier
+</span><span class="sub">-from libqtile.log_utils import logger
+</span><span class="def"> from libqtile.drawer import Drawer
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -40,6 +39,7 @@
+<span class="def">         self.win = win
+</span><span class="def">         self.drawer = drawer
+</span><span class="def">         self.layout = layout
+</span><span class="add">+        self.id = None
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> class Server(configurable.Configurable):
+</span>@@ -53,6 +53,7 @@
+<span class="def">         - overflow
+</span><span class="def">         - spacing between lines
+</span><span class="def">         - replace_id
+</span><span class="add">+        - notifications moving up to first position if possible
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def">     defaults = [
+</span>@@ -102,6 +103,7 @@
+<span class="def">         configurable.Configurable.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Server.defaults)
+</span><span class="def">         self.qtile = None
+</span><span class="add">+        self._popups = []
+</span><span class="def">         self._hidden = []
+</span><span class="def">         self._shown = []
+</span><span class="def">         self._queue = []
+</span>@@ -140,12 +142,16 @@
+<span class="def">         if self.border_width:
+</span><span class="def">             self.border = [self.qtile.color_pixel(c) for c in self.border]
+</span><span class="def">         for win in range(self.max_windows):
+</span><span class="sub">-            self._hidden.append(self._create_window(win))
+</span><span class="add">+            popup = self._create_window(win)
+</span><span class="add">+            self._popups.append(popup)
+</span><span class="add">+            self._hidden.append(popup)
+</span><span class="def"> 
+</span><span class="def">         notifier.register(self._notify)
+</span><span class="def"> 
+</span><span class="def">     def _create_window(self, win):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="add">+        Get a Popup instance to maintain a window, drawer and textlayout with a specific
+</span><span class="add">+        configuration.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         win = window.Internal.create(
+</span><span class="def">             self.qtile,
+</span>@@ -167,7 +173,6 @@
+<span class="def">             markup=True,
+</span><span class="def">         )
+</span><span class="def">         layout.layout.set_alignment(ALIGNMENTS[self.text_alignment])
+</span><span class="sub">-        #drawer.clear(self.background[1])  # is this necessary?
+</span><span class="def"> 
+</span><span class="def">         if self.border_width:
+</span><span class="def">             win.window.configure(borderwidth=self.border_width)
+</span>@@ -201,7 +206,11 @@
+<span class="def">         received via dbus. They will either be drawn now or queued to be drawn soon.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         if self._hidden:
+</span><span class="sub">-            self._send(notif, self._hidden.pop(0))
+</span><span class="add">+            for popup in self._popups:
+</span><span class="add">+                if popup in self._hidden:
+</span><span class="add">+                    break
+</span><span class="add">+            self._hidden.remove(popup)
+</span><span class="add">+            self._send(notif, popup)
+</span><span class="def">         else:
+</span><span class="def">             self._queue.append(notif)
+</span><span class="def"> 
+</span>@@ -229,19 +238,23 @@
+<span class="def">         popup.win.unhide()
+</span><span class="def">         popup.drawer.draw()
+</span><span class="def">         popup.win.window.configure(stackmode=StackMode.Above)
+</span><span class="add">+        popup.id = notif.id
+</span><span class="def"> 
+</span><span class="def">         if notif.timeout is None or notif.timeout &lt; 0:
+</span><span class="def">             timeout = self.timeout[urgency]
+</span><span class="def">         else:
+</span><span class="def">             timeout = notif.timeout
+</span><span class="def">         if timeout &gt; 0:
+</span><span class="sub">-            self.qtile.call_later(timeout / 1000, self._close, popup)
+</span><span class="add">+            self.qtile.call_later(timeout / 1000, self._close, popup, notif.id)
+</span><span class="def">         self._shown.append(popup)
+</span><span class="def"> 
+</span><span class="sub">-    def _close(self, popup):
+</span><span class="add">+    def _close(self, popup, nid=None):
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="def">         Close the specified Popup instance.
+</span><span class="def">         &quot;&quot;&quot;
+</span><span class="add">+        if nid is not None and popup.id != nid:
+</span><span class="add">+            return
+</span><span class="add">+
+</span><span class="def">         if popup in self._shown:
+</span><span class="def">             self._shown.remove(popup)
+</span><span class="def">             if self._queue:
+</span></pre>
+</div></div>
+  </body>
+</html>

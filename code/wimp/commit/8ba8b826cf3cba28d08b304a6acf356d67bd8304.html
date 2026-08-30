@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Move config folder to ~/.config/wimp and add auto-start functionality</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/8ba8b826cf3cba28d08b304a6acf356d67bd8304.html">8ba8b826cf3cba28d08b304a6acf356d67bd8304</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/874a9fd70d0caf02ae8f0ef231184811b49a2cc7.html">874a9fd70d0caf02ae8f0ef231184811b49a2cc7</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-26 20:43:47 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-26 20:43:47 +0000
+
+Move config folder to ~/.config/wimp and add auto-start functionality
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -11,6 +11,11 @@
+<span class="def"> #
+</span><span class="def"> # All possible options are described here. Lines that start with &apos;#&apos; are
+</span><span class="def"> # ignored. Options that are commented out contain their default values.
+</span><span class="add">+#
+</span><span class="add">+# Config is read from the first found of:
+</span><span class="add">+#   -c command line argument
+</span><span class="add">+#   $XDG_CONFIG_HOME/.config/wimp/config
+</span><span class="add">+#   $HOME/.config/wimp/config
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> ## General settings
+</span>@@ -83,6 +88,9 @@
+<span class="def"> # Scroll direction. Can be one of: natural, reverse
+</span><span class="def"> #scroll_direction natural
+</span><span class="def"> 
+</span><span class="add">+# Set an auto-start script. This will be executed after setting up the compositor.
+</span><span class="add">+#auto_start ${XDG_CONFIG_HOME:-$HOME}/.config/wimp/autostart
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> ## Configure desks
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,6 +15,8 @@
+<span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#define is_readable(p) (access(p, R_OK) != -1)
+</span><span class="add">+#define is_executable(p) (access(p, R_OK | X_OK) != -1)
+</span><span class="def"> 
+</span><span class="def"> enum cursor_mode {
+</span><span class="def">     CURSOR_PASSTHROUGH,
+</span>@@ -34,7 +36,10 @@
+<span class="def">     struct wl_display *display;
+</span><span class="def">     struct wlr_backend *backend;
+</span><span class="def">     struct wlr_renderer *renderer;
+</span><span class="add">+
+</span><span class="add">+    char *config_directory;
+</span><span class="def">     char *config_file;
+</span><span class="add">+    char *auto_start;
+</span><span class="def"> 
+</span><span class="def">     struct wlr_output_layout *output_layout;
+</span><span class="def">     struct wl_list outputs;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -46,6 +46,10 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static void free_stuff() {
+</span><span class="add">+    free(wimp.config_directory);
+</span><span class="add">+    free(wimp.config_file);
+</span><span class="add">+    free(wimp.auto_start);
+</span><span class="add">+
+</span><span class="def">     struct binding *kb, *tkb;
+</span><span class="def">     wl_list_for_each_safe(kb, tkb, &amp;wimp.mouse_bindings, link) {
+</span><span class="def"> 	wl_list_remove(&amp;kb-&gt;link);
+</span>@@ -169,6 +173,7 @@
+<span class="def">     }
+</span><span class="def">     setenv(&quot;WAYLAND_DISPLAY&quot;, socket, true);
+</span><span class="def">     wlr_log(WLR_INFO, &quot;Starting with WAYLAND_DISPLAY=%s&quot;, socket);
+</span><span class="add">+    schedule_auto_start();
+</span><span class="def">     wl_display_run(wimp.display);
+</span><span class="def"> 
+</span><span class="def">     // stop
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,6 +4,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> void assign_colour(char *hex, float dest[4]);
+</span><span class="add">+void schedule_auto_start();
+</span><span class="def"> void load_config();
+</span><span class="def"> void locate_config();
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="def"> #include &lt;string.h&gt;
+</span><span class="def"> #include &lt;wordexp.h&gt;
+</span><span class="add">+#include &lt;wayland-server-core.h&gt;
+</span><span class="def"> #include &lt;wlr/render/wlr_texture.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> 
+</span>@@ -12,8 +13,8 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> #define is_number(s) (strspn(s, &quot;0123456789.-&quot;) == strlen(s))
+</span><span class="sub">-#define CONFIG_HOME &quot;$HOME/.config/wimp.conf&quot;
+</span><span class="sub">-#define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/.config/wimp.conf&quot;
+</span><span class="add">+#define CONFIG_HOME &quot;$HOME/.config/wimp/&quot;
+</span><span class="add">+#define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/.config/wimp/&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> static const char *DEFAULT_CONFIG =  &quot;\n\
+</span>@@ -27,6 +28,16 @@
+<span class="def"> &quot;;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static char *expand(char *path) {
+</span><span class="add">+    wordexp_t p;
+</span><span class="add">+    wordexp(path, &amp;p, WRDE_NOCMD | WRDE_UNDEF);
+</span><span class="add">+    free(path);
+</span><span class="add">+    char *new = strdup(p.we_wordv[0]);
+</span><span class="add">+    wordfree(&amp;p);
+</span><span class="add">+    return new;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> struct value_map {
+</span><span class="def">     const char *name;
+</span><span class="def">     const int value;
+</span>@@ -331,6 +342,48 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+struct source {
+</span><span class="add">+    struct wl_event_source *wl_event_source;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static int _auto_start(void *data) {
+</span><span class="add">+    struct source *source = data;
+</span><span class="add">+    wl_event_source_remove(source-&gt;wl_event_source);
+</span><span class="add">+    free(source);
+</span><span class="add">+
+</span><span class="add">+    char *script = wimp.auto_start;
+</span><span class="add">+    if (fork() == 0) {
+</span><span class="add">+	if (execl(script, script, (void *)NULL) == -1) {
+</span><span class="add">+	    exit(EXIT_FAILURE);
+</span><span class="add">+	}
+</span><span class="add">+    } else {
+</span><span class="add">+	wlr_log(WLR_DEBUG, &quot;Running autostart script: %s&quot;, script);
+</span><span class="add">+    }
+</span><span class="add">+    free(wimp.auto_start);
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void schedule_auto_start() {
+</span><span class="add">+    if (wimp.auto_start) {
+</span><span class="add">+	wimp.auto_start = expand(wimp.auto_start);
+</span><span class="add">+    } else {
+</span><span class="add">+	wimp.auto_start = strndup(
+</span><span class="add">+	    wimp.config_directory, strlen(wimp.config_directory) + strlen(&quot;autostart&quot;)
+</span><span class="add">+	);
+</span><span class="add">+	strcat(wimp.auto_start, &quot;autostart&quot;);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (is_executable(wimp.auto_start)) {
+</span><span class="add">+	struct wl_event_loop *event_loop = wl_display_get_event_loop(wimp.display);
+</span><span class="add">+	struct source *source = calloc(1, sizeof(struct source));
+</span><span class="add">+	source-&gt;wl_event_source = wl_event_loop_add_timer(event_loop, _auto_start, source);
+</span><span class="add">+	wl_event_source_timer_update(source-&gt;wl_event_source, 1);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void parse_config(FILE *stream) {
+</span><span class="def">     char *s;
+</span><span class="def">     char linebuf[1024];
+</span>@@ -383,6 +436,8 @@
+<span class="def"> 	    else if (!strcasecmp(s, &quot;width&quot;))
+</span><span class="def"> 		if ((s = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number(s))
+</span><span class="def"> 		    desk-&gt;border_width = strtod(s, NULL);
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;auto_start&quot;)) {
+</span><span class="add">+	    wimp.auto_start = strdup(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;scroll_direction&quot;)) {
+</span><span class="def"> 	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="def"> 	    if (!strcasecmp(s, &quot;natural&quot;))
+</span>@@ -416,38 +471,30 @@
+<span class="def">     free(buffer);
+</span><span class="def">     fclose(stream);
+</span><span class="def"> 
+</span><span class="sub">-    // load custom configuration file
+</span><span class="sub">-    if (wimp.config_file) {
+</span><span class="add">+    // load configuration file
+</span><span class="add">+    if (is_readable(wimp.config_file)) {
+</span><span class="def"> 	stream = fopen(wimp.config_file, &quot;r&quot;);
+</span><span class="def"> 	parse_config(stream);
+</span><span class="def"> 	fclose(stream);
+</span><span class="add">+    } else {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;%s not accessible. Using defaults.&quot;, wimp.config_file);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     setup_vt_switching();
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void locate_config()
+</span><span class="sub">-{
+</span><span class="sub">-    char *config;
+</span><span class="sub">-    char *xdg_config;
+</span><span class="add">+void locate_config() {
+</span><span class="add">+    char *xdg_config = getenv(&quot;XDG_CONFIG_HOME&quot;);
+</span><span class="add">+    char *config_dir = (xdg_config &amp;&amp; *xdg_config) ? CONFIG_HOME_XDG : CONFIG_HOME;
+</span><span class="add">+    wimp.config_directory = strdup(config_dir);
+</span><span class="add">+    wimp.config_directory = expand(wimp.config_directory);
+</span><span class="add">+    config_dir = wimp.config_directory;
+</span><span class="def"> 
+</span><span class="def">     if (wimp.config_file == NULL) {
+</span><span class="sub">-	xdg_config = getenv(&quot;XDG_CONFIG_HOME&quot;);
+</span><span class="sub">-	config = (xdg_config &amp;&amp; *xdg_config) ? CONFIG_HOME_XDG : CONFIG_HOME;
+</span><span class="sub">-	wimp.config_file = strdup(config);
+</span><span class="sub">-    };
+</span><span class="sub">-
+</span><span class="sub">-    wordexp_t p;
+</span><span class="sub">-    wordexp(wimp.config_file, &amp;p, WRDE_NOCMD | WRDE_UNDEF);
+</span><span class="sub">-    free(wimp.config_file);
+</span><span class="sub">-
+</span><span class="sub">-    if (access(p.we_wordv[0], R_OK) == -1) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;%s not accessible. Using defaults.&quot;, p.we_wordv[0]);
+</span><span class="sub">-	wimp.config_file = NULL;
+</span><span class="add">+	wimp.config_file = strndup(config_dir, strlen(config_dir) + strlen(&quot;config&quot;));
+</span><span class="add">+	strcat(wimp.config_file, &quot;config&quot;);
+</span><span class="def">     } else {
+</span><span class="sub">-	wimp.config_file = strdup(p.we_wordv[0]);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    wordfree(&amp;p);
+</span><span class="add">+	wimp.config_file = expand(wimp.config_file);
+</span><span class="add">+    };
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

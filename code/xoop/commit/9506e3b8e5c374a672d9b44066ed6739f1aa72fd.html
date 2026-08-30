@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - add simple signal handling to clean X connection</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/9506e3b8e5c374a672d9b44066ed6739f1aa72fd.html">9506e3b8e5c374a672d9b44066ed6739f1aa72fd</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/b7e214b7d84216c7202dac31b20350fc0f6a6083.html">b7e214b7d84216c7202dac31b20350fc0f6a6083</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-20 12:45:08 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-20 12:45:08 +0100
+
+add simple signal handling to clean X connection
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,6 +21,7 @@
+<span class="def"> */
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+#include &lt;signal.h&gt;
+</span><span class="def"> #include &lt;stdio.h&gt;
+</span><span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="def"> #include &lt;xcb/shape.h&gt;
+</span>@@ -31,9 +32,10 @@
+<span class="def"> 
+</span><span class="def"> xcb_connection_t    *conn;
+</span><span class="def"> xcb_screen_t	    *screen;
+</span><span class="add">+xcb_window_t	     wid;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void set_window_type(xcb_window_t wid) {
+</span><span class="add">+void set_window_type() {
+</span><span class="def">     xcb_intern_atom_reply_t *reply1, *reply2, *reply3;
+</span><span class="def"> 
+</span><span class="def">     reply1 = xcb_intern_atom_reply(
+</span>@@ -65,7 +67,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void set_window_shape(xcb_window_t wid)
+</span><span class="add">+void set_window_shape()
+</span><span class="def"> {
+</span><span class="def">     xcb_gcontext_t gc = xcb_generate_id(conn);
+</span><span class="def">     xcb_pixmap_t pixmap = xcb_generate_id(conn);
+</span>@@ -96,9 +98,9 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-xcb_window_t setup_window()
+</span><span class="add">+void setup_window()
+</span><span class="def"> {
+</span><span class="sub">-    xcb_window_t wid = xcb_generate_id(conn);
+</span><span class="add">+    wid = xcb_generate_id(conn);
+</span><span class="def"> 
+</span><span class="def">     uint32_t values = 0;
+</span><span class="def">     values |= XCB_EVENT_MASK_ENTER_WINDOW;
+</span>@@ -119,8 +121,8 @@
+<span class="def"> 	&amp;values
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="sub">-    set_window_type(wid);
+</span><span class="sub">-    set_window_shape(wid);
+</span><span class="add">+    set_window_type();
+</span><span class="add">+    set_window_shape();
+</span><span class="def"> 
+</span><span class="def">     uint32_t above = XCB_STACK_MODE_ABOVE;
+</span><span class="def">     xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, &amp;above);
+</span>@@ -131,7 +133,6 @@
+<span class="def"> 
+</span><span class="def">     xcb_map_window(conn, wid);
+</span><span class="def">     xcb_flush(conn);
+</span><span class="sub">-    return wid;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -180,6 +181,14 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void exit_nicely()
+</span><span class="add">+{
+</span><span class="add">+    xcb_unmap_window(conn, wid);
+</span><span class="add">+    xcb_disconnect(conn);
+</span><span class="add">+    exit(EXIT_SUCCESS);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void print_help()
+</span><span class="def"> {
+</span><span class="def">     printf(
+</span>@@ -196,7 +205,6 @@
+<span class="def">     int opt;
+</span><span class="def">     int to_fork = 0;
+</span><span class="def">     int pid;
+</span><span class="sub">-    xcb_window_t wid;
+</span><span class="def"> 
+</span><span class="def">     while ((opt = getopt(argc, argv, &quot;hf&quot;)) != -1) {
+</span><span class="def">         switch (opt) {
+</span>@@ -214,7 +222,11 @@
+<span class="def"> 	exit(EXIT_FAILURE);
+</span><span class="def"> 
+</span><span class="def">     screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
+</span><span class="sub">-    wid = setup_window();
+</span><span class="add">+    setup_window();
+</span><span class="add">+
+</span><span class="add">+    signal(SIGINT, exit_nicely);
+</span><span class="add">+    signal(SIGTERM, exit_nicely);
+</span><span class="add">+    signal(SIGHUP, exit_nicely);
+</span><span class="def"> 
+</span><span class="def">     if (to_fork) {
+</span><span class="def"> 	pid = fork();
+</span>@@ -227,8 +239,6 @@
+<span class="def"> 
+</span><span class="def">     event_loop();
+</span><span class="def"> 
+</span><span class="sub">-    xcb_unmap_window(conn, wid);
+</span><span class="sub">-    xcb_disconnect(conn);
+</span><span class="sub">-
+</span><span class="add">+    exit_nicely(EXIT_SUCCESS);
+</span><span class="def">     return 0;
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

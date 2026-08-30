@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - updating paper list will restore vim to original state</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/94f56dc1e799950f66f99679c0b84a8c7dc8ef66.html">94f56dc1e799950f66f99679c0b84a8c7dc8ef66</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/979fec661d874cb0d7a9ab87b07f1dfbabd67a4d.html">979fec661d874cb0d7a9ab87b07f1dfbabd67a4d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-06-01 15:44:26 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-06-01 15:44:26 +0100
+
+updating paper list will restore vim to original state
+</pre><div class="diff">
+  <p>
+    <b>ftplugin/vimwiki.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -26,7 +26,7 @@
+<span class="def"> nmap &lt;buffer&gt; &lt;Leader&gt;p 0f\|yy&lt;CR&gt;Pdf\|$xx===o&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; open pdf from papers page
+</span><span class="sub">-nmap &lt;buffer&gt; &lt;Leader&gt;o 0f\|lvt]y:let a = substitute(@*, &apos; &apos;, &apos;_&apos;, &apos;g&apos;) \| !qpdfview --unique &quot;~/work/research/papers/&quot; . a . &quot;.pdf&quot; &amp;
+</span><span class="add">+nmap &lt;buffer&gt; &lt;Leader&gt;o 0f\|lvt]y:let a = substitute(@*, &apos; &apos;, &apos;_&apos;, &apos;g&apos;) \| exec &quot;!qpdfview --unique ~/work/research/papers/&quot; . a . &quot;.pdf &amp;&quot;&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; update papers page with new pdf files
+</span><span class="def"> nmap &lt;buffer&gt; &lt;Leader&gt;u :!vimwiki_add_papers.sh&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

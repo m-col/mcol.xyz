@@ -1,0 +1,2081 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Merge pull request #1 from m-col/claude/mcol-xyz-refactor-9hhz87</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/656967a2fad7c646ce55ed89af1c804bfa195f9f.html">656967a2fad7c646ce55ed89af1c804bfa195f9f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/634f156be29b01abf0e7f5183ff061ce9788b5cd.html">634f156be29b01abf0e7f5183ff061ce9788b5cd</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2026-08-30 17:24:39 +0100
+<b>Committer:</b> GitHub &lt;<a href="mailto:noreply@github.com">noreply@github.com</a>&gt;
+<b>Committed:</b> 2026-08-30 17:24:39 +0100
+
+Merge pull request #1 from m-col/claude/mcol-xyz-refactor-9hhz87
+
+Switch to uv, drop VR/gitja cruft, replace makefile with justfile
+</pre><div class="diff">
+  <p>
+    <b>vr/index.html</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,23 +0,0 @@
+<span class="sub">-&lt;!DOCTYPE html&gt;
+</span><span class="sub">-&lt;html&gt;
+</span><span class="sub">-  &lt;head&gt;
+</span><span class="sub">-    &lt;title&gt;mcol.xyz but in VR&lt;/title&gt;
+</span><span class="sub">-    &lt;meta name=&quot;description&quot; content=&quot;mcol.xyz but in VR&quot;&gt;
+</span><span class="sub">-    &lt;script src=&quot;https://aframe.io/releases/1.2.0/aframe.min.js&quot;&gt;&lt;/script&gt;
+</span><span class="sub">-  &lt;/head&gt;
+</span><span class="sub">-  &lt;body&gt;
+</span><span class="sub">-    &lt;a-scene&gt;
+</span><span class="sub">-      &lt;a-entity class=&quot;board&quot;
+</span><span class="sub">-        geometry=&quot;primitive: box; height: 7; width: 2.5; depth: 0.2&quot;
+</span><span class="sub">-        material=&quot;shader: flat; color: #aab&quot;
+</span><span class="sub">-      &gt;
+</span><span class="sub">-      &lt;/a-entity&gt;
+</span><span class="sub">-      
+</span><span class="sub">-      &lt;a-light type=&quot;ambient&quot; color=&quot;#666&quot;&gt;&lt;/a-light&gt;
+</span><span class="sub">-      &lt;a-light type=&quot;point&quot; intensity=&quot;2&quot; position=&quot;2 4 4&quot;&gt;&lt;/a-light&gt;
+</span><span class="sub">-      &lt;a-sky color=&quot;#fff&quot;&gt;&lt;/a-sky&gt;
+</span><span class="sub">-      &lt;a-plane color=&quot;#aab&quot; rotation=&quot;-90 0 0&quot; height=&quot;20&quot; width=&quot;20&quot;&gt;&lt;/a-plane&gt;
+</span><span class="sub">-      &lt;a-text value=&quot;Hello, A-Frame!&quot; color=&quot;black&quot; position=&quot;-0.9 0.2 -3&quot; scale=&quot;1 1 1&quot;&gt;&lt;/a-text&gt;
+</span><span class="sub">-    &lt;/a-scene&gt;
+</span><span class="sub">-  &lt;/body&gt;
+</span><span class="sub">-&lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>vr/a.html</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,79 +0,0 @@
+<span class="sub">-&lt;html&gt;
+</span><span class="sub">-
+</span><span class="sub">-    &lt;head&gt;
+</span><span class="sub">-        &lt;title&gt;A-Frame Starter Kit - Mini Planetarium&lt;/title&gt;
+</span><span class="sub">-        &lt;meta name=&quot;description&quot; content=&quot;Build your own planetarium with A-frame&quot;&gt;
+</span><span class="sub">-
+</span><span class="sub">-        &lt;!-- This turns our HTML into A-Frame! --&gt;
+</span><span class="sub">-        &lt;script src=&quot;https://aframe.io/releases/0.8.2/aframe.min.js&quot;&gt;&lt;/script&gt;
+</span><span class="sub">-    &lt;/head&gt;
+</span><span class="sub">-
+</span><span class="sub">-    &lt;body&gt;
+</span><span class="sub">-        &lt;!-- a-scene contains all our A-Frame HTML --&gt;
+</span><span class="sub">-        &lt;a-scene&gt;
+</span><span class="sub">-
+</span><span class="sub">-            &lt;!-- the sky is our background, try changing the color or removing
+</span><span class="sub">-            it --&gt;
+</span><span class="sub">-            &lt;a-sky color=&quot;midnightblue&quot;&gt;&lt;/a-sky&gt;
+</span><span class="sub">-
+</span><span class="sub">-            &lt;!-- our basic planets, these are not to scale in any way--&gt;
+</span><span class="sub">-            &lt;a-sphere id=&quot;sun&quot; position=&quot;-13 2 -10&quot; radius=&quot;4&quot; color=&quot;#F5C85D&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-            &lt;a-sphere id=&quot;mercury&quot; position=&quot;-7 2 -10&quot; radius=&quot;.25&quot; color=&quot;#AF886D&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-            &lt;a-sphere id=&quot;venus&quot; position=&quot;-5 2 -10&quot; radius=&quot;.5&quot; color=&quot;#ECBFBF&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-            &lt;a-sphere id=&quot;mars&quot; position=&quot;-1 2 -10&quot; radius=&quot;.25&quot; color=&quot;#CF503A&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-
+</span><span class="sub">-            &lt;!--notice this one doens&apos;t have a radius? If you don&apos;t specify one,
+</span><span class="sub">-            A-Frame uses the default, which is 1 --&gt;
+</span><span class="sub">-            &lt;a-sphere id=&quot;jupiter&quot; position=&quot;1 2 -10&quot; color=&quot;#C9957A&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-            &lt;a-sphere id=&quot;pluto&quot; position=&quot;13 2 -10&quot; radius=&quot;.10&quot; color=&quot;#BFCFD4&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-
+</span><span class="sub">-            &lt;!-- a not so basic planet- it&apos;s Earth with our moon wrapped up
+</span><span class="sub">-            together in an a-entity component  to keep them organized and placed
+</span><span class="sub">-            in relation to each other. --&gt;
+</span><span class="sub">-
+</span><span class="sub">-            &lt;a-entity id=&quot;earth-and-moon&quot; position=&quot;-3 2 -10&quot;&gt;
+</span><span class="sub">-
+</span><span class="sub">-                &lt;!-- the positions in here are in relation to each other, not to
+</span><span class="sub">-                the other planets, if you want to change the position of that
+</span><span class="sub">-                you need to do it on a-entity or remove a-entity --&gt;
+</span><span class="sub">-                &lt;a-sphere position=&quot;0 0 0&quot; radius=&quot;.5&quot; color=&quot;#6DCBE7&quot; id=&quot;earth&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-                &lt;a-sphere position=&quot;-1 0 0&quot; radius=&quot;.10&quot; color=&quot;#DBE0DE&quot; id=&quot;moon&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-
+</span><span class="sub">-            &lt;/a-entity&gt;
+</span><span class="sub">-
+</span><span class="sub">-            &lt;!-- the other not-so-basic planets, these have rings around them.
+</span><span class="sub">-            The rings are made of torii (singular torus) a shape that can be
+</span><span class="sub">-            used to make donuts, tubes and yes, ring shapes--&gt;
+</span><span class="sub">-            &lt;a-entity id=&quot;saturn-container&quot; position=&quot;4 2 -10&quot;&gt;
+</span><span class="sub">-                &lt;a-sphere position=&quot;0 0 0 &quot; radius=&quot;.8&quot; color=&quot;#F8EC99&quot; id=&quot;saturn&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-                &lt;a-torus id=&quot;saturn-ring-1&quot; color=&quot;#57524A&quot; segments-tubular=&quot;50&quot; radius=&quot;3.2&quot; radius-tubular=&quot;0.1&quot;
+</span><span class="sub">-                    rotation=&quot;90 0 0&quot; scale=&quot;.44 .44 0.04&quot;&gt;&lt;/a-torus&gt;
+</span><span class="sub">-                &lt;a-torus id=&quot;saturn-ring-2&quot; color=&quot;#A29A87&quot; segments-tubular=&quot;50&quot; radius=&quot;2.4&quot; radius-tubular=&quot;0.2&quot;
+</span><span class="sub">-                    rotation=&quot;90 0 0&quot; scale=&quot;.44 .44 0.04&quot;&gt;&lt;/a-torus&gt;
+</span><span class="sub">-            &lt;/a-entity&gt;
+</span><span class="sub">-
+</span><span class="sub">-            &lt;a-entity id=&quot;uranus-container&quot; position=&quot;7 2 -10&quot;&gt;
+</span><span class="sub">-                &lt;a-sphere id=&quot;uranus&quot; radius=&quot;.75&quot; color=&quot;#73AAF8&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-                &lt;a-torus id=&quot;uranus-ring&quot; color=&quot;#FFFFFF&quot; segments-tubular=&quot;50&quot; radius=&quot;1.5&quot; radius-tubular=&quot;0.01&quot;
+</span><span class="sub">-                    rotation=&quot;-10 90 0&quot; scale=&quot;.75 .75 0.075&quot;&gt;&lt;/a-torus&gt;
+</span><span class="sub">-            &lt;/a-entity&gt;
+</span><span class="sub">-
+</span><span class="sub">-            &lt;a-entity id=&quot;neptune-container&quot; position=&quot;10 2 -10&quot;&gt;
+</span><span class="sub">-                &lt;a-sphere id=&quot;neptune&quot; radius=&quot;.75&quot; color=&quot;#3453BD&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="sub">-                &lt;a-torus id=&quot;neptune-ring-1&quot; color=&quot;#FFFFFF&quot; segments-tubular=&quot;50&quot; radius=&quot;2&quot; radius-tubular=&quot;0.01&quot;
+</span><span class="sub">-                    rotation=&quot;90 0 0&quot; scale=&quot;.75 .75 0.075&quot; opacity=&quot;0.8&quot;&gt;&lt;/a-torus&gt;
+</span><span class="sub">-                &lt;a-torus id=&quot;neptune-ring-2&quot; color=&quot;#FFFFFF&quot; segments-tubular=&quot;50&quot; radius=&quot;1.7&quot; radius-tubular=&quot;0.05&quot;
+</span><span class="sub">-                    rotation=&quot;90 0 0&quot; scale=&quot;.75 .75 0.075&quot; opacity=&quot;0.8&quot;&gt;&lt;/a-torus&gt;
+</span><span class="sub">-                &lt;a-torus id=&quot;neptune-ring-3&quot; color=&quot;#FFFFFF&quot; segments-tubular=&quot;50&quot; radius=&quot;1.3&quot; radius-tubular=&quot;0.01&quot;
+</span><span class="sub">-                    rotation=&quot;90 0 0&quot; scale=&quot;.75 .75 0.075&quot; opacity=&quot;0.8&quot;&gt;&lt;/a-torus&gt;
+</span><span class="sub">-            &lt;/a-entity&gt;
+</span><span class="sub">-
+</span><span class="sub">-        &lt;/a-scene&gt;
+</span><span class="sub">-        
+</span><span class="sub">-        &lt;!-- include the Glitch button to show what the webpage is about and to
+</span><span class="sub">-        make it easier for folks to view source and remix --&gt;
+</span><span class="sub">-        &lt;div class=&quot;glitchButton&quot; style=&quot;position:fixed;top:20px;right:20px;&quot;&gt;&lt;/div&gt;
+</span><span class="sub">-        &lt;script src=&quot;https://button.glitch.me/button.js&quot;&gt;&lt;/script&gt;
+</span><span class="sub">-    &lt;/body&gt;
+</span><span class="sub">-
+</span><span class="sub">-&lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>uv.lock</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,273 @@
+<span class="add">+version = 1
+</span><span class="add">+revision = 3
+</span><span class="add">+requires-python = &quot;&gt;=3.14&quot;
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;anyio&quot;
+</span><span class="add">+version = &quot;4.14.2&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+dependencies = [
+</span><span class="add">+    { name = &quot;idna&quot; },
+</span><span class="add">+]
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/61/cc/a381afa6efea9f496eff839d4a6a1aed3bfafc7b3ab4b0d1b243a12573dd/anyio-4.14.2.tar.gz&quot;, hash = &quot;sha256:cfa139f3ed1a23ee8f88a145ddb5ac7605b8bbfd8592baacd7ce3d8bb4313c7f&quot;, size = 260176, upload-time = &quot;2026-07-12T20:29:07.082Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/da/35/f2287558c17e29fafc8ef3daf819bb9834061cfa43bff8014f7df7f63bdc/anyio-4.14.2-py3-none-any.whl&quot;, hash = &quot;sha256:9f505dda5ac9f0c8309b5e8bd445a8c2bf7246f3ce950121e45ea15bc41d1494&quot;, size = 125813, upload-time = &quot;2026-07-12T20:29:05.763Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;blinker&quot;
+</span><span class="add">+version = &quot;1.9.0&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/21/28/9b3f50ce0e048515135495f198351908d99540d69bfdc8c1d15b73dc55ce/blinker-1.9.0.tar.gz&quot;, hash = &quot;sha256:b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf&quot;, size = 22460, upload-time = &quot;2024-11-08T17:25:47.436Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/10/cb/f2ad4230dc2eb1a74edf38f1a38b9b52277f75bef262d8908e60d957e13c/blinker-1.9.0-py3-none-any.whl&quot;, hash = &quot;sha256:ba0efaa9080b619ff2f3459d1d500c57bddea4a6b424b60a91141db6fd2f08bc&quot;, size = 8458, upload-time = &quot;2024-11-08T17:25:46.184Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;docutils&quot;
+</span><span class="add">+version = &quot;0.23&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/39/a4/5180d9afc57e8fca05601dd652bdff19604c218814037fe90ffc7625a50a/docutils-0.23.tar.gz&quot;, hash = &quot;sha256:746f5060322511280a1e50eb76846ed6bf2342984b2ac04dc42caa1a8d78799e&quot;, size = 2303823, upload-time = &quot;2026-05-27T17:41:06.934Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/32/91/30151a39f7570f448ed84529390628a651d7f27c87d73c9b887f8189695e/docutils-0.23-py3-none-any.whl&quot;, hash = &quot;sha256:25d013af9bf23bc1c7b2b093dff4208166c53a94786c9e447808335ef1185fea&quot;, size = 634701, upload-time = &quot;2026-05-27T17:40:58.442Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;feedgenerator&quot;
+</span><span class="add">+version = &quot;2.2.1&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+dependencies = [
+</span><span class="add">+    { name = &quot;tzdata&quot;, marker = &quot;sys_platform == &apos;win32&apos;&quot; },
+</span><span class="add">+]
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/b0/d2/f05e9f4628cb0df988de66f8a97dd52877490e6ebf8e7b41cd341bf2ad6b/feedgenerator-2.2.1.tar.gz&quot;, hash = &quot;sha256:0eaa955f1f0bcb5b87ac195af740f06ff9fff4a40ed30b8a7c6bbebb264d4dd1&quot;, size = 20872, upload-time = &quot;2025-08-17T19:36:53.48Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/b9/08/6f74bef4663fb137fa10b493facce85bee8c055b67fbd9a7695d88e3d1a3/feedgenerator-2.2.1-py3-none-any.whl&quot;, hash = &quot;sha256:0d8bb321e49dd43c916b659e137c1eab1b1c053dd4535a03ef8d47e5f3358ba5&quot;, size = 18495, upload-time = &quot;2025-08-17T19:36:52.036Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;idna&quot;
+</span><span class="add">+version = &quot;3.19&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/5f/f7/abb373e5757eaec4b922b92f97ec8d6d7e057cf06778247604fbc4e7c3f3/idna-3.19.tar.gz&quot;, hash = &quot;sha256:5e0811a4383b21dc5838069f801c4fb62113b7447663d2530d2bd6e77b49bf15&quot;, size = 215237, upload-time = &quot;2026-08-18T05:14:24.27Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/57/b0/0e52c878c53f245edd3a11020f20979b3f490f245af532c7cae3027754b5/idna-3.19-py3-none-any.whl&quot;, hash = &quot;sha256:815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4&quot;, size = 68550, upload-time = &quot;2026-08-18T05:14:22.343Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;jinja2&quot;
+</span><span class="add">+version = &quot;3.1.6&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+dependencies = [
+</span><span class="add">+    { name = &quot;markupsafe&quot; },
+</span><span class="add">+]
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.6.tar.gz&quot;, hash = &quot;sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d&quot;, size = 245115, upload-time = &quot;2025-03-05T20:05:02.478Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl&quot;, hash = &quot;sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67&quot;, size = 134899, upload-time = &quot;2025-03-05T20:05:00.369Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;markdown-it-py&quot;
+</span><span class="add">+version = &quot;4.2.0&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+dependencies = [
+</span><span class="add">+    { name = &quot;mdurl&quot; },
+</span><span class="add">+]
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/06/ff/7841249c247aa650a76b9ee4bbaeae59370dc8bfd2f6c01f3630c35eb134/markdown_it_py-4.2.0.tar.gz&quot;, hash = &quot;sha256:04a21681d6fbb623de53f6f364d352309d4094dd4194040a10fd51833e418d49&quot;, size = 82454, upload-time = &quot;2026-05-07T12:08:28.36Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/b3/81/4da04ced5a082363ecfa159c010d200ecbd959ae410c10c0264a38cac0f5/markdown_it_py-4.2.0-py3-none-any.whl&quot;, hash = &quot;sha256:9f7ebbcd14fe59494226453aed97c1070d83f8d24b6fc3a3bcf9a38092641c4a&quot;, size = 91687, upload-time = &quot;2026-05-07T12:08:27.182Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;markupsafe&quot;
+</span><span class="add">+version = &quot;3.0.3&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/7e/99/7690b6d4034fffd95959cbe0c02de8deb3098cc577c67bb6a24fe5d7caa7/markupsafe-3.0.3.tar.gz&quot;, hash = &quot;sha256:722695808f4b6457b320fdc131280796bdceb04ab50fe1795cd540799ebe1698&quot;, size = 80313, upload-time = &quot;2025-09-27T18:37:40.426Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/33/8a/8e42d4838cd89b7dde187011e97fe6c3af66d8c044997d2183fbd6d31352/markupsafe-3.0.3-cp314-cp314-macosx_10_13_x86_64.whl&quot;, hash = &quot;sha256:eaa9599de571d72e2daf60164784109f19978b327a3910d3e9de8c97b5b70cfe&quot;, size = 11619, upload-time = &quot;2025-09-27T18:37:06.342Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/b5/64/7660f8a4a8e53c924d0fa05dc3a55c9cee10bbd82b11c5afb27d44b096ce/markupsafe-3.0.3-cp314-cp314-macosx_11_0_arm64.whl&quot;, hash = &quot;sha256:c47a551199eb8eb2121d4f0f15ae0f923d31350ab9280078d1e5f12b249e0026&quot;, size = 12029, upload-time = &quot;2025-09-27T18:37:07.213Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/da/ef/e648bfd021127bef5fa12e1720ffed0c6cbb8310c8d9bea7266337ff06de/markupsafe-3.0.3-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl&quot;, hash = &quot;sha256:f34c41761022dd093b4b6896d4810782ffbabe30f2d443ff5f083e0cbbb8c737&quot;, size = 24408, upload-time = &quot;2025-09-27T18:37:09.572Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/41/3c/a36c2450754618e62008bf7435ccb0f88053e07592e6028a34776213d877/markupsafe-3.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl&quot;, hash = &quot;sha256:457a69a9577064c05a97c41f4e65148652db078a3a509039e64d3467b9e7ef97&quot;, size = 23005, upload-time = &quot;2025-09-27T18:37:10.58Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/bc/20/b7fdf89a8456b099837cd1dc21974632a02a999ec9bf7ca3e490aacd98e7/markupsafe-3.0.3-cp314-cp314-manylinux_2_31_riscv64.manylinux_2_39_riscv64.whl&quot;, hash = &quot;sha256:e8afc3f2ccfa24215f8cb28dcf43f0113ac3c37c2f0f0806d8c70e4228c5cf4d&quot;, size = 22048, upload-time = &quot;2025-09-27T18:37:11.547Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/9a/a7/591f592afdc734f47db08a75793a55d7fbcc6902a723ae4cfbab61010cc5/markupsafe-3.0.3-cp314-cp314-musllinux_1_2_aarch64.whl&quot;, hash = &quot;sha256:ec15a59cf5af7be74194f7ab02d0f59a62bdcf1a537677ce67a2537c9b87fcda&quot;, size = 23821, upload-time = &quot;2025-09-27T18:37:12.48Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/7d/33/45b24e4f44195b26521bc6f1a82197118f74df348556594bd2262bda1038/markupsafe-3.0.3-cp314-cp314-musllinux_1_2_riscv64.whl&quot;, hash = &quot;sha256:0eb9ff8191e8498cca014656ae6b8d61f39da5f95b488805da4bb029cccbfbaf&quot;, size = 21606, upload-time = &quot;2025-09-27T18:37:13.485Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/ff/0e/53dfaca23a69fbfbbf17a4b64072090e70717344c52eaaaa9c5ddff1e5f0/markupsafe-3.0.3-cp314-cp314-musllinux_1_2_x86_64.whl&quot;, hash = &quot;sha256:2713baf880df847f2bece4230d4d094280f4e67b1e813eec43b4c0e144a34ffe&quot;, size = 23043, upload-time = &quot;2025-09-27T18:37:14.408Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/46/11/f333a06fc16236d5238bfe74daccbca41459dcd8d1fa952e8fbd5dccfb70/markupsafe-3.0.3-cp314-cp314-win32.whl&quot;, hash = &quot;sha256:729586769a26dbceff69f7a7dbbf59ab6572b99d94576a5592625d5b411576b9&quot;, size = 14747, upload-time = &quot;2025-09-27T18:37:15.36Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/28/52/182836104b33b444e400b14f797212f720cbc9ed6ba34c800639d154e821/markupsafe-3.0.3-cp314-cp314-win_amd64.whl&quot;, hash = &quot;sha256:bdc919ead48f234740ad807933cdf545180bfbe9342c2bb451556db2ed958581&quot;, size = 15341, upload-time = &quot;2025-09-27T18:37:16.496Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/6f/18/acf23e91bd94fd7b3031558b1f013adfa21a8e407a3fdb32745538730382/markupsafe-3.0.3-cp314-cp314-win_arm64.whl&quot;, hash = &quot;sha256:5a7d5dc5140555cf21a6fefbdbf8723f06fcd2f63ef108f2854de715e4422cb4&quot;, size = 14073, upload-time = &quot;2025-09-27T18:37:17.476Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/3c/f0/57689aa4076e1b43b15fdfa646b04653969d50cf30c32a102762be2485da/markupsafe-3.0.3-cp314-cp314t-macosx_10_13_x86_64.whl&quot;, hash = &quot;sha256:1353ef0c1b138e1907ae78e2f6c63ff67501122006b0f9abad68fda5f4ffc6ab&quot;, size = 11661, upload-time = &quot;2025-09-27T18:37:18.453Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/89/c3/2e67a7ca217c6912985ec766c6393b636fb0c2344443ff9d91404dc4c79f/markupsafe-3.0.3-cp314-cp314t-macosx_11_0_arm64.whl&quot;, hash = &quot;sha256:1085e7fbddd3be5f89cc898938f42c0b3c711fdcb37d75221de2666af647c175&quot;, size = 12069, upload-time = &quot;2025-09-27T18:37:19.332Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/f0/00/be561dce4e6ca66b15276e184ce4b8aec61fe83662cce2f7d72bd3249d28/markupsafe-3.0.3-cp314-cp314t-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl&quot;, hash = &quot;sha256:1b52b4fb9df4eb9ae465f8d0c228a00624de2334f216f178a995ccdcf82c4634&quot;, size = 25670, upload-time = &quot;2025-09-27T18:37:20.245Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/50/09/c419f6f5a92e5fadde27efd190eca90f05e1261b10dbd8cbcb39cd8ea1dc/markupsafe-3.0.3-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl&quot;, hash = &quot;sha256:fed51ac40f757d41b7c48425901843666a6677e3e8eb0abcff09e4ba6e664f50&quot;, size = 23598, upload-time = &quot;2025-09-27T18:37:21.177Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/22/44/a0681611106e0b2921b3033fc19bc53323e0b50bc70cffdd19f7d679bb66/markupsafe-3.0.3-cp314-cp314t-manylinux_2_31_riscv64.manylinux_2_39_riscv64.whl&quot;, hash = &quot;sha256:f190daf01f13c72eac4efd5c430a8de82489d9cff23c364c3ea822545032993e&quot;, size = 23261, upload-time = &quot;2025-09-27T18:37:22.167Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/5f/57/1b0b3f100259dc9fffe780cfb60d4be71375510e435efec3d116b6436d43/markupsafe-3.0.3-cp314-cp314t-musllinux_1_2_aarch64.whl&quot;, hash = &quot;sha256:e56b7d45a839a697b5eb268c82a71bd8c7f6c94d6fd50c3d577fa39a9f1409f5&quot;, size = 24835, upload-time = &quot;2025-09-27T18:37:23.296Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/26/6a/4bf6d0c97c4920f1597cc14dd720705eca0bf7c787aebc6bb4d1bead5388/markupsafe-3.0.3-cp314-cp314t-musllinux_1_2_riscv64.whl&quot;, hash = &quot;sha256:f3e98bb3798ead92273dc0e5fd0f31ade220f59a266ffd8a4f6065e0a3ce0523&quot;, size = 22733, upload-time = &quot;2025-09-27T18:37:24.237Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/14/c7/ca723101509b518797fedc2fdf79ba57f886b4aca8a7d31857ba3ee8281f/markupsafe-3.0.3-cp314-cp314t-musllinux_1_2_x86_64.whl&quot;, hash = &quot;sha256:5678211cb9333a6468fb8d8be0305520aa073f50d17f089b5b4b477ea6e67fdc&quot;, size = 23672, upload-time = &quot;2025-09-27T18:37:25.271Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/fb/df/5bd7a48c256faecd1d36edc13133e51397e41b73bb77e1a69deab746ebac/markupsafe-3.0.3-cp314-cp314t-win32.whl&quot;, hash = &quot;sha256:915c04ba3851909ce68ccc2b8e2cd691618c4dc4c4232fb7982bca3f41fd8c3d&quot;, size = 14819, upload-time = &quot;2025-09-27T18:37:26.285Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/1a/8a/0402ba61a2f16038b48b39bccca271134be00c5c9f0f623208399333c448/markupsafe-3.0.3-cp314-cp314t-win_amd64.whl&quot;, hash = &quot;sha256:4faffd047e07c38848ce017e8725090413cd80cbc23d86e55c587bf979e579c9&quot;, size = 15426, upload-time = &quot;2025-09-27T18:37:27.316Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/70/bc/6f1c2f612465f5fa89b95bead1f44dcb607670fd42891d8fdcd5d039f4f4/markupsafe-3.0.3-cp314-cp314t-win_arm64.whl&quot;, hash = &quot;sha256:32001d6a8fc98c8cb5c947787c5d08b0a50663d139f1305bac5885d98d9b40fa&quot;, size = 14146, upload-time = &quot;2025-09-27T18:37:28.327Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;mcol-xyz&quot;
+</span><span class="add">+version = &quot;0.1.0&quot;
+</span><span class="add">+source = { virtual = &quot;.&quot; }
+</span><span class="add">+dependencies = [
+</span><span class="add">+    { name = &quot;docutils&quot; },
+</span><span class="add">+    { name = &quot;pelican&quot; },
+</span><span class="add">+    { name = &quot;pygments&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[package.metadata]
+</span><span class="add">+requires-dist = [
+</span><span class="add">+    { name = &quot;docutils&quot;, specifier = &quot;&gt;=0.23&quot; },
+</span><span class="add">+    { name = &quot;pelican&quot;, specifier = &quot;&gt;=4.12.0&quot; },
+</span><span class="add">+    { name = &quot;pygments&quot;, specifier = &quot;&gt;=2.19.2&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;mdurl&quot;
+</span><span class="add">+version = &quot;0.1.2&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz&quot;, hash = &quot;sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba&quot;, size = 8729, upload-time = &quot;2022-08-14T12:40:10.846Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl&quot;, hash = &quot;sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8&quot;, size = 9979, upload-time = &quot;2022-08-14T12:40:09.779Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;ordered-set&quot;
+</span><span class="add">+version = &quot;4.1.0&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/4c/ca/bfac8bc689799bcca4157e0e0ced07e70ce125193fc2e166d2e685b7e2fe/ordered-set-4.1.0.tar.gz&quot;, hash = &quot;sha256:694a8e44c87657c59292ede72891eb91d34131f6531463aab3009191c77364a8&quot;, size = 12826, upload-time = &quot;2022-01-26T14:38:56.6Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/33/55/af02708f230eb77084a299d7b08175cff006dea4f2721074b92cdb0296c0/ordered_set-4.1.0-py3-none-any.whl&quot;, hash = &quot;sha256:046e1132c71fcf3330438a539928932caf51ddbc582496833e23de611de14562&quot;, size = 7634, upload-time = &quot;2022-01-26T14:38:48.677Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;pelican&quot;
+</span><span class="add">+version = &quot;4.12.0&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+dependencies = [
+</span><span class="add">+    { name = &quot;blinker&quot; },
+</span><span class="add">+    { name = &quot;docutils&quot; },
+</span><span class="add">+    { name = &quot;feedgenerator&quot; },
+</span><span class="add">+    { name = &quot;jinja2&quot; },
+</span><span class="add">+    { name = &quot;ordered-set&quot; },
+</span><span class="add">+    { name = &quot;pygments&quot; },
+</span><span class="add">+    { name = &quot;python-dateutil&quot; },
+</span><span class="add">+    { name = &quot;rich&quot; },
+</span><span class="add">+    { name = &quot;tzdata&quot;, marker = &quot;sys_platform == &apos;win32&apos;&quot; },
+</span><span class="add">+    { name = &quot;unidecode&quot; },
+</span><span class="add">+    { name = &quot;watchfiles&quot; },
+</span><span class="add">+]
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/c4/8d/da26b77f0d9827d341bdedea357ccb5670717e3a9b4142e3e44c7f34db44/pelican-4.12.0.tar.gz&quot;, hash = &quot;sha256:3983b5d2dc84c7bdf967154359077a2b78c0bbd2f7dcc55292133a7779609458&quot;, size = 1252907, upload-time = &quot;2026-04-20T15:30:17.322Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/6e/55/4adcce41a45f8f77e69d7e84ea447819dae1a78b4b9762a104599e5ec811/pelican-4.12.0-py3-none-any.whl&quot;, hash = &quot;sha256:3697230f56cfcca9e98d3ac9ac26f655bb20cad807f7eacf156601e241f69ad8&quot;, size = 1358275, upload-time = &quot;2026-04-20T15:30:15.383Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;pygments&quot;
+</span><span class="add">+version = &quot;2.19.2&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/b0/77/a5b8c569bf593b0140bde72ea885a803b82086995367bf2037de0159d924/pygments-2.19.2.tar.gz&quot;, hash = &quot;sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887&quot;, size = 4968631, upload-time = &quot;2025-06-21T13:39:12.283Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/c7/21/705964c7812476f378728bdf590ca4b771ec72385c533964653c68e86bdc/pygments-2.19.2-py3-none-any.whl&quot;, hash = &quot;sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b&quot;, size = 1225217, upload-time = &quot;2025-06-21T13:39:07.939Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;python-dateutil&quot;
+</span><span class="add">+version = &quot;2.9.0.post0&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+dependencies = [
+</span><span class="add">+    { name = &quot;six&quot; },
+</span><span class="add">+]
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/66/c0/0c8b6ad9f17a802ee498c46e004a0eb49bc148f2fd230864601a86dcf6db/python-dateutil-2.9.0.post0.tar.gz&quot;, hash = &quot;sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3&quot;, size = 342432, upload-time = &quot;2024-03-01T18:36:20.211Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl&quot;, hash = &quot;sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427&quot;, size = 229892, upload-time = &quot;2024-03-01T18:36:18.57Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;rich&quot;
+</span><span class="add">+version = &quot;15.0.0&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+dependencies = [
+</span><span class="add">+    { name = &quot;markdown-it-py&quot; },
+</span><span class="add">+    { name = &quot;pygments&quot; },
+</span><span class="add">+]
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/c0/8f/0722ca900cc807c13a6a0c696dacf35430f72e0ec571c4275d2371fca3e9/rich-15.0.0.tar.gz&quot;, hash = &quot;sha256:edd07a4824c6b40189fb7ac9bc4c52536e9780fbbfbddf6f1e2502c31b068c36&quot;, size = 230680, upload-time = &quot;2026-04-12T08:24:00.75Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl&quot;, hash = &quot;sha256:33bd4ef74232fb73fe9279a257718407f169c09b78a87ad3d296f548e27de0bb&quot;, size = 310654, upload-time = &quot;2026-04-12T08:24:02.83Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;six&quot;
+</span><span class="add">+version = &quot;1.17.0&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/94/e7/b2c673351809dca68a0e064b6af791aa332cf192da575fd474ed7d6f16a2/six-1.17.0.tar.gz&quot;, hash = &quot;sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81&quot;, size = 34031, upload-time = &quot;2024-12-04T17:35:28.174Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl&quot;, hash = &quot;sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274&quot;, size = 11050, upload-time = &quot;2024-12-04T17:35:26.475Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;tzdata&quot;
+</span><span class="add">+version = &quot;2026.3&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/92/ff/5a28bdfd8c3ebec42564ac7d0e54ca3db65044a9314a97f9564fa7a1e926/tzdata-2026.3.tar.gz&quot;, hash = &quot;sha256:4a1518b8993086a7982523e071643f3c0e5f213e75b21318e78bcabfff9d1415&quot;, size = 198674, upload-time = &quot;2026-07-10T08:50:37.887Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/e5/6d/b53b99a9f2766d095985947a5782f1702cabb129a34f7a802d7197af832f/tzdata-2026.3-py2.py3-none-any.whl&quot;, hash = &quot;sha256:dc096730c87af6cab1b171c9d532be840741ff5d459015e7f6947bd7d7e54931&quot;, size = 348168, upload-time = &quot;2026-07-10T08:50:36.46Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;unidecode&quot;
+</span><span class="add">+version = &quot;1.4.0&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/94/7d/a8a765761bbc0c836e397a2e48d498305a865b70a8600fd7a942e85dcf63/Unidecode-1.4.0.tar.gz&quot;, hash = &quot;sha256:ce35985008338b676573023acc382d62c264f307c8f7963733405add37ea2b23&quot;, size = 200149, upload-time = &quot;2025-04-24T08:45:03.798Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/8f/b7/559f59d57d18b44c6d1250d2eeaa676e028b9c527431f5d0736478a73ba1/Unidecode-1.4.0-py3-none-any.whl&quot;, hash = &quot;sha256:c3c7606c27503ad8d501270406e345ddb480a7b5f38827eafe4fa82a137f0021&quot;, size = 235837, upload-time = &quot;2025-04-24T08:45:01.609Z&quot; },
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[[package]]
+</span><span class="add">+name = &quot;watchfiles&quot;
+</span><span class="add">+version = &quot;1.2.0&quot;
+</span><span class="add">+source = { registry = &quot;https://pypi.org/simple&quot; }
+</span><span class="add">+dependencies = [
+</span><span class="add">+    { name = &quot;anyio&quot; },
+</span><span class="add">+]
+</span><span class="add">+sdist = { url = &quot;https://files.pythonhosted.org/packages/cd/41/5e1a4bb12aac5f1493fa1bdc11154eca3b258ca4eba65d39c473fe19d8e9/watchfiles-1.2.0.tar.gz&quot;, hash = &quot;sha256:c995fba777f1ea992f090f9236e9284cf7a5d1a0130dd5a3d82c598cacd76838&quot;, size = 108252, upload-time = &quot;2026-05-18T04:32:04.251Z&quot; }
+</span><span class="add">+wheels = [
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/e7/54/a9c7ea9a82a4ac65e7004c0a03920b5cdd2f9c3b678757d9cd425aa51d53/watchfiles-1.2.0-cp314-cp314-macosx_10_12_x86_64.whl&quot;, hash = &quot;sha256:b8c8358484d5fa12ef34f05b7f4168eaf1932f408725ff6d023c33ec17bd79d4&quot;, size = 400205, upload-time = &quot;2026-05-18T04:32:05.153Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/aa/5d/c9ab3534374a4a67450696905d6ef16a04405448b8dc52bd752ae50423d4/watchfiles-1.2.0-cp314-cp314-macosx_11_0_arm64.whl&quot;, hash = &quot;sha256:9f04b092229ad2c50126dd3c922c8822e51e605993764a33058d4a791ab42281&quot;, size = 392508, upload-time = &quot;2026-05-18T04:30:54.849Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/26/ca/1ad30103535cf0cecd7b993e8d50edc5351b1820e38f2d22e3df58962feb/watchfiles-1.2.0-cp314-cp314-manylinux_2_17_aarch64.manylinux2014_aarch64.whl&quot;, hash = &quot;sha256:7a7ce236284f002a156f70add88efe5c70879cccbb658be0822c54b1306fc09d&quot;, size = 452448, upload-time = &quot;2026-05-18T04:30:53.727Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/37/a1/ceee2cdf2afbd715fa07758d39c9859513eae411b23196f7fd039e5feedd/watchfiles-1.2.0-cp314-cp314-manylinux_2_17_armv7l.manylinux2014_armv7l.whl&quot;, hash = &quot;sha256:b9909cc2b48468b575eefa944919e1fe8a36c5849d5c7c168f80a8c1db69398e&quot;, size = 459605, upload-time = &quot;2026-05-18T04:30:23.312Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/e8/f6/421e30fd1cb3907a84ed92ab3f1983e37ba2dca015e9a894a048418417a2/watchfiles-1.2.0-cp314-cp314-manylinux_2_17_i686.manylinux2014_i686.whl&quot;, hash = &quot;sha256:0a37faaed405c67e28e6be45a1fa4f206ef5a2860f27c237db9fa30704c38242&quot;, size = 490757, upload-time = &quot;2026-05-18T04:30:47.358Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/41/b0/55ed1b97ed08be7bba6f9a541cac15f2a858e1d74d2b07b6da70a82aab00/watchfiles-1.2.0-cp314-cp314-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl&quot;, hash = &quot;sha256:9649193aa27bd9ff2e80ff29bfaa93085496c7a3a377592823cc58b77ee88add&quot;, size = 568672, upload-time = &quot;2026-05-18T04:30:38.915Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/d1/cf/d8ae8a80dd7bafab395ea7681c10237311bbf34d37704a8c744e7cf31fc7/watchfiles-1.2.0-cp314-cp314-manylinux_2_17_s390x.manylinux2014_s390x.whl&quot;, hash = &quot;sha256:4e4ff8e37f99cf1da89e255e07c9c4b37c214038c4283707bdec308cb1b0ea1f&quot;, size = 464197, upload-time = &quot;2026-05-18T04:30:09.914Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/7c/8a/3076c496ca8dafe0e8cd03fcebdfc47be4b1174b4e5b24ff6e396e6b3af2/watchfiles-1.2.0-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl&quot;, hash = &quot;sha256:054dc20fd2e3132b4c3883b4a00d72fd6e1f56fdaf89fccd12e8057d74cd74d7&quot;, size = 453181, upload-time = &quot;2026-05-18T04:30:14.829Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/e5/10/9745e17c98e7b8a86454df0a3c7b5686bd650383f1e9f26e4ebcbd6cc0c0/watchfiles-1.2.0-cp314-cp314-manylinux_2_31_riscv64.whl&quot;, hash = &quot;sha256:e140ed30ebde76796b686e67c182cff10ea2fbab186fafd1560f74bb5a473a6e&quot;, size = 465109, upload-time = &quot;2026-05-18T04:30:28.123Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/8f/95/8ef4a95481d3e0cb52d62a06fa6e972e81424be2d9698b91a2fecca9904c/watchfiles-1.2.0-cp314-cp314-musllinux_1_1_aarch64.whl&quot;, hash = &quot;sha256:bb7e52ecf68ba46d22df23467b87cffeb2146908aa523ebfe803019618cfda06&quot;, size = 630653, upload-time = &quot;2026-05-18T04:31:49.304Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/fd/e4/3b3bf36b0f829b50c6ebcb8d031583863c59f923d6a6af3d485e470d0fac/watchfiles-1.2.0-cp314-cp314-musllinux_1_1_x86_64.whl&quot;, hash = &quot;sha256:23282a321c8baf9b3a3c4afff673f9fe65eb7fdc2338d765ccad9d3d1916a5ba&quot;, size = 657838, upload-time = &quot;2026-05-18T04:31:06.497Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/21/b1/6cbbb50c1f3002ab568777d44aa21206dfb8807a840990c4037523b51812/watchfiles-1.2.0-cp314-cp314-win32.whl&quot;, hash = &quot;sha256:c0db965c5f79aa49fe672d297cf1febc5ad149b658594944f49a54a2b96270a7&quot;, size = 275108, upload-time = &quot;2026-05-18T04:30:06.891Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/92/45/190ce6db8dcb4536682cf75d3889ff1a27182a58cb519d343cb6d9ea63d8/watchfiles-1.2.0-cp314-cp314-win_amd64.whl&quot;, hash = &quot;sha256:71283b39fd17e5408eb123bd37aeecfd9d54c81fc184421943208aadb879d103&quot;, size = 288441, upload-time = &quot;2026-05-18T04:32:12.901Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/74/0d/3eae1c2313ab08378431d907c3f8095ecca00f3eda33111cf4f0f2591799/watchfiles-1.2.0-cp314-cp314-win_arm64.whl&quot;, hash = &quot;sha256:c5c19526f4e54a00f2666a6c0e9e40d582c09e865055ea7378bf0009aab857b3&quot;, size = 280684, upload-time = &quot;2026-05-18T04:31:26.902Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/b1/75/fb64e6c25d6b5ca636d03df34ffb1c6e9873303e76d27967e045f8df088f/watchfiles-1.2.0-cp314-cp314t-macosx_10_12_x86_64.whl&quot;, hash = &quot;sha256:d73a585accffa5ae39c17264c36ec3166d2fad7000c780f5ef83b2722afb9dd2&quot;, size = 398857, upload-time = &quot;2026-05-18T04:32:17.108Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/73/4e/9f7adf01754cbf81843722ccfec169d8f26c69778281a302855cecd2ee08/watchfiles-1.2.0-cp314-cp314t-macosx_11_0_arm64.whl&quot;, hash = &quot;sha256:ae99b14c5f21e026e0e9d96f40e07d8570ebee6cafd9d8fc318354606daa7a28&quot;, size = 392413, upload-time = &quot;2026-05-18T04:31:07.911Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/47/c8/bec626bcc2d69f44b9acb24ce7d60ed7b16b73628eea747fcbd169d8edda/watchfiles-1.2.0-cp314-cp314t-manylinux_2_17_aarch64.manylinux2014_aarch64.whl&quot;, hash = &quot;sha256:4429f3b105524a10b72c3a819b091c495d2811d419c1e1e8df773a5a5974f831&quot;, size = 452409, upload-time = &quot;2026-05-18T04:31:20.142Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/00/b7/b6362068e81e7c556d155a34c35d40ac3ef42d747b06d7f6e5bf58e359c2/watchfiles-1.2.0-cp314-cp314t-manylinux_2_17_armv7l.manylinux2014_armv7l.whl&quot;, hash = &quot;sha256:43d818978d06062d9b22c4fab2ebe44cf5213d42dc8e62bda8c2760cfa2eeb33&quot;, size = 458827, upload-time = &quot;2026-05-18T04:32:06.219Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/67/f8/9a813fa42afb1e0b4625e75f0479826644d3ee8dc287e093799bc01f390c/watchfiles-1.2.0-cp314-cp314t-manylinux_2_17_i686.manylinux2014_i686.whl&quot;, hash = &quot;sha256:b9f732dc58b2dbe69e464ccf8fff7a03b0dd0be439da4c0720d3558527d3d6b4&quot;, size = 490104, upload-time = &quot;2026-05-18T04:31:56.034Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/2f/bf/27dfb6094ca4c9aad21298b5525b6c53cb36121ee454331d05161e58d130/watchfiles-1.2.0-cp314-cp314t-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl&quot;, hash = &quot;sha256:8f200104103feb097de4cab8fe4f5dd18a2026934c7dea98c55a2f5fd6d5a33b&quot;, size = 571360, upload-time = &quot;2026-05-18T04:31:57.133Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/fb/39/44a096d67270ea93df91d33877dbe91fbda3aa4f8ec2edf799d93eda8736/watchfiles-1.2.0-cp314-cp314t-manylinux_2_17_s390x.manylinux2014_s390x.whl&quot;, hash = &quot;sha256:63ac26eefbf4af1741247d6fb68b11c49a25b2f7413fbd318a83a12aaa9cf666&quot;, size = 464644, upload-time = &quot;2026-05-18T04:30:57.33Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/0e/80/c7472203bad6268e3ef1ad260739704847898938ad7ea8b63a5131f46b50/watchfiles-1.2.0-cp314-cp314t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl&quot;, hash = &quot;sha256:0c4997d4e4a55f0d02b6cde327322daf3a0400e5df6c6b15948994bf72497925&quot;, size = 454771, upload-time = &quot;2026-05-18T04:30:48.736Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/51/cf/3b10b268b4b7f0fc26e9debb5eef1998b515887840f444cd3ec80c688755/watchfiles-1.2.0-cp314-cp314t-manylinux_2_31_riscv64.whl&quot;, hash = &quot;sha256:4c887eba18b7945ac73067a8b4a66f21cd46c2539b2bc68588f7be6c7eb6d26b&quot;, size = 463494, upload-time = &quot;2026-05-18T04:31:33.826Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/3d/3e/a4302545cd589262a0dc7d140e86f7688eba3f9c72776c27f7e23b8864c4/watchfiles-1.2.0-cp314-cp314t-musllinux_1_1_aarch64.whl&quot;, hash = &quot;sha256:3416ff151bb6b5a8d8d11664974fbef4d9305b9b2957839ab5a270468fd8df30&quot;, size = 629383, upload-time = &quot;2026-05-18T04:31:15.596Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/db/99/d5649df0a9a410d45b7c882304d0b790903ac9b6e8f2cfd12114e0c6b9f2/watchfiles-1.2.0-cp314-cp314t-musllinux_1_1_x86_64.whl&quot;, hash = &quot;sha256:0e831a271c035d89789cffc386b6aa1375f39f1cd25eb7ca0997e4970d152fc5&quot;, size = 656093, upload-time = &quot;2026-05-18T04:31:58.707Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/92/b9/362702539275019a54dd2e94511b31a9b89c5f9e6a21966de7eb692549fc/watchfiles-1.2.0-cp315-cp315-macosx_10_12_x86_64.whl&quot;, hash = &quot;sha256:37a6721cdf3f65dbb13aa9503510ccb4451603ac837e44d265d7992a597e1374&quot;, size = 400109, upload-time = &quot;2026-05-18T04:31:16.879Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/8f/75/71d5ba62db781e5587bded1d944c675374bc4aa37ff33d5018d98e8b6538/watchfiles-1.2.0-cp315-cp315-macosx_11_0_arm64.whl&quot;, hash = &quot;sha256:2b37d10b5a63bd4d87e18472d80fa525bd670586fae62e5dd580452764879b65&quot;, size = 392167, upload-time = &quot;2026-05-18T04:31:28.058Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/3c/01/c66dd95d0423fe30d31820e2d1d5bda773764131bbb6ac0cb1cf303ac328/watchfiles-1.2.0-cp315-cp315-manylinux_2_17_aarch64.manylinux2014_aarch64.whl&quot;, hash = &quot;sha256:0a105bc2283f67e8fbec74253ec2d94925de92ed72c0393f1206bf326b7b7b69&quot;, size = 452372, upload-time = &quot;2026-05-18T04:31:00.836Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/91/15/2fe99557e72f85627c6a8eed50d889e8d101623e060a22ad75b875cb932d/watchfiles-1.2.0-cp315-cp315-manylinux_2_17_armv7l.manylinux2014_armv7l.whl&quot;, hash = &quot;sha256:5327989a465505f05cfe06f04fa9d0c2fd5432bb243e10e6f012b1bdca3c8579&quot;, size = 459596, upload-time = &quot;2026-05-18T04:31:34.96Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/ed/23/d4acfa0023367428ed48351b3b9b267893037b6cadae55620c61c24bcfd4/watchfiles-1.2.0-cp315-cp315-manylinux_2_17_i686.manylinux2014_i686.whl&quot;, hash = &quot;sha256:ecb47f183a8025b2aa18b546725c3657e542112ae9c0613a2af79b4fa8d04ad7&quot;, size = 490869, upload-time = &quot;2026-05-18T04:31:59.923Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/a4/5f/3164cbdce06c9fb95c4f7b9e2f9760b5e2797af43a9ecc317ef42a23a278/watchfiles-1.2.0-cp315-cp315-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl&quot;, hash = &quot;sha256:8520a4ab0e37f770afc34459c4f8f7019e153f9124dc101c15538365875d1ab2&quot;, size = 571641, upload-time = &quot;2026-05-18T04:32:00.948Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/41/e6/85d3731c55e65cd7690f3f803d24c139588aaf863e4bf2148fe7a7fa1a19/watchfiles-1.2.0-cp315-cp315-manylinux_2_17_s390x.manylinux2014_s390x.whl&quot;, hash = &quot;sha256:71cd71740ed2c15211ebb237ced4e39a1cdf6f80566e5fe95428da1626f4fde6&quot;, size = 464444, upload-time = &quot;2026-05-18T04:30:34.298Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/f4/7d/562641012b8b09872742c3b8adf9629ec479fd78f8d68ae4a0c13da8add6/watchfiles-1.2.0-cp315-cp315-manylinux_2_17_x86_64.manylinux2014_x86_64.whl&quot;, hash = &quot;sha256:f88af53d6ddaf72179ef613ddc905e6f4785f712b49b80b3bef9f3525e6194b4&quot;, size = 453593, upload-time = &quot;2026-05-18T04:31:23.464Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/56/fe/cb8ef3d6f929d14158fdaaad9925985b7310abc9384dcd4d82dd0016fb59/watchfiles-1.2.0-cp315-cp315-manylinux_2_31_riscv64.whl&quot;, hash = &quot;sha256:cee9d5efd929efdac5f7e58f72b3376f676b64050a91c5b99a7094c5b2317488&quot;, size = 465096, upload-time = &quot;2026-05-18T04:31:30.384Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/25/91/80908e835e100527a9267147b08c0eee1fa6ab0ffec15edc04d1d44885f7/watchfiles-1.2.0-cp315-cp315-musllinux_1_1_aarch64.whl&quot;, hash = &quot;sha256:b718bf356bbc15e559bd8ef41782b573b8ae0e3f177ab244b440568d7ea02cfb&quot;, size = 630638, upload-time = &quot;2026-05-18T04:30:49.89Z&quot; },
+</span><span class="add">+    { url = &quot;https://files.pythonhosted.org/packages/46/4b/95ab2f256bb4af3cb2eb23b9317bda984ee6e0f11733a5c004a6c95b06e3/watchfiles-1.2.0-cp315-cp315-musllinux_1_1_x86_64.whl&quot;, hash = &quot;sha256:922c0e019fe68b3ae392965a766b02a71ba1168c932cebc3733cd52c5fe5b377&quot;, size = 657684, upload-time = &quot;2026-05-18T04:31:32.027Z&quot; },
+</span><span class="add">+]
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/screenshots.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,24 @@
+<span class="add">+{% extends &quot;base.html&quot; %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block title %}{{ SITENAME }} / {{ page.title }}{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block header %}
+</span><span class="add">+&lt;a href=/&gt;mcol.xyz&lt;/a&gt; /
+</span><span class="add">+&lt;a href=/{{ output_file }}&gt;{{ page.title }}&lt;/a&gt;
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block content %}
+</span><span class="add">+{% for img in SCREENSHOTS %}
+</span><span class="add">+{% if loop.index != 1 %}
+</span><span class="add">+&lt;hr&gt;
+</span><span class="add">+{% endif %}
+</span><span class="add">+&lt;table&gt;
+</span><span class="add">+	&lt;tr&gt;&lt;td&gt;&lt;a rel=&quot;nix&quot; href=&quot;/screenshots/{{ img }}&quot;&gt;&lt;img loading=&quot;lazy&quot; class=&quot;maim&quot; src=&quot;/screenshots/{{ img }}&quot;/&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+{% endfor %}
+</span><span class="add">+
+</span><span class="add">+&lt;footer&gt;&lt;hr&gt;- mcol.xyz -&lt;/footer&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/page.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,15 @@
+<span class="add">+{% extends &quot;base.html&quot; %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block title %}{{ SITENAME }} / {{ page.title }}{%endblock%}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block header %}
+</span><span class="add">+&lt;a href=/{{ output_file }}&gt;{{ page.title }}&lt;/a&gt;
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block content %}
+</span><span class="add">+{{ page.content }}
+</span><span class="add">+&lt;footer&gt;&lt;hr&gt;- mcol.xyz -&lt;/footer&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/index.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,117 @@
+<span class="add">+{% extends &quot;base.html&quot; %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block extra_meta %}
+</span><span class="add">+&lt;style&gt;
+</span><span class="add">+	#home { /* this flex is only used on small screens */
+</span><span class="add">+			display: flex;
+</span><span class="add">+			height: 100%;
+</span><span class="add">+			width: 100%;
+</span><span class="add">+			justify-content: space-evenly;
+</span><span class="add">+			align-items: center;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	.win {
+</span><span class="add">+			position: absolute;
+</span><span class="add">+			border-color: #000;
+</span><span class="add">+			margin: 10px 0;
+</span><span class="add">+			width: 428px;
+</span><span class="add">+			height: 238px;
+</span><span class="add">+			box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.3);
+</span><span class="add">+			border: 6px solid;
+</span><span class="add">+			background-clip: padding-box;
+</span><span class="add">+			overflow: hidden;
+</span><span class="add">+			display: flex;
+</span><span class="add">+			flex-direction: column;
+</span><span class="add">+			flex: 0 0 auto;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	.win:hover
+</span><span class="add">+	{
+</span><span class="add">+			border-color: var(--trim);
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	@keyframes blink{50%{opacity:0;}}
+</span><span class="add">+	#c{
+</span><span class="add">+			color: var(--trim);
+</span><span class="add">+			animation: blink 2s step-start infinite;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	#home2 {
+</span><span class="add">+			top: calc(50% + 22px);
+</span><span class="add">+			left: calc(50% - 352px);
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	#home1 {
+</span><span class="add">+			top: calc(50% - 260px);
+</span><span class="add">+			left: calc(50% - 88px);
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	.bar {
+</span><span class="add">+			border-top-style: solid;
+</span><span class="add">+			border-width: 18px;
+</span><span class="add">+			border-color: inherit;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	.wc {
+</span><span class="add">+			font-size: 1.1em;
+</span><span class="add">+			display: flex;
+</span><span class="add">+			flex: 1 1 auto;
+</span><span class="add">+			align-items: center;
+</span><span class="add">+			justify-content: center;
+</span><span class="add">+			align-self: center;
+</span><span class="add">+			width: 75%;
+</span><span class="add">+			line-height: 1.4em;
+</span><span class="add">+			padding-bottom: 0.5em;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	@media (max-height: 580px) {
+</span><span class="add">+			.win {
+</span><span class="add">+				position: initial;
+</span><span class="add">+			}
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	@media (min-width: 491px) and (max-width: 780px) {
+</span><span class="add">+			#home1 {
+</span><span class="add">+				right: 5%;
+</span><span class="add">+				margin-left: auto;
+</span><span class="add">+			}
+</span><span class="add">+			#home2 {
+</span><span class="add">+				left: 5%;
+</span><span class="add">+				margin-right: auto;
+</span><span class="add">+			}
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	@media (max-width: 490px) {
+</span><span class="add">+			.win {
+</span><span class="add">+				width: 88%;
+</span><span class="add">+				position: initial;
+</span><span class="add">+			}
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	@media (max-width: 960px) {
+</span><span class="add">+			#home {
+</span><span class="add">+				flex-direction: column;
+</span><span class="add">+			}
+</span><span class="add">+	}
+</span><span class="add">+&lt;/style&gt;
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block content %}
+</span><span class="add">+&lt;div id=home&gt;
+</span><span class="add">+	&lt;div id=home1 class=win&gt;
+</span><span class="add">+		&lt;div class=bar&gt;&lt;/div&gt;
+</span><span class="add">+		&lt;div class=wc&gt;
+</span><span class="add">+			&lt;div&gt;{{ HOME1 }}&lt;span id=c&gt;_&lt;/span&gt;&lt;/li&gt;&lt;/div&gt;
+</span><span class="add">+		&lt;/div&gt;
+</span><span class="add">+	&lt;/div&gt;
+</span><span class="add">+
+</span><span class="add">+	&lt;div id=home2 class=win&gt;
+</span><span class="add">+		&lt;div class=bar&gt;&lt;/div&gt;
+</span><span class="add">+		&lt;div class=wc&gt;
+</span><span class="add">+			&lt;div&gt;&lt;a href=/posts.html&gt;{{ HOME2 }}&lt;/a&gt;&lt;/div&gt;
+</span><span class="add">+		&lt;/div&gt;
+</span><span class="add">+	&lt;/div&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/feeds.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,20 @@
+<span class="add">+{% if FEED_ATOM %}
+</span><span class="add">+&lt;link href=&quot;{% if FEED_DOMAIN %}{{ FEED_DOMAIN }}{% endif %}/{%if FEED_ATOM_URL %}{{ FEED_ATOM_URL }}{% else %}{{ FEED_ATOM }}{% endif %}&quot;
+</span><span class="add">+	type=&quot;application/atom+xml&quot; rel=&quot;alternate&quot; title=&quot;{{ SITENAME }}&quot;
+</span><span class="add">+/&gt;
+</span><span class="add">+{% endif %}
+</span><span class="add">+{% if FEED_RSS %}
+</span><span class="add">+&lt;link href=&quot;{% if FEED_DOMAIN %}{{ FEED_DOMAIN }}{% endif %}/{% if FEED_RSS_URL %}{{ FEED_RSS_URL }}{% else %}{{ FEED_RSS }}{% endif %}&quot;
+</span><span class="add">+	type=&quot;application/rss+xml&quot; rel=&quot;alternate&quot; title=&quot;{{ SITENAME }}&quot;
+</span><span class="add">+/&gt;
+</span><span class="add">+{% endif %}
+</span><span class="add">+{% if CATEGORY_FEED_ATOM and category %}
+</span><span class="add">+&lt;link href=&quot;{% if FEED_DOMAIN %}{{ FEED_DOMAIN }}{% endif %}/{% if CATEGORY_FEED_ATOM_URL %}{{ CATEGORY_FEED_ATOM_URL.format(slug=category.slug) }}{% else %}{{ CATEGORY_FEED_ATOM.format(slug=category.slug) }}{% endif %}&quot;
+</span><span class="add">+	type=&quot;application/atom+xml&quot; rel=&quot;alternate&quot; title=&quot;{{ SITENAME }} / {{ category }}&quot;
+</span><span class="add">+/&gt;
+</span><span class="add">+{% endif %}
+</span><span class="add">+{% if CATEGORY_FEED_RSS and category %}
+</span><span class="add">+&lt;link href=&quot;{% if FEED_DOMAIN %}{{ FEED_DOMAIN }}{% endif %}/{% if CATEGORY_FEED_RSS_URL %}{{ CATEGORY_FEED_RSS_URL.format(slug=category.slug) }}{% else %}{{ CATEGORY_FEED_RSS.format(slug=category.slug) }}{% endif %}&quot;
+</span><span class="add">+	type=&quot;application/rss+xml&quot; rel=&quot;alternate&quot; title=&quot;{{ SITENAME }} / {{ category }}&quot;
+</span><span class="add">+/&gt;
+</span><span class="add">+{% endif %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/category.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,31 @@
+<span class="add">+{% extends &quot;base.html&quot; %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block title %}{{ SITENAME }} / {{ category }}{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block header %}
+</span><span class="add">+&lt;a href=/&gt;mcol.xyz&lt;/a&gt; /
+</span><span class="add">+&lt;a href=/{{ ARCHIVES_SAVE_AS }}&gt;{{ ARCHIVES_TITLE }}&lt;/a&gt; /
+</span><span class="add">+&lt;a href=/{{ CATEGORIES_SAVE_AS }}&gt;categories&lt;/a&gt; /
+</span><span class="add">+&lt;a href=/{{ output_file }}&gt;{{ category }}&lt;/a&gt;
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block content %}
+</span><span class="add">+
+</span><span class="add">+&lt;table&gt;
+</span><span class="add">+	{% for year, date_year in dates|groupby( &apos;date.year&apos; )|sort(reverse=True) %}
+</span><span class="add">+	&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;h2&gt;{{ year }}&lt;/h2&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+
+</span><span class="add">+	{% for month, articles in date_year|groupby(&apos;date.month&apos;)|sort(reverse=True) %}
+</span><span class="add">+	{% for article in articles %}
+</span><span class="add">+	&lt;tr&gt;&lt;td&gt;{{ article.date.strftime(&apos;%b %d&apos;) }}&lt;/td&gt;
+</span><span class="add">+			&lt;td&gt;&lt;a href=&quot;/{{ article.url }}&quot;&gt;{{ article.title }}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+	{% endfor %}
+</span><span class="add">+	{% endfor %}
+</span><span class="add">+	{% endfor %}
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;footer&gt;&lt;hr&gt;- mcol.xyz -&lt;/footer&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/categories.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,21 @@
+<span class="add">+{% extends &quot;base.html&quot; %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block title %}{{ SITENAME }} / categories{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block header %}
+</span><span class="add">+&lt;a href=/&gt;mcol.xyz&lt;/a&gt; /
+</span><span class="add">+&lt;a href=/{{ ARCHIVES_SAVE_AS }}&gt;{{ ARCHIVES_TITLE }}&lt;/a&gt; /
+</span><span class="add">+&lt;a href=/{{ output_file }}&gt;categories&lt;/a&gt;
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block content %}
+</span><span class="add">+&lt;table&gt;
+</span><span class="add">+	{% for category, articles in categories|sort %}
+</span><span class="add">+	&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;/{{ category.url }}&quot;&gt;{{ category }} ({{ articles|count }})&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+	{% endfor %}
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+&lt;footer&gt;&lt;hr&gt;- mcol.xyz -&lt;/footer&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/base.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,40 @@
+<span class="add">+&lt;!DOCTYPE html&gt;
+</span><span class="add">+&lt;html lang=en-US&gt;
+</span><span class="add">+	&lt;head&gt;
+</span><span class="add">+		&lt;title&gt;{% block title %}{{ SITENAME }}{% endblock title %}&lt;/title&gt;
+</span><span class="add">+		&lt;meta charset=utf-8 /&gt;
+</span><span class="add">+		&lt;meta name=author content={{ AUTHOR }}&gt;
+</span><span class="add">+		&lt;meta name=viewport content=width=device-width, initial-scale=1&gt;
+</span><span class="add">+		{% for name, content in DEFAULT_METADATA.items() %}
+</span><span class="add">+		&lt;meta name={{ name }} content={{ content }}&gt;
+</span><span class="add">+		{% endfor %}
+</span><span class="add">+		{% block extra_meta %}{% endblock %}
+</span><span class="add">+		&lt;link rel=&quot;shortcut icon&quot; type=image/png href=/favicon.png /&gt;
+</span><span class="add">+		&lt;link rel=stylesheet href=/theme/css/{{ CSS_FILE }} type=text/css /&gt;
+</span><span class="add">+		{% include &quot;feeds.html&quot; %}
+</span><span class="add">+		{{ EXTRAHEAD }}
+</span><span class="add">+	&lt;/head&gt;
+</span><span class="add">+
+</span><span class="add">+	&lt;body&gt;
+</span><span class="add">+		{% if output_file != &quot;index.html&quot; %}
+</span><span class="add">+		&lt;table id=&quot;head&quot;&gt;
+</span><span class="add">+			&lt;tr&gt;
+</span><span class="add">+				&lt;td width=&quot;32px&quot; rowspan=&quot;2&quot;&gt;&lt;a href=&quot;/&quot;&gt;&lt;img id=avatar src=&quot;{{ AVATAR }}&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+				&lt;td rowspan=&quot;2&quot;&gt;{% block header %}{% endblock header %}&lt;/td&gt;
+</span><span class="add">+				&lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;/code&quot;&gt;code&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+			&lt;/tr&gt;
+</span><span class="add">+			&lt;tr&gt;
+</span><span class="add">+				{% if output_file == &quot;about.html&quot; %}
+</span><span class="add">+				&lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;/posts.html&quot;&gt;posts&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+				{% else %}
+</span><span class="add">+				&lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;/about.html&quot;&gt;about&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+				{% endif %}
+</span><span class="add">+			&lt;/tr&gt;
+</span><span class="add">+		&lt;/table&gt;
+</span><span class="add">+		&lt;hr&gt;
+</span><span class="add">+		{% endif %}
+</span><span class="add">+		{% block content %}
+</span><span class="add">+		{% endblock %}
+</span><span class="add">+		{{ EXTRATAIL }}
+</span><span class="add">+	&lt;/body&gt;
+</span><span class="add">+&lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/article.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,36 @@
+<span class="add">+{% extends &quot;base.html&quot; %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block title %}{{ SITENAME }} / {{ article.title }}{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block extra_meta %}
+</span><span class="add">+	{% if article.description %}
+</span><span class="add">+	&lt;meta name=&quot;description&quot; content=&quot;{{article.description}}&quot; /&gt;
+</span><span class="add">+	{% endif %}
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block header %}
+</span><span class="add">+&lt;a href=/&gt;mcol.xyz&lt;/a&gt; / &lt;a href=/{{ ARCHIVES_SAVE_AS }}&gt;{{ ARCHIVES_TITLE }}&lt;/a&gt; / &lt;a href=/{{ output_file }}&gt;{{ article.title }}&lt;/a&gt;
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block content %}
+</span><span class="add">+
+</span><span class="add">+{{ article.content }}
+</span><span class="add">+
+</span><span class="add">+{% if ARTICLE_FEEDBACK %}
+</span><span class="add">+&lt;hr&gt;&lt;p&gt;{{ ARTICLE_FEEDBACK }}&lt;/p&gt;
+</span><span class="add">+{% endif %}
+</span><span class="add">+
+</span><span class="add">+&lt;footer&gt;&lt;hr&gt;
+</span><span class="add">+&lt;p&gt;Published @ &lt;time datetime=&quot;{{ article.date.isoformat() }}&quot;&gt;{{ article.locale_date }}&lt;/time&gt;
+</span><span class="add">+{% if article.category %}in &lt;a href=&quot;/{{ article.category.url }}&quot;&gt;{{ article.category }}&lt;/a&gt;{% endif %}
+</span><span class="add">+
+</span><span class="add">+{% if article.modified %}
+</span><span class="add">+/ &lt;span class=mod&gt;Modified &lt;time datetime=&quot;{{ article.modified.isoformat() }}&quot;&gt;{{ article.locale_modified }}&lt;/time&gt;&lt;span&gt;
+</span><span class="add">+{% endif %}&lt;/p&gt;
+</span><span class="add">+&lt;/footer&gt;
+</span><span class="add">+
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/archives.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,30 @@
+<span class="add">+{% extends &quot;base.html&quot; %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block title %}{{ SITENAME }} / {{ ARCHIVES_TITLE }}{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block header %}
+</span><span class="add">+&lt;a href=/&gt;mcol.xyz&lt;/a&gt; /
+</span><span class="add">+&lt;a href=/{{ output_file }}&gt;{{ ARCHIVES_TITLE }}&lt;/a&gt;
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block content %}
+</span><span class="add">+{{ ABOUT }}
+</span><span class="add">+&lt;hr&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;table&gt;
+</span><span class="add">+	{% for year, date_year in dates|groupby( &apos;date.year&apos; )|sort(reverse=True) %}
+</span><span class="add">+	&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;h2&gt;{{ year }}&lt;/h2&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+	{% for month, articles in date_year|groupby(&apos;date.month&apos;)|sort(reverse=True) %}
+</span><span class="add">+	{% for article in articles %}
+</span><span class="add">+	&lt;tr&gt;&lt;td&gt;{{ article.date.strftime(&apos;%b %d&apos;) }}&lt;/td&gt;
+</span><span class="add">+		&lt;td&gt;&lt;a href=&quot;/{{ article.url }}&quot;&gt;{{ article.title }}&lt;/a&gt;&lt;td&gt;&lt;/tr&gt;
+</span><span class="add">+	{% endfor %}
+</span><span class="add">+	{% endfor %}
+</span><span class="add">+	{% endfor %}
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;footer&gt;&lt;hr&gt;- mcol.xyz -&lt;/footer&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/templates/about.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,33 @@
+<span class="add">+{% extends &quot;base.html&quot; %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block title %}{{ SITENAME }} / {{ page.title }}{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block header %}
+</span><span class="add">+&lt;a href=/&gt;mcol.xyz&lt;/a&gt; /
+</span><span class="add">+&lt;a href=/{{ output_file }}&gt;{{ page.title }}&lt;/a&gt;
+</span><span class="add">+{% endblock %}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+{% block content %}
+</span><span class="add">+{{ ABOUT }}
+</span><span class="add">+&lt;hr&gt;
+</span><span class="add">+&lt;p&gt;&lt;h2&gt;me on the WWW&lt;/h2&gt;&lt;/p&gt;
+</span><span class="add">+&lt;table&gt;
+</span><span class="add">+{% for name, url, msg in LINKS %}
+</span><span class="add">+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;{{ url }}&quot;&gt;{{ name }}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;{{ msg }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+{% endfor %}
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+&lt;p&gt;&lt;/p&gt;
+</span><span class="add">+&lt;hr&gt;
+</span><span class="add">+&lt;p&gt;{{ page.content }}&lt;/p&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;table&gt;
+</span><span class="add">+	{% for blog in BLOGROLL %}
+</span><span class="add">+	&lt;tr&gt;&lt;td&gt;{{ blog[0] }} at &lt;a href=&quot;{{ blog[1] }}&quot;&gt;{{ blog[2] }}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+	{% endfor %}
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;footer&gt;&lt;hr&gt;- mcol.xyz -&lt;/footer&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/static/css/main.css</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,190 @@
+<span class="add">+/* 🐱  🐭  */
+</span><span class="add">+
+</span><span class="add">+@viewport {
+</span><span class="add">+    width: device-width;
+</span><span class="add">+    zoom: 1.0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+html {
+</span><span class="add">+    color: #000;
+</span><span class="add">+    font-family: monospace;
+</span><span class="add">+    font-size: 1em;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+body {
+</span><span class="add">+    max-width: 900px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+p {
+</span><span class="add">+    margin: 15px 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+li {
+</span><span class="add">+    list-style-type: square;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+h1, h2 {
+</span><span class="add">+    font-size: 1em;
+</span><span class="add">+    margin: 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+h2 {
+</span><span class="add">+    font-weight: bold;
+</span><span class="add">+    text-decoration: underline;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+::selection {
+</span><span class="add">+    background: #5D479D;
+</span><span class="add">+    color: #fff;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.fas {
+</span><span class="add">+    vertical-align: -5%;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+table td {
+</span><span class="add">+    padding: 0 0.4em;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+td.link {
+</span><span class="add">+    text-align: right;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.mod {
+</span><span class="add">+    font-style: italic;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+a:target {
+</span><span class="add">+    background-color: #ddd;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+img, video {
+</span><span class="add">+    max-width: 100%;
+</span><span class="add">+    margin: 0 auto;
+</span><span class="add">+    display: block;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#avatar {
+</span><span class="add">+    width: 32px;
+</span><span class="add">+    height: 32px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#avatar:hover {
+</span><span class="add">+    transform: scaleY(-1);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+/* some of these are from stagit */
+</span><span class="add">+a.d,
+</span><span class="add">+a.h,
+</span><span class="add">+a.i,
+</span><span class="add">+a.line {
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#blob a,
+</span><span class="add">+.desc {
+</span><span class="add">+    color: #777;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#blob a:hover {
+</span><span class="add">+    color: blue;
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+table thead td {
+</span><span class="add">+    font-weight: bold;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#content table td {
+</span><span class="add">+    vertical-align: top;
+</span><span class="add">+    white-space: nowrap;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#head {
+</span><span class="add">+    width: 100%;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#branches tr:hover td,
+</span><span class="add">+#tags tr:hover td,
+</span><span class="add">+#index tr:hover td,
+</span><span class="add">+#log tr:hover td,
+</span><span class="add">+#files tr:hover td {
+</span><span class="add">+    background-color: #eee;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#index tr td:nth-child(2),
+</span><span class="add">+#tags tr td:nth-child(3),
+</span><span class="add">+#branches tr td:nth-child(3),
+</span><span class="add">+#log tr td:nth-child(2) {
+</span><span class="add">+    white-space: normal;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+td.num {
+</span><span class="add">+    text-align: right;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+hr {
+</span><span class="add">+    border: 0;
+</span><span class="add">+    border-top: 1px solid #777;
+</span><span class="add">+    height: 1px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+pre a.h {
+</span><span class="add">+    color: #00a;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.A,
+</span><span class="add">+span.i,
+</span><span class="add">+pre a.i {
+</span><span class="add">+    color: #070;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.D,
+</span><span class="add">+span.d,
+</span><span class="add">+pre a.d {
+</span><span class="add">+    color: #e00;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+pre a.h:hover,
+</span><span class="add">+pre a.i:hover,
+</span><span class="add">+pre a.d:hover {
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.highlight, code {
+</span><span class="add">+    background: #eeeeef;
+</span><span class="add">+    color: black;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.highlight {
+</span><span class="add">+    white-space: pre-wrap;
+</span><span class="add">+    word-wrap: break-word;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.c, .ch, .cm, .cp, .cpf, .c1, .gh, .gp
+</span><span class="add">+{ color: #5D479D } /* comments */
+</span><span class="add">+
+</span><span class="add">+.err, .se, .o
+</span><span class="add">+{ color: #a53c21 } /* dark red */
+</span><span class="add">+
+</span><span class="add">+.sh, .si, .sx, .sr, .s1, .ss, .cs, .gd, .dl,
+</span><span class="add">+.s2, .nc, .vc, .vg, .vi, .vm, .nv, .sc, .s
+</span><span class="add">+{ color: #8f4ff0 } /* bright pink */
+</span><span class="add">+
+</span><span class="add">+.kn, .nb, .mb, .mf, .mh, .mi, .mo, .bp, .il, .m
+</span><span class="add">+{ color: #406794 } /* keywords (exit, eval) */
+</span><span class="add">+
+</span><span class="add">+.kt
+</span><span class="add">+{ color: #3e3e73 } /* light grey */
+</span><span class="add">+
+</span><span class="add">+.kc, .k, .ow, .kp, .kr
+</span><span class="add">+{ color: #406794 } /* key words */
+</span><span class="add">+
+</span><span class="add">+.esc, .l, .n, .x, .p, .gs, .ld, .na, .no, .ge
+</span><span class="add">+.nd, .ni, .nf, .nl, .nn, .nx, .py, .nt, .w, .fm, .g
+</span><span class="add">+{ color: black }
+</span><span class="add">+
+</span><span class="add">+.ne { color: #5fd75f }
+</span><span class="add">+
+</span><span class="add">+.gh, .gp, .cs, .gu, .ne, .cs
+</span><span class="add">+{ font-weight: bold }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>theme/readme.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,5 @@
+<span class="add">+mini theme for pelican
+</span><span class="add">+======================
+</span><span class="add">+
+</span><span class="add">+This is a theme for websites that use the Pelican static site generator. It is
+</span><span class="add">+very minimal and doesn&apos;t do much.
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>pyproject.toml</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,13 @@
+<span class="add">+[project]
+</span><span class="add">+name = &quot;mcol-xyz&quot;
+</span><span class="add">+version = &quot;0.1.0&quot;
+</span><span class="add">+description = &quot;Source for the mcol.xyz blog, built with Pelican&quot;
+</span><span class="add">+requires-python = &quot;&gt;=3.14&quot;
+</span><span class="add">+dependencies = [
+</span><span class="add">+    &quot;docutils&gt;=0.23&quot;,
+</span><span class="add">+    &quot;pelican&gt;=4.12.0&quot;,
+</span><span class="add">+    &quot;pygments&gt;=2.19.2&quot;,
+</span><span class="add">+]
+</span><span class="add">+
+</span><span class="add">+[tool.uv]
+</span><span class="add">+package = false
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>publishconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,6 +9,3 @@
+<span class="def"> 
+</span><span class="def"> FEED_ATOM = &quot;rss.xml&quot;
+</span><span class="def"> FEED_DOMAIN = SITEURL
+</span><span class="sub">-
+</span><span class="sub">-# css-html-js-minify
+</span><span class="sub">-PLUGINS.append(&quot;css-html-js-minify&quot;)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugins/fontawesome_roles/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,20 @@
+<span class="add">+# -*- coding: utf-8 -*-
+</span><span class="add">+#
+</span><span class="add">+# fontawesome_roles
+</span><span class="add">+#
+</span><span class="add">+# Registers the :fas:/:far:/:fab: RST roles used in posts to embed inline
+</span><span class="add">+# Font Awesome icons, e.g. :fas:`envelope` -&gt; &lt;span class=&quot;fas fa-envelope&quot;&gt;.
+</span><span class="add">+# The icon font/CSS itself is loaded separately (see EXTRAHEAD).
+</span><span class="add">+
+</span><span class="add">+from docutils import nodes
+</span><span class="add">+from docutils.parsers.rst import roles
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def rst_span(name, rawtext, text, lineno, inliner, options={}, content=[]):
+</span><span class="add">+    return [nodes.raw(&quot;&quot;, f&apos;&lt;span class=&quot;{name} fa-{text}&quot;&gt;&lt;/span&gt;&apos;, format=&quot;html&quot;)], []
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def register():
+</span><span class="add">+    roles.register_local_role(&quot;fas&quot;, rst_span)
+</span><span class="add">+    roles.register_local_role(&quot;far&quot;, rst_span)
+</span><span class="add">+    roles.register_local_role(&quot;fab&quot;, rst_span)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,12 +7,14 @@
+<span class="def"> sys.path.append(os.curdir)
+</span><span class="def"> from blogroll import BLOGROLL
+</span><span class="def"> 
+</span><span class="add">+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+</span><span class="add">+
+</span><span class="def"> SITEURL = &quot;https://mcol.xyz&quot;
+</span><span class="def"> AUTHOR = &quot;mcol&quot;
+</span><span class="def"> SITENAME = &quot;mcol.xyz&quot;
+</span><span class="def"> PATH = &quot;content&quot;
+</span><span class="def"> TIMEZONE = &quot;UTC&quot;
+</span><span class="sub">-THEME = &quot;/home/mcol/git/mini-theme&quot;
+</span><span class="add">+THEME = os.path.join(BASE_DIR, &quot;theme&quot;)
+</span><span class="def"> PAGE_PATHS = [
+</span><span class="def">     &quot;pages&quot;,
+</span><span class="def"> ]
+</span>@@ -22,7 +24,7 @@
+<span class="def"> DEFAULT_DATE_FORMAT = &quot;%Y-%m-%d&quot;
+</span><span class="def"> STATIC_PATHS = [&quot;static&quot;, &quot;favicon.png&quot;, &quot;icons&quot;, &quot;avatar.png&quot;, &quot;screenshots&quot;]
+</span><span class="def"> STATIC_CREATE_LINKS = True
+</span><span class="sub">-PLUGIN_PATHS = [&quot;/home/mcol/git&quot;, &quot;/home/mcol/git/pelican-plugins&quot;]
+</span><span class="add">+PLUGIN_PATHS = [os.path.join(BASE_DIR, &quot;plugins&quot;)]
+</span><span class="def"> PLUGINS = []
+</span><span class="def"> RELATIVE_URLS = True
+</span><span class="def"> 
+</span>@@ -59,17 +61,20 @@
+<span class="def"> AVATAR = &quot;/avatar.png&quot;
+</span><span class="def"> HOME1 = &quot;One more person&apos;s notes on FOSS, code and unix toys&quot;
+</span><span class="def"> HOME2 = &quot;Welcome&quot;
+</span><span class="sub">-EXTRAHEAD = &quot;&lt;link rel=stylesheet href=/theme/css/fa.css /&gt;&quot;
+</span><span class="add">+EXTRAHEAD = &apos;&lt;link rel=stylesheet href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css&quot;&gt;&apos;
+</span><span class="def"> EXTRATAIL = &quot;&quot;
+</span><span class="def"> ARTICLE_FEEDBACK = &quot;&quot;&quot;If you have any thoughts, comments, criticisms, feel free to reach
+</span><span class="def"> out on &lt;a href=&quot;https://fosstodon.org/@mcol&quot;&gt;mastodon&lt;/a&gt; or by &lt;a
+</span><span class="def"> href=&quot;mailto:mcol@posteo.net&quot;&gt;email&lt;/a&gt; ʕ•ᴥ•ʔ&quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="sub">-SCREENSHOTS = reversed([escape(i) for i in os.listdir(&quot;content/screenshots&quot;)])
+</span><span class="add">+SCREENSHOTS_DIR = &quot;content/screenshots&quot;
+</span><span class="add">+if os.path.isdir(SCREENSHOTS_DIR):
+</span><span class="add">+    SCREENSHOTS = reversed([escape(i) for i in os.listdir(SCREENSHOTS_DIR)])
+</span><span class="add">+else:
+</span><span class="add">+    SCREENSHOTS = []
+</span><span class="def"> 
+</span><span class="sub">-# minify-fontawesome
+</span><span class="sub">-PLUGINS.append(&quot;pelican-minify-fontawesome&quot;)
+</span><span class="sub">-MINIFY_FONTAWESOME = &quot;/home/mcol/git/mcol.xyz/fontawesome-free-5.11.2-web&quot;
+</span><span class="add">+# fontawesome icons (:fas:/:far:/:fab: RST roles), served via CDN
+</span><span class="add">+PLUGINS.append(&quot;fontawesome_roles&quot;)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # development settings
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,96 +0,0 @@
+<span class="sub">-PY?=python3
+</span><span class="sub">-PELICAN?=pelican
+</span><span class="sub">-PELICANOPTS=
+</span><span class="sub">-
+</span><span class="sub">-BASEDIR=$(CURDIR)
+</span><span class="sub">-INPUTDIR=$(BASEDIR)/content
+</span><span class="sub">-OUTPUTDIR=$(BASEDIR)/output
+</span><span class="sub">-CONFFILE=$(BASEDIR)/pelicanconf.py
+</span><span class="sub">-PUBLISHCONF=$(BASEDIR)/publishconf.py
+</span><span class="sub">-
+</span><span class="sub">-SSH_HOST=mcol.xyz
+</span><span class="sub">-SSH_PORT=22
+</span><span class="sub">-SSH_USER=mcol
+</span><span class="sub">-SSH_TARGET_DIR=/home/mcol/mcol.xyz
+</span><span class="sub">-
+</span><span class="sub">-FTP_USER=mcol@mcol.xyz
+</span><span class="sub">-FTP_HOST=mcol.xyz
+</span><span class="sub">-
+</span><span class="sub">-DEBUG ?= 0
+</span><span class="sub">-ifeq ($(DEBUG), 1)
+</span><span class="sub">-	PELICANOPTS += -D
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-RELATIVE ?= 0
+</span><span class="sub">-ifeq ($(RELATIVE), 1)
+</span><span class="sub">-	PELICANOPTS += --relative-urls
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-help:
+</span><span class="sub">-	@echo &apos;Makefile for a pelican Web site                                           &apos;
+</span><span class="sub">-	@echo &apos;                                                                          &apos;
+</span><span class="sub">-	@echo &apos;Usage:                                                                    &apos;
+</span><span class="sub">-	@echo &apos;   make html                           (re)generate the web site          &apos;
+</span><span class="sub">-	@echo &apos;   make clean                          remove the generated files         &apos;
+</span><span class="sub">-	@echo &apos;   make regenerate                     regenerate files upon modification &apos;
+</span><span class="sub">-	@echo &apos;   make publish                        generate using production settings &apos;
+</span><span class="sub">-	@echo &apos;   make serve [PORT=8000]              serve site at http://localhost:8000&apos;
+</span><span class="sub">-	@echo &apos;   make serve-global [SERVER=0.0.0.0]  serve (as root) to $(SERVER):80    &apos;
+</span><span class="sub">-	@echo &apos;   make devserver [PORT=8000]          serve and regenerate together      &apos;
+</span><span class="sub">-	@echo &apos;   make ssh_upload                     upload the web site via SSH        &apos;
+</span><span class="sub">-	@echo &apos;   make rsync_upload                   upload the web site via rsync+ssh  &apos;
+</span><span class="sub">-	@echo &apos;   make ftp_upload                     upload the web site via FTP        &apos;
+</span><span class="sub">-	@echo &apos;                                                                          &apos;
+</span><span class="sub">-	@echo &apos;Set the DEBUG variable to 1 to enable debugging, e.g. make DEBUG=1 html   &apos;
+</span><span class="sub">-	@echo &apos;Set the RELATIVE variable to 1 to enable relative urls                    &apos;
+</span><span class="sub">-	@echo &apos;                                                                          &apos;
+</span><span class="sub">-
+</span><span class="sub">-html: clean
+</span><span class="sub">-	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS)
+</span><span class="sub">-
+</span><span class="sub">-clean:
+</span><span class="sub">-	[ ! -d $(OUTPUTDIR) ] || rm -rf $(OUTPUTDIR)
+</span><span class="sub">-
+</span><span class="sub">-regenerate:
+</span><span class="sub">-	$(PELICAN) -r $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS)
+</span><span class="sub">-
+</span><span class="sub">-serve:
+</span><span class="sub">-ifdef PORT
+</span><span class="sub">-	$(PELICAN) -l $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS) -p $(PORT)
+</span><span class="sub">-else
+</span><span class="sub">-	$(PELICAN) -l $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS)
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-serve-global:
+</span><span class="sub">-ifdef SERVER
+</span><span class="sub">-	$(PELICAN) -l $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS) -p $(PORT) -b $(SERVER)
+</span><span class="sub">-else
+</span><span class="sub">-	$(PELICAN) -l $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS) -p $(PORT) -b 0.0.0.0
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-devserver:
+</span><span class="sub">-ifdef PORT
+</span><span class="sub">-	$(PELICAN) -lr $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS) -p $(PORT)
+</span><span class="sub">-else
+</span><span class="sub">-	$(PELICAN) -lr $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS)
+</span><span class="sub">-endif
+</span><span class="sub">-
+</span><span class="sub">-publish: clean
+</span><span class="sub">-	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(PUBLISHCONF) $(PELICANOPTS)
+</span><span class="sub">-
+</span><span class="sub">-ssh_upload: publish
+</span><span class="sub">-	scp -P $(SSH_PORT) -r $(OUTPUTDIR)/* $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
+</span><span class="sub">-
+</span><span class="sub">-rsync_upload: publish
+</span><span class="sub">-	rsync -e &quot;ssh -p $(SSH_PORT)&quot; -P -rczz --cvs-exclude --delete --chmod=D755,F644 --copy-dirlinks \
+</span><span class="sub">-	    $(OUTPUTDIR)/ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
+</span><span class="sub">-
+</span><span class="sub">-ftp_upload: publish
+</span><span class="sub">-	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) / $(OUTPUTDIR)/*
+</span><span class="sub">-
+</span><span class="sub">-code:
+</span><span class="sub">-	gitja -c gitja.dhall
+</span><span class="sub">-	ncftpput -vRz -u $(FTP_USER) $(FTP_HOST) /code/ output-gitja/*
+</span><span class="sub">-
+</span><span class="sub">-.PHONY: html help clean regenerate serve serve-global devserver stopserver publish ssh_upload rsync_upload ftp_upload code
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>justfile</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,58 @@
+<span class="add">+basedir := justfile_directory()
+</span><span class="add">+inputdir := basedir / &quot;content&quot;
+</span><span class="add">+outputdir := basedir / &quot;output&quot;
+</span><span class="add">+conffile := basedir / &quot;pelicanconf.py&quot;
+</span><span class="add">+publishconf := basedir / &quot;publishconf.py&quot;
+</span><span class="add">+
+</span><span class="add">+ssh_host := &quot;mcol.xyz&quot;
+</span><span class="add">+ssh_port := &quot;22&quot;
+</span><span class="add">+ssh_user := &quot;mcol&quot;
+</span><span class="add">+ssh_target_dir := &quot;/home/mcol/mcol.xyz&quot;
+</span><span class="add">+
+</span><span class="add">+ftp_user := &quot;mcol@mcol.xyz&quot;
+</span><span class="add">+ftp_host := &quot;mcol.xyz&quot;
+</span><span class="add">+
+</span><span class="add">+# List available recipes
+</span><span class="add">+default:
+</span><span class="add">+    @just --list
+</span><span class="add">+
+</span><span class="add">+# (Re)generate the web site. Pass extra pelican flags after `--`, e.g. `just html -- -D`
+</span><span class="add">+html *flags: clean
+</span><span class="add">+    uv run pelican {{ inputdir }} -o {{ outputdir }} -s {{ conffile }} {{ flags }}
+</span><span class="add">+
+</span><span class="add">+# Remove the generated files
+</span><span class="add">+clean:
+</span><span class="add">+    rm -rf {{ outputdir }}
+</span><span class="add">+
+</span><span class="add">+# Regenerate files upon modification
+</span><span class="add">+regenerate *flags:
+</span><span class="add">+    uv run pelican -r {{ inputdir }} -o {{ outputdir }} -s {{ conffile }} {{ flags }}
+</span><span class="add">+
+</span><span class="add">+# Serve site at http://localhost:8000
+</span><span class="add">+serve port=&quot;8000&quot; *flags:
+</span><span class="add">+    uv run pelican -l {{ inputdir }} -o {{ outputdir }} -s {{ conffile }} -p {{ port }} {{ flags }}
+</span><span class="add">+
+</span><span class="add">+# Serve (as root) to 0.0.0.0:80
+</span><span class="add">+serve-global server=&quot;0.0.0.0&quot; port=&quot;80&quot; *flags:
+</span><span class="add">+    uv run pelican -l {{ inputdir }} -o {{ outputdir }} -s {{ conffile }} -p {{ port }} -b {{ server }} {{ flags }}
+</span><span class="add">+
+</span><span class="add">+# Serve and regenerate together
+</span><span class="add">+devserver port=&quot;8000&quot; *flags:
+</span><span class="add">+    uv run pelican -lr {{ inputdir }} -o {{ outputdir }} -s {{ conffile }} -p {{ port }} {{ flags }}
+</span><span class="add">+
+</span><span class="add">+# Generate using production settings
+</span><span class="add">+publish *flags: clean
+</span><span class="add">+    uv run pelican {{ inputdir }} -o {{ outputdir }} -s {{ publishconf }} {{ flags }}
+</span><span class="add">+
+</span><span class="add">+# Upload the web site via SSH
+</span><span class="add">+ssh-upload: publish
+</span><span class="add">+    scp -P {{ ssh_port }} -r {{ outputdir }}/* {{ ssh_user }}@{{ ssh_host }}:{{ ssh_target_dir }}
+</span><span class="add">+
+</span><span class="add">+# Upload the web site via rsync+ssh
+</span><span class="add">+rsync-upload: publish
+</span><span class="add">+    rsync -e &quot;ssh -p {{ ssh_port }}&quot; -P -rczz --cvs-exclude --delete --chmod=D755,F644 --copy-dirlinks \
+</span><span class="add">+        {{ outputdir }}/ {{ ssh_user }}@{{ ssh_host }}:{{ ssh_target_dir }}
+</span><span class="add">+
+</span><span class="add">+# Upload the web site via FTP
+</span><span class="add">+ftp-upload: publish
+</span><span class="add">+    ncftpput -vRz -u {{ ftp_user }} {{ ftp_host }} / {{ outputdir }}/*
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja_descriptions.py</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,39 +0,0 @@
+<span class="sub">-#!/usr/bin/env python3
+</span><span class="sub">-#
+</span><span class="sub">-# Generate a &apos;descriptions&apos; file in each repo folder
+</span><span class="sub">-#
+</span><span class="sub">-# Make sure to re-run this script after editing any descriptions or adding repos.
+</span><span class="sub">-
+</span><span class="sub">-from pathlib import Path
+</span><span class="sub">-
+</span><span class="sub">-repo_dir = Path(&quot;~/git/&quot;).expanduser()
+</span><span class="sub">-
+</span><span class="sub">-descriptions = {
+</span><span class="sub">-    &quot;bdf2flf&quot;: &quot;Convert BDF bitmap fonts to flf fonts for figlet&quot;,
+</span><span class="sub">-    &quot;gitja&quot;: &quot;🐙 Templated web page generator for your git repositories&quot;,
+</span><span class="sub">-    &quot;mcol.xyz&quot;: &quot;The main content of my blog mcol.xyz&quot;,
+</span><span class="sub">-    &quot;mini-theme&quot;: &quot;A mini theme for the pelican static site generator&quot;,
+</span><span class="sub">-    &quot;mkinitcpio-welcome&quot;: &apos;mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html&apos;,
+</span><span class="sub">-    &quot;pelican-microfeed&quot;: &quot;Pelican plugin to create tiny single-page feeds&quot;,
+</span><span class="sub">-    &quot;pelican-minify-fontawesome&quot;: &quot;Pelican plugin to minify fontawesome assets to include used icons.&quot;,
+</span><span class="sub">-    &quot;pixels&quot;: &quot;Neuropixels recording data processing and analysis pipeline&quot;,
+</span><span class="sub">-    &quot;pywayland&quot;: &quot;Python bindings to libwayland&quot;,
+</span><span class="sub">-    &quot;pywlroots&quot;: &quot;Python bindings to the wlroots Wayland library&quot;,
+</span><span class="sub">-    &quot;qtile&quot;: &quot;A pure-Python tiling window manager for X11 and Wayland.&quot;,
+</span><span class="sub">-    &quot;qtools&quot;: &quot;An (outdated) collection of plugins for Qtile.&quot;,
+</span><span class="sub">-    &quot;reach&quot;: &quot;Rodent reaching task control software&quot;,
+</span><span class="sub">-    &quot;screenshot-gallery-generator&quot;: &quot;Screenshot gallery generator for nixers&quot;,
+</span><span class="sub">-    &quot;sudoku-solver&quot;: &quot;A small haskell script to solve sudoku puzzles&quot;,
+</span><span class="sub">-    &quot;tide&quot;: &quot;A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.&quot;,
+</span><span class="sub">-    &quot;unix.sexy-react&quot;: &quot;A web app to help you design beautiful desktop environments.&quot;,
+</span><span class="sub">-    &quot;vim-misc&quot;: &quot;My vim configuration&quot;,
+</span><span class="sub">-    &quot;wimp&quot;: &quot;gimp but for windows: a wayland compositor&quot;,
+</span><span class="sub">-    &quot;xanadu&quot;: &quot;Virtual desktop underlay for Wayland and X11&quot;,
+</span><span class="sub">-    &quot;xoop&quot;: &quot;Loop your X cursor around the screen 👉😎👉&quot;,
+</span><span class="sub">-    &quot;zshrc&quot;: &quot;My zsh configuration&quot;,
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-for name, desc in descriptions.items():
+</span><span class="sub">-    path = repo_dir / name / &quot;.git&quot; / &quot;description&quot;
+</span><span class="sub">-    with path.open(&quot;w&quot;) as f:
+</span><span class="sub">-        f.write(desc)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja.dhall</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,39 +0,0 @@
+<span class="sub">--- After adding repos, make sure to re-run gitja_descriptions.py
+</span><span class="sub">-
+</span><span class="sub">-let repos = &quot;..&quot;
+</span><span class="sub">-
+</span><span class="sub">-let folders = [
+</span><span class="sub">-    , &quot;${repos}/bdf2flf&quot;
+</span><span class="sub">-    , &quot;${repos}/gitja&quot;
+</span><span class="sub">-    , &quot;${repos}/mcol.xyz&quot;
+</span><span class="sub">-    , &quot;${repos}/mini-theme&quot;
+</span><span class="sub">-    , &quot;${repos}/mkinitcpio-welcome&quot;
+</span><span class="sub">-    , &quot;${repos}/pelican-microfeed&quot;
+</span><span class="sub">-    , &quot;${repos}/pelican-minify-fontawesome&quot;
+</span><span class="sub">-    , &quot;${repos}/pixels&quot;
+</span><span class="sub">-    , &quot;${repos}/pywayland&quot;
+</span><span class="sub">-    , &quot;${repos}/pywlroots&quot;
+</span><span class="sub">-    , &quot;${repos}/qtile&quot;
+</span><span class="sub">-    , &quot;${repos}/qtools&quot;
+</span><span class="sub">-    , &quot;${repos}/reach&quot;
+</span><span class="sub">-    , &quot;${repos}/screenshot-gallery-generator&quot;
+</span><span class="sub">-    , &quot;${repos}/sudoku-solver&quot;
+</span><span class="sub">-    , &quot;${repos}/tide&quot;
+</span><span class="sub">-    , &quot;${repos}/unix.sexy-react&quot;
+</span><span class="sub">-    , &quot;${repos}/vim-misc&quot;
+</span><span class="sub">-    , &quot;${repos}/wimp&quot;
+</span><span class="sub">-    , &quot;${repos}/xanadu&quot;
+</span><span class="sub">-    , &quot;${repos}/xoop&quot;
+</span><span class="sub">-    , &quot;${repos}/zshrc&quot;
+</span><span class="sub">-    ]
+</span><span class="sub">-
+</span><span class="sub">-let config =
+</span><span class="sub">-    { repos = folders
+</span><span class="sub">-    , scan = False
+</span><span class="sub">-    , template = &quot;./gitja-template&quot;
+</span><span class="sub">-    , output = &quot;./output-gitja&quot;
+</span><span class="sub">-    , host = &quot;https://mcol.xyz&quot;
+</span><span class="sub">-    --, host = &quot;http://localhost:8000&quot;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-in config
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/template.html.include</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,18 +0,0 @@
+<span class="sub">-{#- Style credit goes to stagit. -#}
+</span><span class="sub">-
+</span><span class="sub">-&lt;!doctype html&gt;
+</span><span class="sub">-&lt;html lang=&quot;en&quot;&gt;
+</span><span class="sub">-  &lt;head&gt;
+</span><span class="sub">-    &lt;meta charset=&quot;utf-8&quot;&gt;
+</span><span class="sub">-    &lt;meta http-equiv=&quot;x-ua-compatible&quot; content=&quot;ie=edge&quot;&gt;
+</span><span class="sub">-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+</span><span class="sub">-    &lt;title&gt;{% block title %}{% endblock %}&lt;/title&gt;
+</span><span class="sub">-    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;{{ host }}/code/style.css&quot;/&gt;
+</span><span class="sub">-    &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;{{ host }}/favicon.png&quot;/&gt;
+</span><span class="sub">-  &lt;/head&gt;
+</span><span class="sub">-  &lt;body&gt;
+</span><span class="sub">-
+</span><span class="sub">-  {% block body %}
+</span><span class="sub">-  {% endblock %}
+</span><span class="sub">-  &lt;/body&gt;
+</span><span class="sub">-&lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/style.css</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,177 +0,0 @@
+<span class="sub">-/*
+</span><span class="sub">-Credit to much of the styling here goes to stagit: https://codemadness.org/git/stagit/
+</span><span class="sub">-*/
+</span><span class="sub">-
+</span><span class="sub">-@viewport {
+</span><span class="sub">-    width: device-width;
+</span><span class="sub">-    zoom: 1.0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-html {
+</span><span class="sub">-    color: #000;
+</span><span class="sub">-    font-family: monospace;
+</span><span class="sub">-    font-size: 1em;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-body {
+</span><span class="sub">-    max-width: 900px;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-p {
+</span><span class="sub">-    margin: 15px 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-li {
+</span><span class="sub">-    list-style-type: square;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-h1, h2 {
+</span><span class="sub">-    font-size: 1em;
+</span><span class="sub">-    margin: 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-h2 {
+</span><span class="sub">-    font-weight: bold;
+</span><span class="sub">-    text-decoration: underline;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-::selection {
+</span><span class="sub">-    background: #5D479D;
+</span><span class="sub">-    color: #fff;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-table td {
+</span><span class="sub">-    padding: 0 0.4em;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-td.link {
+</span><span class="sub">-    text-align: right;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-a:target {
+</span><span class="sub">-    background-color: #ddd;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-#avatar {
+</span><span class="sub">-    width: 32px;
+</span><span class="sub">-    height: 32px;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-a.d, a.h, a.i, a.line {
+</span><span class="sub">-    text-decoration: none;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-#blob a, .desc {
+</span><span class="sub">-    color: #777;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-#blob a:hover {
+</span><span class="sub">-    color: blue;
+</span><span class="sub">-    text-decoration: none;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-table thead td {
+</span><span class="sub">-    font-weight: bold;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-#content table td {
+</span><span class="sub">-    vertical-align: top;
+</span><span class="sub">-    white-space: nowrap;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-#head {
+</span><span class="sub">-    width: 100%;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-#branches tr:hover td,
+</span><span class="sub">-#tags tr:hover td,
+</span><span class="sub">-#index tr:hover td,
+</span><span class="sub">-#log tr:hover td,
+</span><span class="sub">-#files tr:hover td {
+</span><span class="sub">-    background-color: #eee;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-#index tr td:nth-child(2),
+</span><span class="sub">-#tags tr td:nth-child(3),
+</span><span class="sub">-#branches tr td:nth-child(3),
+</span><span class="sub">-#log tr td:nth-child(2) {
+</span><span class="sub">-    white-space: normal;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-td.num {
+</span><span class="sub">-    text-align: right;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-hr {
+</span><span class="sub">-    border: 0;
+</span><span class="sub">-    border-top: 1px solid #777;
+</span><span class="sub">-    height: 1px;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-pre a.h {
+</span><span class="sub">-    color: #00a;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-.A,
+</span><span class="sub">-span.i,
+</span><span class="sub">-pre a.i {
+</span><span class="sub">-    color: #070;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-.D,
+</span><span class="sub">-span.d,
+</span><span class="sub">-pre a.d {
+</span><span class="sub">-    color: #e00;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-pre a.h:hover,
+</span><span class="sub">-pre a.i:hover,
+</span><span class="sub">-pre a.d:hover {
+</span><span class="sub">-    text-decoration: none;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-.highlight, code {
+</span><span class="sub">-    background: #eeeeef;
+</span><span class="sub">-    color: black;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-.highlight {
+</span><span class="sub">-    white-space: pre-wrap;
+</span><span class="sub">-    word-wrap: break-word;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-.c, .ch, .cm, .cp, .cpf, .c1, .gh, .gp
+</span><span class="sub">-{ color: #5D479D } /* comments */
+</span><span class="sub">-
+</span><span class="sub">-.err, .se, .o
+</span><span class="sub">-{ color: #a53c21 } /* dark red */
+</span><span class="sub">-
+</span><span class="sub">-.sh, .si, .sx, .sr, .s1, .ss, .cs, .gd, .dl,
+</span><span class="sub">-.s2, .nc, .vc, .vg, .vi, .vm, .nv, .sc, .s
+</span><span class="sub">-{ color: #8f4ff0 } /* bright pink */
+</span><span class="sub">-
+</span><span class="sub">-.kn, .nb, .mb, .mf, .mh, .mi, .mo, .bp, .il, .m
+</span><span class="sub">-{ color: #406794 } /* keywords (exit, eval) */
+</span><span class="sub">-
+</span><span class="sub">-.kt
+</span><span class="sub">-{ color: #3e3e73 } /* light grey */
+</span><span class="sub">-
+</span><span class="sub">-.kc, .k, .ow, .kp, .kr
+</span><span class="sub">-{ color: #406794 } /* key words */
+</span><span class="sub">-
+</span><span class="sub">-.esc, .l, .n, .x, .p, .gs, .ld, .na, .no, .ge
+</span><span class="sub">-.nd, .ni, .nf, .nl, .nn, .nx, .py, .nt, .w, .fm, .g
+</span><span class="sub">-{ color: black }
+</span><span class="sub">-
+</span><span class="sub">-.ne { color: #5fd75f }
+</span><span class="sub">-
+</span><span class="sub">-.gh, .gp, .cs, .gu, .ne, .cs
+</span><span class="sub">-{ font-weight: bold }
+</span><span class="sub">-
+</span><span class="sub">-.diff .add {
+</span><span class="sub">-    color: #0a0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-.diff .sub {
+</span><span class="sub">-    color: #a00;
+</span><span class="sub">-}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/tree.html</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,29 +0,0 @@
+<span class="sub">-{% extends &quot;../template.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-{%- block title -%}
+</span><span class="sub">-{{ name }} - target
+</span><span class="sub">-{%- endblock -%}
+</span><span class="sub">-
+</span><span class="sub">-{% block body %}
+</span><span class="sub">-{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-&lt;div id=&quot;content&quot;&gt;
+</span><span class="sub">-  &lt;table id=&quot;files&quot;&gt;
+</span><span class="sub">-    &lt;thead&gt;
+</span><span class="sub">-      &lt;tr&gt;
+</span><span class="sub">-        &lt;td&gt;&lt;b&gt;Mode&lt;/b&gt;&lt;/td&gt;
+</span><span class="sub">-        &lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;
+</span><span class="sub">-      &lt;/tr&gt;
+</span><span class="sub">-    &lt;/thead&gt;
+</span><span class="sub">-
+</span><span class="sub">-    &lt;tbody&gt;
+</span><span class="sub">-      {% for file in tree %}
+</span><span class="sub">-      &lt;tr&gt;
+</span><span class="sub">-        &lt;td&gt;{{ file.mode_symbolic }}&lt;/td&gt;
+</span><span class="sub">-        &lt;td&gt;&lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ file.href }}&quot;&gt;{{ file.path }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="sub">-      &lt;/tr&gt;
+</span><span class="sub">-      {% endfor %}
+</span><span class="sub">-    &lt;/tbody&gt;
+</span><span class="sub">-  &lt;/table&gt;
+</span><span class="sub">-&lt;/div&gt;
+</span><span class="sub">-{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/repo-table-header.html.include</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,24 +0,0 @@
+<span class="sub">-{#- This block is rendered at the top of every page. -#}
+</span><span class="sub">-
+</span><span class="sub">-&lt;table id=&quot;head&quot;&gt;
+</span><span class="sub">-  &lt;tr&gt;
+</span><span class="sub">-    &lt;td width=&quot;32px&quot; rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;&lt;img src=&quot;{{ host }}/avatar.png&quot; id=&quot;avatar&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+</span><span class="sub">-    &lt;td rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;{{ host }}&lt;/a&gt; / &lt;a href=&quot;{{ host }}/code/&quot;&gt;code&lt;/a&gt; / &lt;a href=&quot;{{ host }}/code/{{ name }}&quot;&gt;{{ name }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="sub">-    &lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/posts.html&quot;&gt;posts&lt;/a&gt;&lt;/td&gt;
+</span><span class="sub">-  &lt;/tr&gt;
+</span><span class="sub">-  &lt;tr&gt;
+</span><span class="sub">-    &lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/about.html&quot;&gt;about&lt;/a&gt;&lt;/td&gt;
+</span><span class="sub">-  &lt;/tr&gt;
+</span><span class="sub">-&lt;/table&gt;
+</span><span class="sub">-&lt;hr&gt;
+</span><span class="sub">-
+</span><span class="sub">-&lt;table&gt;
+</span><span class="sub">-  &lt;tr&gt;&lt;td&gt;&lt;span class=&quot;desc&quot;&gt;{{ description }}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-  &lt;tr class=&quot;url&quot;&gt;&lt;td&gt;git clone &lt;a href=&quot;https://github.com/m-col/{{ name }}&quot;&gt;https://github.com/m-col/{{ name }}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-  &lt;tr&gt;&lt;td&gt;
+</span><span class="sub">-    &lt;a href=&quot;{{ host }}/code/{{ name }}/tree.html&quot;&gt;Files&lt;/a&gt; | &lt;a href=&quot;{{ host }}/code/{{ name }}/refs.html&quot;&gt;Refs&lt;/a&gt;
+</span><span class="sub">-    {% if readme %} | &lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ readme.href }}&quot;&gt;Readme&lt;/a&gt;{% endif %}
+</span><span class="sub">-    {% if license %} | &lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ license.href }}&quot;&gt;License&lt;/a&gt;{% endif %}
+</span><span class="sub">-  &lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-&lt;/table&gt;
+</span><span class="sub">-&lt;hr&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/refs.html</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,37 +0,0 @@
+<span class="sub">-{% extends &quot;../template.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-{%- block title -%}
+</span><span class="sub">-{{ name }} - Refs
+</span><span class="sub">-{%- endblock -%}
+</span><span class="sub">-
+</span><span class="sub">-{% block body %}
+</span><span class="sub">-{% include  &quot;repo-table-header.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-&lt;div id=&quot;content&quot;&gt;
+</span><span class="sub">-  &lt;h2&gt;Branches&lt;/h2&gt;
+</span><span class="sub">-  &lt;table id=&quot;branches&quot;&gt;
+</span><span class="sub">-    &lt;thead&gt;
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-    &lt;/thead&gt;
+</span><span class="sub">-    &lt;tbody&gt;
+</span><span class="sub">-      {% for branch in branches %}
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;{{ branch.name }}&lt;/td&gt;&lt;td&gt;{{ branch.authored[:16] }}&lt;/td&gt;&lt;td&gt;{{ branch.title }}&lt;/td&gt;&lt;td&gt;{{ branch.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-      {% endfor %}
+</span><span class="sub">-    &lt;/tbody&gt;
+</span><span class="sub">-  &lt;/table&gt;
+</span><span class="sub">-
+</span><span class="sub">-  &lt;br&gt;
+</span><span class="sub">-
+</span><span class="sub">-  &lt;h2&gt;Tags&lt;/h2&gt;
+</span><span class="sub">-  &lt;table id=&quot;tags&quot;&gt;
+</span><span class="sub">-    &lt;thead&gt;
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-    &lt;/thead&gt;
+</span><span class="sub">-    &lt;tbody&gt;
+</span><span class="sub">-      {% for tag in tags %}
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;{{ tag.name }}&lt;/td&gt;&lt;td&gt;{{ tag.authored[:16] }}&lt;/td&gt;&lt;td&gt;{{ tag.title }}&lt;/td&gt;&lt;td&gt;{{ tag.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-      {% endfor %}
+</span><span class="sub">-    &lt;/tbody&gt;
+</span><span class="sub">-  &lt;/table&gt;
+</span><span class="sub">-&lt;/div&gt;
+</span><span class="sub">-{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/index.html</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,27 +0,0 @@
+<span class="sub">-{% extends &quot;../template.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-{%- block title -%}
+</span><span class="sub">-{{ description }}
+</span><span class="sub">-{%- endblock -%}
+</span><span class="sub">-
+</span><span class="sub">-{% block body %}
+</span><span class="sub">-{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-&lt;div id=&quot;content&quot;&gt;
+</span><span class="sub">-  &lt;table id=&quot;log&quot;&gt;
+</span><span class="sub">-    &lt;thead&gt;
+</span><span class="sub">-      &lt;tr&gt;
+</span><span class="sub">-        &lt;td&gt;&lt;b&gt;Date&lt;/b&gt;&lt;/td&gt;
+</span><span class="sub">-        &lt;td&gt;&lt;b&gt;Commit message&lt;/b&gt;&lt;/td&gt;
+</span><span class="sub">-        &lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;
+</span><span class="sub">-      &lt;/tr&gt;
+</span><span class="sub">-    &lt;/thead&gt;
+</span><span class="sub">-
+</span><span class="sub">-    &lt;tbody&gt;
+</span><span class="sub">-      {% for commit in commits[:50] %}
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;{{ commit.authored[:16] }}&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;commit/{{ commit.id }}.html&quot;&gt;{{ commit.title }}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;{{ commit.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-      {% endfor %}
+</span><span class="sub">-    &lt;/tbody&gt;
+</span><span class="sub">-  &lt;/table&gt;
+</span><span class="sub">-&lt;/div&gt;
+</span><span class="sub">-{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/file.html</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,41 +0,0 @@
+<span class="sub">-{% extends &quot;../template.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-{%- block title -%}
+</span><span class="sub">-{{ name }} - {{ file }}
+</span><span class="sub">-{%- endblock -%}
+</span><span class="sub">-
+</span><span class="sub">-{% block body %}
+</span><span class="sub">-{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-&lt;div id=&quot;content&quot;&gt;
+</span><span class="sub">-  &lt;p&gt;{{ file.mode_symbolic }} {{ file }}&lt;/p&gt;&lt;hr&gt;
+</span><span class="sub">-
+</span><span class="sub">-{% if file.is_directory %}
+</span><span class="sub">-  &lt;table id=&quot;files&quot;&gt;
+</span><span class="sub">-    &lt;thead&gt;
+</span><span class="sub">-      &lt;tr&gt;
+</span><span class="sub">-        &lt;td&gt;&lt;b&gt;Mode&lt;/b&gt;&lt;/td&gt;
+</span><span class="sub">-        &lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;
+</span><span class="sub">-      &lt;/tr&gt;
+</span><span class="sub">-    &lt;/thead&gt;
+</span><span class="sub">-
+</span><span class="sub">-    &lt;tbody&gt;
+</span><span class="sub">-      {% for child in file.contents %}
+</span><span class="sub">-      &lt;tr&gt;
+</span><span class="sub">-        &lt;td&gt;{{ child.mode_symbolic }}&lt;/td&gt;
+</span><span class="sub">-        &lt;td&gt;&lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ child.href }}&quot;&gt;{{ child.path }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="sub">-      &lt;/tr&gt;
+</span><span class="sub">-      {% endfor %}
+</span><span class="sub">-    &lt;/tbody&gt;
+</span><span class="sub">-  &lt;/table&gt;
+</span><span class="sub">-{% else %}
+</span><span class="sub">-  {% if file.is_binary %}
+</span><span class="sub">-  (File is binary)
+</span><span class="sub">-  {% else %}
+</span><span class="sub">-&lt;pre id=&quot;blob&quot;&gt;{% for line in split(file.contents, &apos;\n&apos;) %}
+</span><span class="sub">-&lt;a href=&quot;#l{{ loop.index }}&quot; class=&quot;line&quot; id=&quot;l{{ loop.index }}&quot;&gt;{{ printf(&quot;%7v&quot;, loop.index) }}&lt;/a&gt; {{ line }}
+</span><span class="sub">-{% endfor %}&lt;/pre&gt;
+</span><span class="sub">-  {% endif %}
+</span><span class="sub">-{% endif %}
+</span><span class="sub">-&lt;/div&gt;
+</span><span class="sub">-{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/repo/commit.html</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,46 +0,0 @@
+<span class="sub">-{% extends &quot;../template.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-{%- block title -%}
+</span><span class="sub">-{{ name }} - {{ commit.title }}
+</span><span class="sub">-{%- endblock -%}
+</span><span class="sub">-
+</span><span class="sub">-{% block body %}
+</span><span class="sub">-{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-&lt;div id=&quot;content&quot;&gt;
+</span><span class="sub">-  &lt;pre&gt;&lt;b&gt;Commit&lt;/b&gt; &lt;a href=&quot;{{ host }}/code/{{ name }}/commit/{{ commit.id }}.html&quot;&gt;{{ commit.id }}&lt;/a&gt;
+</span><span class="sub">-&lt;b&gt;Parent:&lt;/b&gt; &lt;a href=&quot;{{ host }}/code/{{ name }}/commit/{{ commit.parent }}.html&quot;&gt;{{ commit.parent }}&lt;/a&gt;
+</span><span class="sub">-&lt;b&gt;Author:&lt;/b&gt; {{ commit.author }} &amp;lt;&lt;a href=&quot;mailto:{{ commit.author_email }}&quot;&gt;{{ commit.author_email }}&lt;/a&gt;&amp;gt;
+</span><span class="sub">-&lt;b&gt;Date:&lt;/b&gt; {{ commit.authored }}
+</span><span class="sub">-&lt;b&gt;Committer:&lt;/b&gt; {{ commit.committer }} &amp;lt;&lt;a href=&quot;mailto:{{ commit.committer_email }}&quot;&gt;{{ commit.committer_email }}&lt;/a&gt;&amp;gt;
+</span><span class="sub">-&lt;b&gt;Committed:&lt;/b&gt; {{ commit.committed }}
+</span><span class="sub">-
+</span><span class="sub">-{{ commit.message }}
+</span><span class="sub">-&lt;/pre&gt;
+</span><span class="sub">-
+</span><span class="sub">-{%- for diff in commit.diffs -%}
+</span><span class="sub">-&lt;div class=&quot;diff&quot;&gt;
+</span><span class="sub">-  &lt;p&gt;
+</span><span class="sub">-    &lt;b&gt;{{ diff.new_file }}&lt;/b&gt;
+</span><span class="sub">-    &lt;span class=&quot;status&quot;&gt;{{ diff.status }}&lt;/span&gt;
+</span><span class="sub">-  &lt;/p&gt;
+</span><span class="sub">-
+</span><span class="sub">-  {% if diff.newfile != diff.oldfile %}
+</span><span class="sub">-  &lt;p&gt;Renamed from {{ diff.old_file }}&lt;/p&gt;
+</span><span class="sub">-  {% endif %}
+</span><span class="sub">-
+</span><span class="sub">-  &lt;pre&gt;
+</span><span class="sub">-  {%- for hunk in diff.hunks -%}
+</span><span class="sub">-  {{ hunk.header }}
+</span><span class="sub">-
+</span><span class="sub">-    {%- for line in hunk.lines -%}
+</span><span class="sub">-      &lt;span class=&quot;{{ line.class }}&quot;&gt;{{ line.text }}&lt;/span&gt;
+</span><span class="sub">-    {%- endfor -%}
+</span><span class="sub">-
+</span><span class="sub">-  {%- endfor -%}
+</span><span class="sub">-  &lt;/pre&gt;
+</span><span class="sub">-&lt;/div&gt;
+</span><span class="sub">-{%- endfor -%}
+</span><span class="sub">-
+</span><span class="sub">-&lt;/div&gt;
+</span><span class="sub">-{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja-template/index.html</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,28 +0,0 @@
+<span class="sub">-{% extends &quot;template.html.include&quot; %}
+</span><span class="sub">-
+</span><span class="sub">-{%- block title -%}
+</span><span class="sub">-mcol.xyz / code
+</span><span class="sub">-{%- endblock -%}
+</span><span class="sub">-
+</span><span class="sub">-{% block body %}
+</span><span class="sub">-&lt;table id=&quot;head&quot;&gt;
+</span><span class="sub">-  &lt;tr&gt;&lt;td width=&quot;32px&quot; rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;&lt;img src=&quot;{{ host }}/avatar.png&quot; id=&quot;avatar&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+</span><span class="sub">-    &lt;td rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;{{ host }}&lt;/a&gt; / &lt;a href=&quot;{{ host }}/code&quot;&gt;code&lt;/a&gt;&lt;/td&gt;&lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/posts.html&quot;&gt;posts&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/about.html&quot;&gt;about&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-&lt;/table&gt;
+</span><span class="sub">-
+</span><span class="sub">-&lt;hr&gt;
+</span><span class="sub">-
+</span><span class="sub">-&lt;div id=&quot;content&quot;&gt;
+</span><span class="sub">-  &lt;table id=&quot;index&quot;&gt;
+</span><span class="sub">-    &lt;thead&gt;
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-    &lt;/thead&gt;
+</span><span class="sub">-
+</span><span class="sub">-    &lt;tbody&gt;
+</span><span class="sub">-      {% for repo in sort(repositories, by=&quot;updated&quot;, reverse=1) %}
+</span><span class="sub">-      &lt;tr&gt;&lt;td&gt;&lt;a href=&quot;{{ repo.name }}&quot;&gt;{{ repo.name }}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;{{ repo.description }}&lt;/td&gt;&lt;td&gt;{{ repo.updated[:16] }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="sub">-      {% endfor %}
+</span><span class="sub">-    &lt;/tbody&gt;
+</span><span class="sub">-  &lt;/table&gt;
+</span><span class="sub">-&lt;/div&gt;
+</span><span class="sub">-{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.python-version</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+3.14
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,5 @@
+<span class="def"> __pycache__
+</span><span class="def"> drafts
+</span><span class="sub">-fontawesome-*
+</span><span class="def"> output
+</span><span class="sub">-output-gitja
+</span><span class="def"> content/screenshots
+</span><span class="add">+.venv
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.github/workflows/build.yml</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,26 @@
+<span class="add">+name: build
+</span><span class="add">+
+</span><span class="add">+on:
+</span><span class="add">+  push:
+</span><span class="add">+    branches: [master]
+</span><span class="add">+  pull_request:
+</span><span class="add">+
+</span><span class="add">+jobs:
+</span><span class="add">+  build:
+</span><span class="add">+    runs-on: ubuntu-latest
+</span><span class="add">+    steps:
+</span><span class="add">+      - uses: actions/checkout@v4
+</span><span class="add">+
+</span><span class="add">+      - name: Install uv
+</span><span class="add">+        uses: astral-sh/setup-uv@v4
+</span><span class="add">+        with:
+</span><span class="add">+          enable-cache: true
+</span><span class="add">+
+</span><span class="add">+      - name: Install just
+</span><span class="add">+        uses: extractions/setup-just@v2
+</span><span class="add">+
+</span><span class="add">+      - name: Install dependencies
+</span><span class="add">+        run: uv sync --locked
+</span><span class="add">+
+</span><span class="add">+      - name: Build site
+</span><span class="add">+        run: just publish
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add unmap_view, map_view, and remove on_unmap listener</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/18d85ea1c7ae2a718a8aaee1efe5365c00a0d105.html">18d85ea1c7ae2a718a8aaee1efe5365c00a0d105</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/1367fb202f326b60c371f611541c3a9fb62f7989.html">1367fb202f326b60c371f611541c3a9fb62f7989</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-08 17:23:39 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-08 17:23:39 +0000
+
+add unmap_view, map_view, and remove on_unmap listener
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -57,7 +57,6 @@
+<span class="def">     struct server *server;
+</span><span class="def">     struct wlr_xdg_surface *surface;
+</span><span class="def">     struct wl_listener map_listener;
+</span><span class="sub">-    struct wl_listener unmap_listener;
+</span><span class="def">     struct wl_listener destroy_listener;
+</span><span class="def">     struct wl_listener request_move_listener;
+</span><span class="def">     struct wl_listener request_resize_listener;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,9 +3,10 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+void unmap_view(struct view *view);
+</span><span class="add">+void map_view(struct view *view);
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface);
+</span><span class="def"> void on_map(struct wl_listener *listener, void *data);
+</span><span class="sub">-void on_unmap(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_surface_destroy(struct wl_listener *listener, void *data);
+</span><span class="def"> void process_move_resize(struct view *view, enum cursor_mode mode, uint32_t edges);
+</span><span class="def"> void on_request_move(struct wl_listener *listener, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,16 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void unmap_view(struct view *view) {
+</span><span class="add">+    wl_signal_emit(&amp;view-&gt;surface-&gt;events.unmap, view);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void map_view(struct view *view) {
+</span><span class="add">+    wl_signal_emit(&amp;view-&gt;surface-&gt;events.map, view);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface) {
+</span><span class="def">     if (view == NULL) {
+</span><span class="def"> 	return;
+</span>@@ -41,12 +51,6 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void on_unmap(struct wl_listener *listener, void *data) {
+</span><span class="sub">-    struct view *view = wl_container_of(listener, view, unmap_listener);
+</span><span class="sub">-    view-&gt;is_mapped = false;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void on_surface_destroy(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct view *view = wl_container_of(listener, view, destroy_listener);
+</span><span class="def">     wl_list_remove(&amp;view-&gt;link);
+</span>@@ -112,8 +116,6 @@
+<span class="def"> 
+</span><span class="def">     view-&gt;map_listener.notify = on_map;
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.map, &amp;view-&gt;map_listener);
+</span><span class="sub">-    view-&gt;unmap_listener.notify = on_unmap;
+</span><span class="sub">-    wl_signal_add(&amp;surface-&gt;events.unmap, &amp;view-&gt;unmap_listener);
+</span><span class="def">     view-&gt;destroy_listener.notify = on_surface_destroy;
+</span><span class="def">     wl_signal_add(&amp;surface-&gt;events.destroy, &amp;view-&gt;destroy_listener);
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

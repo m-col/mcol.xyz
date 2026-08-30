@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - Create WM-unmanaged InputOnly window to move mouse upon entry</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/b33ae8ecbbad7be4705da00d9d7c4bf0e1847111.html">b33ae8ecbbad7be4705da00d9d7c4bf0e1847111</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/ec463d8252e42551f4270053edbd289162f4b049.html">ec463d8252e42551f4270053edbd289162f4b049</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-17 22:56:48 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-17 22:56:48 +0100
+
+Create WM-unmanaged InputOnly window to move mouse upon entry
+</pre><div class="diff">
+  <p>
+    <b>xinf.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,21 +1,42 @@
+<span class="sub">-// gcc xinf.c -lX11
+</span><span class="sub">-
+</span><span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="def"> #include &lt;X11/Xlib.h&gt;
+</span><span class="add">+#include &lt;X11/Xatom.h&gt;
+</span><span class="def"> 
+</span><span class="def"> int main()
+</span><span class="def"> {
+</span><span class="sub">-   Display *dpy;
+</span><span class="add">+    Display *dpy;
+</span><span class="add">+    Window root;
+</span><span class="add">+    Window win;
+</span><span class="add">+    XSetWindowAttributes attrs;
+</span><span class="add">+    XEvent ev; 
+</span><span class="add">+
+</span><span class="add">+    if (NULL == (dpy = XOpenDisplay(NULL))) {
+</span><span class="add">+	exit(1);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    root = RootWindow(dpy, DefaultScreen(dpy));
+</span><span class="add">+    attrs.event_mask = KeyPressMask;
+</span><span class="add">+    Atom window_type = XInternAtom(dpy, &quot;_NET_WM_WINDOW_TYPE&quot;, False);
+</span><span class="add">+    long value = XInternAtom(dpy, &quot;_NET_WM_WINDOW_TYPE_NOTIFICATION&quot;, False);
+</span><span class="add">+
+</span><span class="add">+    win = XCreateWindow(
+</span><span class="add">+        dpy, root, 10,10,200,200, 0, CopyFromParent, InputOnly, 0, 0, &amp;attrs
+</span><span class="add">+    );
+</span><span class="add">+    XChangeProperty(dpy, win, window_type, 4, 32,
+</span><span class="add">+                    PropModeReplace, (unsigned char *)&amp;value, 1);
+</span><span class="def"> 
+</span><span class="sub">-   if (NULL == (dpy = XOpenDisplay(NULL))) {
+</span><span class="sub">-      exit(1);
+</span><span class="sub">-   }
+</span><span class="add">+    XSelectInput(dpy, win, EnterWindowMask);
+</span><span class="add">+    XMapWindow(dpy, win);
+</span><span class="add">+    XFlush(dpy);
+</span><span class="def"> 
+</span><span class="sub">-   XWarpPointer(dpy, None, DefaultRootWindow(dpy), 0, 0, 0, 0, 0, 0);
+</span><span class="add">+    while(1) {
+</span><span class="add">+        XNextEvent(dpy, &amp;ev);
+</span><span class="add">+	XWarpPointer(dpy, None, root, 0, 0, 0, 0, 0, 0);
+</span><span class="add">+    }   
+</span><span class="def"> 
+</span><span class="sub">-   if (XCloseDisplay(dpy)) {
+</span><span class="sub">-      exit(1);
+</span><span class="sub">-   }
+</span><span class="add">+    if (XCloseDisplay(dpy)) {
+</span><span class="add">+	exit(1);
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="sub">-   return 0;
+</span><span class="add">+    return 0;
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

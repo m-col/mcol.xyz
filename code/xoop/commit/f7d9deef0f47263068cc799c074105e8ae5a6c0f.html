@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - translate to XCB and organise parts</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/f7d9deef0f47263068cc799c074105e8ae5a6c0f.html">f7d9deef0f47263068cc799c074105e8ae5a6c0f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/b33ae8ecbbad7be4705da00d9d7c4bf0e1847111.html">b33ae8ecbbad7be4705da00d9d7c4bf0e1847111</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-18 14:57:53 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-18 14:57:53 +0100
+
+translate to XCB and organise parts
+</pre><div class="diff">
+  <p>
+    <b>xinf.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,42 +1,141 @@
+<span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="sub">-#include &lt;X11/Xlib.h&gt;
+</span><span class="sub">-#include &lt;X11/Xatom.h&gt;
+</span><span class="add">+#include &lt;stdio.h&gt;
+</span><span class="add">+#include &lt;string.h&gt;
+</span><span class="add">+#include &lt;xcb/xcb.h&gt;
+</span><span class="def"> 
+</span><span class="sub">-int main()
+</span><span class="add">+
+</span><span class="add">+xcb_connection_t    *conn;
+</span><span class="add">+xcb_screen_t	    *screen;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void clip_window(xcb_window_t wid)
+</span><span class="def"> {
+</span><span class="sub">-    Display *dpy;
+</span><span class="sub">-    Window root;
+</span><span class="sub">-    Window win;
+</span><span class="sub">-    XSetWindowAttributes attrs;
+</span><span class="sub">-    XEvent ev; 
+</span><span class="add">+    uint32_t mask;
+</span><span class="add">+    xcb_gcontext_t  gc;
+</span><span class="def"> 
+</span><span class="sub">-    if (NULL == (dpy = XOpenDisplay(NULL))) {
+</span><span class="sub">-	exit(1);
+</span><span class="sub">-    }
+</span><span class="add">+    mask = XCB_GC_CLIP_ORIGIN_X | XCB_GC_CLIP_ORIGIN_Y;// | XCB_GC_CLIP_MASK
+</span><span class="def"> 
+</span><span class="sub">-    root = RootWindow(dpy, DefaultScreen(dpy));
+</span><span class="sub">-    attrs.event_mask = KeyPressMask;
+</span><span class="sub">-    Atom window_type = XInternAtom(dpy, &quot;_NET_WM_WINDOW_TYPE&quot;, False);
+</span><span class="sub">-    long value = XInternAtom(dpy, &quot;_NET_WM_WINDOW_TYPE_NOTIFICATION&quot;, False);
+</span><span class="add">+    const uint32_t values[] = {
+</span><span class="add">+	1,
+</span><span class="add">+	1,
+</span><span class="add">+    };
+</span><span class="def"> 
+</span><span class="sub">-    win = XCreateWindow(
+</span><span class="sub">-        dpy, root, 10,10,200,200, 0, CopyFromParent, InputOnly, 0, 0, &amp;attrs
+</span><span class="add">+    gc = xcb_generate_id(conn);
+</span><span class="add">+    xcb_create_gc(
+</span><span class="add">+	conn,
+</span><span class="add">+	gc,
+</span><span class="add">+	wid,
+</span><span class="add">+	mask,
+</span><span class="add">+	values
+</span><span class="def">     );
+</span><span class="sub">-    XChangeProperty(dpy, win, window_type, 4, 32,
+</span><span class="sub">-                    PropModeReplace, (unsigned char *)&amp;value, 1);
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="sub">-    XSelectInput(dpy, win, EnterWindowMask);
+</span><span class="sub">-    XMapWindow(dpy, win);
+</span><span class="sub">-    XFlush(dpy);
+</span><span class="def"> 
+</span><span class="sub">-    while(1) {
+</span><span class="sub">-        XNextEvent(dpy, &amp;ev);
+</span><span class="sub">-	XWarpPointer(dpy, None, root, 0, 0, 0, 0, 0, 0);
+</span><span class="sub">-    }   
+</span><span class="add">+void set_window_type(xcb_window_t wid) {
+</span><span class="add">+    xcb_intern_atom_cookie_t cookie1, cookie2;
+</span><span class="add">+    xcb_intern_atom_reply_t *reply1, *reply2;
+</span><span class="def"> 
+</span><span class="sub">-    if (XCloseDisplay(dpy)) {
+</span><span class="sub">-	exit(1);
+</span><span class="add">+    cookie1 = xcb_intern_atom(conn, 0, 19, &quot;_NET_WM_WINDOW_TYPE&quot;);
+</span><span class="add">+    reply1 = xcb_intern_atom_reply(conn, cookie1, NULL);
+</span><span class="add">+    cookie2 = xcb_intern_atom(conn, 0, 32, &quot;_NET_WM_WINDOW_TYPE_NOTIFICATION&quot;);
+</span><span class="add">+    reply2 = xcb_intern_atom_reply(conn, cookie2, NULL);
+</span><span class="add">+
+</span><span class="add">+    xcb_change_property(
+</span><span class="add">+	conn,
+</span><span class="add">+	XCB_PROP_MODE_REPLACE,
+</span><span class="add">+	wid,
+</span><span class="add">+	reply1-&gt;atom,
+</span><span class="add">+	XCB_ATOM_ATOM,
+</span><span class="add">+	32,
+</span><span class="add">+	1,
+</span><span class="add">+	&amp;reply2-&gt;atom
+</span><span class="add">+    );
+</span><span class="add">+    free(reply1);
+</span><span class="add">+    free(reply2);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+xcb_window_t setup_window()
+</span><span class="add">+{
+</span><span class="add">+    xcb_window_t wid = xcb_generate_id(conn);
+</span><span class="add">+
+</span><span class="add">+    uint32_t mask_val = 0;
+</span><span class="add">+    mask_val |= XCB_EVENT_MASK_ENTER_WINDOW;
+</span><span class="add">+
+</span><span class="add">+    xcb_create_window(
+</span><span class="add">+	conn,
+</span><span class="add">+	XCB_COPY_FROM_PARENT,
+</span><span class="add">+	wid,
+</span><span class="add">+	screen-&gt;root,
+</span><span class="add">+	0,
+</span><span class="add">+	0,
+</span><span class="add">+	1, // screen-&gt;width_in_pixels
+</span><span class="add">+	screen-&gt;height_in_pixels,
+</span><span class="add">+	0,
+</span><span class="add">+	XCB_WINDOW_CLASS_INPUT_ONLY,
+</span><span class="add">+	XCB_COPY_FROM_PARENT,
+</span><span class="add">+	XCB_CW_EVENT_MASK,
+</span><span class="add">+	&amp;mask_val
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    set_window_type(wid);
+</span><span class="add">+    clip_window(wid);
+</span><span class="add">+
+</span><span class="add">+    uint32_t above = XCB_STACK_MODE_ABOVE;
+</span><span class="add">+    xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, &amp;above);
+</span><span class="add">+
+</span><span class="add">+    xcb_change_property(
+</span><span class="add">+	conn,
+</span><span class="add">+	XCB_PROP_MODE_REPLACE,
+</span><span class="add">+	wid,
+</span><span class="add">+	XCB_ATOM_WM_NAME,
+</span><span class="add">+	XCB_ATOM_STRING,
+</span><span class="add">+	8,
+</span><span class="add">+	4,
+</span><span class="add">+	&quot;xinf&quot;
+</span><span class="add">+    );
+</span><span class="add">+
+</span><span class="add">+    xcb_map_window(conn, wid);
+</span><span class="add">+    xcb_flush(conn);
+</span><span class="add">+    return wid;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void event_loop()
+</span><span class="add">+{
+</span><span class="add">+    xcb_generic_event_t *event;
+</span><span class="add">+
+</span><span class="add">+    while((event = xcb_wait_for_event(conn))) {
+</span><span class="add">+	switch (event-&gt;response_type) {
+</span><span class="add">+
+</span><span class="add">+	    case XCB_ENTER_NOTIFY:
+</span><span class="add">+	    printf(&quot;# enter window\n&quot;);
+</span><span class="add">+	    break;
+</span><span class="add">+
+</span><span class="add">+	    default:
+</span><span class="add">+	    printf(&quot;# %d\n&quot;, event-&gt;response_type);
+</span><span class="add">+	    break;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+    free(event);
+</span><span class="def">     }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+int main()
+</span><span class="add">+{
+</span><span class="add">+    xcb_window_t wid;
+</span><span class="add">+
+</span><span class="add">+    conn = xcb_connect(NULL, NULL);
+</span><span class="add">+    if (xcb_connection_has_error(conn))
+</span><span class="add">+	exit(1);
+</span><span class="add">+    screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
+</span><span class="add">+
+</span><span class="add">+    wid = setup_window();
+</span><span class="add">+    event_loop();
+</span><span class="add">+
+</span><span class="add">+    xcb_unmap_window(conn, wid);
+</span><span class="add">+    xcb_disconnect(conn);
+</span><span class="def"> 
+</span><span class="def">     return 0;
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,6 @@
+<span class="def"> OUT        = xinf
+</span><span class="def"> SRC 	   = xinf.c
+</span><span class="sub">-CFLAGS 	  += -lX11
+</span><span class="add">+CFLAGS 	  += -Wall -Wextra -pedantic -lxcb
+</span><span class="def"> PREFIX    ?= /usr/local
+</span><span class="def"> BINPREFIX ?= $(PREFIX)/bin
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

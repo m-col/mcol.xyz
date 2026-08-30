@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Change approach to panning to instead change view coords</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/f87ba5e2a6c5dabfc839335181d94294408e2be7.html">f87ba5e2a6c5dabfc839335181d94294408e2be7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/b350282add2b152c0f358ceca32ddd766864035e.html">b350282add2b152c0f358ceca32ddd766864035e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-08 23:23:42 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-08 23:23:42 +0000
+
+Change approach to panning to instead change view coords
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -76,7 +76,6 @@
+<span class="def">     struct server *server;
+</span><span class="def">     struct wl_list views;
+</span><span class="def">     float background[4];
+</span><span class="sub">-    double x, y;
+</span><span class="def">     int index;
+</span><span class="def"> };
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -28,8 +28,8 @@
+<span class="def"> 	    break;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="sub">-    x += view-&gt;x + sx - server-&gt;current_desk-&gt;x;
+</span><span class="sub">-    y += view-&gt;y + sy - server-&gt;current_desk-&gt;y;
+</span><span class="add">+    x += view-&gt;x + sx;
+</span><span class="add">+    y += view-&gt;y + sy;
+</span><span class="def"> 
+</span><span class="def">     // scale for HiDPI
+</span><span class="def">     struct wlr_box box = {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -126,13 +126,18 @@
+<span class="def"> 		wlr_seat_pointer_clear_focus(seat);
+</span><span class="def"> 	    }
+</span><span class="def"> 	    break;
+</span><span class="add">+
+</span><span class="def"> 	case CURSOR_PAN:
+</span><span class="sub">-	    server-&gt;current_desk-&gt;x += dx;
+</span><span class="sub">-	    server-&gt;current_desk-&gt;y += dy;
+</span><span class="add">+	    wl_list_for_each(view, &amp;server-&gt;current_desk-&gt;views, link) {
+</span><span class="add">+		view-&gt;x += dx;
+</span><span class="add">+		view-&gt;y += dy;
+</span><span class="add">+	    }
+</span><span class="def"> 	    break;
+</span><span class="add">+
+</span><span class="def"> 	case CURSOR_MOVE:
+</span><span class="def"> 	    process_cursor_move(server, time);
+</span><span class="def"> 	    break;
+</span><span class="add">+
+</span><span class="def"> 	case CURSOR_RESIZE:
+</span><span class="def"> 	    process_cursor_resize(server, time);
+</span><span class="def"> 	    break;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,7 +13,6 @@
+<span class="def">     desk-&gt;server = server;
+</span><span class="def">     wl_list_init(&amp;desk-&gt;views);
+</span><span class="def">     assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="sub">-    desk-&gt;x = desk-&gt;y = 0;
+</span><span class="def">     desk-&gt;index = num_desks;
+</span><span class="def">     num_desks++;
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

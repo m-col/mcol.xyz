@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - clean up loadRepos function</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/349c410a30363bcadeaf82b2854af0ef8e595a9c.html">349c410a30363bcadeaf82b2854af0ef8e595a9c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/6db437d5c906dda3f895e7cb084b1bba07143d3f.html">6db437d5c906dda3f895e7cb084b1bba07143d3f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-06 20:45:04 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-06 20:47:47 +0100
+
+clean up loadRepos function
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -45,8 +45,8 @@
+<span class="def"> import Types
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="sub">-This is the entrypoint maps over our repositories, reading from them and writing out
+</span><span class="sub">-their web pages using the loaded templates.
+</span><span class="add">+This is the entrypoint that maps over our repositories, reading from them and writing
+</span><span class="add">+out their web pages using the loaded templates.
+</span><span class="def"> -}
+</span><span class="def"> run :: Env -&gt; IO [Repo]
+</span><span class="def"> run env = do
+</span>@@ -57,16 +57,16 @@
+<span class="def"> Get paths along with their descriptions.
+</span><span class="def"> -}
+</span><span class="def"> loadRepos :: Env -&gt; IO [Repo]
+</span><span class="sub">-loadRepos env = do
+</span><span class="sub">-    paths&apos; &lt;- filterM (fmap isRight . okRepo) . envRepos $ env
+</span><span class="sub">-    descs &lt;- mapM getDescription paths&apos;
+</span><span class="sub">-    return . fmap ($ Nothing) . zipWith Repo paths&apos; $ descs
+</span><span class="add">+loadRepos = mapM mkRepo &lt;=&lt; filterM (fmap isRight . okRepo) . envRepos
+</span><span class="def">   where
+</span><span class="def">     okRepo :: Path Abs Dir -&gt; IO (Either Git.GitException LgRepo)
+</span><span class="def">     okRepo p =
+</span><span class="def">         try . liftIO . Git.openRepository lgFactory $
+</span><span class="def">             Git.defaultRepositoryOptions{Git.repoPath = toFilePath p}
+</span><span class="def"> 
+</span><span class="add">+    mkRepo :: Path Abs Dir -&gt; IO Repo
+</span><span class="add">+    mkRepo p = (\d -&gt; Repo p d Nothing) &lt;$&gt; getDescription p
+</span><span class="add">+
+</span><span class="def"> {-
+</span><span class="def"> Pass the repository&apos;s folder, get its description. The algorithm is:
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

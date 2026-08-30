@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - more</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/3d87a64def19ac606ca6a5f14ae25541ccde227c.html">3d87a64def19ac606ca6a5f14ae25541ccde227c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/7dca40b4f733cef84ba8b057ee751e0a95c0622f.html">7dca40b4f733cef84ba8b057ee751e0a95c0622f</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2026-02-25 19:49:45 +0000
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2026-02-25 19:49:45 +0000
+
+more
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -126,7 +126,7 @@
+<span class="def"> nmap &lt;silent&gt; &lt;C-i&gt; &lt;Plug&gt;(ale_find_references)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-]&gt; &lt;Plug&gt;(ale_go_to_definition)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-f&gt; &lt;Plug&gt;(ale_fix)
+</span><span class="sub">-nmap &lt;silent&gt; &lt;leader&gt;r :ALERename&lt;CR&gt;
+</span><span class="add">+nmap &lt;silent&gt; &lt;leader&gt;r :ALERename \| w&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; telescope
+</span><span class="def"> nnoremap &lt;silent&gt; &lt;C-p&gt; :Telescope git_files&lt;CR&gt;
+</span>@@ -135,9 +135,6 @@
+<span class="def"> &quot; CtrlP (in addition to the default Ctrl-p binding)
+</span><span class="def"> nnoremap &lt;silent&gt; &lt;C-o&gt; :CtrlPTag&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="sub">-&quot; blamer
+</span><span class="sub">-nnoremap &lt;A-b&gt; :BlamerToggle&lt;CR&gt;
+</span><span class="sub">-
+</span><span class="def"> &quot; marks
+</span><span class="def"> nnoremap mm mM
+</span><span class="def"> nnoremap `m `M
+</span></pre>
+</div></div>
+  </body>
+</html>

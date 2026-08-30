@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Add the qtile-extras power menu!</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/f062e4882055bfe9ab947a5c85e0879b9db29afe.html">f062e4882055bfe9ab947a5c85e0879b9db29afe</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/03e587fff15c900255b4dbe0eb5fe09c33890581.html">03e587fff15c900255b4dbe0eb5fe09c33890581</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-18 00:37:55 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-18 00:37:55 +0100
+
+Add the qtile-extras power menu!
+</pre><div class="diff">
+  <p>
+    <b>power_menu.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,82 @@
+<span class="add">+from qtile_extras.popup.toolkit import (
+</span><span class="add">+    PopupRelativeLayout,
+</span><span class="add">+    PopupImage,
+</span><span class="add">+    PopupText
+</span><span class="add">+)
+</span><span class="add">+
+</span><span class="add">+from libqtile.lazy import lazy
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def show_power_menu(qtile):
+</span><span class="add">+    controls = [
+</span><span class="add">+        PopupImage(
+</span><span class="add">+            filename=&quot;~/pictures/icons/lock.svg&quot;,
+</span><span class="add">+            pos_x=0.15,
+</span><span class="add">+            pos_y=0.1,
+</span><span class="add">+            width=0.1,
+</span><span class="add">+            height=0.5,
+</span><span class="add">+            mouse_callbacks={
+</span><span class="add">+                &quot;Button1&quot;:
+</span><span class="add">+                lazy.spawn(&quot;swaylock&quot;)
+</span><span class="add">+            }
+</span><span class="add">+        ),
+</span><span class="add">+        PopupImage(
+</span><span class="add">+            filename=&quot;~/pictures/icons/sleep.svg&quot;,
+</span><span class="add">+            pos_x=0.45,
+</span><span class="add">+            pos_y=0.1,
+</span><span class="add">+            width=0.1,
+</span><span class="add">+            height=0.5,
+</span><span class="add">+            mouse_callbacks={
+</span><span class="add">+                &quot;Button1&quot;:
+</span><span class="add">+                lazy.spawn(&quot;systemctl suspend&quot;, shell=True)
+</span><span class="add">+            }
+</span><span class="add">+        ),
+</span><span class="add">+        PopupImage(
+</span><span class="add">+            filename=&quot;~/pictures/icons/shutdown.svg&quot;,
+</span><span class="add">+            pos_x=0.75,
+</span><span class="add">+            pos_y=0.1,
+</span><span class="add">+            width=0.1,
+</span><span class="add">+            height=0.5,
+</span><span class="add">+            highlight=&quot;A00000&quot;,
+</span><span class="add">+            mouse_callbacks={
+</span><span class="add">+                &quot;Button1&quot;:
+</span><span class="add">+                lazy.spawn(&quot;backup-home-and-poweroff&quot;)
+</span><span class="add">+            }
+</span><span class="add">+        ),
+</span><span class="add">+        PopupText(
+</span><span class="add">+            text=&quot;Lock&quot;,
+</span><span class="add">+            pos_x=0.1,
+</span><span class="add">+            pos_y=0.7,
+</span><span class="add">+            width=0.2,
+</span><span class="add">+            height=0.2,
+</span><span class="add">+            h_align=&quot;center&quot;
+</span><span class="add">+        ),
+</span><span class="add">+        PopupText(
+</span><span class="add">+            text=&quot;Sleep&quot;,
+</span><span class="add">+            pos_x=0.4,
+</span><span class="add">+            pos_y=0.7,
+</span><span class="add">+            width=0.2,
+</span><span class="add">+            height=0.2,
+</span><span class="add">+            h_align=&quot;center&quot;
+</span><span class="add">+        ),
+</span><span class="add">+        PopupText(
+</span><span class="add">+            text=&quot;Shutdown&quot;,
+</span><span class="add">+            pos_x=0.7,
+</span><span class="add">+            pos_y=0.7,
+</span><span class="add">+            width=0.2,
+</span><span class="add">+            height=0.2,
+</span><span class="add">+            h_align=&quot;center&quot;
+</span><span class="add">+        ),
+</span><span class="add">+    ]
+</span><span class="add">+    PopupRelativeLayout(
+</span><span class="add">+        qtile,
+</span><span class="add">+        width=1000,
+</span><span class="add">+        height=200,
+</span><span class="add">+        controls=controls,
+</span><span class="add">+        background=&quot;00000060&quot;,
+</span><span class="add">+        initial_focus=2,
+</span><span class="add">+    ).show(centered=True)
+</span><span class="add">+
+</span><span class="add">+keys_power_menu = [
+</span><span class="add">+    ([], &apos;XF86PowerOff&apos;, lazy.function(show_power_menu), &quot;Display the power menu.&quot;)
+</span><span class="add">+]
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -38,6 +38,9 @@
+<span class="def"> reload(&quot;scratchpad&quot;)
+</span><span class="def"> from scratchpad import keys_scratchpad, scratchpad
+</span><span class="def"> 
+</span><span class="add">+reload(&quot;power_menu&quot;)
+</span><span class="add">+from power_menu import keys_power_menu
+</span><span class="add">+
+</span><span class="def"> IS_WAYLAND: bool = qtile.core.name == &quot;wayland&quot;
+</span><span class="def"> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span><span class="def"> 
+</span>@@ -96,6 +99,7 @@
+<span class="def"> my_keys.extend(keys_backend)
+</span><span class="def"> my_keys.extend(keys_group)
+</span><span class="def"> my_keys.extend(keys_scratchpad)
+</span><span class="add">+my_keys.extend(keys_power_menu)
+</span><span class="def"> 
+</span><span class="def"> reload(&quot;fullscreen_state&quot;)
+</span><span class="def"> from fullscreen_state import toggle_fullscreen_state
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / minifying font awesome in pelican</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2019/10/minifying-font-awesome-in-pelican.html>minifying font awesome in pelican</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>I recently incorporated <a class="reference external" href="https://fontawesome.com/">font awesome</a> glyphs into
+my website in an attempt to add a touch more <span class="fas fa-eye"></span> <span class="fas fa-candy-cane"></span>. I
+wanted to self-host them, rather than use a CDN, for the slight privacy
+benefit.</p>
+<p>Following installation, I found the generation of my site, done by <a class="reference external" href="https://blog.getpelican.com/">pelican</a>, was taking significantly longer. Perhaps I'm
+crazy, but I also felt like Firefox was loading the pages for a noticably
+longer few milliseconds and the change wasn't doing anything for the
+perfectionist in me.</p>
+<p>Looking at the files I had just bundled with my pages, they had added at least
+200KB in webfonts (possibly more, depending on which filetype is requested) and
+around 55KB in CSS to my website. And for what, the odd glyph here or there?
+Most of my blog posts are less than 10KB, as is the rest of my CSS, so I
+determined to find a solution to incorporate only those glyphs that I wanted to
+use.</p>
+<div class="section" id="creating-a-pelican-pugin">
+<h2>creating a pelican pugin</h2>
+<p>The <a class="reference external" href="https://docs.getpelican.com/en/stable/plugins.html#how-to-create-plugins">documention</a>
+for creating pelican plugins is useful, but I found reading existing plugins in
+the <a class="reference external" href="https://github.com/getpelican/pelican-plugins">great repository</a> of
+plugins much more informative.</p>
+<p>Eventually I had put together a plugin that (so far!) appears to work wonders:
+<a class="reference external" href="/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a> <span class="fas fa-grin-beam"></span>.</p>
+<p>First, after site generation, it identifies which font awesome icons are
+present by scanning the output folder and getting all HTML class attributes
+that start with <code>fa-</code>. The words that follow this string are the names of
+the icons.</p>
+<p>With a bit of regex magic, these icon names are then used to extract their
+corresponding CSS blocks from a locally available font awesome download. These
+CSS blocks are then copied into the output folder.</p>
+<p>Extracting the glyphs from the fonts was the tricky part. FontForge advertised
+Python bindings, so guided by <a class="reference external" href="https://fontforge.github.io/python.html">their docs</a> I tried to put the logic together.
+FontForge's approach to manipulating fonts did take me a while to understand,
+however it does work well. This is the gist of it:</p>
+<div class="highlight"><pre><span></span><span class="n">font</span> <span class="o">=</span> <span class="n">fontforge</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">font_path</span><span class="p">)</span>
+<span class="n">selected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">for</span> <span class="n">icon</span> <span class="ow">in</span> <span class="n">icons</span><span class="p">:</span>  <span class="c1"># The list of icon names</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">select</span><span class="p">((</span><span class="s2">&quot;more&quot;</span><span class="p">,),</span> <span class="n">icon</span><span class="p">)</span>
+        <span class="n">selected</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="c1"># icon not found in font</span>
+        <span class="k">pass</span>
+
+<span class="k">if</span> <span class="n">selected</span><span class="p">:</span>
+    <span class="n">font</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">invert</span><span class="p">()</span>
+    <span class="n">font</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">font</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+</pre></div>
+<p>One by one, it loads each font, <code>select</code>s our desired icons that are
+present in the font, and, if there are any, it inverts the selection and
+deletes it. This leaves only our desired icons in the font, which is saved into
+our output folder.</p>
+</div>
+<div class="section" id="adding-font-awesome-rst-roles">
+<h2>adding font awesome RST roles</h2>
+<p>I wanted to add something extra for convenience, that is reStructuredText roles
+that allow me to include font awesome fonts inline in my posts.</p>
+<p>I added 3 roles: <code>fas</code>, <code>far</code>, and <code>fab</code> for font awesome's
+solid, regular and brands icon lists. These can be used like this:</p>
+<div class="highlight"><pre><span></span>Here is the classic <span class="na">:fas:</span><span class="nv">`blender-phone`</span>.
+</pre></div>
+<p>Here is the classic <span class="fas fa-blender-phone"></span>.</p>
+</div>
+<div class="section" id="result">
+<h2>result</h2>
+<p>Whenever I use a new icon, like the <span class="fas fa-poo-storm"></span>, I simply use one of the
+above RST roles in my draft and then pelican will include it when it copies
+over font awesome's CSS and webfonts into the output folder.</p>
+<p>Then I think about how much of my time I waste over-optimising tiny, tiny
+things.</p>
+</div>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2019-10-20T00:00:00+00:00">2019-10-20</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

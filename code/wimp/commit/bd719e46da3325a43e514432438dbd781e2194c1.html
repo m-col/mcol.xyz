@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add general corner colours even without mods, to bind to actions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/bd719e46da3325a43e514432438dbd781e2194c1.html">bd719e46da3325a43e514432438dbd781e2194c1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/d4ee960e9e832376b1e1879cb291c315a1b5b2ac.html">d4ee960e9e832376b1e1879cb291c315a1b5b2ac</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-12 23:45:02 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-12 23:45:02 +0000
+
+add general corner colours even without mods, to bind to actions
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,16 +19,18 @@
+<span class="def"> #auto_start ${XDG_CONFIG_HOME:-$HOME}/.config/wimp/autostart
+</span><span class="def"> 
+</span><span class="def"> #desks 2
+</span><span class="sub">-#desk 1 background #5D479D
+</span><span class="add">+#desk 1 background #31475c
+</span><span class="def"> #desk 1 borders normal #3e3e73
+</span><span class="sub">-#desk 1 borders focus #998dd1
+</span><span class="sub">-#desk 1 borders width 4
+</span><span class="sub">-#desk 1 corners resize #406794
+</span><span class="add">+#desk 1 corners normal #31315c
+</span><span class="add">+#desk 1 borders focus #47315c
+</span><span class="add">+#desk 1 corners focus #7e5992
+</span><span class="add">+#desk 1 borders width 6
+</span><span class="def"> #desk 2 background #3e3e73
+</span><span class="sub">-#desk 2 borders normal #5D479D
+</span><span class="sub">-#desk 2 borders focus #998dd1
+</span><span class="add">+#desk 2 borders normal #31475c
+</span><span class="add">+#desk 1 corners normal #3e5973
+</span><span class="add">+#desk 2 borders focus #47315c
+</span><span class="add">+#desk 1 corners focus #7e5992
+</span><span class="def"> #desk 2 borders width 6
+</span><span class="sub">-#desk 2 corners resize #3e3e73
+</span><span class="def"> desk 1 background ~/path/to/tiling-image.png
+</span><span class="def"> 
+</span><span class="def"> # Magnification bounds
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -88,7 +88,6 @@
+<span class="def">     struct wl_listener request_set_selection_listener;
+</span><span class="def">     struct wl_list keyboards;
+</span><span class="def">     enum wlr_keyboard_modifier mod;
+</span><span class="sub">-    bool mod_on;
+</span><span class="def">     struct wl_list key_bindings;
+</span><span class="def">     struct wl_list mouse_bindings;
+</span><span class="def"> 
+</span>@@ -173,7 +172,8 @@
+<span class="def">     float background[4];
+</span><span class="def">     float border_normal[4];
+</span><span class="def">     float border_focus[4];
+</span><span class="sub">-    float corner_resize[4];
+</span><span class="add">+    float corner_normal[4];
+</span><span class="add">+    float corner_focus[4];
+</span><span class="def">     int border_width;
+</span><span class="def">     struct wallpaper *wallpaper;
+</span><span class="def">     double panned_x, panned_y;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -58,29 +58,21 @@
+<span class="def"> 		rdata-&gt;is_focussed ? wimp.current_desk-&gt;border_focus : wimp.current_desk-&gt;border_normal,
+</span><span class="def"> 		output-&gt;transform_matrix
+</span><span class="def"> 	    );
+</span><span class="sub">-	    if (wimp.mod_on) {
+</span><span class="sub">-		struct wlr_box corners = {
+</span><span class="sub">-		    .x = borders.x,
+</span><span class="sub">-		    .y = borders.y,
+</span><span class="sub">-		    .width = 24,
+</span><span class="sub">-		    .height = 24,
+</span><span class="sub">-		};
+</span><span class="sub">-		wlr_render_rect(
+</span><span class="sub">-		    rdata-&gt;renderer, &amp;corners, wimp.current_desk-&gt;corner_resize, output-&gt;transform_matrix
+</span><span class="sub">-		);
+</span><span class="sub">-		corners.x = borders.x + borders.width - 24;
+</span><span class="sub">-		wlr_render_rect(
+</span><span class="sub">-		    rdata-&gt;renderer, &amp;corners, wimp.current_desk-&gt;corner_resize, output-&gt;transform_matrix
+</span><span class="sub">-		);
+</span><span class="sub">-		corners.y = borders.y + borders.height - 24;
+</span><span class="sub">-		wlr_render_rect(
+</span><span class="sub">-		    rdata-&gt;renderer, &amp;corners, wimp.current_desk-&gt;corner_resize, output-&gt;transform_matrix
+</span><span class="sub">-		);
+</span><span class="sub">-		corners.x = borders.x;
+</span><span class="sub">-		wlr_render_rect(
+</span><span class="sub">-		    rdata-&gt;renderer, &amp;corners, wimp.current_desk-&gt;corner_resize, output-&gt;transform_matrix
+</span><span class="sub">-		);
+</span><span class="sub">-	    }
+</span><span class="add">+	    struct wlr_box corners = {
+</span><span class="add">+		.x = borders.x,
+</span><span class="add">+		.y = borders.y,
+</span><span class="add">+		.width = 24,
+</span><span class="add">+		.height = 24,
+</span><span class="add">+	    };
+</span><span class="add">+	    float *corner = rdata-&gt;is_focussed ?
+</span><span class="add">+		wimp.current_desk-&gt;corner_focus : wimp.current_desk-&gt;corner_normal;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="add">+	    corners.x = borders.x + borders.width - 24;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="add">+	    corners.y = borders.y + borders.height - 24;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="add">+	    corners.x = borders.x;
+</span><span class="add">+	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -29,14 +29,13 @@
+<span class="def">     .on_drag3 = NULL,
+</span><span class="def">     .on_pinch = NULL,
+</span><span class="def">     .desk_count = 0,
+</span><span class="sub">-    .mod_on = false,
+</span><span class="def">     .mark_waiting = false,
+</span><span class="def">     .mark_indicator.box.width = 25,
+</span><span class="def">     .mark_indicator.box.height = 25,
+</span><span class="def">     .mark_indicator.box.x = 0,
+</span><span class="def">     .mark_indicator.box.y = 0,
+</span><span class="def">     .scratchpad_waiting = false,
+</span><span class="sub">-    .auto_focus = false,
+</span><span class="add">+    .auto_focus = true,
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -52,15 +52,6 @@
+<span class="def"> 		handled = true;
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="sub">-	if (!wimp.mod_on) {
+</span><span class="sub">-	    wimp.mod_on = true;
+</span><span class="sub">-	    damage_all_views();
+</span><span class="sub">-	}
+</span><span class="sub">-    } else {
+</span><span class="sub">-	if (wimp.mod_on) {
+</span><span class="sub">-	    wimp.mod_on = false;
+</span><span class="sub">-	    damage_all_views();
+</span><span class="sub">-	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     if (!handled){
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,11 +10,12 @@
+<span class="def">     struct desk *desk = calloc(1, sizeof(struct desk));
+</span><span class="def">     wl_list_insert(wimp.desks.prev, &amp;desk-&gt;link);
+</span><span class="def">     wl_list_init(&amp;desk-&gt;views);
+</span><span class="sub">-    assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="add">+    assign_colour(&quot;#31475c&quot;, desk-&gt;background);
+</span><span class="def">     assign_colour(&quot;#3e3e73&quot;, desk-&gt;border_normal);
+</span><span class="sub">-    assign_colour(&quot;#998dd1&quot;, desk-&gt;border_focus);
+</span><span class="sub">-    assign_colour(&quot;#406794&quot;, desk-&gt;corner_resize);
+</span><span class="sub">-    desk-&gt;border_width = 4;
+</span><span class="add">+    assign_colour(&quot;#31315c&quot;, desk-&gt;corner_normal);
+</span><span class="add">+    assign_colour(&quot;#47315c&quot;, desk-&gt;border_focus);
+</span><span class="add">+    assign_colour(&quot;#7e5992&quot;, desk-&gt;corner_focus);
+</span><span class="add">+    desk-&gt;border_width = 6;
+</span><span class="def">     desk-&gt;wallpaper = NULL;
+</span><span class="def">     desk-&gt;index = wimp.desk_count;
+</span><span class="def">     desk-&gt;zoom = 1;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -22,23 +22,15 @@
+<span class="def"> 
+</span><span class="def"> static const char *DEFAULT_CONFIG =  &quot;\n\
+</span><span class="def"> desks 2\n\
+</span><span class="sub">-desk 1 background #5D479D\n\
+</span><span class="sub">-desk 1 borders normal #3e3e73\n\
+</span><span class="sub">-desk 1 borders focus #998dd1\n\
+</span><span class="sub">-desk 1 borders width 4\n\
+</span><span class="sub">-desk 1 corners resize #406794\n\
+</span><span class="def"> desk 2 background #3e3e73\n\
+</span><span class="sub">-desk 2 borders normal #5D479D\n\
+</span><span class="sub">-desk 2 borders focus #998dd1\n\
+</span><span class="sub">-desk 2 borders width 6\n\
+</span><span class="sub">-desk 2 corners resize #3e3e73\n\
+</span><span class="add">+desk 2 borders normal #31475c\n\
+</span><span class="add">+desk 2 corners normal #3e5973\n\
+</span><span class="def"> zoom_min 0.2\n\
+</span><span class="def"> zoom_max 5\n\
+</span><span class="sub">-mark_indicator #000000\n\
+</span><span class="add">+mark_indicator #47315c\n\
+</span><span class="def"> vt_switching on\n\
+</span><span class="def"> scroll_direction natural\n\
+</span><span class="def"> set_modifier Logo\n\
+</span><span class="sub">-auto_focus on\n\
+</span><span class="def"> bind Ctrl Escape shutdown\n\
+</span><span class="def"> &quot;;
+</span><span class="def"> 
+</span>@@ -591,11 +583,14 @@
+<span class="def"> 		    }
+</span><span class="def"> 		}
+</span><span class="def"> 
+</span><span class="sub">-		// desk &lt;index&gt; corners resize &lt;#rrggbb&gt;
+</span><span class="add">+		// desk &lt;index&gt; corners [focus|normal] &lt;#rrggbb&gt;
+</span><span class="def"> 		else if (!strcasecmp(s, &quot;corners&quot;)) {
+</span><span class="def"> 		    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-		    if (!strcasecmp(s, &quot;resize&quot;)) {
+</span><span class="sub">-			assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;corner_resize);
+</span><span class="add">+		    if (!strcasecmp(s, &quot;normal&quot;)) {
+</span><span class="add">+			assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;corner_normal);
+</span><span class="add">+		    }
+</span><span class="add">+		    else if (!strcasecmp(s, &quot;focus&quot;)) {
+</span><span class="add">+			assign_colour(strtok(NULL, &quot; \t\n\r&quot;), desk-&gt;corner_focus);
+</span><span class="def"> 		    }
+</span><span class="def"> 		}
+</span><span class="def"> 	    }
+</span></pre>
+</div></div>
+  </body>
+</html>

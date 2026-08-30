@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - content/static/nftables.conf</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- content/static/nftables.conf</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> #!/usr/bin/nft -f
+<a href="#l2" class="line" id="l2">      2</a> #
+<a href="#l3" class="line" id="l3">      3</a> # Restricted nftables configuration:
+<a href="#l4" class="line" id="l4">      4</a> #   - Limit inbound traffic
+<a href="#l5" class="line" id="l5">      5</a> #   - Allow outbound traffic to VPN&apos;s socks5 proxy
+<a href="#l6" class="line" id="l6">      6</a> #   - Allow outbound traffic from UID &apos;tor&apos;
+<a href="#l7" class="line" id="l7">      7</a> #
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> 
+<a href="#l10" class="line" id="l10">     10</a> #
+<a href="#l11" class="line" id="l11">     11</a> # Definitions
+<a href="#l12" class="line" id="l12">     12</a> #
+<a href="#l13" class="line" id="l13">     13</a> 
+<a href="#l14" class="line" id="l14">     14</a> # VPN server
+<a href="#l15" class="line" id="l15">     15</a> define vpn_ip = 123.456.789.123
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a> # individual IPs to be unrestricted
+<a href="#l18" class="line" id="l18">     18</a> define exceptions = { 192.168.0.0/24, 192.168.1.0/24 }
+<a href="#l19" class="line" id="l19">     19</a> 
+<a href="#l20" class="line" id="l20">     20</a> #
+<a href="#l21" class="line" id="l21">     21</a> # Rules
+<a href="#l22" class="line" id="l22">     22</a> #
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> # clear all rules
+<a href="#l25" class="line" id="l25">     25</a> flush ruleset
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> table inet restricted {
+<a href="#l28" class="line" id="l28">     28</a> 
+<a href="#l29" class="line" id="l29">     29</a>     chain inbound {
+<a href="#l30" class="line" id="l30">     30</a> 	type filter hook input priority 0;
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> 	    # allow established/related connections
+<a href="#l33" class="line" id="l33">     33</a> 	    ct state {established, related} accept
+<a href="#l34" class="line" id="l34">     34</a> 
+<a href="#l35" class="line" id="l35">     35</a> 	    # allow localhost traffic
+<a href="#l36" class="line" id="l36">     36</a> 	    iifname lo accept
+<a href="#l37" class="line" id="l37">     37</a> 
+<a href="#l38" class="line" id="l38">     38</a> 	    # echo requests (pings) 
+<a href="#l39" class="line" id="l39">     39</a> 	    ip protocol icmp icmp type echo-request ct state new accept
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a> 	    # reject everything else
+<a href="#l42" class="line" id="l42">     42</a> 	    counter reject with icmp type port-unreachable
+<a href="#l43" class="line" id="l43">     43</a>     }
+<a href="#l44" class="line" id="l44">     44</a> 
+<a href="#l45" class="line" id="l45">     45</a>     chain outbound {
+<a href="#l46" class="line" id="l46">     46</a> 	type filter hook output priority 0;
+<a href="#l47" class="line" id="l47">     47</a> 
+<a href="#l48" class="line" id="l48">     48</a> 	    # allow localhost traffic
+<a href="#l49" class="line" id="l49">     49</a> 	    oifname lo accept
+<a href="#l50" class="line" id="l50">     50</a> 
+<a href="#l51" class="line" id="l51">     51</a> 	    # allow VPN and exceptions directly
+<a href="#l52" class="line" id="l52">     52</a> 	    oifname wlp2s0 ip daddr { $vpn_ip, $exceptions } accept
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a> 	    # allow all traffic from UID tor
+<a href="#l55" class="line" id="l55">     55</a> 	    oifname wlp2s0 skuid tor counter accept
+<a href="#l56" class="line" id="l56">     56</a> 
+<a href="#l57" class="line" id="l57">     57</a> 	    # allow wireguard traffic but only if destined to proxy
+<a href="#l58" class="line" id="l58">     58</a> 	    oifname wg0 ip daddr { 10.64.0.1 } accept
+<a href="#l59" class="line" id="l59">     59</a> 	    #oifname wg0 accept
+<a href="#l60" class="line" id="l60">     60</a> 
+<a href="#l61" class="line" id="l61">     61</a> 	    # reject remaining
+<a href="#l62" class="line" id="l62">     62</a> 	    counter reject
+<a href="#l63" class="line" id="l63">     63</a>     }
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a>     # no forwarding
+<a href="#l66" class="line" id="l66">     66</a>     chain forward {
+<a href="#l67" class="line" id="l67">     67</a> 	type filter hook forward priority 0; policy drop;
+<a href="#l68" class="line" id="l68">     68</a>     }
+<a href="#l69" class="line" id="l69">     69</a> }
+<a href="#l70" class="line" id="l70">     70</a> 
+</pre>
+  </div>
+  </body>
+</html>

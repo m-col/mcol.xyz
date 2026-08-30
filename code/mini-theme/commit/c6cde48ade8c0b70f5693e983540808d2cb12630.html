@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mini-theme - adjust margin around article footers</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mini-theme">mini-theme</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A mini theme for the pelican static site generator</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mini-theme">https://github.com/m-col/mini-theme</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mini-theme/tree.html">Files</a> | <a href="https://mcol.xyz/code/mini-theme/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mini-theme/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mini-theme/commit/c6cde48ade8c0b70f5693e983540808d2cb12630.html">c6cde48ade8c0b70f5693e983540808d2cb12630</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mini-theme/commit/b53bc9de131bd4ea043327c0bcf97c51df96e4e3.html">b53bc9de131bd4ea043327c0bcf97c51df96e4e3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-04 12:46:39 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-04 12:46:39 +0100
+
+adjust margin around article footers
+</pre><div class="diff">
+  <p>
+    <b>templates/article.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,16 +21,16 @@
+<span class="def"> {{ article.content }}
+</span><span class="def"> 
+</span><span class="def"> {% if ARTICLE_FEEDBACK %}
+</span><span class="sub">-&lt;hr&gt;{{ ARTICLE_FEEDBACK }}
+</span><span class="add">+&lt;hr&gt;&lt;p&gt;{{ ARTICLE_FEEDBACK }}&lt;/p&gt;
+</span><span class="def"> {% endif %}
+</span><span class="def"> 
+</span><span class="def"> &lt;footer&gt;&lt;hr&gt;
+</span><span class="sub">-Published @ &lt;time datetime=&quot;{{ article.date.isoformat() }}&quot;&gt;{{ article.locale_date }}&lt;/time&gt;
+</span><span class="add">+&lt;p&gt;Published @ &lt;time datetime=&quot;{{ article.date.isoformat() }}&quot;&gt;{{ article.locale_date }}&lt;/time&gt;
+</span><span class="def"> {% if article.category %}in &lt;a href=&quot;/{{ article.category.url }}&quot;&gt;{{ article.category }}&lt;/a&gt;{% endif %}
+</span><span class="def"> 
+</span><span class="def"> {% if article.modified %}
+</span><span class="def"> / &lt;span class=mod&gt;Modified &lt;time datetime=&quot;{{ article.modified.isoformat() }}&quot;&gt;{{ article.locale_modified }}&lt;/time&gt;&lt;span&gt;
+</span><span class="sub">-{% endif %}
+</span><span class="add">+{% endif %}&lt;/p&gt;
+</span><span class="def"> &lt;/footer&gt;
+</span><span class="def"> 
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>static/css/main.css</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -67,10 +67,6 @@
+<span class="def">     background-color: #ddd;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-footer {
+</span><span class="sub">-    margin: 15px 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="def"> img, video {
+</span><span class="def">     max-width: 100%;
+</span><span class="def">     margin: 0 auto;
+</span></pre>
+</div></div>
+  </body>
+</html>

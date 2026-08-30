@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - do not share history</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/49d6da3681308089b4a8c6ca774868a82084dd93.html">49d6da3681308089b4a8c6ca774868a82084dd93</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/b89cb00a74bb9f50860c38f8cbd2debf049e4665.html">b89cb00a74bb9f50860c38f8cbd2debf049e4665</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-07-28 21:54:56 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-07-28 21:54:56 +0100
+
+do not share history
+</pre><div class="diff">
+  <p>
+    <b>zshrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,7 @@
+<span class="def"> fi
+</span><span class="def"> 
+</span><span class="def"> # zsh settings
+</span><span class="sub">-ZSH=&quot;$HOME/.zsh&quot;
+</span><span class="add">+local ZSH=&quot;$HOME/.zsh&quot;
+</span><span class="def"> HYPHEN_INSENSITIVE=&quot;true&quot;
+</span><span class="def"> COMPLETION_WAITING_DOTS=&quot;true&quot;
+</span><span class="def"> ZSH_COMPDUMP=&quot;$HOME/.zcompdump&quot;
+</span>@@ -26,7 +26,7 @@
+<span class="def"> HISTFILE=&quot;$HOME/.zsh_history&quot;
+</span><span class="def"> HISTSIZE=12000
+</span><span class="def"> SAVEHIST=8000
+</span><span class="sub">-setopt SHARE_HISTORY
+</span><span class="add">+#setopt SHARE_HISTORY
+</span><span class="def"> setopt HIST_IGNORE_ALL_DUPS
+</span><span class="def"> setopt HIST_REDUCE_BLANKS
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

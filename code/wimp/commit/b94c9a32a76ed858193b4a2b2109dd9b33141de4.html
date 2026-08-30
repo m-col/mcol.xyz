@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - DESKWM -&gt; WIMP in headers</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/b94c9a32a76ed858193b4a2b2109dd9b33141de4.html">b94c9a32a76ed858193b4a2b2109dd9b33141de4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/f046336561e63bb1a6863fc3a751f20c0bac54ac.html">f046336561e63bb1a6863fc3a751f20c0bac54ac</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-14 18:15:24 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-14 18:15:24 +0000
+
+DESKWM -&gt; WIMP in headers
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_TYPES_H
+</span><span class="sub">-#define DESKWM_TYPES_H
+</span><span class="add">+#ifndef WIMP_TYPES_H
+</span><span class="add">+#define WIMP_TYPES_H
+</span><span class="def"> 
+</span><span class="def"> #include &lt;cairo/cairo.h&gt;
+</span><span class="def"> #include &lt;stdlib.h&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_SHELL_H
+</span><span class="sub">-#define DESKWM_SHELL_H
+</span><span class="add">+#ifndef WIMP_SHELL_H
+</span><span class="add">+#define WIMP_SHELL_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/scratchpad.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_SCRATCHPAD_H
+</span><span class="sub">-#define DESKWM_SCRATCHPAD_H
+</span><span class="add">+#ifndef WIMP_SCRATCHPAD_H
+</span><span class="add">+#define WIMP_SCRATCHPAD_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_OUTPUT_H
+</span><span class="sub">-#define DESKWM_OUTPUT_H
+</span><span class="add">+#ifndef WIMP_OUTPUT_H
+</span><span class="add">+#define WIMP_OUTPUT_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,4 +1,4 @@
+<span class="sub">-#ifndef DESKWM_DESKWM_H
+</span><span class="sub">-#define DESKWM_DESKWM_H
+</span><span class="add">+#ifndef WIMP_WIMP_H
+</span><span class="add">+#define WIMP_WIMP_H
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/log.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_LOG_H
+</span><span class="sub">-#define DESKWM_LOG_H
+</span><span class="add">+#ifndef WIMP_LOG_H
+</span><span class="add">+#define WIMP_LOG_H
+</span><span class="def"> 
+</span><span class="def"> void init_log(enum wlr_log_importance log_level);
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/layer_shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_LAYER_SHELL_H
+</span><span class="sub">-#define DESKWM_LAYER_SHELL_H
+</span><span class="add">+#ifndef WIMP_LAYER_SHELL_H
+</span><span class="add">+#define WIMP_LAYER_SHELL_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_KEYBOARD_H
+</span><span class="sub">-#define DESKWM_KEYBOARD_H
+</span><span class="add">+#ifndef WIMP_KEYBOARD_H
+</span><span class="add">+#define WIMP_KEYBOARD_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_DESK_H
+</span><span class="sub">-#define DESKWM_DESK_H
+</span><span class="add">+#ifndef WIMP_DESK_H
+</span><span class="add">+#define WIMP_DESK_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/decorations.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_DECORATIONS_H
+</span><span class="sub">-#define DESKWM_DECORATIONS_H
+</span><span class="add">+#ifndef WIMP_DECORATIONS_H
+</span><span class="add">+#define WIMP_DECORATIONS_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_INPUT_H
+</span><span class="sub">-#define DESKWM_INPUT_H
+</span><span class="add">+#ifndef WIMP_INPUT_H
+</span><span class="add">+#define WIMP_INPUT_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_CONFIG_H
+</span><span class="sub">-#define DESKWM_CONFIG_H
+</span><span class="add">+#ifndef WIMP_CONFIG_H
+</span><span class="add">+#define WIMP_CONFIG_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,5 +1,5 @@
+<span class="sub">-#ifndef DESKWM_ACTION_H
+</span><span class="sub">-#define DESKWM_ACTION_H
+</span><span class="add">+#ifndef WIMP_ACTION_H
+</span><span class="add">+#define WIMP_ACTION_H
+</span><span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

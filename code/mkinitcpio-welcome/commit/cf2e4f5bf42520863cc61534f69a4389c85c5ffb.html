@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mkinitcpio-welcome - Wrap the encrypt hook to simplify usage and control cursor position</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mkinitcpio-welcome">mkinitcpio-welcome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mkinitcpio-welcome">https://github.com/m-col/mkinitcpio-welcome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mkinitcpio-welcome/tree.html">Files</a> | <a href="https://mcol.xyz/code/mkinitcpio-welcome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mkinitcpio-welcome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/cf2e4f5bf42520863cc61534f69a4389c85c5ffb.html">cf2e4f5bf42520863cc61534f69a4389c85c5ffb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mkinitcpio-welcome/commit/b5fe9a0fb6e3cc0fd16349654debf5c026f5cc15.html">b5fe9a0fb6e3cc0fd16349654debf5c026f5cc15</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-12 21:32:34 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-12 21:32:34 +0100
+
+Wrap the encrypt hook to simplify usage and control cursor position
+
+This changes the way mkinitcpio-welcome is used. By replacing the
+encrypt hook, the old poscursor hook is unnecessary as everything can be
+contained in one &apos;welcome&apos; hook. The encrypt hook&apos;s build and run_hook
+functions are executed directly by this hook. This makes it easier to
+control the position of the cursor and any messages printed by the
+decryption step.
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,32 +1,35 @@
+<span class="def"> mkinitcpio-welcome
+</span><span class="def"> ==================
+</span><span class="def"> 
+</span><span class="sub">-Two hooks for mkinitcpio_ that draw out the word &quot;Welcome&quot; in big letters early
+</span><span class="sub">-during the boot process. A box is drawn underneath for inputting the password
+</span><span class="sub">-during the &apos;encrypt&apos; hook and printing the output of the &apos;fsck&apos; hook.
+</span><span class="add">+A mkinitcpio_ hook that draws out the word &quot;Welcome&quot; in big letters early
+</span><span class="add">+during the boot process and accepts input for disk decryption. A box is drawn
+</span><span class="add">+underneath for inputting the password and printing the output of the &apos;fsck&apos;
+</span><span class="add">+hook.
+</span><span class="def"> 
+</span><span class="sub">-Please email me with any issues, questions or comments @ mcol at posteo.net
+</span><span class="add">+The hook wraps and replaces the encrypt hook so that it can have greater
+</span><span class="add">+control over the cursor and any printed messages.
+</span><span class="add">+
+</span><span class="add">+It works very well with Evan Purkhiser&apos;s `mkinitcpio-colors`_.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> Usage
+</span><span class="def"> -----
+</span><span class="def"> 
+</span><span class="sub">-1. Copy the contents of `hooks` into `/etc/initcpio/hooks`
+</span><span class="sub">-#. Copy the contents of `install` into `/etc/initcpio/install`
+</span><span class="sub">-#. Add the `welcome` hook to `/etc/mkinitcpio.conf` before the `encrypt` hook
+</span><span class="sub">-#. Add the `poscursor` hook to `/etc/mkinitcpio.conf` after the `encrypt` hook
+</span><span class="sub">-   but before the `fsck` hook
+</span><span class="sub">-#. Optionally configure the colours to use in `/etc/vconsole.conf`:
+</span><span class="add">+0. Ensure that you can successfully use the `encrypt` hook without first.
+</span><span class="add">+1. Copy `hooks/welcome` into `/etc/initcpio/hooks`.
+</span><span class="add">+2. Copy `install/welcome` into `/etc/initcpio/install`.
+</span><span class="add">+3. Add the `welcome` hook to `/etc/mkinitcpio.conf` replacing the `encrypt` hook.
+</span><span class="add">+4. Optionally configure the colours to use in `/etc/vconsole.conf`:
+</span><span class="def"> 
+</span><span class="def"> .. code-block:: sh
+</span><span class="def"> 
+</span><span class="def">    WELCOME_BG=0    # background
+</span><span class="def">    WELCOME_FG=5    # foreground (&quot;Welcome&quot;)
+</span><span class="sub">-   WELCOME_IN=6    # input box
+</span><span class="add">+   WELCOME_IN=6    # input box frame
+</span><span class="def"> 
+</span><span class="def"> where the number is 0-15 corresponding to the 16 defined console colours.
+</span><span class="def"> 
+</span><span class="sub">-Works very well with Evan Purkhiser&apos;s `mkinitcpio-colors`_.
+</span><span class="add">+5. Rebuild the initramfs image with `mkinitcpio`.
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> Contact
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>install/welcome</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,32 +2,39 @@
+<span class="def"> 
+</span><span class="def"> build() {
+</span><span class="def">     (
+</span><span class="sub">-	WELCOME_FG=5
+</span><span class="sub">-	WELCOME_BG=0
+</span><span class="sub">-	WELCOME_IN=4
+</span><span class="add">+        test -s /etc/vconsole.conf &amp;&amp; . /etc/vconsole.conf
+</span><span class="def"> 
+</span><span class="sub">-        [[ -s /etc/vconsole.conf ]] &amp;&amp; . /etc/vconsole.conf
+</span><span class="sub">-
+</span><span class="sub">-	is_int() { test &quot;$1&quot; -ge 0 -a &quot;$1&quot; -le 15; }
+</span><span class="sub">-	is_int $WELCOME_FG || exit 1
+</span><span class="sub">-	is_int $WELCOME_BG || exit 1
+</span><span class="sub">-	is_int $WELCOME_IN || exit 1
+</span><span class="add">+	is_valid() { test &quot;$1&quot; -ge 0 -a &quot;$1&quot; -le 15; }
+</span><span class="add">+	is_valid ${WELCOME_FG:-5} || WELCOME_FG=5
+</span><span class="add">+	is_valid ${WELCOME_BG:-0} || WELCOME_BG=0
+</span><span class="add">+	is_valid ${WELCOME_IN:-4} || WELCOME_IN=4
+</span><span class="def"> 
+</span><span class="def"> 	echo &quot;WELCOME_FG=$WELCOME_FG&quot; &gt;&gt; &quot;$BUILDROOT/welcome&quot;
+</span><span class="def"> 	echo &quot;WELCOME_BG=$WELCOME_BG&quot; &gt;&gt; &quot;$BUILDROOT/welcome&quot;
+</span><span class="def"> 	echo &quot;WELCOME_IN=$WELCOME_IN&quot; &gt;&gt; &quot;$BUILDROOT/welcome&quot;
+</span><span class="add">+    )
+</span><span class="def"> 
+</span><span class="sub">-    ) || {
+</span><span class="sub">-	echo &quot;welcome: /etc/vconsole.conf configuration error&quot;
+</span><span class="sub">-	exit 1
+</span><span class="sub">-    }
+</span><span class="add">+    add_file &quot;/usr/lib/initcpio/hooks/encrypt&quot; &quot;/welcome-decrypt&quot; 755
+</span><span class="def"> 
+</span><span class="def">     add_runscript
+</span><span class="add">+
+</span><span class="add">+    # This is pretty ugly but we want the &apos;build&apos; function in the encrypt hook
+</span><span class="add">+    # and we want it called from a file called &apos;welcome&apos; as it calls
+</span><span class="add">+    # &apos;add_runscript&apos; which reads the filename.
+</span><span class="add">+    TMP=`mktemp -d`
+</span><span class="add">+    cp /usr/lib/initcpio/install/encrypt $TMP/welcome
+</span><span class="add">+    sed -i &apos;s/build()/_&amp;/&apos; $TMP/welcome
+</span><span class="add">+    echo _build &gt;&gt; $TMP/welcome
+</span><span class="add">+    . $TMP/welcome
+</span><span class="add">+    rm -r $TMP
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> help() {
+</span><span class="def">     cat &lt;&lt;HELPEOF
+</span><span class="sub">-Prints the word &quot;Welcome&quot; in large letters and draws a box around the input for
+</span><span class="sub">-the encrypt hook and output of the fsck hook.
+</span><span class="add">+This hook displays &quot;Welcome&quot; while waiting for input for disk decryption. It
+</span><span class="add">+depends on (and uses) the build function from the standard encrypt hook to
+</span><span class="add">+ensure that everything is set up correctly for decryption, but instead of using
+</span><span class="add">+the encrypt hook&apos;s own boot script, a custom one is specified by the user in
+</span><span class="add">+/etc/initcpio/welcome-decrypt
+</span><span class="def"> HELPEOF
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>install/poscursor</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,11 +0,0 @@
+<span class="sub">-#!/bin/bash
+</span><span class="sub">-
+</span><span class="sub">-build() {
+</span><span class="sub">-    add_runscript
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-help() {
+</span><span class="sub">-    cat &lt;&lt;HELPEOF
+</span><span class="sub">-Moves the cursor the second line of the input box to position fsck output
+</span><span class="sub">-HELPEOF
+</span><span class="sub">-}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>hooks/welcome</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +1,7 @@
+<span class="def"> #!/usr/bin/ash
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-draw_welcome() {
+</span><span class="add">+run_hook() {
+</span><span class="def">     # user-defined colours
+</span><span class="def">     . /welcome
+</span><span class="def">     we=&quot;\x1b[48;5;${WELCOME_FG}m&quot;
+</span>@@ -16,7 +16,7 @@
+<span class="def">     fill=&quot;\033[K&quot;   		# fill to end of line
+</span><span class="def"> 
+</span><span class="def">     # draw &quot;Welcome&quot;
+</span><span class="sub">-    echo -e &quot;$b14\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="add">+    echo -e &quot;\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="def">     echo -e &quot;                                                                                                  $s$e$fill&quot;
+</span><span class="def">     echo -e &quot;                                                                   $p          $p                   $p$fill&quot;
+</span><span class="def">     echo -e &quot;                                                                   $p          $p                   $p$fill&quot;
+</span>@@ -38,16 +38,11 @@
+<span class="def">     echo -e &quot;$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="def">     echo -e &quot;$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill\n$fill&quot;
+</span><span class="def"> 
+</span><span class="sub">-    # move cursor into inpux box
+</span><span class="add">+    # decrypt
+</span><span class="def">     echo -ne &quot;\x1b[32;81H&quot;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-run_hook() {
+</span><span class="sub">-    if [ -e /welcome ]
+</span><span class="sub">-    then
+</span><span class="sub">-	draw_welcome
+</span><span class="sub">-    else
+</span><span class="sub">-	msg &quot;/welcome not found despite added hook.&quot;
+</span><span class="sub">-    fi
+</span><span class="add">+    (
+</span><span class="add">+	. /welcome-decrypt
+</span><span class="add">+	run_hook
+</span><span class="add">+    )
+</span><span class="add">+    echo -ne &quot;\x1b[33;81H&quot;
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>hooks/poscursor</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +0,0 @@
+<span class="sub">-#!/usr/bin/ash
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-run_hook() {
+</span><span class="sub">-    # Reposition cursor to second line of input box for the output of fsck
+</span><span class="sub">-    echo -ne &quot;\x1b[33;81H&quot;
+</span><span class="sub">-}
+</span></pre>
+</div></div>
+  </body>
+</html>

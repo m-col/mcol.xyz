@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - disable markdown autoformat</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/6e0d6a3b4a3f062ddf0f9e654bafd836dfecc968.html">6e0d6a3b4a3f062ddf0f9e654bafd836dfecc968</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/4e7f6e6d611912f33fbf782d2cde0cca816b0d9a.html">4e7f6e6d611912f33fbf782d2cde0cca816b0d9a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-10-31 17:01:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-10-31 17:01:36 +0000
+
+disable markdown autoformat
+</pre><div class="diff">
+  <p>
+    <b>ftplugin/markdown.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,7 +4,7 @@
+<span class="def"> setlocal textwidth=101
+</span><span class="def"> setlocal noautoindent
+</span><span class="def"> setlocal nosmartindent
+</span><span class="sub">-setlocal formatoptions+=a
+</span><span class="add">+&quot;setlocal formatoptions+=a
+</span><span class="def"> &quot;setlocal spell spelllang=en_gb
+</span><span class="def"> 
+</span><span class="def"> &quot; format folded section header text
+</span></pre>
+</div></div>
+  </body>
+</html>

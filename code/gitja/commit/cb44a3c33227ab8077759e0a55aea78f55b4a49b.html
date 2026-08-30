@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add modeToSymbol function</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/cb44a3c33227ab8077759e0a55aea78f55b4a49b.html">cb44a3c33227ab8077759e0a55aea78f55b4a49b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/1403669b22b1435f588f71d985db158dc8613f39.html">1403669b22b1435f588f71d985db158dc8613f39</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-05 22:47:08 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-05 22:47:08 +0100
+
+Add modeToSymbol function
+</pre><div class="diff">
+  <p>
+    <b>src/Types.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -74,6 +74,13 @@
+<span class="def"> modeToOctal ModeSymlink = &quot;20000&quot;
+</span><span class="def"> modeToOctal ModeSubmodule = &quot;60000&quot;
+</span><span class="def"> 
+</span><span class="add">+modeToSymbolic :: TreeEntryMode -&gt; String
+</span><span class="add">+modeToSymbolic ModeDirectory = &quot;drwxr-xr-x&quot;
+</span><span class="add">+modeToSymbolic ModePlain = &quot;-rw-r--r--&quot;
+</span><span class="add">+modeToSymbolic ModeExecutable = &quot;-rwxr-xr-x&quot;
+</span><span class="add">+modeToSymbolic ModeSymlink = &quot;l---------&quot;
+</span><span class="add">+modeToSymbolic ModeSubmodule = &quot;git-module&quot;
+</span><span class="add">+
+</span><span class="def"> {-
+</span><span class="def"> GVal implementations for data definitions above, allowing commits to be rendered in
+</span><span class="def"> Ginger templates.
+</span></pre>
+</div></div>
+  </body>
+</html>

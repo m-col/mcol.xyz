@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Adjust example config and template to use some variables</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/6c541337026f26356a41b76e581f066b9882149c.html">6c541337026f26356a41b76e581f066b9882149c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/8690292adfbe3f9a36e2d65dea33176dd6f32a63.html">8690292adfbe3f9a36e2d65dea33176dd6f32a63</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-24 00:31:03 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-24 00:31:03 +0100
+
+Adjust example config and template to use some variables
+</pre><div class="diff">
+  <p>
+    <b>templates/log.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,18 +1,18 @@
+<span class="def"> &lt;!doctype html&gt;
+</span><span class="def"> &lt;html lang=&quot;en&quot;&gt;
+</span><span class="sub">-	&lt;head&gt;
+</span><span class="sub">-		&lt;meta charset=&quot;utf-8&quot;&gt;
+</span><span class="sub">-		&lt;meta http-equiv=&quot;x-ua-compatible&quot; content=&quot;ie=edge&quot;&gt;
+</span><span class="sub">-		&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+</span><span class="sub">-		&lt;title&gt;gitserve - {{ title }}&lt;/title&gt;
+</span><span class="sub">-		&lt;link rel=&quot;stylesheet&quot; href=&quot;{{ host }}/style.css&quot; /&gt;
+</span><span class="sub">-	&lt;/head&gt;
+</span><span class="add">+  &lt;head&gt;
+</span><span class="add">+    &lt;meta charset=&quot;utf-8&quot;&gt;
+</span><span class="add">+    &lt;meta http-equiv=&quot;x-ua-compatible&quot; content=&quot;ie=edge&quot;&gt;
+</span><span class="add">+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+</span><span class="add">+    &lt;title&gt;{{ name }} -- {{ title }}&lt;/title&gt;
+</span><span class="add">+    &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ host }}/style.css&quot; /&gt;
+</span><span class="add">+  &lt;/head&gt;
+</span><span class="def"> 
+</span><span class="sub">-	&lt;body&gt;
+</span><span class="sub">-		&lt;p&gt;{{ title }}&lt;/p&gt;
+</span><span class="sub">-		&lt;hr&gt;
+</span><span class="sub">-		&lt;p&gt;{{ description }}&lt;/p&gt;
+</span><span class="sub">-		&lt;p&gt;git clone {{ host }}{{ path }}&lt;/p&gt;
+</span><span class="sub">-		{{ title }}
+</span><span class="sub">-	&lt;/body&gt;
+</span><span class="add">+  &lt;body&gt;
+</span><span class="add">+    &lt;p&gt;{{ name }}&lt;/p&gt;
+</span><span class="add">+    &lt;hr&gt;
+</span><span class="add">+    &lt;p&gt;{{ description }}&lt;/p&gt;
+</span><span class="add">+    &lt;p&gt;git clone {{ host }}/{{ name }}&lt;/p&gt;
+</span><span class="add">+    {{ title }}
+</span><span class="add">+  &lt;/body&gt;
+</span><span class="def"> &lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.dhall</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,11 +2,11 @@
+<span class="def"> -- It uses the Dhall configuration language: dhall-lang.org
+</span><span class="def"> 
+</span><span class="def"> -- This is a folder containing repositories.
+</span><span class="sub">-let root = &quot;.&quot;
+</span><span class="add">+let root = &quot;..&quot;
+</span><span class="def"> 
+</span><span class="def"> -- And these are relative paths from root to those repositories.
+</span><span class="sub">-let folders = [
+</span><span class="sub">-    &quot;${root}/&quot;
+</span><span class="add">+let folders =
+</span><span class="add">+    [ &quot;${root}/gitserve&quot;
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def"> -- This is the configuration object that is used by gitserve
+</span></pre>
+</div></div>
+  </body>
+</html>

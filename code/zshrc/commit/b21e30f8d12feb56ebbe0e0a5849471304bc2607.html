@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - more</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/b21e30f8d12feb56ebbe0e0a5849471304bc2607.html">b21e30f8d12feb56ebbe0e0a5849471304bc2607</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/9782d9926f4f394cc331178b6c50ace4585bbc0d.html">9782d9926f4f394cc331178b6c50ace4585bbc0d</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2026-02-25 19:49:27 +0000
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2026-02-25 19:49:27 +0000
+
+more
+p
+</pre><div class="diff">
+  <p>
+    <b>git-worktrees.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +1,15 @@
+<span class="add">+case &quot;${WAYLAND_DISPLAY:+wayland}${DISPLAY:+x11}$OSTYPE&quot; in
+</span><span class="add">+    wayland*)
+</span><span class="add">+        _copy=&apos;wl-copy&apos;
+</span><span class="add">+        ;;
+</span><span class="add">+    x11*)
+</span><span class="add">+        _copy=&apos;xclip -selection clipboard&apos;
+</span><span class="add">+        ;;
+</span><span class="add">+    darwin*)
+</span><span class="add">+        _copy=pbcopy
+</span><span class="add">+        ;;
+</span><span class="add">+esac
+</span><span class="add">+
+</span><span class="def"> # Add a worktree - creates branch from main if it doesn&apos;t exist
+</span><span class="def"> gw() {
+</span><span class="def">     local input=&quot;$1&quot;
+</span>@@ -8,6 +20,7 @@
+<span class="def"> 
+</span><span class="def">     local branch=&quot;${input##origin/}&quot;
+</span><span class="def">     local folder=&quot;${branch//\//-}&quot;
+</span><span class="add">+    echo -n &quot;$folder&quot; | $_copy
+</span><span class="def">     local target=&quot;../$folder&quot;
+</span><span class="def"> 
+</span><span class="def">     # Check if worktree already exists
+</span>@@ -35,8 +48,28 @@
+<span class="def">     git worktree add -b &quot;$branch&quot; &quot;$target&quot; main &amp;&amp; cd &quot;$target&quot;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+# cd to top-level folder of a worktree if we&apos;re inside a subfolder, otherwise cd to main
+</span><span class="add">+gw_top_level() {
+</span><span class="add">+    local root=&quot;${HOME}/git/$1&quot;
+</span><span class="add">+
+</span><span class="add">+    # Check if we&apos;re inside a subfolder of the repo
+</span><span class="add">+    if [[ &quot;$PWD&quot; == &quot;$root&quot;/* ]]; then
+</span><span class="add">+        # Extract path relative to root, then get first component
+</span><span class="add">+        local relative=&quot;${PWD#$root/}&quot;
+</span><span class="add">+        local subfolder=&quot;${relative%%/*}&quot;
+</span><span class="add">+        cd &quot;$root/$subfolder&quot;
+</span><span class="add">+    else
+</span><span class="add">+        cd &quot;$root/main&quot;
+</span><span class="add">+    fi
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> # Remove a worktree
+</span><span class="def"> gwr() {
+</span><span class="add">+    if [[ &quot;$(git rev-parse --is-inside-work-tree)&quot; != &quot;true&quot; ]]; then
+</span><span class="add">+        echo &quot;Not in a worktree&quot;
+</span><span class="add">+        return 1
+</span><span class="add">+    fi
+</span><span class="add">+    cd $(git rev-parse --show-toplevel)
+</span><span class="def">     local target=&quot;${1:-$(basename &quot;$PWD&quot;)}&quot;
+</span><span class="def"> 
+</span><span class="def">     if [[ &quot;$target&quot; == &quot;main&quot; ]]; then
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,7 +15,6 @@
+<span class="def"> alias _=&apos;sudo&apos;
+</span><span class="def"> alias p=&apos;ps aux  | grep -v grep | grep -i&apos;
+</span><span class="def"> alias import=&apos;echo you forgot to enter python&apos;
+</span><span class="sub">-alias rg=&apos;grep -r&apos;
+</span><span class="def"> alias pth=&apos;echo &quot;${PATH//:/\n}&quot;&apos;
+</span><span class="def"> vgr() { nvim `grep -lri &quot;$@&quot;`; }
+</span><span class="def"> alias va=&quot;source venv/bin/activate&quot;
+</span>@@ -25,6 +24,7 @@
+<span class="def"> alias fv=&quot;fzf --print0 | xargs -0 -o nvim&quot;
+</span><span class="def"> alias cat=bat
+</span><span class="def"> alias vi=vim
+</span><span class="add">+alias t=&quot;vim ~/tasks.rst&quot;
+</span><span class="def"> 
+</span><span class="def"> if [[ -n &quot;$WAYLAND_DISPLAY&quot; ]]
+</span><span class="def"> then
+</span>@@ -37,7 +37,7 @@
+<span class="def">     alias copy=pbcopy
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="sub">-alias grep=&apos;grep --exclude-dir=__pycache__ --exclude-dir=.terraform --exclude-dir=.git --exclude-dir=.venv --exclude-dir=.tox --exclude-dir=tags --exclude-dir=.eggs --exclude-dir=.mypy_cache&apos;
+</span><span class="add">+alias grep=&apos;grep --exclude-dir=__pycache__ --exclude-dir=.terraform --exclude-dir=.git --exclude-dir=.venv --exclude-dir=.tox --exclude=tags --exclude-dir=.eggs --exclude-dir=.mypy_cache&apos;
+</span><span class="def"> 
+</span><span class="def"> # systemd
+</span><span class="def"> alias sc=&apos;systemctl&apos;
+</span>@@ -170,8 +170,26 @@
+<span class="def">       | column -t -s $&apos;\t&apos;
+</span><span class="def"> }
+</span><span class="def"> pshpr() {
+</span><span class="sub">-    psh &amp;&amp; gh pr create --fill
+</span><span class="add">+    psh &amp;&amp; gh pr create --fill | tail -n 1 | xargs open
+</span><span class="def"> }
+</span><span class="add">+alias cmx=&apos;cm fix&apos;
+</span><span class="add">+alias cmxp=&apos;cm fix &amp;&amp; psh&apos;
+</span><span class="add">+
+</span><span class="add">+vin() { vim &quot;$@&quot; }
+</span><span class="add">+_vin_git_modified() {
+</span><span class="add">+  local repo_root files file rel
+</span><span class="add">+  repo_root=$(git rev-parse --show-toplevel 2&gt;/dev/null) || return
+</span><span class="add">+  files=(${(f)&quot;$(git status --porcelain --untracked-files=no 2&gt;/dev/null | awk &apos;/^ M/{print $2}&apos;)&quot;})
+</span><span class="add">+  for i in {1..$#files}; do
+</span><span class="add">+    file=&quot;$repo_root/${files[$i]}&quot;
+</span><span class="add">+    rel=${file:#$PWD/}
+</span><span class="add">+    files[$i]=&quot;${rel#$PWD/}&quot;
+</span><span class="add">+  done
+</span><span class="add">+  compadd -U -a files
+</span><span class="add">+}
+</span><span class="add">+compdef _vin_git_modified vin
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span></pre>
+</div></div>
+  </body>
+</html>

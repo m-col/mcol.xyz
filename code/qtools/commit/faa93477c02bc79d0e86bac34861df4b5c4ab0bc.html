@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/faa93477c02bc79d0e86bac34861df4b5c4ab0bc.html">faa93477c02bc79d0e86bac34861df4b5c4ab0bc</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/5d094c147d5ee0203b5c8a439f896956406d1647.html">5d094c147d5ee0203b5c8a439f896956406d1647</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-11 13:35:46 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-11 13:35:46 +0000
+
+add readme
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,53 @@
+<span class="add">+qtools
+</span><span class="add">+======
+</span><span class="add">+
+</span><span class="add">+This is a small collection of plugins I wrote for Qtile_.
+</span><span class="add">+
+</span><span class="add">+Aims:
+</span><span class="add">+    - Simplifying Qtile configuration.
+</span><span class="add">+    - Only loading those that are used.
+</span><span class="add">+    - Ability to easily create responsive key-bindings with notifications.
+</span><span class="add">+    - Avoiding extra dependencies.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+Notifiers
+</span><span class="add">+---------
+</span><span class="add">+
+</span><span class="add">+:code:`Notifier`-based plugins expose methods that trigger notifications, with
+</span><span class="add">+the purpose of being bound to keys.
+</span><span class="add">+
+</span><span class="add">+An example usage:
+</span><span class="add">+
+</span><span class="add">+.. code-block:: python
+</span><span class="add">+
+</span><span class="add">+    import qtools.mpc
+</span><span class="add">+    mpc = qtools.mpc.Client()
+</span><span class="add">+    keys.extend([EzKey(k, v) for k, v in {
+</span><span class="add">+        &apos;&lt;XF86AudioPlay&gt;&apos;:  mpc.lazy_toggle,
+</span><span class="add">+        &apos;&lt;XF86AudioNext&gt;&apos;:  mpc.lazy_next,
+</span><span class="add">+        &apos;&lt;XF86AudioPrev&gt;&apos;:  mpc.lazy_previous,
+</span><span class="add">+    }.items()])
+</span><span class="add">+
+</span><span class="add">+:code:`Notifier`&apos;s methods are exposed with the &apos;lazy\_&apos; prefix for binding to
+</span><span class="add">+keys.
+</span><span class="add">+
+</span><span class="add">+:code:`qtools.mpc.Client` is a subclass of :code:`Notifier`, which is found at
+</span><span class="add">+:code:`qtools.Notifier` in :code:`qtools/__init__.py`.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+Plugin list
+</span><span class="add">+-----------
+</span><span class="add">+
+</span><span class="add">+==============  ===============================================================
+</span><span class="add">+Module          Description
+</span><span class="add">+==============  ===============================================================
+</span><span class="add">+amixer          Notifier that controls an ALSA device&apos;s volume
+</span><span class="add">+
+</span><span class="add">+backlight       Notifier that controls backlight level
+</span><span class="add">+
+</span><span class="add">+mpc             Notifier that controls MPD
+</span><span class="add">+
+</span><span class="add">+xresources      Load X resources into Qtile config
+</span><span class="add">+==============  ===============================================================
+</span><span class="add">+
+</span><span class="add">+.. _Qtile: https://github.com/qtile/qtile
+</span></pre>
+</div></div>
+  </body>
+</html>

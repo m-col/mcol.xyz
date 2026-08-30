@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - reformat conf</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/282ee5c4a8012256d4c10a2d2b6a613f265da4c5.html">282ee5c4a8012256d4c10a2d2b6a613f265da4c5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/5ff8017c29ca1a84fffdecc810da3a3be83bca89.html">5ff8017c29ca1a84fffdecc810da3a3be83bca89</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-03 19:03:48 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-03 19:03:48 +0100
+
+reformat conf
+</pre><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,61 +1,63 @@
+<span class="def"> #!/usr/bin/env python
+</span><span class="sub">-# -*- coding: utf-8 -*- #
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="sub">-from __future__ import unicode_literals
+</span><span class="def"> import os
+</span><span class="def"> import sys
+</span><span class="add">+from html import escape
+</span><span class="add">+
+</span><span class="def"> sys.path.append(os.curdir)
+</span><span class="def"> from blogroll import BLOGROLL
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="sub">-SITEURL = &apos;//&apos;
+</span><span class="sub">-AUTHOR = &apos;mcol&apos;
+</span><span class="sub">-SITENAME = &apos;mcol.xyz&apos;
+</span><span class="sub">-PATH = &apos;content&apos;
+</span><span class="sub">-TIMEZONE = &apos;UTC&apos;
+</span><span class="sub">-THEME = &apos;/home/mcol/git/mini-theme&apos;
+</span><span class="sub">-PAGE_PATHS = [&apos;pages&apos;,]
+</span><span class="sub">-ARTICLE_PATHS = [&apos;posts&apos;,]
+</span><span class="sub">-DEFAULT_DATE_FORMAT = &apos;%Y-%m-%d&apos;
+</span><span class="sub">-STATIC_PATHS = [&apos;static&apos;, &apos;favicon.png&apos;, &apos;icons&apos;, &apos;avatar.png&apos;, &apos;screenshots&apos;]
+</span><span class="add">+SITEURL = &quot;//&quot;
+</span><span class="add">+AUTHOR = &quot;mcol&quot;
+</span><span class="add">+SITENAME = &quot;mcol.xyz&quot;
+</span><span class="add">+PATH = &quot;content&quot;
+</span><span class="add">+TIMEZONE = &quot;UTC&quot;
+</span><span class="add">+THEME = &quot;/home/mcol/git/mini-theme&quot;
+</span><span class="add">+PAGE_PATHS = [
+</span><span class="add">+    &quot;pages&quot;,
+</span><span class="add">+]
+</span><span class="add">+ARTICLE_PATHS = [
+</span><span class="add">+    &quot;posts&quot;,
+</span><span class="add">+]
+</span><span class="add">+DEFAULT_DATE_FORMAT = &quot;%Y-%m-%d&quot;
+</span><span class="add">+STATIC_PATHS = [&quot;static&quot;, &quot;favicon.png&quot;, &quot;icons&quot;, &quot;avatar.png&quot;, &quot;screenshots&quot;]
+</span><span class="def"> STATIC_CREATE_LINKS = True
+</span><span class="def"> PLUGIN_PATHS = [&quot;/home/mcol/git&quot;, &quot;/home/mcol/git/pelican-plugins&quot;]
+</span><span class="def"> PLUGINS = []
+</span><span class="def"> RELATIVE_URLS = True
+</span><span class="def"> 
+</span><span class="sub">-ARCHIVES_TITLE = &apos;posts&apos;
+</span><span class="sub">-ARCHIVES_SAVE_AS = &apos;posts.html&apos;
+</span><span class="sub">-AUTHORS_SAVE_AS = &apos;&apos;
+</span><span class="sub">-TAGS_SAVE_AS = &apos;&apos;
+</span><span class="sub">-ARTICLE_URL = &apos;{date:%Y}/{date:%m}/{slug}.html&apos;
+</span><span class="sub">-ARTICLE_SAVE_AS = &apos;{date:%Y}/{date:%m}/{slug}.html&apos;
+</span><span class="add">+ARCHIVES_TITLE = &quot;posts&quot;
+</span><span class="add">+ARCHIVES_SAVE_AS = &quot;posts.html&quot;
+</span><span class="add">+AUTHORS_SAVE_AS = &quot;&quot;
+</span><span class="add">+TAGS_SAVE_AS = &quot;&quot;
+</span><span class="add">+ARTICLE_URL = &quot;{date:%Y}/{date:%m}/{slug}.html&quot;
+</span><span class="add">+ARTICLE_SAVE_AS = &quot;{date:%Y}/{date:%m}/{slug}.html&quot;
+</span><span class="def"> USE_FOLDER_AS_CATEGORY = True
+</span><span class="sub">-CATEGORIES_SAVE_AS = &apos;categories.html&apos;
+</span><span class="sub">-AUTHOR_SAVE_AS = &apos;&apos;
+</span><span class="add">+CATEGORIES_SAVE_AS = &quot;categories.html&quot;
+</span><span class="add">+AUTHOR_SAVE_AS = &quot;&quot;
+</span><span class="def"> DISPLAY_CATEGORIES_ON_MENU = False
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # Theme
+</span><span class="sub">-ONION = &apos;http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion&apos;
+</span><span class="add">+ONION = &quot;http://mcolxyzogp3cy4czf52oa2svu2vjge3otm3shxmtvwshyum47sis3iid.onion&quot;
+</span><span class="def"> LINKS = (
+</span><span class="sub">-    (&apos;mastodon&apos;, &apos;https://fosstodon.org/@mcol&apos;, &apos;hit me up to chat!&apos;),
+</span><span class="sub">-    (&apos;email&apos;, &apos;mailto:mcol@posteo.net&apos;,         &apos;or here, if you want&apos;),
+</span><span class="sub">-    (&apos;github&apos;, &apos;https://github.com/m-col&apos;,      &apos;this i use when i must&apos;),
+</span><span class="sub">-    (&apos;blog onion&apos;, ONION,                       &apos;feeling edgy and/or paranoid?&apos;),
+</span><span class="sub">-    (&apos;blog RSS feed&apos;, &apos;/rss.xml&apos;,               &apos;follow me if you\&apos;d like&apos;),
+</span><span class="add">+    (&quot;mastodon&quot;, &quot;https://fosstodon.org/@mcol&quot;, &quot;hit me up to chat!&quot;),
+</span><span class="add">+    (&quot;email&quot;, &quot;mailto:mcol@posteo.net&quot;, &quot;or here, if you want&quot;),
+</span><span class="add">+    (&quot;github&quot;, &quot;https://github.com/m-col&quot;, &quot;this i use when i must&quot;),
+</span><span class="add">+    (&quot;blog onion&quot;, ONION, &quot;feeling edgy and/or paranoid?&quot;),
+</span><span class="add">+    (&quot;blog RSS feed&quot;, &quot;/rss.xml&quot;, &quot;follow me if you&apos;d like&quot;),
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> ABOUT = &quot;&quot;&quot;
+</span><span class="def"> &lt;p&gt;Welcome to my blog!&lt;/p&gt;
+</span><span class="def"> &lt;p&gt;I&apos;m Matt and I write about open source software that I stumble across surfing the web.&lt;/p&gt;
+</span><span class="sub">-&lt;p&gt;Some of my main interests are self-hosting, privacy tools, and anything
+</span><span class="add">+&lt;p&gt;Some of my main interests are self-hosting, functional programming, and anything
+</span><span class="def"> to do with &lt;a href=https://wiki.installgentoo.com/wiki/GNU/Linux_ricing&gt;ricing&lt;/a&gt; (see
+</span><span class="def"> mine &lt;a href=&quot;/screenshots.html&quot;&gt;here&lt;/a&gt;).&lt;/p&gt;
+</span><span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> AVATAR = &quot;/avatar.png&quot;
+</span><span class="sub">-HOME1 = &quot;A hobbyist&apos;s notes on FOSS, unix toys and privacy tools&quot;
+</span><span class="add">+HOME1 = &quot;One more person&apos;s notes on FOSS, code and unix toys.&quot;
+</span><span class="def"> HOME2 = &quot;Welcome&quot;
+</span><span class="def"> EXTRAHEAD = &quot;&lt;link rel=stylesheet href=/theme/css/fa.css /&gt;&quot;
+</span><span class="def"> EXTRATAIL = &quot;&quot;
+</span>@@ -63,14 +65,11 @@
+<span class="def"> out on &lt;a href=&quot;https://fosstodon.org/@mcol&quot;&gt;mastodon&lt;/a&gt; or by &lt;a
+</span><span class="def"> href=&quot;mailto:mcol@posteo.net&quot;&gt;email&lt;/a&gt; ʕ•ᴥ•ʔ&quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="sub">-import html
+</span><span class="sub">-SCREENSHOTS = os.listdir(&apos;content/screenshots&apos;)
+</span><span class="sub">-SCREENSHOTS = [html.escape(i) for i in SCREENSHOTS]
+</span><span class="sub">-SCREENSHOTS.sort(reverse=True)
+</span><span class="add">+SCREENSHOTS = reversed([escape(i) for i in os.listdir(&quot;content/screenshots&quot;)])
+</span><span class="def"> 
+</span><span class="def"> # minify-fontawesome
+</span><span class="def"> PLUGINS.append(&quot;pelican-minify-fontawesome&quot;)
+</span><span class="sub">-MINIFY_FONTAWESOME = &apos;/home/mcol/git/mcol.xyz/fontawesome-free-5.11.2-web&apos;
+</span><span class="add">+MINIFY_FONTAWESOME = &quot;/home/mcol/git/mcol.xyz/fontawesome-free-5.11.2-web&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> # development settings
+</span></pre>
+</div></div>
+  </body>
+</html>

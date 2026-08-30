@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - protocols/wlr-layer-shell-unstable-v1.xml</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- protocols/wlr-layer-shell-unstable-v1.xml</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+<a href="#l2" class="line" id="l2">      2</a> &lt;protocol name=&quot;wlr_layer_shell_unstable_v1&quot;&gt;
+<a href="#l3" class="line" id="l3">      3</a>   &lt;copyright&gt;
+<a href="#l4" class="line" id="l4">      4</a>     Copyright © 2017 Drew DeVault
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a>     Permission to use, copy, modify, distribute, and sell this
+<a href="#l7" class="line" id="l7">      7</a>     software and its documentation for any purpose is hereby granted
+<a href="#l8" class="line" id="l8">      8</a>     without fee, provided that the above copyright notice appear in
+<a href="#l9" class="line" id="l9">      9</a>     all copies and that both that copyright notice and this permission
+<a href="#l10" class="line" id="l10">     10</a>     notice appear in supporting documentation, and that the name of
+<a href="#l11" class="line" id="l11">     11</a>     the copyright holders not be used in advertising or publicity
+<a href="#l12" class="line" id="l12">     12</a>     pertaining to distribution of the software without specific,
+<a href="#l13" class="line" id="l13">     13</a>     written prior permission.  The copyright holders make no
+<a href="#l14" class="line" id="l14">     14</a>     representations about the suitability of this software for any
+<a href="#l15" class="line" id="l15">     15</a>     purpose.  It is provided &quot;as is&quot; without express or implied
+<a href="#l16" class="line" id="l16">     16</a>     warranty.
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a>     THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS
+<a href="#l19" class="line" id="l19">     19</a>     SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+<a href="#l20" class="line" id="l20">     20</a>     FITNESS, IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY
+<a href="#l21" class="line" id="l21">     21</a>     SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+<a href="#l22" class="line" id="l22">     22</a>     WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+<a href="#l23" class="line" id="l23">     23</a>     AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+<a href="#l24" class="line" id="l24">     24</a>     ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+<a href="#l25" class="line" id="l25">     25</a>     THIS SOFTWARE.
+<a href="#l26" class="line" id="l26">     26</a>   &lt;/copyright&gt;
+<a href="#l27" class="line" id="l27">     27</a> 
+<a href="#l28" class="line" id="l28">     28</a>   &lt;interface name=&quot;zwlr_layer_shell_v1&quot; version=&quot;4&quot;&gt;
+<a href="#l29" class="line" id="l29">     29</a>     &lt;description summary=&quot;create surfaces that are layers of the desktop&quot;&gt;
+<a href="#l30" class="line" id="l30">     30</a>       Clients can use this interface to assign the surface_layer role to
+<a href="#l31" class="line" id="l31">     31</a>       wl_surfaces. Such surfaces are assigned to a &quot;layer&quot; of the output and
+<a href="#l32" class="line" id="l32">     32</a>       rendered with a defined z-depth respective to each other. They may also be
+<a href="#l33" class="line" id="l33">     33</a>       anchored to the edges and corners of a screen and specify input handling
+<a href="#l34" class="line" id="l34">     34</a>       semantics. This interface should be suitable for the implementation of
+<a href="#l35" class="line" id="l35">     35</a>       many desktop shell components, and a broad number of other applications
+<a href="#l36" class="line" id="l36">     36</a>       that interact with the desktop.
+<a href="#l37" class="line" id="l37">     37</a>     &lt;/description&gt;
+<a href="#l38" class="line" id="l38">     38</a> 
+<a href="#l39" class="line" id="l39">     39</a>     &lt;request name=&quot;get_layer_surface&quot;&gt;
+<a href="#l40" class="line" id="l40">     40</a>       &lt;description summary=&quot;create a layer_surface from a surface&quot;&gt;
+<a href="#l41" class="line" id="l41">     41</a>         Create a layer surface for an existing surface. This assigns the role of
+<a href="#l42" class="line" id="l42">     42</a>         layer_surface, or raises a protocol error if another role is already
+<a href="#l43" class="line" id="l43">     43</a>         assigned.
+<a href="#l44" class="line" id="l44">     44</a> 
+<a href="#l45" class="line" id="l45">     45</a>         Creating a layer surface from a wl_surface which has a buffer attached
+<a href="#l46" class="line" id="l46">     46</a>         or committed is a client error, and any attempts by a client to attach
+<a href="#l47" class="line" id="l47">     47</a>         or manipulate a buffer prior to the first layer_surface.configure call
+<a href="#l48" class="line" id="l48">     48</a>         must also be treated as errors.
+<a href="#l49" class="line" id="l49">     49</a> 
+<a href="#l50" class="line" id="l50">     50</a>         After creating a layer_surface object and setting it up, the client
+<a href="#l51" class="line" id="l51">     51</a>         must perform an initial commit without any buffer attached.
+<a href="#l52" class="line" id="l52">     52</a>         The compositor will reply with a layer_surface.configure event.
+<a href="#l53" class="line" id="l53">     53</a>         The client must acknowledge it and is then allowed to attach a buffer
+<a href="#l54" class="line" id="l54">     54</a>         to map the surface.
+<a href="#l55" class="line" id="l55">     55</a> 
+<a href="#l56" class="line" id="l56">     56</a>         You may pass NULL for output to allow the compositor to decide which
+<a href="#l57" class="line" id="l57">     57</a>         output to use. Generally this will be the one that the user most
+<a href="#l58" class="line" id="l58">     58</a>         recently interacted with.
+<a href="#l59" class="line" id="l59">     59</a> 
+<a href="#l60" class="line" id="l60">     60</a>         Clients can specify a namespace that defines the purpose of the layer
+<a href="#l61" class="line" id="l61">     61</a>         surface.
+<a href="#l62" class="line" id="l62">     62</a>       &lt;/description&gt;
+<a href="#l63" class="line" id="l63">     63</a>       &lt;arg name=&quot;id&quot; type=&quot;new_id&quot; interface=&quot;zwlr_layer_surface_v1&quot;/&gt;
+<a href="#l64" class="line" id="l64">     64</a>       &lt;arg name=&quot;surface&quot; type=&quot;object&quot; interface=&quot;wl_surface&quot;/&gt;
+<a href="#l65" class="line" id="l65">     65</a>       &lt;arg name=&quot;output&quot; type=&quot;object&quot; interface=&quot;wl_output&quot; allow-null=&quot;true&quot;/&gt;
+<a href="#l66" class="line" id="l66">     66</a>       &lt;arg name=&quot;layer&quot; type=&quot;uint&quot; enum=&quot;layer&quot; summary=&quot;layer to add this surface to&quot;/&gt;
+<a href="#l67" class="line" id="l67">     67</a>       &lt;arg name=&quot;namespace&quot; type=&quot;string&quot; summary=&quot;namespace for the layer surface&quot;/&gt;
+<a href="#l68" class="line" id="l68">     68</a>     &lt;/request&gt;
+<a href="#l69" class="line" id="l69">     69</a> 
+<a href="#l70" class="line" id="l70">     70</a>     &lt;enum name=&quot;error&quot;&gt;
+<a href="#l71" class="line" id="l71">     71</a>       &lt;entry name=&quot;role&quot; value=&quot;0&quot; summary=&quot;wl_surface has another role&quot;/&gt;
+<a href="#l72" class="line" id="l72">     72</a>       &lt;entry name=&quot;invalid_layer&quot; value=&quot;1&quot; summary=&quot;layer value is invalid&quot;/&gt;
+<a href="#l73" class="line" id="l73">     73</a>       &lt;entry name=&quot;already_constructed&quot; value=&quot;2&quot; summary=&quot;wl_surface has a buffer attached or committed&quot;/&gt;
+<a href="#l74" class="line" id="l74">     74</a>     &lt;/enum&gt;
+<a href="#l75" class="line" id="l75">     75</a> 
+<a href="#l76" class="line" id="l76">     76</a>     &lt;enum name=&quot;layer&quot;&gt;
+<a href="#l77" class="line" id="l77">     77</a>       &lt;description summary=&quot;available layers for surfaces&quot;&gt;
+<a href="#l78" class="line" id="l78">     78</a>         These values indicate which layers a surface can be rendered in. They
+<a href="#l79" class="line" id="l79">     79</a>         are ordered by z depth, bottom-most first. Traditional shell surfaces
+<a href="#l80" class="line" id="l80">     80</a>         will typically be rendered between the bottom and top layers.
+<a href="#l81" class="line" id="l81">     81</a>         Fullscreen shell surfaces are typically rendered at the top layer.
+<a href="#l82" class="line" id="l82">     82</a>         Multiple surfaces can share a single layer, and ordering within a
+<a href="#l83" class="line" id="l83">     83</a>         single layer is undefined.
+<a href="#l84" class="line" id="l84">     84</a>       &lt;/description&gt;
+<a href="#l85" class="line" id="l85">     85</a> 
+<a href="#l86" class="line" id="l86">     86</a>       &lt;entry name=&quot;background&quot; value=&quot;0&quot;/&gt;
+<a href="#l87" class="line" id="l87">     87</a>       &lt;entry name=&quot;bottom&quot; value=&quot;1&quot;/&gt;
+<a href="#l88" class="line" id="l88">     88</a>       &lt;entry name=&quot;top&quot; value=&quot;2&quot;/&gt;
+<a href="#l89" class="line" id="l89">     89</a>       &lt;entry name=&quot;overlay&quot; value=&quot;3&quot;/&gt;
+<a href="#l90" class="line" id="l90">     90</a>     &lt;/enum&gt;
+<a href="#l91" class="line" id="l91">     91</a> 
+<a href="#l92" class="line" id="l92">     92</a>     &lt;!-- Version 3 additions --&gt;
+<a href="#l93" class="line" id="l93">     93</a> 
+<a href="#l94" class="line" id="l94">     94</a>     &lt;request name=&quot;destroy&quot; type=&quot;destructor&quot; since=&quot;3&quot;&gt;
+<a href="#l95" class="line" id="l95">     95</a>       &lt;description summary=&quot;destroy the layer_shell object&quot;&gt;
+<a href="#l96" class="line" id="l96">     96</a>         This request indicates that the client will not use the layer_shell
+<a href="#l97" class="line" id="l97">     97</a>         object any more. Objects that have been created through this instance
+<a href="#l98" class="line" id="l98">     98</a>         are not affected.
+<a href="#l99" class="line" id="l99">     99</a>       &lt;/description&gt;
+<a href="#l100" class="line" id="l100">    100</a>     &lt;/request&gt;
+<a href="#l101" class="line" id="l101">    101</a>   &lt;/interface&gt;
+<a href="#l102" class="line" id="l102">    102</a> 
+<a href="#l103" class="line" id="l103">    103</a>   &lt;interface name=&quot;zwlr_layer_surface_v1&quot; version=&quot;4&quot;&gt;
+<a href="#l104" class="line" id="l104">    104</a>     &lt;description summary=&quot;layer metadata interface&quot;&gt;
+<a href="#l105" class="line" id="l105">    105</a>       An interface that may be implemented by a wl_surface, for surfaces that
+<a href="#l106" class="line" id="l106">    106</a>       are designed to be rendered as a layer of a stacked desktop-like
+<a href="#l107" class="line" id="l107">    107</a>       environment.
+<a href="#l108" class="line" id="l108">    108</a> 
+<a href="#l109" class="line" id="l109">    109</a>       Layer surface state (layer, size, anchor, exclusive zone,
+<a href="#l110" class="line" id="l110">    110</a>       margin, interactivity) is double-buffered, and will be applied at the
+<a href="#l111" class="line" id="l111">    111</a>       time wl_surface.commit of the corresponding wl_surface is called.
+<a href="#l112" class="line" id="l112">    112</a> 
+<a href="#l113" class="line" id="l113">    113</a>       Attaching a null buffer to a layer surface unmaps it.
+<a href="#l114" class="line" id="l114">    114</a> 
+<a href="#l115" class="line" id="l115">    115</a>       Unmapping a layer_surface means that the surface cannot be shown by the
+<a href="#l116" class="line" id="l116">    116</a>       compositor until it is explicitly mapped again. The layer_surface
+<a href="#l117" class="line" id="l117">    117</a>       returns to the state it had right after layer_shell.get_layer_surface.
+<a href="#l118" class="line" id="l118">    118</a>       The client can re-map the surface by performing a commit without any
+<a href="#l119" class="line" id="l119">    119</a>       buffer attached, waiting for a configure event and handling it as usual.
+<a href="#l120" class="line" id="l120">    120</a>     &lt;/description&gt;
+<a href="#l121" class="line" id="l121">    121</a> 
+<a href="#l122" class="line" id="l122">    122</a>     &lt;request name=&quot;set_size&quot;&gt;
+<a href="#l123" class="line" id="l123">    123</a>       &lt;description summary=&quot;sets the size of the surface&quot;&gt;
+<a href="#l124" class="line" id="l124">    124</a>         Sets the size of the surface in surface-local coordinates. The
+<a href="#l125" class="line" id="l125">    125</a>         compositor will display the surface centered with respect to its
+<a href="#l126" class="line" id="l126">    126</a>         anchors.
+<a href="#l127" class="line" id="l127">    127</a> 
+<a href="#l128" class="line" id="l128">    128</a>         If you pass 0 for either value, the compositor will assign it and
+<a href="#l129" class="line" id="l129">    129</a>         inform you of the assignment in the configure event. You must set your
+<a href="#l130" class="line" id="l130">    130</a>         anchor to opposite edges in the dimensions you omit; not doing so is a
+<a href="#l131" class="line" id="l131">    131</a>         protocol error. Both values are 0 by default.
+<a href="#l132" class="line" id="l132">    132</a> 
+<a href="#l133" class="line" id="l133">    133</a>         Size is double-buffered, see wl_surface.commit.
+<a href="#l134" class="line" id="l134">    134</a>       &lt;/description&gt;
+<a href="#l135" class="line" id="l135">    135</a>       &lt;arg name=&quot;width&quot; type=&quot;uint&quot;/&gt;
+<a href="#l136" class="line" id="l136">    136</a>       &lt;arg name=&quot;height&quot; type=&quot;uint&quot;/&gt;
+<a href="#l137" class="line" id="l137">    137</a>     &lt;/request&gt;
+<a href="#l138" class="line" id="l138">    138</a> 
+<a href="#l139" class="line" id="l139">    139</a>     &lt;request name=&quot;set_anchor&quot;&gt;
+<a href="#l140" class="line" id="l140">    140</a>       &lt;description summary=&quot;configures the anchor point of the surface&quot;&gt;
+<a href="#l141" class="line" id="l141">    141</a>         Requests that the compositor anchor the surface to the specified edges
+<a href="#l142" class="line" id="l142">    142</a>         and corners. If two orthogonal edges are specified (e.g. &apos;top&apos; and
+<a href="#l143" class="line" id="l143">    143</a>         &apos;left&apos;), then the anchor point will be the intersection of the edges
+<a href="#l144" class="line" id="l144">    144</a>         (e.g. the top left corner of the output); otherwise the anchor point
+<a href="#l145" class="line" id="l145">    145</a>         will be centered on that edge, or in the center if none is specified.
+<a href="#l146" class="line" id="l146">    146</a> 
+<a href="#l147" class="line" id="l147">    147</a>         Anchor is double-buffered, see wl_surface.commit.
+<a href="#l148" class="line" id="l148">    148</a>       &lt;/description&gt;
+<a href="#l149" class="line" id="l149">    149</a>       &lt;arg name=&quot;anchor&quot; type=&quot;uint&quot; enum=&quot;anchor&quot;/&gt;
+<a href="#l150" class="line" id="l150">    150</a>     &lt;/request&gt;
+<a href="#l151" class="line" id="l151">    151</a> 
+<a href="#l152" class="line" id="l152">    152</a>     &lt;request name=&quot;set_exclusive_zone&quot;&gt;
+<a href="#l153" class="line" id="l153">    153</a>       &lt;description summary=&quot;configures the exclusive geometry of this surface&quot;&gt;
+<a href="#l154" class="line" id="l154">    154</a>         Requests that the compositor avoids occluding an area with other
+<a href="#l155" class="line" id="l155">    155</a>         surfaces. The compositor&apos;s use of this information is
+<a href="#l156" class="line" id="l156">    156</a>         implementation-dependent - do not assume that this region will not
+<a href="#l157" class="line" id="l157">    157</a>         actually be occluded.
+<a href="#l158" class="line" id="l158">    158</a> 
+<a href="#l159" class="line" id="l159">    159</a>         A positive value is only meaningful if the surface is anchored to one
+<a href="#l160" class="line" id="l160">    160</a>         edge or an edge and both perpendicular edges. If the surface is not
+<a href="#l161" class="line" id="l161">    161</a>         anchored, anchored to only two perpendicular edges (a corner), anchored
+<a href="#l162" class="line" id="l162">    162</a>         to only two parallel edges or anchored to all edges, a positive value
+<a href="#l163" class="line" id="l163">    163</a>         will be treated the same as zero.
+<a href="#l164" class="line" id="l164">    164</a> 
+<a href="#l165" class="line" id="l165">    165</a>         A positive zone is the distance from the edge in surface-local
+<a href="#l166" class="line" id="l166">    166</a>         coordinates to consider exclusive.
+<a href="#l167" class="line" id="l167">    167</a> 
+<a href="#l168" class="line" id="l168">    168</a>         Surfaces that do not wish to have an exclusive zone may instead specify
+<a href="#l169" class="line" id="l169">    169</a>         how they should interact with surfaces that do. If set to zero, the
+<a href="#l170" class="line" id="l170">    170</a>         surface indicates that it would like to be moved to avoid occluding
+<a href="#l171" class="line" id="l171">    171</a>         surfaces with a positive exclusive zone. If set to -1, the surface
+<a href="#l172" class="line" id="l172">    172</a>         indicates that it would not like to be moved to accommodate for other
+<a href="#l173" class="line" id="l173">    173</a>         surfaces, and the compositor should extend it all the way to the edges
+<a href="#l174" class="line" id="l174">    174</a>         it is anchored to.
+<a href="#l175" class="line" id="l175">    175</a> 
+<a href="#l176" class="line" id="l176">    176</a>         For example, a panel might set its exclusive zone to 10, so that
+<a href="#l177" class="line" id="l177">    177</a>         maximized shell surfaces are not shown on top of it. A notification
+<a href="#l178" class="line" id="l178">    178</a>         might set its exclusive zone to 0, so that it is moved to avoid
+<a href="#l179" class="line" id="l179">    179</a>         occluding the panel, but shell surfaces are shown underneath it. A
+<a href="#l180" class="line" id="l180">    180</a>         wallpaper or lock screen might set their exclusive zone to -1, so that
+<a href="#l181" class="line" id="l181">    181</a>         they stretch below or over the panel.
+<a href="#l182" class="line" id="l182">    182</a> 
+<a href="#l183" class="line" id="l183">    183</a>         The default value is 0.
+<a href="#l184" class="line" id="l184">    184</a> 
+<a href="#l185" class="line" id="l185">    185</a>         Exclusive zone is double-buffered, see wl_surface.commit.
+<a href="#l186" class="line" id="l186">    186</a>       &lt;/description&gt;
+<a href="#l187" class="line" id="l187">    187</a>       &lt;arg name=&quot;zone&quot; type=&quot;int&quot;/&gt;
+<a href="#l188" class="line" id="l188">    188</a>     &lt;/request&gt;
+<a href="#l189" class="line" id="l189">    189</a> 
+<a href="#l190" class="line" id="l190">    190</a>     &lt;request name=&quot;set_margin&quot;&gt;
+<a href="#l191" class="line" id="l191">    191</a>       &lt;description summary=&quot;sets a margin from the anchor point&quot;&gt;
+<a href="#l192" class="line" id="l192">    192</a>         Requests that the surface be placed some distance away from the anchor
+<a href="#l193" class="line" id="l193">    193</a>         point on the output, in surface-local coordinates. Setting this value
+<a href="#l194" class="line" id="l194">    194</a>         for edges you are not anchored to has no effect.
+<a href="#l195" class="line" id="l195">    195</a> 
+<a href="#l196" class="line" id="l196">    196</a>         The exclusive zone includes the margin.
+<a href="#l197" class="line" id="l197">    197</a> 
+<a href="#l198" class="line" id="l198">    198</a>         Margin is double-buffered, see wl_surface.commit.
+<a href="#l199" class="line" id="l199">    199</a>       &lt;/description&gt;
+<a href="#l200" class="line" id="l200">    200</a>       &lt;arg name=&quot;top&quot; type=&quot;int&quot;/&gt;
+<a href="#l201" class="line" id="l201">    201</a>       &lt;arg name=&quot;right&quot; type=&quot;int&quot;/&gt;
+<a href="#l202" class="line" id="l202">    202</a>       &lt;arg name=&quot;bottom&quot; type=&quot;int&quot;/&gt;
+<a href="#l203" class="line" id="l203">    203</a>       &lt;arg name=&quot;left&quot; type=&quot;int&quot;/&gt;
+<a href="#l204" class="line" id="l204">    204</a>     &lt;/request&gt;
+<a href="#l205" class="line" id="l205">    205</a> 
+<a href="#l206" class="line" id="l206">    206</a>     &lt;enum name=&quot;keyboard_interactivity&quot;&gt;
+<a href="#l207" class="line" id="l207">    207</a>       &lt;description summary=&quot;types of keyboard interaction possible for a layer shell surface&quot;&gt;
+<a href="#l208" class="line" id="l208">    208</a>         Types of keyboard interaction possible for layer shell surfaces. The
+<a href="#l209" class="line" id="l209">    209</a>         rationale for this is twofold: (1) some applications are not interested
+<a href="#l210" class="line" id="l210">    210</a>         in keyboard events and not allowing them to be focused can improve the
+<a href="#l211" class="line" id="l211">    211</a>         desktop experience; (2) some applications will want to take exclusive
+<a href="#l212" class="line" id="l212">    212</a>         keyboard focus.
+<a href="#l213" class="line" id="l213">    213</a>       &lt;/description&gt;
+<a href="#l214" class="line" id="l214">    214</a> 
+<a href="#l215" class="line" id="l215">    215</a>       &lt;entry name=&quot;none&quot; value=&quot;0&quot;&gt;
+<a href="#l216" class="line" id="l216">    216</a>         &lt;description summary=&quot;no keyboard focus is possible&quot;&gt;
+<a href="#l217" class="line" id="l217">    217</a>           This value indicates that this surface is not interested in keyboard
+<a href="#l218" class="line" id="l218">    218</a>           events and the compositor should never assign it the keyboard focus.
+<a href="#l219" class="line" id="l219">    219</a> 
+<a href="#l220" class="line" id="l220">    220</a>           This is the default value, set for newly created layer shell surfaces.
+<a href="#l221" class="line" id="l221">    221</a> 
+<a href="#l222" class="line" id="l222">    222</a>           This is useful for e.g. desktop widgets that display information or
+<a href="#l223" class="line" id="l223">    223</a>           only have interaction with non-keyboard input devices.
+<a href="#l224" class="line" id="l224">    224</a>         &lt;/description&gt;
+<a href="#l225" class="line" id="l225">    225</a>       &lt;/entry&gt;
+<a href="#l226" class="line" id="l226">    226</a>       &lt;entry name=&quot;exclusive&quot; value=&quot;1&quot;&gt;
+<a href="#l227" class="line" id="l227">    227</a>         &lt;description summary=&quot;request exclusive keyboard focus&quot;&gt;
+<a href="#l228" class="line" id="l228">    228</a>           Request exclusive keyboard focus if this surface is above the shell surface layer.
+<a href="#l229" class="line" id="l229">    229</a> 
+<a href="#l230" class="line" id="l230">    230</a>           For the top and overlay layers, the seat will always give
+<a href="#l231" class="line" id="l231">    231</a>           exclusive keyboard focus to the top-most layer which has keyboard
+<a href="#l232" class="line" id="l232">    232</a>           interactivity set to exclusive. If this layer contains multiple
+<a href="#l233" class="line" id="l233">    233</a>           surfaces with keyboard interactivity set to exclusive, the compositor
+<a href="#l234" class="line" id="l234">    234</a>           determines the one receiving keyboard events in an implementation-
+<a href="#l235" class="line" id="l235">    235</a>           defined manner. In this case, no guarantee is made when this surface
+<a href="#l236" class="line" id="l236">    236</a>           will receive keyboard focus (if ever).
+<a href="#l237" class="line" id="l237">    237</a> 
+<a href="#l238" class="line" id="l238">    238</a>           For the bottom and background layers, the compositor is allowed to use
+<a href="#l239" class="line" id="l239">    239</a>           normal focus semantics.
+<a href="#l240" class="line" id="l240">    240</a> 
+<a href="#l241" class="line" id="l241">    241</a>           This setting is mainly intended for applications that need to ensure
+<a href="#l242" class="line" id="l242">    242</a>           they receive all keyboard events, such as a lock screen or a password
+<a href="#l243" class="line" id="l243">    243</a>           prompt.
+<a href="#l244" class="line" id="l244">    244</a>         &lt;/description&gt;
+<a href="#l245" class="line" id="l245">    245</a>       &lt;/entry&gt;
+<a href="#l246" class="line" id="l246">    246</a>       &lt;entry name=&quot;on_demand&quot; value=&quot;2&quot; since=&quot;4&quot;&gt;
+<a href="#l247" class="line" id="l247">    247</a>         &lt;description summary=&quot;request regular keyboard focus semantics&quot;&gt;
+<a href="#l248" class="line" id="l248">    248</a>           This requests the compositor to allow this surface to be focused and
+<a href="#l249" class="line" id="l249">    249</a>           unfocused by the user in an implementation-defined manner. The user
+<a href="#l250" class="line" id="l250">    250</a>           should be able to unfocus this surface even regardless of the layer
+<a href="#l251" class="line" id="l251">    251</a>           it is on.
+<a href="#l252" class="line" id="l252">    252</a> 
+<a href="#l253" class="line" id="l253">    253</a>           Typically, the compositor will want to use its normal mechanism to
+<a href="#l254" class="line" id="l254">    254</a>           manage keyboard focus between layer shell surfaces with this setting
+<a href="#l255" class="line" id="l255">    255</a>           and regular toplevels on the desktop layer (e.g. click to focus).
+<a href="#l256" class="line" id="l256">    256</a>           Nevertheless, it is possible for a compositor to require a special
+<a href="#l257" class="line" id="l257">    257</a>           interaction to focus or unfocus layer shell surfaces (e.g. requiring
+<a href="#l258" class="line" id="l258">    258</a>           a click even if focus follows the mouse normally, or providing a
+<a href="#l259" class="line" id="l259">    259</a>           keybinding to switch focus between layers).
+<a href="#l260" class="line" id="l260">    260</a> 
+<a href="#l261" class="line" id="l261">    261</a>           This setting is mainly intended for desktop shell components (e.g.
+<a href="#l262" class="line" id="l262">    262</a>           panels) that allow keyboard interaction. Using this option can allow
+<a href="#l263" class="line" id="l263">    263</a>           implementing a desktop shell that can be fully usable without the
+<a href="#l264" class="line" id="l264">    264</a>           mouse.
+<a href="#l265" class="line" id="l265">    265</a>         &lt;/description&gt;
+<a href="#l266" class="line" id="l266">    266</a>       &lt;/entry&gt;
+<a href="#l267" class="line" id="l267">    267</a>     &lt;/enum&gt;
+<a href="#l268" class="line" id="l268">    268</a> 
+<a href="#l269" class="line" id="l269">    269</a>     &lt;request name=&quot;set_keyboard_interactivity&quot;&gt;
+<a href="#l270" class="line" id="l270">    270</a>       &lt;description summary=&quot;requests keyboard events&quot;&gt;
+<a href="#l271" class="line" id="l271">    271</a>         Set how keyboard events are delivered to this surface. By default,
+<a href="#l272" class="line" id="l272">    272</a>         layer shell surfaces do not receive keyboard events; this request can
+<a href="#l273" class="line" id="l273">    273</a>         be used to change this.
+<a href="#l274" class="line" id="l274">    274</a> 
+<a href="#l275" class="line" id="l275">    275</a>         This setting is inherited by child surfaces set by the get_popup
+<a href="#l276" class="line" id="l276">    276</a>         request.
+<a href="#l277" class="line" id="l277">    277</a> 
+<a href="#l278" class="line" id="l278">    278</a>         Layer surfaces receive pointer, touch, and tablet events normally. If
+<a href="#l279" class="line" id="l279">    279</a>         you do not want to receive them, set the input region on your surface
+<a href="#l280" class="line" id="l280">    280</a>         to an empty region.
+<a href="#l281" class="line" id="l281">    281</a> 
+<a href="#l282" class="line" id="l282">    282</a>         Keyboard interactivity is double-buffered, see wl_surface.commit.
+<a href="#l283" class="line" id="l283">    283</a>       &lt;/description&gt;
+<a href="#l284" class="line" id="l284">    284</a>       &lt;arg name=&quot;keyboard_interactivity&quot; type=&quot;uint&quot; enum=&quot;keyboard_interactivity&quot;/&gt;
+<a href="#l285" class="line" id="l285">    285</a>     &lt;/request&gt;
+<a href="#l286" class="line" id="l286">    286</a> 
+<a href="#l287" class="line" id="l287">    287</a>     &lt;request name=&quot;get_popup&quot;&gt;
+<a href="#l288" class="line" id="l288">    288</a>       &lt;description summary=&quot;assign this layer_surface as an xdg_popup parent&quot;&gt;
+<a href="#l289" class="line" id="l289">    289</a>         This assigns an xdg_popup&apos;s parent to this layer_surface.  This popup
+<a href="#l290" class="line" id="l290">    290</a>         should have been created via xdg_surface::get_popup with the parent set
+<a href="#l291" class="line" id="l291">    291</a>         to NULL, and this request must be invoked before committing the popup&apos;s
+<a href="#l292" class="line" id="l292">    292</a>         initial state.
+<a href="#l293" class="line" id="l293">    293</a> 
+<a href="#l294" class="line" id="l294">    294</a>         See the documentation of xdg_popup for more details about what an
+<a href="#l295" class="line" id="l295">    295</a>         xdg_popup is and how it is used.
+<a href="#l296" class="line" id="l296">    296</a>       &lt;/description&gt;
+<a href="#l297" class="line" id="l297">    297</a>       &lt;arg name=&quot;popup&quot; type=&quot;object&quot; interface=&quot;xdg_popup&quot;/&gt;
+<a href="#l298" class="line" id="l298">    298</a>     &lt;/request&gt;
+<a href="#l299" class="line" id="l299">    299</a> 
+<a href="#l300" class="line" id="l300">    300</a>     &lt;request name=&quot;ack_configure&quot;&gt;
+<a href="#l301" class="line" id="l301">    301</a>       &lt;description summary=&quot;ack a configure event&quot;&gt;
+<a href="#l302" class="line" id="l302">    302</a>         When a configure event is received, if a client commits the
+<a href="#l303" class="line" id="l303">    303</a>         surface in response to the configure event, then the client
+<a href="#l304" class="line" id="l304">    304</a>         must make an ack_configure request sometime before the commit
+<a href="#l305" class="line" id="l305">    305</a>         request, passing along the serial of the configure event.
+<a href="#l306" class="line" id="l306">    306</a> 
+<a href="#l307" class="line" id="l307">    307</a>         If the client receives multiple configure events before it
+<a href="#l308" class="line" id="l308">    308</a>         can respond to one, it only has to ack the last configure event.
+<a href="#l309" class="line" id="l309">    309</a> 
+<a href="#l310" class="line" id="l310">    310</a>         A client is not required to commit immediately after sending
+<a href="#l311" class="line" id="l311">    311</a>         an ack_configure request - it may even ack_configure several times
+<a href="#l312" class="line" id="l312">    312</a>         before its next surface commit.
+<a href="#l313" class="line" id="l313">    313</a> 
+<a href="#l314" class="line" id="l314">    314</a>         A client may send multiple ack_configure requests before committing, but
+<a href="#l315" class="line" id="l315">    315</a>         only the last request sent before a commit indicates which configure
+<a href="#l316" class="line" id="l316">    316</a>         event the client really is responding to.
+<a href="#l317" class="line" id="l317">    317</a>       &lt;/description&gt;
+<a href="#l318" class="line" id="l318">    318</a>       &lt;arg name=&quot;serial&quot; type=&quot;uint&quot; summary=&quot;the serial from the configure event&quot;/&gt;
+<a href="#l319" class="line" id="l319">    319</a>     &lt;/request&gt;
+<a href="#l320" class="line" id="l320">    320</a> 
+<a href="#l321" class="line" id="l321">    321</a>     &lt;request name=&quot;destroy&quot; type=&quot;destructor&quot;&gt;
+<a href="#l322" class="line" id="l322">    322</a>       &lt;description summary=&quot;destroy the layer_surface&quot;&gt;
+<a href="#l323" class="line" id="l323">    323</a>         This request destroys the layer surface.
+<a href="#l324" class="line" id="l324">    324</a>       &lt;/description&gt;
+<a href="#l325" class="line" id="l325">    325</a>     &lt;/request&gt;
+<a href="#l326" class="line" id="l326">    326</a> 
+<a href="#l327" class="line" id="l327">    327</a>     &lt;event name=&quot;configure&quot;&gt;
+<a href="#l328" class="line" id="l328">    328</a>       &lt;description summary=&quot;suggest a surface change&quot;&gt;
+<a href="#l329" class="line" id="l329">    329</a>         The configure event asks the client to resize its surface.
+<a href="#l330" class="line" id="l330">    330</a> 
+<a href="#l331" class="line" id="l331">    331</a>         Clients should arrange their surface for the new states, and then send
+<a href="#l332" class="line" id="l332">    332</a>         an ack_configure request with the serial sent in this configure event at
+<a href="#l333" class="line" id="l333">    333</a>         some point before committing the new surface.
+<a href="#l334" class="line" id="l334">    334</a> 
+<a href="#l335" class="line" id="l335">    335</a>         The client is free to dismiss all but the last configure event it
+<a href="#l336" class="line" id="l336">    336</a>         received.
+<a href="#l337" class="line" id="l337">    337</a> 
+<a href="#l338" class="line" id="l338">    338</a>         The width and height arguments specify the size of the window in
+<a href="#l339" class="line" id="l339">    339</a>         surface-local coordinates.
+<a href="#l340" class="line" id="l340">    340</a> 
+<a href="#l341" class="line" id="l341">    341</a>         The size is a hint, in the sense that the client is free to ignore it if
+<a href="#l342" class="line" id="l342">    342</a>         it doesn&apos;t resize, pick a smaller size (to satisfy aspect ratio or
+<a href="#l343" class="line" id="l343">    343</a>         resize in steps of NxM pixels). If the client picks a smaller size and
+<a href="#l344" class="line" id="l344">    344</a>         is anchored to two opposite anchors (e.g. &apos;top&apos; and &apos;bottom&apos;), the
+<a href="#l345" class="line" id="l345">    345</a>         surface will be centered on this axis.
+<a href="#l346" class="line" id="l346">    346</a> 
+<a href="#l347" class="line" id="l347">    347</a>         If the width or height arguments are zero, it means the client should
+<a href="#l348" class="line" id="l348">    348</a>         decide its own window dimension.
+<a href="#l349" class="line" id="l349">    349</a>       &lt;/description&gt;
+<a href="#l350" class="line" id="l350">    350</a>       &lt;arg name=&quot;serial&quot; type=&quot;uint&quot;/&gt;
+<a href="#l351" class="line" id="l351">    351</a>       &lt;arg name=&quot;width&quot; type=&quot;uint&quot;/&gt;
+<a href="#l352" class="line" id="l352">    352</a>       &lt;arg name=&quot;height&quot; type=&quot;uint&quot;/&gt;
+<a href="#l353" class="line" id="l353">    353</a>     &lt;/event&gt;
+<a href="#l354" class="line" id="l354">    354</a> 
+<a href="#l355" class="line" id="l355">    355</a>     &lt;event name=&quot;closed&quot;&gt;
+<a href="#l356" class="line" id="l356">    356</a>       &lt;description summary=&quot;surface should be closed&quot;&gt;
+<a href="#l357" class="line" id="l357">    357</a>         The closed event is sent by the compositor when the surface will no
+<a href="#l358" class="line" id="l358">    358</a>         longer be shown. The output may have been destroyed or the user may
+<a href="#l359" class="line" id="l359">    359</a>         have asked for it to be removed. Further changes to the surface will be
+<a href="#l360" class="line" id="l360">    360</a>         ignored. The client should destroy the resource after receiving this
+<a href="#l361" class="line" id="l361">    361</a>         event, and create a new surface if they so choose.
+<a href="#l362" class="line" id="l362">    362</a>       &lt;/description&gt;
+<a href="#l363" class="line" id="l363">    363</a>     &lt;/event&gt;
+<a href="#l364" class="line" id="l364">    364</a> 
+<a href="#l365" class="line" id="l365">    365</a>     &lt;enum name=&quot;error&quot;&gt;
+<a href="#l366" class="line" id="l366">    366</a>       &lt;entry name=&quot;invalid_surface_state&quot; value=&quot;0&quot; summary=&quot;provided surface state is invalid&quot;/&gt;
+<a href="#l367" class="line" id="l367">    367</a>       &lt;entry name=&quot;invalid_size&quot; value=&quot;1&quot; summary=&quot;size is invalid&quot;/&gt;
+<a href="#l368" class="line" id="l368">    368</a>       &lt;entry name=&quot;invalid_anchor&quot; value=&quot;2&quot; summary=&quot;anchor bitfield is invalid&quot;/&gt;
+<a href="#l369" class="line" id="l369">    369</a>       &lt;entry name=&quot;invalid_keyboard_interactivity&quot; value=&quot;3&quot; summary=&quot;keyboard interactivity is invalid&quot;/&gt;
+<a href="#l370" class="line" id="l370">    370</a>     &lt;/enum&gt;
+<a href="#l371" class="line" id="l371">    371</a> 
+<a href="#l372" class="line" id="l372">    372</a>     &lt;enum name=&quot;anchor&quot; bitfield=&quot;true&quot;&gt;
+<a href="#l373" class="line" id="l373">    373</a>       &lt;entry name=&quot;top&quot; value=&quot;1&quot; summary=&quot;the top edge of the anchor rectangle&quot;/&gt;
+<a href="#l374" class="line" id="l374">    374</a>       &lt;entry name=&quot;bottom&quot; value=&quot;2&quot; summary=&quot;the bottom edge of the anchor rectangle&quot;/&gt;
+<a href="#l375" class="line" id="l375">    375</a>       &lt;entry name=&quot;left&quot; value=&quot;4&quot; summary=&quot;the left edge of the anchor rectangle&quot;/&gt;
+<a href="#l376" class="line" id="l376">    376</a>       &lt;entry name=&quot;right&quot; value=&quot;8&quot; summary=&quot;the right edge of the anchor rectangle&quot;/&gt;
+<a href="#l377" class="line" id="l377">    377</a>     &lt;/enum&gt;
+<a href="#l378" class="line" id="l378">    378</a> 
+<a href="#l379" class="line" id="l379">    379</a>     &lt;!-- Version 2 additions --&gt;
+<a href="#l380" class="line" id="l380">    380</a> 
+<a href="#l381" class="line" id="l381">    381</a>     &lt;request name=&quot;set_layer&quot; since=&quot;2&quot;&gt;
+<a href="#l382" class="line" id="l382">    382</a>       &lt;description summary=&quot;change the layer of the surface&quot;&gt;
+<a href="#l383" class="line" id="l383">    383</a>         Change the layer that the surface is rendered on.
+<a href="#l384" class="line" id="l384">    384</a> 
+<a href="#l385" class="line" id="l385">    385</a>         Layer is double-buffered, see wl_surface.commit.
+<a href="#l386" class="line" id="l386">    386</a>       &lt;/description&gt;
+<a href="#l387" class="line" id="l387">    387</a>       &lt;arg name=&quot;layer&quot; type=&quot;uint&quot; enum=&quot;zwlr_layer_shell_v1.layer&quot; summary=&quot;layer to move this surface to&quot;/&gt;
+<a href="#l388" class="line" id="l388">    388</a>     &lt;/request&gt;
+<a href="#l389" class="line" id="l389">    389</a>   &lt;/interface&gt;
+<a href="#l390" class="line" id="l390">    390</a> &lt;/protocol&gt;
+<a href="#l391" class="line" id="l391">    391</a> 
+<a href="#l392" class="line" id="l392">    392</a> 
+</pre>
+  </div>
+  </body>
+</html>

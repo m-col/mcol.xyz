@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - use pyright instead of mypy</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/b28bab83882adbba11441a443d284d28d4af18db.html">b28bab83882adbba11441a443d284d28d4af18db</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/7d1d9646d7e1f607896db7e2163eece9299434ac.html">7d1d9646d7e1f607896db7e2163eece9299434ac</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2024-07-05 14:57:15 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2024-07-05 14:57:15 +0100
+
+use pyright instead of mypy
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -79,7 +79,7 @@
+<span class="def"> let g:ale_linters_explicit = 1
+</span><span class="def"> let g:ale_linters = {
+</span><span class="def"> \   &apos;haskell&apos;: [&apos;hlint&apos;],
+</span><span class="sub">-\   &apos;python&apos;: [&apos;flake8&apos;, &apos;mypy&apos;, &apos;ruff&apos;],
+</span><span class="add">+\   &apos;python&apos;: [&apos;flake8&apos;, &apos;pyright&apos;, &apos;ruff&apos;],
+</span><span class="def"> \}
+</span><span class="def"> &quot; Don&apos;t show errors in virtual text or signs column; rely on echoed message instead
+</span><span class="def"> let g:ale_virtualtext_cursor = 0
+</span></pre>
+</div></div>
+  </body>
+</html>

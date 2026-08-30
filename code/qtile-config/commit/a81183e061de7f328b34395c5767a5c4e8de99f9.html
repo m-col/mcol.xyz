@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - make xephyr fake mpd textbox actually mpd widget</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/a81183e061de7f328b34395c5767a5c4e8de99f9.html">a81183e061de7f328b34395c5767a5c4e8de99f9</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/9fb8c4bcaae77cd52f3907651dc2e024e3b5611d.html">9fb8c4bcaae77cd52f3907651dc2e024e3b5611d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-25 23:44:28 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-25 23:44:28 +0100
+
+make xephyr fake mpd textbox actually mpd widget
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -252,22 +252,15 @@
+<span class="def">     &apos;fontsize&apos;: 12,
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-if IS_XEPHYR:
+</span><span class="sub">-    mpd2 = widget.TextBox(
+</span><span class="sub">-        &apos;mpd here&apos;,
+</span><span class="sub">-        foreground=colours[12],
+</span><span class="sub">-        font=&apos;TamzenForPowerline Bold&apos;,
+</span><span class="sub">-    )
+</span><span class="sub">-else:
+</span><span class="sub">-    mpd2 = widget.Mpd2(
+</span><span class="sub">-        no_connection=&apos;&apos;,
+</span><span class="sub">-        status_format=&apos;{artist} - {title}&apos;,
+</span><span class="sub">-        status_format_stopped=&apos;&apos;,
+</span><span class="sub">-        foreground=colours[12],
+</span><span class="sub">-        idle_format=&apos;&apos;,
+</span><span class="sub">-        font=&apos;TamzenForPowerline Bold&apos;,
+</span><span class="sub">-        update_interval=10,
+</span><span class="sub">-    )
+</span><span class="add">+mpd2 = widget.Mpd2(
+</span><span class="add">+    no_connection=&apos;&apos;,
+</span><span class="add">+    status_format=&apos;mpd here&apos; if IS_XEPHYR else &apos;{artist} - {title}&apos;,
+</span><span class="add">+    status_format_stopped=&apos;&apos;,
+</span><span class="add">+    foreground=colours[12],
+</span><span class="add">+    idle_format=&apos;&apos;,
+</span><span class="add">+    font=&apos;TamzenForPowerline Bold&apos;,
+</span><span class="add">+    update_interval=10,
+</span><span class="add">+)
+</span><span class="def"> 
+</span><span class="def"> cpugraph = widget.CPUGraph(
+</span><span class="def">     graph_color=colours[12],
+</span></pre>
+</div></div>
+  </body>
+</html>

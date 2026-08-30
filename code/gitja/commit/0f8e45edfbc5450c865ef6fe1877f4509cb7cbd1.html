@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - add set -e to test script</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/0f8e45edfbc5450c865ef6fe1877f4509cb7cbd1.html">0f8e45edfbc5450c865ef6fe1877f4509cb7cbd1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/4ef4700d03b9511d89424246dfcac506398d887f.html">4ef4700d03b9511d89424246dfcac506398d887f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-26 20:42:50 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-26 20:44:43 +0000
+
+add set -e to test script
+</pre><div class="diff">
+  <p>
+    <b>test/test.sh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -15,7 +15,7 @@
+<span class="def"> 
+</span><span class="def"> &apos;
+</span><span class="def"> 
+</span><span class="sub">-set -u
+</span><span class="add">+set -ue
+</span><span class="def"> 
+</span><span class="def"> if [[ $(basename &quot;$PWD&quot;) != gitserve ]]
+</span><span class="def"> then
+</span>@@ -23,7 +23,7 @@
+<span class="def">     exit 1
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="sub">-let errors=&quot;0&quot;
+</span><span class="add">+let errors=&quot;0&quot; &quot;1&quot;
+</span><span class="def"> EXPECTED=&quot;test/expected&quot;
+</span><span class="def"> RESULT=&quot;test/result&quot;
+</span><span class="def"> 
+</span>@@ -39,7 +39,7 @@
+<span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> rm -rf &quot;$RESULT&quot;
+</span><span class="sub">-stack run -- -c test/config.dhall -q || exit 1
+</span><span class="add">+stack run -- -c test/config.dhall -q
+</span><span class="def"> 
+</span><span class="def"> for test in &quot;${TESTS[@]}&quot;
+</span><span class="def"> do
+</span></pre>
+</div></div>
+  </body>
+</html>

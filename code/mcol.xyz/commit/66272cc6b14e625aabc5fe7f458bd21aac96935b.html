@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - minor changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/66272cc6b14e625aabc5fe7f458bd21aac96935b.html">66272cc6b14e625aabc5fe7f458bd21aac96935b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/bf5865d55d3f362bcee11ebf199936ef849f21db.html">bf5865d55d3f362bcee11ebf199936ef849f21db</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-03-01 16:35:55 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-03-01 16:35:55 +0000
+
+minor changes
+</pre><div class="diff">
+  <p>
+    <b>publishconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,7 +1,4 @@
+<span class="def"> #!/usr/bin/env python
+</span><span class="sub">-# -*- coding: utf-8 -*- #
+</span><span class="sub">-from __future__ import unicode_literals
+</span><span class="sub">-
+</span><span class="def"> # This file is only used if you use `make publish` or
+</span><span class="def"> # explicitly specify it as your config file.
+</span><span class="def"> 
+</span>@@ -10,8 +7,8 @@
+<span class="def"> sys.path.append(os.curdir)
+</span><span class="def"> from pelicanconf import *
+</span><span class="def"> 
+</span><span class="sub">-FEED_ATOM = &apos;rss.xml&apos;
+</span><span class="sub">-FEED_DOMAIN = &quot;&quot;
+</span><span class="add">+FEED_ATOM = &quot;rss.xml&quot;
+</span><span class="add">+FEED_DOMAIN = SITEURL
+</span><span class="def"> 
+</span><span class="def"> # css-html-js-minify
+</span><span class="def"> PLUGINS.append(&quot;css-html-js-minify&quot;)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,7 +7,7 @@
+<span class="def"> sys.path.append(os.curdir)
+</span><span class="def"> from blogroll import BLOGROLL
+</span><span class="def"> 
+</span><span class="sub">-SITEURL = &quot;//&quot;
+</span><span class="add">+SITEURL = &quot;https://mcol.xyz&quot;
+</span><span class="def"> AUTHOR = &quot;mcol&quot;
+</span><span class="def"> SITENAME = &quot;mcol.xyz&quot;
+</span><span class="def"> PATH = &quot;content&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

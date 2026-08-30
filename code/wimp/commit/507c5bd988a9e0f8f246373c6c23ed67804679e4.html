@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add to_region action</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/507c5bd988a9e0f8f246373c6c23ed67804679e4.html">507c5bd988a9e0f8f246373c6c23ed67804679e4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/a8d0f418fed1d9b87eec9260797c9218c1fc1d6b.html">a8d0f418fed1d9b87eec9260797c9218c1fc1d6b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-18 20:48:17 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-18 20:48:17 +0000
+
+add to_region action
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -99,6 +99,8 @@
+<span class="def"> # A percentage of the used output can also be requested:
+</span><span class="def"> wimptool bind	Ctrl	t		scratchpad 50%+50%+0+0 footclient tmux
+</span><span class="def"> 
+</span><span class="add">+wimptool bind		s		exec wimptool to_region \`slurp -f %wx%h+%x+%y\`
+</span><span class="add">+
+</span><span class="def"> # These two actions can be used to mark and go to set positions. Each one, once
+</span><span class="def"> # pressed, waits for the next key press and uses that as the &apos;mark&apos;, e.g.
+</span><span class="def"> # hitting &apos;mod + m&apos; then &apos;a&apos; will save the current position, then hitting &apos;mod
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -27,7 +27,7 @@
+<span class="def"> 	ssize_t len = recv(fd, buffer, sizeof(buffer) - 1, 0);
+</span><span class="def"> 	if (len &gt; 0) {
+</span><span class="def"> 	    buffer[len] = &apos;\0&apos;;
+</span><span class="sub">-	    parse_message(buffer);
+</span><span class="add">+	    handle_message(buffer);
+</span><span class="def"> 	}
+</span><span class="def"> 	close(fd);
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,8 +3,9 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+bool wlr_box_from_str(char* str, struct wlr_box *box);
+</span><span class="def"> void assign_colour(char *hex, float dest[4]);
+</span><span class="sub">-void parse_message(char *buffer);
+</span><span class="add">+void handle_message(char *buffer);
+</span><span class="def"> void schedule_startup();
+</span><span class="def"> void set_up_defaults();
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -125,7 +125,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool wlr_box_from_str(char* str, struct wlr_box *box) {
+</span><span class="add">+bool wlr_box_from_str(char* str, struct wlr_box *box) {
+</span><span class="def">     // turns e.g. 1920x1800+500+500 into a wlr_box
+</span><span class="def">     char *w, *h, *x, *y;
+</span><span class="def">     if (str) {
+</span>@@ -217,6 +217,23 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static bool box_handler(struct binding *kb, char *data) {
+</span><span class="add">+    char *geo;
+</span><span class="add">+    if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    struct wlr_box *box = calloc(1, sizeof(struct wlr_box));
+</span><span class="add">+    if (!wlr_box_from_str(geo, box)) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    kb-&gt;data = box;
+</span><span class="add">+    return true;
+</span><span class="add">+err:
+</span><span class="add">+    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static struct {
+</span><span class="def">     const char *name;
+</span><span class="def">     const action action;
+</span>@@ -239,6 +256,7 @@
+<span class="def">     { &quot;maximize&quot;, &amp;maximize, NULL },
+</span><span class="def">     { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="def">     { &quot;scratchpad&quot;, &amp;toggle_scratchpad, &amp;scratchpad_handler },
+</span><span class="add">+    { &quot;to_region&quot;, &amp;to_region, &amp;box_handler },
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -460,7 +478,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void parse_message(char *message) {
+</span><span class="add">+void handle_message(char *message) {
+</span><span class="def">     char *s;
+</span><span class="def">     if (!(s = strtok(message, &quot; \t\n\r&quot;))) {
+</span><span class="def"> 	return;
+</span>@@ -595,7 +613,9 @@
+<span class="def"> 
+</span><span class="def">     // other non-empty, non-commented lines
+</span><span class="def">     else {
+</span><span class="sub">-        wlr_log(WLR_ERROR, &quot;Unknown command &apos;%s&apos;.&quot;, s);
+</span><span class="add">+	if(!handle_do_action(s)) {
+</span><span class="add">+	    wlr_log(WLR_ERROR, &quot;Unknown command &apos;%s&apos;.&quot;, s);
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -655,7 +675,7 @@
+<span class="def"> 	&quot;bind Ctrl Escape shutdown&quot;,
+</span><span class="def">     };
+</span><span class="def">     for (size_t i = 0; i &lt; sizeof(defaults) / sizeof(defaults[0]); i++) {
+</span><span class="sub">-	parse_message(defaults[i]);
+</span><span class="add">+	handle_message(defaults[i]);
+</span><span class="def">     }
+</span><span class="def">     setup_vt_switching();
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+bool handle_do_action(char *command);
+</span><span class="def"> void shutdown(void *data);
+</span><span class="def"> void exec_command(void *data);
+</span><span class="def"> void change_vt(void *data);
+</span>@@ -26,5 +27,6 @@
+<span class="def"> void maximize(void *data);
+</span><span class="def"> void send_to_desk(void *data);
+</span><span class="def"> void toggle_scratchpad(void *data);
+</span><span class="add">+void to_region(void *data);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,6 +12,21 @@
+<span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+bool handle_do_action(char *command) {
+</span><span class="add">+    char *s;
+</span><span class="add">+
+</span><span class="add">+    if (!strcasecmp(command, &quot;to_region&quot;)) {
+</span><span class="add">+	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	    struct wlr_box box;
+</span><span class="add">+	    if (wlr_box_from_str(s, &amp;box)) {
+</span><span class="add">+		to_region(&amp;box);
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+	return true;
+</span><span class="add">+    }
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> void shutdown(void *data) {
+</span><span class="def">     wl_display_terminate(wimp.display);
+</span>@@ -447,3 +462,31 @@
+<span class="def"> 	wlr_log(WLR_DEBUG, &quot;Launching scratchpad: %s&quot;, scratchpad-&gt;command);
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void to_region(void *data) {
+</span><span class="add">+    struct wlr_box *box = (struct wlr_box *)data;
+</span><span class="add">+    struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span><span class="add">+
+</span><span class="add">+    struct motion motion = {
+</span><span class="add">+	.dx = - (extents-&gt;width / 2) + (box-&gt;width / 2) + box-&gt;x,
+</span><span class="add">+	.dy = - (extents-&gt;height / 2) + (box-&gt;height / 2) + box-&gt;y,
+</span><span class="add">+	.is_percentage = false,
+</span><span class="add">+    };
+</span><span class="add">+    pan_desk(&amp;motion);
+</span><span class="add">+
+</span><span class="add">+    double f;
+</span><span class="add">+    if (extents-&gt;width / extents-&gt;height &gt; box-&gt;width / box-&gt;height) {
+</span><span class="add">+	f = wimp.current_desk-&gt;zoom / ((double)box-&gt;width / (double)extents-&gt;width);
+</span><span class="add">+    } else {
+</span><span class="add">+	f = wimp.current_desk-&gt;zoom / ((double)box-&gt;height / (double)extents-&gt;height);
+</span><span class="add">+    }
+</span><span class="add">+    double dz = 100 * f / wimp.current_desk-&gt;zoom - 100;
+</span><span class="add">+    double cx = wimp.cursor-&gt;x;
+</span><span class="add">+    double cy = wimp.cursor-&gt;y;
+</span><span class="add">+    wimp.cursor-&gt;x = extents-&gt;width / 2;
+</span><span class="add">+    wimp.cursor-&gt;y = extents-&gt;height / 2;
+</span><span class="add">+    zoom(&amp;dz);
+</span><span class="add">+    wimp.cursor-&gt;x = cx;
+</span><span class="add">+    wimp.cursor-&gt;y = cy;
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

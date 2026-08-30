@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - squeeze formatting to take up less space</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/d6624daa1322e569068e7058ab9614ee72673d79.html">d6624daa1322e569068e7058ab9614ee72673d79</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/f0bdafa99e12d639f2f885a30c7a083fe97e5ceb.html">f0bdafa99e12d639f2f885a30c7a083fe97e5ceb</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-18 19:17:43 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-18 19:17:43 +0100
+
+squeeze formatting to take up less space
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,14 +20,7 @@
+<span class="def">     reply2 = xcb_intern_atom_reply(conn, cookie2, NULL);
+</span><span class="def"> 
+</span><span class="def">     xcb_change_property(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	XCB_PROP_MODE_REPLACE,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	reply1-&gt;atom,
+</span><span class="sub">-	XCB_ATOM_ATOM,
+</span><span class="sub">-	32,
+</span><span class="sub">-	1,
+</span><span class="sub">-	&amp;reply2-&gt;atom
+</span><span class="add">+	conn, XCB_PROP_MODE_REPLACE, wid, reply1-&gt;atom, XCB_ATOM_ATOM, 32, 1, &amp;reply2-&gt;atom
+</span><span class="def">     );
+</span><span class="def">     free(reply1);
+</span><span class="def">     free(reply2);
+</span>@@ -40,48 +33,24 @@
+<span class="def">     xcb_pixmap_t pixmap = xcb_generate_id(conn);
+</span><span class="def"> 
+</span><span class="def">     xcb_create_pixmap(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	1,
+</span><span class="sub">-	pixmap,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	screen-&gt;width_in_pixels,
+</span><span class="sub">-	screen-&gt;height_in_pixels
+</span><span class="add">+	conn, 1, pixmap, wid, screen-&gt;width_in_pixels, screen-&gt;height_in_pixels
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="sub">-    const uint32_t values[] = {
+</span><span class="sub">-	screen-&gt;white_pixel,
+</span><span class="sub">-    };
+</span><span class="add">+    const uint32_t values[] = {screen-&gt;white_pixel};
+</span><span class="def"> 
+</span><span class="def">     xcb_create_gc(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	gc,
+</span><span class="sub">-	pixmap,
+</span><span class="sub">-	XCB_GC_FOREGROUND,
+</span><span class="sub">-	values
+</span><span class="add">+	conn, gc, pixmap, XCB_GC_FOREGROUND, values
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     xcb_rectangle_t rect = {
+</span><span class="sub">-	1,
+</span><span class="sub">-	1,
+</span><span class="sub">-	screen-&gt;width_in_pixels - 2,
+</span><span class="sub">-	screen-&gt;height_in_pixels - 2
+</span><span class="add">+	1, 1, screen-&gt;width_in_pixels - 2, screen-&gt;height_in_pixels - 2
+</span><span class="def">     };
+</span><span class="def">     xcb_poly_fill_rectangle(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	pixmap,
+</span><span class="sub">-	gc,
+</span><span class="sub">-	1,
+</span><span class="sub">-	&amp;rect
+</span><span class="add">+	conn, pixmap, gc, 1, &amp;rect
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     xcb_shape_mask(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	XCB_SHAPE_SO_SUBTRACT,
+</span><span class="sub">-        XCB_SHAPE_SK_INPUT,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	0,
+</span><span class="sub">-        0,
+</span><span class="sub">-	pixmap
+</span><span class="add">+	conn, XCB_SHAPE_SO_SUBTRACT, XCB_SHAPE_SK_INPUT, wid, 0, 0, pixmap
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     xcb_free_gc(conn, gc);
+</span>@@ -119,14 +88,7 @@
+<span class="def">     xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, &amp;above);
+</span><span class="def"> 
+</span><span class="def">     xcb_change_property(
+</span><span class="sub">-	conn,
+</span><span class="sub">-	XCB_PROP_MODE_REPLACE,
+</span><span class="sub">-	wid,
+</span><span class="sub">-	XCB_ATOM_WM_NAME,
+</span><span class="sub">-	XCB_ATOM_STRING,
+</span><span class="sub">-	8,
+</span><span class="sub">-	4,
+</span><span class="sub">-	CLASS
+</span><span class="add">+	conn, XCB_PROP_MODE_REPLACE, wid, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, 4, CLASS
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     xcb_map_window(conn, wid);
+</span></pre>
+</div></div>
+  </body>
+</html>

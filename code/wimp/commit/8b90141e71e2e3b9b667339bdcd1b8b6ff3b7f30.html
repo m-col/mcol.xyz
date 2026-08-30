@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Enable tap-to-click for libinput devices</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/8b90141e71e2e3b9b667339bdcd1b8b6ff3b7f30.html">8b90141e71e2e3b9b667339bdcd1b8b6ff3b7f30</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/7be89bba103fcddcedbdf80f4a6117461f42867f.html">7be89bba103fcddcedbdf80f4a6117461f42867f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-11 19:09:09 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-11 19:09:09 +0000
+
+Enable tap-to-click for libinput devices
+
+Closes #27
+</pre><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,7 @@
+<span class="def"> #include &lt;inttypes.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> #include &lt;wayland-server-protocol.h&gt;
+</span><span class="add">+#include &lt;wlr/backend/libinput.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_keyboard.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_primary_selection_v1.h&gt;
+</span>@@ -123,7 +124,18 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static void on_new_keyboard(struct wlr_input_device *device) {
+</span><span class="add">+static void add_new_pointer(struct wlr_input_device *device) {
+</span><span class="add">+    if (wlr_input_device_is_libinput(device)) {
+</span><span class="add">+	struct libinput_device *ldev = wlr_libinput_get_device_handle(device);
+</span><span class="add">+	if (libinput_device_config_tap_get_finger_count(ldev) &gt; 1) {
+</span><span class="add">+	    libinput_device_config_tap_set_enabled(ldev, LIBINPUT_CONFIG_TAP_ENABLED);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    wlr_cursor_attach_input_device(wimp.cursor, device);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void add_new_keyboard(struct wlr_input_device *device) {
+</span><span class="def">     struct keyboard *keyboard = calloc(1, sizeof(struct keyboard));
+</span><span class="def">     keyboard-&gt;device = device;
+</span><span class="def"> 
+</span>@@ -160,10 +172,10 @@
+<span class="def">     struct wlr_input_device *device = data;
+</span><span class="def">     switch (device-&gt;type) {
+</span><span class="def"> 	case WLR_INPUT_DEVICE_KEYBOARD:
+</span><span class="sub">-	    on_new_keyboard(device);
+</span><span class="add">+	    add_new_keyboard(device);
+</span><span class="def"> 	    break;
+</span><span class="def"> 	case WLR_INPUT_DEVICE_POINTER:
+</span><span class="sub">-	    wlr_cursor_attach_input_device(wimp.cursor, device);
+</span><span class="add">+	    add_new_pointer(device);
+</span><span class="def"> 	    break;
+</span><span class="def"> 	default:
+</span><span class="def"> 	    break;
+</span>@@ -179,7 +191,7 @@
+<span class="def"> static void on_new_virtual_keyboard(struct wl_listener *listener, void *data) {
+</span><span class="def">     struct wlr_virtual_keyboard_v1 *keyboard = data;
+</span><span class="def">     struct wlr_input_device *device = &amp;keyboard-&gt;input_device;
+</span><span class="sub">-    on_new_keyboard(device);
+</span><span class="add">+    add_new_keyboard(device);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,7 @@
+<span class="def"> LDFLAGS	+= $(shell pkg-config --cflags --libs wlroots) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs wayland-server) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs xkbcommon) \
+</span><span class="add">+	    $(shell pkg-config --cflags --libs libinput) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs cairo) \
+</span><span class="def"> 	    $(shell pkg-config --cflags --libs pixman-1)
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

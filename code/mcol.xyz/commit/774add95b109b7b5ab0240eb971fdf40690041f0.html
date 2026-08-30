@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - add screenshots page and configuration, and only copy static files as hardlinks</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/774add95b109b7b5ab0240eb971fdf40690041f0.html">774add95b109b7b5ab0240eb971fdf40690041f0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/4e6ef578b7f496cb78626b6ca3c1af0beb6b8af4.html">4e6ef578b7f496cb78626b6ca3c1af0beb6b8af4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-02 23:37:18 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-02 23:37:18 +0100
+
+add screenshots page and configuration, and only copy static files as hardlinks
+</pre><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,7 +18,8 @@
+<span class="def"> PAGE_PATHS = [&apos;pages&apos;,]
+</span><span class="def"> ARTICLE_PATHS = [&apos;posts&apos;,]
+</span><span class="def"> DEFAULT_DATE_FORMAT = &apos;%Y-%m-%d&apos;
+</span><span class="sub">-STATIC_PATHS = [&apos;static&apos;, &apos;favicon.png&apos;, &apos;icons&apos;, &apos;avatar.png&apos;]
+</span><span class="add">+STATIC_PATHS = [&apos;static&apos;, &apos;favicon.png&apos;, &apos;icons&apos;, &apos;avatar.png&apos;, &apos;screenshots&apos;]
+</span><span class="add">+STATIC_CREATE_LINKS = True
+</span><span class="def"> PLUGIN_PATHS = [&quot;/home/mcol/git&quot;, &quot;/home/mcol/git/pelican-plugins&quot;]
+</span><span class="def"> PLUGINS = []
+</span><span class="def"> RELATIVE_URLS = True
+</span>@@ -50,7 +51,8 @@
+<span class="def"> &lt;p&gt;Welcome to my blog!&lt;/p&gt;
+</span><span class="def"> &lt;p&gt;I&apos;m Matt and I write about open source software that I stumble across surfing the web.&lt;/p&gt;
+</span><span class="def"> &lt;p&gt;Some of my main interests are self-hosting, privacy tools, and anything
+</span><span class="sub">-to do with &lt;a href=https://wiki.installgentoo.com/wiki/GNU/Linux_ricing&gt;ricing&lt;/a&gt;.&lt;/p&gt;
+</span><span class="add">+to do with &lt;a href=https://wiki.installgentoo.com/wiki/GNU/Linux_ricing&gt;ricing&lt;/a&gt; (see
+</span><span class="add">+mine &lt;a href=&quot;/screenshots.html&quot;&gt;here&lt;/a&gt;).&lt;/p&gt;
+</span><span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> AVATAR = &quot;/avatar.png&quot;
+</span>@@ -59,6 +61,11 @@
+<span class="def"> EXTRAHEAD = &quot;&lt;link rel=stylesheet href=/theme/css/fa.css /&gt;&quot;
+</span><span class="def"> EXTRATAIL = &quot;&lt;script data-goatcounter=https://goat.mcol.xyz/count async src=//goat.mcol.xyz/count.js&gt;&lt;/script&gt;&quot;
+</span><span class="def"> 
+</span><span class="add">+import html
+</span><span class="add">+SCREENSHOTS = os.listdir(&apos;content/screenshots&apos;)
+</span><span class="add">+SCREENSHOTS = [html.escape(i) for i in SCREENSHOTS]
+</span><span class="add">+SCREENSHOTS.sort(reverse=True)
+</span><span class="add">+
+</span><span class="def"> # minify-fontawesome
+</span><span class="def"> PLUGINS.append(&quot;pelican-minify-fontawesome&quot;)
+</span><span class="def"> MINIFY_FONTAWESOME = &apos;/home/mcol/git/mcol.xyz/fontawesome-free-5.11.2-web&apos;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -80,7 +80,7 @@
+<span class="def"> 	scp -P $(SSH_PORT) -r $(OUTPUTDIR)/* $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
+</span><span class="def"> 
+</span><span class="def"> rsync_upload: publish
+</span><span class="sub">-	rsync -e &quot;ssh -p $(SSH_PORT)&quot; -P -rczz --cvs-exclude --delete --chmod=D755,F644 \
+</span><span class="add">+	rsync -e &quot;ssh -p $(SSH_PORT)&quot; -P -rczz --cvs-exclude --delete --chmod=D755,F644 --copy-dirlinks \
+</span><span class="def"> 	    $(OUTPUTDIR)/ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>content/pages/screenshots.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,5 @@
+<span class="add">+screenshots
+</span><span class="add">+===========
+</span><span class="add">+
+</span><span class="add">+:save_as: screenshots.html
+</span><span class="add">+:template: screenshots
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,3 +2,4 @@
+<span class="def"> drafts
+</span><span class="def"> fontawesome-*
+</span><span class="def"> output
+</span><span class="add">+content/screenshots
+</span></pre>
+</div></div>
+  </body>
+</html>

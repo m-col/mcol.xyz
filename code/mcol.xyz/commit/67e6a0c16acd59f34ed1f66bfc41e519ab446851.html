@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - add Sandy Maguire&apos;s blog</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/67e6a0c16acd59f34ed1f66bfc41e519ab446851.html">67e6a0c16acd59f34ed1f66bfc41e519ab446851</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/821157d4b02dd4e24a16a182d98441e236c255e3.html">821157d4b02dd4e24a16a182d98441e236c255e3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-30 00:46:16 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-30 00:46:16 +0100
+
+add Sandy Maguire&apos;s blog
+</pre><div class="diff">
+  <p>
+    <b>vr/index.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,23 @@
+<span class="add">+&lt;!DOCTYPE html&gt;
+</span><span class="add">+&lt;html&gt;
+</span><span class="add">+  &lt;head&gt;
+</span><span class="add">+    &lt;title&gt;mcol.xyz but in VR&lt;/title&gt;
+</span><span class="add">+    &lt;meta name=&quot;description&quot; content=&quot;mcol.xyz but in VR&quot;&gt;
+</span><span class="add">+    &lt;script src=&quot;https://aframe.io/releases/1.2.0/aframe.min.js&quot;&gt;&lt;/script&gt;
+</span><span class="add">+  &lt;/head&gt;
+</span><span class="add">+  &lt;body&gt;
+</span><span class="add">+    &lt;a-scene&gt;
+</span><span class="add">+      &lt;a-entity class=&quot;board&quot;
+</span><span class="add">+        geometry=&quot;primitive: box; height: 7; width: 2.5; depth: 0.2&quot;
+</span><span class="add">+        material=&quot;shader: flat; color: #aab&quot;
+</span><span class="add">+      &gt;
+</span><span class="add">+      &lt;/a-entity&gt;
+</span><span class="add">+      
+</span><span class="add">+      &lt;a-light type=&quot;ambient&quot; color=&quot;#666&quot;&gt;&lt;/a-light&gt;
+</span><span class="add">+      &lt;a-light type=&quot;point&quot; intensity=&quot;2&quot; position=&quot;2 4 4&quot;&gt;&lt;/a-light&gt;
+</span><span class="add">+      &lt;a-sky color=&quot;#fff&quot;&gt;&lt;/a-sky&gt;
+</span><span class="add">+      &lt;a-plane color=&quot;#aab&quot; rotation=&quot;-90 0 0&quot; height=&quot;20&quot; width=&quot;20&quot;&gt;&lt;/a-plane&gt;
+</span><span class="add">+      &lt;a-text value=&quot;Hello, A-Frame!&quot; color=&quot;black&quot; position=&quot;-0.9 0.2 -3&quot; scale=&quot;1 1 1&quot;&gt;&lt;/a-text&gt;
+</span><span class="add">+    &lt;/a-scene&gt;
+</span><span class="add">+  &lt;/body&gt;
+</span><span class="add">+&lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>vr/a.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,79 @@
+<span class="add">+&lt;html&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;head&gt;
+</span><span class="add">+        &lt;title&gt;A-Frame Starter Kit - Mini Planetarium&lt;/title&gt;
+</span><span class="add">+        &lt;meta name=&quot;description&quot; content=&quot;Build your own planetarium with A-frame&quot;&gt;
+</span><span class="add">+
+</span><span class="add">+        &lt;!-- This turns our HTML into A-Frame! --&gt;
+</span><span class="add">+        &lt;script src=&quot;https://aframe.io/releases/0.8.2/aframe.min.js&quot;&gt;&lt;/script&gt;
+</span><span class="add">+    &lt;/head&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;body&gt;
+</span><span class="add">+        &lt;!-- a-scene contains all our A-Frame HTML --&gt;
+</span><span class="add">+        &lt;a-scene&gt;
+</span><span class="add">+
+</span><span class="add">+            &lt;!-- the sky is our background, try changing the color or removing
+</span><span class="add">+            it --&gt;
+</span><span class="add">+            &lt;a-sky color=&quot;midnightblue&quot;&gt;&lt;/a-sky&gt;
+</span><span class="add">+
+</span><span class="add">+            &lt;!-- our basic planets, these are not to scale in any way--&gt;
+</span><span class="add">+            &lt;a-sphere id=&quot;sun&quot; position=&quot;-13 2 -10&quot; radius=&quot;4&quot; color=&quot;#F5C85D&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+            &lt;a-sphere id=&quot;mercury&quot; position=&quot;-7 2 -10&quot; radius=&quot;.25&quot; color=&quot;#AF886D&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+            &lt;a-sphere id=&quot;venus&quot; position=&quot;-5 2 -10&quot; radius=&quot;.5&quot; color=&quot;#ECBFBF&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+            &lt;a-sphere id=&quot;mars&quot; position=&quot;-1 2 -10&quot; radius=&quot;.25&quot; color=&quot;#CF503A&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+
+</span><span class="add">+            &lt;!--notice this one doens&apos;t have a radius? If you don&apos;t specify one,
+</span><span class="add">+            A-Frame uses the default, which is 1 --&gt;
+</span><span class="add">+            &lt;a-sphere id=&quot;jupiter&quot; position=&quot;1 2 -10&quot; color=&quot;#C9957A&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+            &lt;a-sphere id=&quot;pluto&quot; position=&quot;13 2 -10&quot; radius=&quot;.10&quot; color=&quot;#BFCFD4&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+
+</span><span class="add">+            &lt;!-- a not so basic planet- it&apos;s Earth with our moon wrapped up
+</span><span class="add">+            together in an a-entity component  to keep them organized and placed
+</span><span class="add">+            in relation to each other. --&gt;
+</span><span class="add">+
+</span><span class="add">+            &lt;a-entity id=&quot;earth-and-moon&quot; position=&quot;-3 2 -10&quot;&gt;
+</span><span class="add">+
+</span><span class="add">+                &lt;!-- the positions in here are in relation to each other, not to
+</span><span class="add">+                the other planets, if you want to change the position of that
+</span><span class="add">+                you need to do it on a-entity or remove a-entity --&gt;
+</span><span class="add">+                &lt;a-sphere position=&quot;0 0 0&quot; radius=&quot;.5&quot; color=&quot;#6DCBE7&quot; id=&quot;earth&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+                &lt;a-sphere position=&quot;-1 0 0&quot; radius=&quot;.10&quot; color=&quot;#DBE0DE&quot; id=&quot;moon&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+
+</span><span class="add">+            &lt;/a-entity&gt;
+</span><span class="add">+
+</span><span class="add">+            &lt;!-- the other not-so-basic planets, these have rings around them.
+</span><span class="add">+            The rings are made of torii (singular torus) a shape that can be
+</span><span class="add">+            used to make donuts, tubes and yes, ring shapes--&gt;
+</span><span class="add">+            &lt;a-entity id=&quot;saturn-container&quot; position=&quot;4 2 -10&quot;&gt;
+</span><span class="add">+                &lt;a-sphere position=&quot;0 0 0 &quot; radius=&quot;.8&quot; color=&quot;#F8EC99&quot; id=&quot;saturn&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+                &lt;a-torus id=&quot;saturn-ring-1&quot; color=&quot;#57524A&quot; segments-tubular=&quot;50&quot; radius=&quot;3.2&quot; radius-tubular=&quot;0.1&quot;
+</span><span class="add">+                    rotation=&quot;90 0 0&quot; scale=&quot;.44 .44 0.04&quot;&gt;&lt;/a-torus&gt;
+</span><span class="add">+                &lt;a-torus id=&quot;saturn-ring-2&quot; color=&quot;#A29A87&quot; segments-tubular=&quot;50&quot; radius=&quot;2.4&quot; radius-tubular=&quot;0.2&quot;
+</span><span class="add">+                    rotation=&quot;90 0 0&quot; scale=&quot;.44 .44 0.04&quot;&gt;&lt;/a-torus&gt;
+</span><span class="add">+            &lt;/a-entity&gt;
+</span><span class="add">+
+</span><span class="add">+            &lt;a-entity id=&quot;uranus-container&quot; position=&quot;7 2 -10&quot;&gt;
+</span><span class="add">+                &lt;a-sphere id=&quot;uranus&quot; radius=&quot;.75&quot; color=&quot;#73AAF8&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+                &lt;a-torus id=&quot;uranus-ring&quot; color=&quot;#FFFFFF&quot; segments-tubular=&quot;50&quot; radius=&quot;1.5&quot; radius-tubular=&quot;0.01&quot;
+</span><span class="add">+                    rotation=&quot;-10 90 0&quot; scale=&quot;.75 .75 0.075&quot;&gt;&lt;/a-torus&gt;
+</span><span class="add">+            &lt;/a-entity&gt;
+</span><span class="add">+
+</span><span class="add">+            &lt;a-entity id=&quot;neptune-container&quot; position=&quot;10 2 -10&quot;&gt;
+</span><span class="add">+                &lt;a-sphere id=&quot;neptune&quot; radius=&quot;.75&quot; color=&quot;#3453BD&quot;&gt;&lt;/a-sphere&gt;
+</span><span class="add">+                &lt;a-torus id=&quot;neptune-ring-1&quot; color=&quot;#FFFFFF&quot; segments-tubular=&quot;50&quot; radius=&quot;2&quot; radius-tubular=&quot;0.01&quot;
+</span><span class="add">+                    rotation=&quot;90 0 0&quot; scale=&quot;.75 .75 0.075&quot; opacity=&quot;0.8&quot;&gt;&lt;/a-torus&gt;
+</span><span class="add">+                &lt;a-torus id=&quot;neptune-ring-2&quot; color=&quot;#FFFFFF&quot; segments-tubular=&quot;50&quot; radius=&quot;1.7&quot; radius-tubular=&quot;0.05&quot;
+</span><span class="add">+                    rotation=&quot;90 0 0&quot; scale=&quot;.75 .75 0.075&quot; opacity=&quot;0.8&quot;&gt;&lt;/a-torus&gt;
+</span><span class="add">+                &lt;a-torus id=&quot;neptune-ring-3&quot; color=&quot;#FFFFFF&quot; segments-tubular=&quot;50&quot; radius=&quot;1.3&quot; radius-tubular=&quot;0.01&quot;
+</span><span class="add">+                    rotation=&quot;90 0 0&quot; scale=&quot;.75 .75 0.075&quot; opacity=&quot;0.8&quot;&gt;&lt;/a-torus&gt;
+</span><span class="add">+            &lt;/a-entity&gt;
+</span><span class="add">+
+</span><span class="add">+        &lt;/a-scene&gt;
+</span><span class="add">+        
+</span><span class="add">+        &lt;!-- include the Glitch button to show what the webpage is about and to
+</span><span class="add">+        make it easier for folks to view source and remix --&gt;
+</span><span class="add">+        &lt;div class=&quot;glitchButton&quot; style=&quot;position:fixed;top:20px;right:20px;&quot;&gt;&lt;/div&gt;
+</span><span class="add">+        &lt;script src=&quot;https://button.glitch.me/button.js&quot;&gt;&lt;/script&gt;
+</span><span class="add">+    &lt;/body&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>blogroll.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,6 +8,12 @@
+<span class="def"> BLOGROLL = []
+</span><span class="def"> 
+</span><span class="def"> BLOGROLL.append([
+</span><span class="add">+    &quot;Sandy Maguire&apos;s Reasonably Polymorphic&quot;,
+</span><span class="add">+    &quot;https://reasonablypolymorphic.com/&quot;,
+</span><span class="add">+    &quot;reasonablypolymorphic.com&quot;,
+</span><span class="add">+])
+</span><span class="add">+
+</span><span class="add">+BLOGROLL.append([
+</span><span class="def">     &quot;Bartosz Milewski&apos;s Programming Cafe&quot;,
+</span><span class="def">     &quot;https://bartoszmilewski.com&quot;,
+</span><span class="def">     &quot;bartoszmilewski.com&quot;,
+</span></pre>
+</div></div>
+  </body>
+</html>

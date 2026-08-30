@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - focus_view will get surface from view if not provided</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/357da79563a597762f7cf8b1a714054ff72fbbe2.html">357da79563a597762f7cf8b1a714054ff72fbbe2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/9757af28cb92a1d0d5be44137bf24024a8da73d4.html">9757af28cb92a1d0d5be44137bf24024a8da73d4</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-11 23:21:41 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-11 23:22:11 +0000
+
+focus_view will get surface from view if not provided
+</pre><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,6 +19,8 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void focus_view(struct view *view, struct wlr_surface *surface) {
+</span><span class="add">+    /* view can be NULL. In that case focus is removed from any focussed surface. */
+</span><span class="add">+    /* surface can be NULL. In that case focus goes to view-&gt;surface-&gt;surface. */
+</span><span class="def">     struct wlr_surface *prev_surface = wimp.seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     if (prev_surface == surface) {
+</span><span class="def"> 	return;
+</span>@@ -39,9 +41,12 @@
+<span class="def"> 	    wl_list_remove(&amp;view-&gt;link);
+</span><span class="def"> 	    wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+</span><span class="def"> 	}
+</span><span class="sub">-
+</span><span class="sub">-	wlr_xdg_toplevel_set_activated(view-&gt;surface, true);
+</span><span class="sub">-
+</span><span class="add">+	if (!surface) {
+</span><span class="add">+	    surface = view-&gt;surface-&gt;surface;
+</span><span class="add">+	}
+</span><span class="add">+	if (wlr_surface_is_xdg_surface(surface)) {
+</span><span class="add">+	    wlr_xdg_toplevel_set_activated(view-&gt;surface, true);
+</span><span class="add">+	}
+</span><span class="def"> 	struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(wimp.seat);
+</span><span class="def"> 	wlr_seat_keyboard_notify_enter(
+</span><span class="def"> 	    wimp.seat, view-&gt;surface-&gt;surface, keyboard-&gt;keycodes,
+</span>@@ -172,7 +177,7 @@
+<span class="def"> 	scratchpad-&gt;is_mapped = true;
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+    focus_view(view, NULL);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -197,7 +202,7 @@
+<span class="def"> 
+</span><span class="def">     wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+</span><span class="def"> 	if (scratchpad-&gt;is_mapped) {
+</span><span class="sub">-	    focus_view(scratchpad-&gt;view, scratchpad-&gt;view-&gt;surface-&gt;surface);
+</span><span class="add">+	    focus_view(scratchpad-&gt;view, NULL);
+</span><span class="def"> 	    return;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span>@@ -205,7 +210,7 @@
+<span class="def">     if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="def"> 	struct view *next = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="def"> 	if (view != next) {
+</span><span class="sub">-	    focus_view(next, next-&gt;surface-&gt;surface);
+</span><span class="add">+	    focus_view(next, NULL);
+</span><span class="def"> 	    return;
+</span><span class="def"> 	}
+</span><span class="def">     };
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -75,7 +75,7 @@
+<span class="def"> 	focus_view(NULL, NULL);
+</span><span class="def">     } else {
+</span><span class="def"> 	struct view *view = wl_container_of(desk-&gt;views.next, view, link);
+</span><span class="sub">-	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+	focus_view(view, NULL);
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -98,7 +98,7 @@
+<span class="def"> 	wl_list_insert(&amp;desk-&gt;views, &amp;view-&gt;link);
+</span><span class="def"> 	if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="def"> 	    struct view *next_view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="sub">-	    focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="add">+	    focus_view(next_view, NULL);
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -106,7 +106,7 @@
+<span class="def">     if (next) {
+</span><span class="def"> 	unfullscreen();
+</span><span class="def"> 	pan_to_view(next);
+</span><span class="sub">-	focus_view(next, next-&gt;surface-&gt;surface);
+</span><span class="add">+	focus_view(next, NULL);
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span>@@ -302,7 +302,7 @@
+<span class="def"> 	) {
+</span><span class="def"> 	    continue;
+</span><span class="def"> 	}
+</span><span class="sub">-	focus_view(view, view-&gt;surface-&gt;surface);
+</span><span class="add">+	focus_view(view, NULL);
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

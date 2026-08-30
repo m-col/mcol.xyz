@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - clarify readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/98f8c44d2e217abb286e6eb56e00549672f154ed.html">98f8c44d2e217abb286e6eb56e00549672f154ed</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/ec4699bd6d8000c863d2383839beae5c43387c2b.html">ec4699bd6d8000c863d2383839beae5c43387c2b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-04-16 12:08:43 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-04-16 12:08:43 +0100
+
+clarify readme
+</pre><div class="diff">
+  <p>
+    <b>readme.md</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,9 +1,9 @@
+<span class="def"> my personal zsh env
+</span><span class="def"> 
+</span><span class="def">     git clone --recurse-submodules https://github.com/mcolligan/zshrc.git ~/.zsh
+</span><span class="add">+    ~/.zsh/install
+</span><span class="def"> 
+</span><span class="sub">-and run install.
+</span><span class="add">+This appears to be required on raspberry pi:
+</span><span class="def"> 
+</span><span class="def">     locale-gen en_US.UTF-8
+</span><span class="def"> 
+</span><span class="sub">-appears to be required on raspberry pi
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>install</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,7 +21,7 @@
+<span class="def"> # inform if zsh is not yet installed
+</span><span class="def"> if ! type zsh 2&gt; /dev/null
+</span><span class="def"> then
+</span><span class="sub">-	echo &quot;zsh is not installed on this system.&quot;
+</span><span class="add">+    echo &quot;zsh is not installed on this system.&quot;
+</span><span class="def"> fi
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - add argparsing with forking option</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/fc91bb73cb8250524fe865c4e69e10b45d1c21d2.html">fc91bb73cb8250524fe865c4e69e10b45d1c21d2</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/76f9291b532537750c2797f6ae2e8e4a01bfcc4c.html">76f9291b532537750c2797f6ae2e8e4a01bfcc4c</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-20 12:20:47 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-20 12:20:47 +0100
+
+add argparsing with forking option
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,6 +24,7 @@
+<span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="def"> #include &lt;xcb/xcb.h&gt;
+</span><span class="def"> #include &lt;xcb/shape.h&gt;
+</span><span class="add">+#include &lt;unistd.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #ifdef DEBUG
+</span><span class="def"> #include &lt;stdio.h&gt;
+</span>@@ -182,16 +183,37 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-int main()
+</span><span class="add">+int main(int argc, char *argv[])
+</span><span class="def"> {
+</span><span class="add">+    int opt;
+</span><span class="add">+    int to_fork = 0;
+</span><span class="add">+    int pid;
+</span><span class="def">     xcb_window_t wid;
+</span><span class="def"> 
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;f&quot;)) != -1) {
+</span><span class="add">+        switch (opt) {
+</span><span class="add">+	    case &apos;f&apos;:
+</span><span class="add">+		to_fork = 1;
+</span><span class="add">+		break;
+</span><span class="add">+        }
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     conn = xcb_connect(NULL, NULL);
+</span><span class="def">     if (xcb_connection_has_error(conn))
+</span><span class="sub">-	exit(1);
+</span><span class="sub">-    screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
+</span><span class="add">+	exit(EXIT_FAILURE);
+</span><span class="def"> 
+</span><span class="add">+    screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
+</span><span class="def">     wid = setup_window();
+</span><span class="add">+
+</span><span class="add">+    if (to_fork) {
+</span><span class="add">+	pid = fork();
+</span><span class="add">+	if (pid &gt; 0) {
+</span><span class="add">+	    exit(EXIT_SUCCESS);
+</span><span class="add">+	} else if (pid &lt; 0) {
+</span><span class="add">+	    exit(EXIT_FAILURE);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="def">     event_loop();
+</span><span class="def"> 
+</span><span class="def">     xcb_unmap_window(conn, wid);
+</span></pre>
+</div></div>
+  </body>
+</html>

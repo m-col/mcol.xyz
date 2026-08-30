@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - bindigs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/8318debf1d9ddb64776f94ba84bd83c57f46b892.html">8318debf1d9ddb64776f94ba84bd83c57f46b892</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/ef06cb42d3fa9a6b9b13df177198c07ec64d3cc1.html">ef06cb42d3fa9a6b9b13df177198c07ec64d3cc1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-19 20:56:30 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-19 20:56:30 +0100
+
+bindigs
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -14,7 +14,7 @@
+<span class="def"> 
+</span><span class="def"> from libqtile import bar, hook, layout, qtile, widget
+</span><span class="def"> from libqtile.backend import base
+</span><span class="sub">-from libqtile.config import Drag, Key, Match, Screen
+</span><span class="add">+from libqtile.config import Click, Drag, Key, Match, Screen
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.widget.backlight import ChangeDirection
+</span><span class="def"> from libqtile.widget.battery import Battery, BatteryState
+</span>@@ -157,7 +157,6 @@
+<span class="def">     ([mod],             &apos;d&apos;,        lazy.spawncmd(),                            &quot;Spawn with Prompt&quot;),
+</span><span class="def">     ([mod],             &apos;Return&apos;,   lazy.spawn(term),                           &quot;Spawn terminal&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;f&apos;,        lazy.spawn(&quot;firefox&quot;),                      &quot;Spawn Firefox&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;],  &apos;f&apos;,        lazy.spawn(&quot;tor-browser --allow-remote&quot;),   &quot;Spawn Tor Browser&quot;),
+</span><span class="def">     ([],                &apos;Print&apos;,    lazy.spawn(&quot;screenshot copy&quot;),              &quot;Screenshot to clipboard&quot;),
+</span><span class="def">     ([&apos;shift&apos;],         &apos;Print&apos;,    lazy.spawn(&apos;screenshot&apos;),                   &quot;Screenshot to file&quot;),
+</span><span class="def">     ([mod],             &apos;p&apos;,        lazy.spawn(&apos;get_password_rofi&apos;),            &quot;Keepass passwords&quot;),
+</span>@@ -167,6 +166,7 @@
+<span class="def"> 
+</span><span class="def"> # Mouse control
+</span><span class="def"> mouse = [
+</span><span class="add">+    Click([mod], &quot;Button2&quot;,     lazy.window.kill()),
+</span><span class="def">     Drag([mod], &quot;Button1&quot;,      lazy.window.set_position_floating(), start=lazy.window.get_position()),
+</span><span class="def">     Drag([mod, alt], &quot;Button1&quot;, lazy.window.set_size_floating(), start=lazy.window.get_size()),
+</span><span class="def"> ]
+</span></pre>
+</div></div>
+  </body>
+</html>

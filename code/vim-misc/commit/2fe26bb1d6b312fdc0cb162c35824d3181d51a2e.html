@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - use lazy lua</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/2fe26bb1d6b312fdc0cb162c35824d3181d51a2e.html">2fe26bb1d6b312fdc0cb162c35824d3181d51a2e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/2de9e1056a0dedc5518c137a2354f57ff9fc29cf.html">2de9e1056a0dedc5518c137a2354f57ff9fc29cf</a>
+<b>Author:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Date:</b> 2025-06-06 11:26:58 +0100
+<b>Committer:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-06-06 11:26:58 +0100
+
+use lazy lua
+</pre><div class="diff">
+  <p>
+    <b>start/vim-gutentags</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit aa47c5e29c37c52176c44e61c780032dfacef3dd
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/supermaven-nvim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit 07d20fce48a5629686aefb0a7cd4b25e33947d50
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/theme.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -79,6 +79,3 @@
+<span class="def"> &quot;&quot; character for split barrier
+</span><span class="def"> &quot;set fillchars=vert:\ 
+</span><span class="def"> &quot;hi VertSplit cterm=bold term=bold ctermbg=12
+</span><span class="sub">-
+</span><span class="sub">-&quot; neovim stuff
+</span><span class="sub">-colorscheme catppuccin-macchiato
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/settings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -70,10 +70,6 @@
+<span class="def"> &quot;     set ttym=sgr
+</span><span class="def"> &quot; endif
+</span><span class="def"> 
+</span><span class="sub">-let g:indentLine_defaultGroup = &apos;LineNr&apos;
+</span><span class="sub">-let g:indentLine_char_list = [&apos;|&apos;, &apos;¦&apos;, &apos;┆&apos;, &apos;┊&apos;]
+</span><span class="sub">-let g:indentLine_conceallevel = 0
+</span><span class="sub">-
+</span><span class="def"> runtime macros/emoji-ab.vim
+</span><span class="def"> 
+</span><span class="def"> &quot; Only linters listed explicitly will be run.
+</span>@@ -104,11 +100,5 @@
+<span class="def"> let g:vim_json_conceal=0
+</span><span class="def"> let g:markdown_syntax_conceal=0
+</span><span class="def"> 
+</span><span class="sub">-&quot; Blamer plugin disable by default
+</span><span class="sub">-let g:blamer_delay = 1000
+</span><span class="sub">-let g:blamer_show_in_insert_modes = 0
+</span><span class="sub">-let g:blamer_date_format = &apos;%d/%m/%y&apos;
+</span><span class="sub">-highlight Blamer guifg=lightgrey
+</span><span class="sub">-
+</span><span class="def"> &quot; used by Ctrl-P, likely among other things
+</span><span class="def"> set wildignore+=*/tmp/*,*.so,*.swp,*.zip,node_modules,target,.mypy_cache
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,24 +1,166 @@
+<span class="def"> # neovim lua config
+</span><span class="def"> 
+</span><span class="sub">-require(&quot;supermaven-nvim&quot;).setup({
+</span><span class="sub">-    keymaps = {
+</span><span class="sub">-      accept_suggestion = &quot;&lt;Tab&gt;&quot;,
+</span><span class="sub">-      clear_suggestion = &quot;&lt;S-Tab&gt;&quot;,
+</span><span class="sub">-  }
+</span><span class="sub">-})
+</span><span class="add">+-- Initialize lazy.nvim
+</span><span class="add">+local lazypath = vim.fn.stdpath(&quot;data&quot;) .. &quot;/lazy/lazy.nvim&quot;
+</span><span class="add">+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+</span><span class="add">+  local lazyrepo = &quot;https://github.com/folke/lazy.nvim.git&quot;
+</span><span class="add">+  local out = vim.fn.system({ &quot;git&quot;, &quot;clone&quot;, &quot;--filter=blob:none&quot;, &quot;--branch=stable&quot;, lazyrepo, lazypath })
+</span><span class="add">+  if vim.v.shell_error ~= 0 then
+</span><span class="add">+    vim.api.nvim_echo({
+</span><span class="add">+      { &quot;Failed to clone lazy.nvim:\n&quot;, &quot;ErrorMsg&quot; },
+</span><span class="add">+      { out, &quot;WarningMsg&quot; },
+</span><span class="add">+      { &quot;\nPress any key to exit...&quot; },
+</span><span class="add">+    }, true, {})
+</span><span class="add">+    vim.fn.getchar()
+</span><span class="add">+    os.exit(1)
+</span><span class="add">+  end
+</span><span class="add">+end
+</span><span class="add">+vim.opt.rtp:prepend(lazypath)
+</span><span class="add">+
+</span><span class="add">+-- Make sure to setup `mapleader` and `maplocalleader` before
+</span><span class="add">+-- loading lazy.nvim so that mappings are correct.
+</span><span class="add">+-- This is also a good place to setup other settings (vim.opt)
+</span><span class="add">+vim.g.mapleader = &quot; &quot;
+</span><span class="add">+vim.g.maplocalleader = &quot;\\&quot;
+</span><span class="add">+
+</span><span class="add">+-- for nvim-tree.lua
+</span><span class="add">+vim.g.loaded_netrw = 1
+</span><span class="add">+vim.g.loaded_netrwPlugin = 1
+</span><span class="def"> 
+</span><span class="sub">-require(&apos;lualine&apos;).setup({
+</span><span class="sub">-    options = {
+</span><span class="sub">-	section_separators = &apos;&apos;,
+</span><span class="sub">-	component_separators = &apos;&apos;,
+</span><span class="sub">-	path = 3,
+</span><span class="add">+-- Setup lazy.nvim
+</span><span class="add">+require(&quot;lazy&quot;).setup({
+</span><span class="add">+  {
+</span><span class="add">+      &apos;catppuccin/nvim&apos;,
+</span><span class="add">+      name = &quot;catppuccin&quot;,
+</span><span class="add">+      lazy = false,
+</span><span class="add">+      priority = 1000,
+</span><span class="add">+      init = function()
+</span><span class="add">+        vim.cmd [[colorscheme catppuccin-mocha]]
+</span><span class="add">+      end,
+</span><span class="add">+  },
+</span><span class="add">+  {
+</span><span class="add">+    &apos;nvim-lualine/lualine.nvim&apos;,
+</span><span class="add">+    dependencies = { &apos;nvim-tree/nvim-web-devicons&apos; },
+</span><span class="add">+    opts = {
+</span><span class="add">+      options = {
+</span><span class="add">+        section_separators = &apos;&apos;,
+</span><span class="add">+        component_separators = &apos;&apos;,
+</span><span class="add">+        path = 3,
+</span><span class="add">+      },
+</span><span class="add">+      sections = {
+</span><span class="add">+        lualine_a = {&apos;mode&apos;},
+</span><span class="add">+        lualine_b = {},
+</span><span class="add">+        lualine_c = {&apos;filename&apos;},
+</span><span class="add">+        lualine_x = {&apos;encoding&apos;, &apos;fileformat&apos;, &apos;filetype&apos;},
+</span><span class="add">+        lualine_y = {&apos;progress&apos;},
+</span><span class="add">+        lualine_z = {&apos;location&apos;}
+</span><span class="add">+      },
+</span><span class="add">+    },
+</span><span class="add">+  },
+</span><span class="add">+  {
+</span><span class="add">+      &apos;Yggdroot/indentLine&apos;,
+</span><span class="add">+      init = function()
+</span><span class="add">+        vim.g.indentLine_defaultGroup = &apos;LineNr&apos;
+</span><span class="add">+        vim.g.indentLine_char_list = {&apos;|&apos;, &apos;¦&apos;, &apos;┆&apos;, &apos;┊&apos;}
+</span><span class="add">+        vim.g.indentLine_conceallevel = 0
+</span><span class="add">+      end
+</span><span class="add">+  },
+</span><span class="add">+  { &apos;neovimhaskell/haskell-vim&apos; },
+</span><span class="add">+  { &apos;dense-analysis/ale&apos; },
+</span><span class="add">+  {
+</span><span class="add">+    &apos;nvim-telescope/telescope.nvim&apos;,
+</span><span class="add">+    tag = &apos;0.1.8&apos;,
+</span><span class="add">+    dependencies = { &apos;nvim-lua/plenary.nvim&apos; },
+</span><span class="add">+    opts = {
+</span><span class="add">+      defaults = {
+</span><span class="add">+        mappings = {
+</span><span class="add">+        },
+</span><span class="add">+        preview = false,
+</span><span class="add">+      },
+</span><span class="add">+      pickers = {
+</span><span class="add">+      },
+</span><span class="add">+      extensions = {
+</span><span class="add">+      }
+</span><span class="add">+    },
+</span><span class="add">+  },
+</span><span class="add">+  {
+</span><span class="add">+      &apos;ctrlpvim/ctrlp.vim&apos;,
+</span><span class="add">+  },
+</span><span class="add">+  {
+</span><span class="add">+      &apos;ludovicchabant/vim-gutentags&apos;,
+</span><span class="add">+  },
+</span><span class="add">+  --{
+</span><span class="add">+  --    &apos;prichrd/netrw.nvim&apos;,
+</span><span class="add">+  --    dependencies = { &apos;nvim-tree/nvim-web-devicons&apos; },
+</span><span class="add">+  --    opts = {},
+</span><span class="add">+  --    use_devicons = true,
+</span><span class="add">+  --},
+</span><span class="add">+  --{
+</span><span class="add">+  --    &apos;nvim-tree/nvim-tree.lua&apos;,
+</span><span class="add">+  --    lazy = false,
+</span><span class="add">+  --    dependencies = {
+</span><span class="add">+  --      &quot;nvim-tree/nvim-web-devicons&quot;,
+</span><span class="add">+  --    },
+</span><span class="add">+  --    opts = {},
+</span><span class="add">+  --},
+</span><span class="add">+  --{
+</span><span class="add">+  --  &quot;supermaven-inc/supermaven-nvim&quot;,
+</span><span class="add">+  --  opts = {
+</span><span class="add">+  --    keymaps = {
+</span><span class="add">+  --      accept_suggestion = &quot;&lt;Tab&gt;&quot;,
+</span><span class="add">+  --      clear_suggestion = &quot;&lt;S-Tab&gt;&quot;,
+</span><span class="add">+  --    }
+</span><span class="add">+  --  },
+</span><span class="add">+  --},
+</span><span class="add">+  {
+</span><span class="add">+  &quot;yetone/avante.nvim&quot;,
+</span><span class="add">+  event = &quot;VeryLazy&quot;,
+</span><span class="add">+  version = false,
+</span><span class="add">+  opts = {
+</span><span class="add">+    provider = &quot;claude&quot;,
+</span><span class="add">+    --providers = {
+</span><span class="add">+    --  openai = {
+</span><span class="add">+    --    endpoint = &quot;https://api.openai.com/v1&quot;,
+</span><span class="add">+    --    model = &quot;gpt-4o&quot;, -- your desired model (or use gpt-4o, etc.)
+</span><span class="add">+    --    extra_request_body = {
+</span><span class="add">+    --      timeout = 30000, -- Timeout in milliseconds, increase this for reasoning models
+</span><span class="add">+    --      temperature = 0.75,
+</span><span class="add">+    --      max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
+</span><span class="add">+    --      --reasoning_effort = &quot;medium&quot;, -- low|medium|high, only used for reasoning models
+</span><span class="add">+    --    },
+</span><span class="add">+    --  },
+</span><span class="add">+    --},
+</span><span class="add">+  },
+</span><span class="add">+  dependencies = {
+</span><span class="add">+    &quot;nvim-treesitter/nvim-treesitter&quot;,
+</span><span class="add">+    &quot;stevearc/dressing.nvim&quot;,
+</span><span class="add">+    &quot;nvim-lua/plenary.nvim&quot;,
+</span><span class="add">+    &quot;MunifTanjim/nui.nvim&quot;,
+</span><span class="add">+    --- The below dependencies are optional,
+</span><span class="add">+    &quot;nvim-telescope/telescope.nvim&quot;, -- for file_selector provider telescope
+</span><span class="add">+    &quot;hrsh7th/nvim-cmp&quot;, -- autocompletion for avante commands and mentions
+</span><span class="add">+    &quot;nvim-tree/nvim-web-devicons&quot;,
+</span><span class="add">+    {
+</span><span class="add">+      -- support for image pasting
+</span><span class="add">+      &quot;HakonHarnes/img-clip.nvim&quot;,
+</span><span class="add">+      event = &quot;VeryLazy&quot;,
+</span><span class="add">+      opts = {
+</span><span class="add">+        default = {
+</span><span class="add">+          embed_image_as_base64 = false,
+</span><span class="add">+          prompt_for_file_name = false,
+</span><span class="add">+          drag_and_drop = {
+</span><span class="add">+            insert_mode = true,
+</span><span class="add">+          },
+</span><span class="add">+        },
+</span><span class="add">+      },
+</span><span class="def">     },
+</span><span class="sub">-    sections = {
+</span><span class="sub">-	lualine_a = {&apos;mode&apos;},
+</span><span class="sub">-	lualine_b = {},
+</span><span class="sub">-	lualine_c = {&apos;filename&apos;},
+</span><span class="sub">-	lualine_x = {&apos;encoding&apos;, &apos;fileformat&apos;, &apos;filetype&apos;},
+</span><span class="sub">-	lualine_y = {&apos;progress&apos;},
+</span><span class="sub">-	lualine_z = {&apos;location&apos;}
+</span><span class="add">+    {
+</span><span class="add">+      &apos;MeanderingProgrammer/render-markdown.nvim&apos;,
+</span><span class="add">+      opts = {
+</span><span class="add">+        file_types = { &quot;markdown&quot;, &quot;Avante&quot; },
+</span><span class="add">+      },
+</span><span class="add">+      ft = { &quot;markdown&quot;, &quot;Avante&quot; },
+</span><span class="def">     },
+</span><span class="add">+  },
+</span><span class="add">+}
+</span><span class="def"> })
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/lualine.nvim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit b431d228b7bbcdaea818bdc3e25b8cdbe861f056
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/indentLine</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit b96a75985736da969ac38b72a7716a8c57bdde98
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/haskell-vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit f35d02204b4813d1dbe8b0e98cc39701a4b8e15e
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/dhall-vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit bd9fd99f21dbc7174fb728a21d04e073ef7dd930
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ctrlp.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit 31be4c36b713a9637c7b530ee52127000a05ea39
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/catppuccin</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit 7be452ee067978cdc8b2c5f3411f0c71ffa612b9
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/blamer.nvim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit e0d43c11697300eb68f00d69df8b87deb0bf52dc
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/ale</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit 2e5f135836a700dcc6b787f10097ebdeb8e22abb
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitmodules</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,33 +1,3 @@
+<span class="sub">-[submodule &quot;start/ale&quot;]
+</span><span class="sub">-	path = start/ale
+</span><span class="sub">-	url = https://github.com/dense-analysis/ale
+</span><span class="def"> [submodule &quot;start/tide&quot;]
+</span><span class="def"> 	path = start/tide
+</span><span class="def"> 	url = https://github.com/m-col/tide
+</span><span class="sub">-[submodule &quot;start/haskell-vim&quot;]
+</span><span class="sub">-	path = start/haskell-vim
+</span><span class="sub">-	url = https://github.com/neovimhaskell/haskell-vim.git
+</span><span class="sub">-[submodule &quot;start/dhall-vim&quot;]
+</span><span class="sub">-	path = start/dhall-vim
+</span><span class="sub">-	url = https://github.com/vmchale/dhall-vim.git
+</span><span class="sub">-[submodule &quot;start/indentLine&quot;]
+</span><span class="sub">-	path = start/indentLine
+</span><span class="sub">-	url = https://github.com/Yggdroot/indentLine
+</span><span class="sub">-[submodule &quot;start/ctrlp.vim&quot;]
+</span><span class="sub">-	path = start/ctrlp.vim
+</span><span class="sub">-	url = https://github.com/ctrlpvim/ctrlp.vim
+</span><span class="sub">-[submodule &quot;start/vim-gutentags&quot;]
+</span><span class="sub">-	path = start/vim-gutentags
+</span><span class="sub">-	url = https://github.com/ludovicchabant/vim-gutentags
+</span><span class="sub">-[submodule &quot;start/blamer.nvim&quot;]
+</span><span class="sub">-	path = start/blamer.nvim
+</span><span class="sub">-	url = https://github.com/APZelos/blamer.nvim
+</span><span class="sub">-[submodule &quot;start/supermaven-nvim&quot;]
+</span><span class="sub">-	path = start/supermaven-nvim
+</span><span class="sub">-	url = https://github.com/supermaven-inc/supermaven-nvim
+</span><span class="sub">-[submodule &quot;start/catppuccin&quot;]
+</span><span class="sub">-	path = start/catppuccin
+</span><span class="sub">-	url = https://github.com/catppuccin/nvim
+</span><span class="sub">-[submodule &quot;start/lualine.nvim&quot;]
+</span><span class="sub">-	path = start/lualine.nvim
+</span><span class="sub">-	url = https://github.com/nvim-lualine/lualine.nvim
+</span></pre>
+</div></div>
+  </body>
+</html>

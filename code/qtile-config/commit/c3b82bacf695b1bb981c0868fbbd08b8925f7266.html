@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Update notification with closed-reason stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/c3b82bacf695b1bb981c0868fbbd08b8925f7266.html">c3b82bacf695b1bb981c0868fbbd08b8925f7266</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/b8aca9d4bff107971f896f8c6fd54351e70eec6f.html">b8aca9d4bff107971f896f8c6fd54351e70eec6f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-07-29 18:50:39 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-07-29 18:50:39 +0100
+
+Update notification with closed-reason stuff
+</pre><div class="diff">
+  <p>
+    <b>notification.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -23,7 +23,7 @@
+<span class="def"> from libqtile import configurable, hook, images, pangocffi, qtile
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.log_utils import logger
+</span><span class="sub">-from libqtile.notify import notifier
+</span><span class="add">+from libqtile.notify import notifier, ClosedReason
+</span><span class="def"> from libqtile.popup import Popup
+</span><span class="def"> 
+</span><span class="def"> if TYPE_CHECKING:
+</span>@@ -38,12 +38,6 @@
+<span class="def">         Notification = Any  # type: ignore
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-class ClosedReason:
+</span><span class="sub">-    expired = 1
+</span><span class="sub">-    dismissed = 2
+</span><span class="sub">-    method = 3  # CloseNotification method
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> class Server(configurable.Configurable):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     This class provides a full graphical notification manager for the
+</span>@@ -187,7 +181,7 @@
+<span class="def"> 
+</span><span class="def">         for win in range(self.max_windows):
+</span><span class="def">             popup = Popup(qtile, **popup_config)
+</span><span class="sub">-            popup.win.process_button_click = self._buttonpress(popup)
+</span><span class="add">+            popup.win.process_button_click = self._process_button_click(popup)
+</span><span class="def">             popup.notif = None
+</span><span class="def">             self._hidden.append(popup)
+</span><span class="def">             self._positions.append(
+</span>@@ -197,10 +191,12 @@
+<span class="def">                 )
+</span><span class="def">             )
+</span><span class="def"> 
+</span><span class="sub">-        await notifier.register(self._notify, Server.capabilities)
+</span><span class="add">+        await notifier.register(
+</span><span class="add">+            self._notify, Server.capabilities, on_close=self._on_close
+</span><span class="add">+        )
+</span><span class="def">         logger.info(&quot;Notification server started up successfully&quot;)
+</span><span class="def"> 
+</span><span class="sub">-    def _buttonpress(self, popup: Popup) -&gt; Callable:
+</span><span class="add">+    def _process_button_click(self, popup: Popup) -&gt; Callable:
+</span><span class="def">         def _(x: int, y: int, button: int) -&gt; None:
+</span><span class="def">             if button == 1:
+</span><span class="def">                 self._act(popup)
+</span>@@ -354,7 +350,7 @@
+<span class="def">                 self._send(self._queue.pop(0), popup)
+</span><span class="def">             else:
+</span><span class="def">                 self._hidden.append(popup)
+</span><span class="sub">-            notifier._service.NotificationClosed(popup.notif.id, 2 if clicked else 1)
+</span><span class="add">+            notifier._service.NotificationClosed(popup.notif.id, reason)
+</span><span class="def">         self._reposition()
+</span><span class="def"> 
+</span><span class="def">     def _act(self, popup: Popup) -&gt; None:
+</span></pre>
+</div></div>
+  </body>
+</html>

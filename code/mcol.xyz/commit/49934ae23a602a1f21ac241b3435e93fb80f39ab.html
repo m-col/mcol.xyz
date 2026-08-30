@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Deploy the blog and /code to GitHub Pages via a combined build</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/49934ae23a602a1f21ac241b3435e93fb80f39ab.html">49934ae23a602a1f21ac241b3435e93fb80f39ab</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/2d9c71eb2550a30c700594caf4203adca9705b6c.html">2d9c71eb2550a30c700594caf4203adca9705b6c</a>
+<b>Author:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Date:</b> 2026-08-30 18:32:15 +0000
+<b>Committer:</b> Claude &lt;<a href="mailto:noreply@anthropic.com">noreply@anthropic.com</a>&gt;
+<b>Committed:</b> 2026-08-30 18:32:15 +0000
+
+Deploy the blog and /code to GitHub Pages via a combined build
+
+Nothing was actually deployed anywhere (the old VPS deploy targets in the
+justfile are stale), so this wires up a single GitHub Pages site on the
+mcol.xyz custom domain covering both the blog and the git-hosting pages
+that /code/&lt;repo&gt; links throughout the posts have always pointed at.
+
+- Add gitja/ (config.dhall, descriptions.py, template/), restored from
+  011a6b8^ where it was deleted as apparent cruft - gitja is actually the
+  generator used in production. Kept together in its own folder rather
+  than scattered at the repo top level. config.dhall&apos;s repo list is
+  trimmed to the repos still public under this account (dropped: pixels,
+  pywayland, pywlroots, qtile, screenshot-gallery-generator - gone,
+  renamed, or not actually mine to host; also excludes private repos and
+  the m-col profile-README repo).
+- Add .github/workflows/deploy.yaml: builds the Pelican site and,
+  separately, builds gitja from source (stack) and clones the listed repos
+  as sibling checkouts (mirroring gitja&apos;s own CI, which self-hosts its
+  docs the same way), then combines both outputs into one tree - blog at
+  root, gitja output under code/ - and pushes it to gh-pages with a
+  mcol.xyz CNAME. Runs on push, on a schedule (the listed repos get
+  commits independently of this one), and on manual dispatch.
+- publishconf.py: turn off STATIC_CREATE_LINKS for production builds, since
+  the symlinks it creates for local dev would be broken once committed to
+  the gh-pages branch (nothing in that tree points back at content/).
+- Fix the qtile_borders_and_pixmaps.rst file link, which pointed at the
+  old stagit-style slash-preserving path; gitja&apos;s actual scheme flattens
+  the path with dots (qtools/borders/borders.py -&gt; qtools.borders.borders.py.html).
+- .gitignore the new build directories (gitja/output, _site, gitja-src).
+
+Still needed from the account side: enable Pages on this repo (source:
+gh-pages branch) and add the DNS records at Porkbun for mcol.xyz to point
+at GitHub Pages.
+
+Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt;
+Claude-Session: https://claude.ai/code/session_012RfZTyHvxLyVp4yaWmNvhN
+</pre><div class="diff">
+  <p>
+    <b>publishconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,3 +9,8 @@
+<span class="def"> 
+</span><span class="def"> FEED_ATOM = &quot;rss.xml&quot;
+</span><span class="def"> FEED_DOMAIN = SITEURL
+</span><span class="add">+
+</span><span class="add">+# Static files must be real copies, not symlinks, for a GitHub Pages
+</span><span class="add">+# deployment (the git tree pushed to gh-pages won&apos;t contain the content/
+</span><span class="add">+# directory the dev-mode symlinks point back into).
+</span><span class="add">+STATIC_CREATE_LINKS = False
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/template/template.html.include</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,18 @@
+<span class="add">+{#- Style credit goes to stagit. -#}
+</span><span class="add">+
+</span><span class="add">+&lt;!doctype html&gt;
+</span><span class="add">+&lt;html lang=&quot;en&quot;&gt;
+</span><span class="add">+  &lt;head&gt;
+</span><span class="add">+    &lt;meta charset=&quot;utf-8&quot;&gt;
+</span><span class="add">+    &lt;meta http-equiv=&quot;x-ua-compatible&quot; content=&quot;ie=edge&quot;&gt;
+</span><span class="add">+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+</span><span class="add">+    &lt;title&gt;{% block title %}{% endblock %}&lt;/title&gt;
+</span><span class="add">+    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;{{ host }}/code/style.css&quot;/&gt;
+</span><span class="add">+    &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;{{ host }}/favicon.png&quot;/&gt;
+</span><span class="add">+  &lt;/head&gt;
+</span><span class="add">+  &lt;body&gt;
+</span><span class="add">+
+</span><span class="add">+  {% block body %}
+</span><span class="add">+  {% endblock %}
+</span><span class="add">+  &lt;/body&gt;
+</span><span class="add">+&lt;/html&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/template/style.css</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,177 @@
+<span class="add">+/*
+</span><span class="add">+Credit to much of the styling here goes to stagit: https://codemadness.org/git/stagit/
+</span><span class="add">+*/
+</span><span class="add">+
+</span><span class="add">+@viewport {
+</span><span class="add">+    width: device-width;
+</span><span class="add">+    zoom: 1.0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+html {
+</span><span class="add">+    color: #000;
+</span><span class="add">+    font-family: monospace;
+</span><span class="add">+    font-size: 1em;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+body {
+</span><span class="add">+    max-width: 900px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+p {
+</span><span class="add">+    margin: 15px 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+li {
+</span><span class="add">+    list-style-type: square;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+h1, h2 {
+</span><span class="add">+    font-size: 1em;
+</span><span class="add">+    margin: 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+h2 {
+</span><span class="add">+    font-weight: bold;
+</span><span class="add">+    text-decoration: underline;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+::selection {
+</span><span class="add">+    background: #5D479D;
+</span><span class="add">+    color: #fff;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+table td {
+</span><span class="add">+    padding: 0 0.4em;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+td.link {
+</span><span class="add">+    text-align: right;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+a:target {
+</span><span class="add">+    background-color: #ddd;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#avatar {
+</span><span class="add">+    width: 32px;
+</span><span class="add">+    height: 32px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+a.d, a.h, a.i, a.line {
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#blob a, .desc {
+</span><span class="add">+    color: #777;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#blob a:hover {
+</span><span class="add">+    color: blue;
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+table thead td {
+</span><span class="add">+    font-weight: bold;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#content table td {
+</span><span class="add">+    vertical-align: top;
+</span><span class="add">+    white-space: nowrap;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#head {
+</span><span class="add">+    width: 100%;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#branches tr:hover td,
+</span><span class="add">+#tags tr:hover td,
+</span><span class="add">+#index tr:hover td,
+</span><span class="add">+#log tr:hover td,
+</span><span class="add">+#files tr:hover td {
+</span><span class="add">+    background-color: #eee;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#index tr td:nth-child(2),
+</span><span class="add">+#tags tr td:nth-child(3),
+</span><span class="add">+#branches tr td:nth-child(3),
+</span><span class="add">+#log tr td:nth-child(2) {
+</span><span class="add">+    white-space: normal;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+td.num {
+</span><span class="add">+    text-align: right;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+hr {
+</span><span class="add">+    border: 0;
+</span><span class="add">+    border-top: 1px solid #777;
+</span><span class="add">+    height: 1px;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+pre a.h {
+</span><span class="add">+    color: #00a;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.A,
+</span><span class="add">+span.i,
+</span><span class="add">+pre a.i {
+</span><span class="add">+    color: #070;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.D,
+</span><span class="add">+span.d,
+</span><span class="add">+pre a.d {
+</span><span class="add">+    color: #e00;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+pre a.h:hover,
+</span><span class="add">+pre a.i:hover,
+</span><span class="add">+pre a.d:hover {
+</span><span class="add">+    text-decoration: none;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.highlight, code {
+</span><span class="add">+    background: #eeeeef;
+</span><span class="add">+    color: black;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.highlight {
+</span><span class="add">+    white-space: pre-wrap;
+</span><span class="add">+    word-wrap: break-word;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.c, .ch, .cm, .cp, .cpf, .c1, .gh, .gp
+</span><span class="add">+{ color: #5D479D } /* comments */
+</span><span class="add">+
+</span><span class="add">+.err, .se, .o
+</span><span class="add">+{ color: #a53c21 } /* dark red */
+</span><span class="add">+
+</span><span class="add">+.sh, .si, .sx, .sr, .s1, .ss, .cs, .gd, .dl,
+</span><span class="add">+.s2, .nc, .vc, .vg, .vi, .vm, .nv, .sc, .s
+</span><span class="add">+{ color: #8f4ff0 } /* bright pink */
+</span><span class="add">+
+</span><span class="add">+.kn, .nb, .mb, .mf, .mh, .mi, .mo, .bp, .il, .m
+</span><span class="add">+{ color: #406794 } /* keywords (exit, eval) */
+</span><span class="add">+
+</span><span class="add">+.kt
+</span><span class="add">+{ color: #3e3e73 } /* light grey */
+</span><span class="add">+
+</span><span class="add">+.kc, .k, .ow, .kp, .kr
+</span><span class="add">+{ color: #406794 } /* key words */
+</span><span class="add">+
+</span><span class="add">+.esc, .l, .n, .x, .p, .gs, .ld, .na, .no, .ge
+</span><span class="add">+.nd, .ni, .nf, .nl, .nn, .nx, .py, .nt, .w, .fm, .g
+</span><span class="add">+{ color: black }
+</span><span class="add">+
+</span><span class="add">+.ne { color: #5fd75f }
+</span><span class="add">+
+</span><span class="add">+.gh, .gp, .cs, .gu, .ne, .cs
+</span><span class="add">+{ font-weight: bold }
+</span><span class="add">+
+</span><span class="add">+.diff .add {
+</span><span class="add">+    color: #0a0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+.diff .sub {
+</span><span class="add">+    color: #a00;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/template/repo/tree.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,29 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ name }} - target
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;table id=&quot;files&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Mode&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for file in tree %}
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;{{ file.mode_symbolic }}&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ file.href }}&quot;&gt;{{ file.path }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/template/repo/repo-table-header.html.include</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,24 @@
+<span class="add">+{#- This block is rendered at the top of every page. -#}
+</span><span class="add">+
+</span><span class="add">+&lt;table id=&quot;head&quot;&gt;
+</span><span class="add">+  &lt;tr&gt;
+</span><span class="add">+    &lt;td width=&quot;32px&quot; rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;&lt;img src=&quot;{{ host }}/avatar.png&quot; id=&quot;avatar&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+    &lt;td rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;{{ host }}&lt;/a&gt; / &lt;a href=&quot;{{ host }}/code/&quot;&gt;code&lt;/a&gt; / &lt;a href=&quot;{{ host }}/code/{{ name }}&quot;&gt;{{ name }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+    &lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/posts.html&quot;&gt;posts&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+  &lt;/tr&gt;
+</span><span class="add">+  &lt;tr&gt;
+</span><span class="add">+    &lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/about.html&quot;&gt;about&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+  &lt;/tr&gt;
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+&lt;hr&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;table&gt;
+</span><span class="add">+  &lt;tr&gt;&lt;td&gt;&lt;span class=&quot;desc&quot;&gt;{{ description }}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+  &lt;tr class=&quot;url&quot;&gt;&lt;td&gt;git clone &lt;a href=&quot;https://github.com/m-col/{{ name }}&quot;&gt;https://github.com/m-col/{{ name }}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+  &lt;tr&gt;&lt;td&gt;
+</span><span class="add">+    &lt;a href=&quot;{{ host }}/code/{{ name }}/tree.html&quot;&gt;Files&lt;/a&gt; | &lt;a href=&quot;{{ host }}/code/{{ name }}/refs.html&quot;&gt;Refs&lt;/a&gt;
+</span><span class="add">+    {% if readme %} | &lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ readme.href }}&quot;&gt;Readme&lt;/a&gt;{% endif %}
+</span><span class="add">+    {% if license %} | &lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ license.href }}&quot;&gt;License&lt;/a&gt;{% endif %}
+</span><span class="add">+  &lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+&lt;hr&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/template/repo/refs.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,37 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ name }} - Refs
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include  &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;h2&gt;Branches&lt;/h2&gt;
+</span><span class="add">+  &lt;table id=&quot;branches&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for branch in branches %}
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;{{ branch.name }}&lt;/td&gt;&lt;td&gt;{{ branch.authored[:16] }}&lt;/td&gt;&lt;td&gt;{{ branch.title }}&lt;/td&gt;&lt;td&gt;{{ branch.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+
+</span><span class="add">+  &lt;br&gt;
+</span><span class="add">+
+</span><span class="add">+  &lt;h2&gt;Tags&lt;/h2&gt;
+</span><span class="add">+  &lt;table id=&quot;tags&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for tag in tags %}
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;{{ tag.name }}&lt;/td&gt;&lt;td&gt;{{ tag.authored[:16] }}&lt;/td&gt;&lt;td&gt;{{ tag.title }}&lt;/td&gt;&lt;td&gt;{{ tag.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/template/repo/index.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,27 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ description }}
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;table id=&quot;log&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Date&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Commit message&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Author&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for commit in commits[:50] %}
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;{{ commit.authored[:16] }}&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;commit/{{ commit.id }}.html&quot;&gt;{{ commit.title }}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;{{ commit.author }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/template/repo/file.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,41 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ name }} - {{ file }}
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;p&gt;{{ file.mode_symbolic }} {{ file }}&lt;/p&gt;&lt;hr&gt;
+</span><span class="add">+
+</span><span class="add">+{% if file.is_directory %}
+</span><span class="add">+  &lt;table id=&quot;files&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Mode&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for child in file.contents %}
+</span><span class="add">+      &lt;tr&gt;
+</span><span class="add">+        &lt;td&gt;{{ child.mode_symbolic }}&lt;/td&gt;
+</span><span class="add">+        &lt;td&gt;&lt;a href=&quot;{{ host }}/code/{{ name }}/file/{{ child.href }}&quot;&gt;{{ child.path }}&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+      &lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+{% else %}
+</span><span class="add">+  {% if file.is_binary %}
+</span><span class="add">+  (File is binary)
+</span><span class="add">+  {% else %}
+</span><span class="add">+&lt;pre id=&quot;blob&quot;&gt;{% for line in split(file.contents, &apos;\n&apos;) %}
+</span><span class="add">+&lt;a href=&quot;#l{{ loop.index }}&quot; class=&quot;line&quot; id=&quot;l{{ loop.index }}&quot;&gt;{{ printf(&quot;%7v&quot;, loop.index) }}&lt;/a&gt; {{ line }}
+</span><span class="add">+{% endfor %}&lt;/pre&gt;
+</span><span class="add">+  {% endif %}
+</span><span class="add">+{% endif %}
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/template/repo/commit.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,46 @@
+<span class="add">+{% extends &quot;../template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+{{ name }} - {{ commit.title }}
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+{% include &quot;repo-table-header.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;pre&gt;&lt;b&gt;Commit&lt;/b&gt; &lt;a href=&quot;{{ host }}/code/{{ name }}/commit/{{ commit.id }}.html&quot;&gt;{{ commit.id }}&lt;/a&gt;
+</span><span class="add">+&lt;b&gt;Parent:&lt;/b&gt; &lt;a href=&quot;{{ host }}/code/{{ name }}/commit/{{ commit.parent }}.html&quot;&gt;{{ commit.parent }}&lt;/a&gt;
+</span><span class="add">+&lt;b&gt;Author:&lt;/b&gt; {{ commit.author }} &amp;lt;&lt;a href=&quot;mailto:{{ commit.author_email }}&quot;&gt;{{ commit.author_email }}&lt;/a&gt;&amp;gt;
+</span><span class="add">+&lt;b&gt;Date:&lt;/b&gt; {{ commit.authored }}
+</span><span class="add">+&lt;b&gt;Committer:&lt;/b&gt; {{ commit.committer }} &amp;lt;&lt;a href=&quot;mailto:{{ commit.committer_email }}&quot;&gt;{{ commit.committer_email }}&lt;/a&gt;&amp;gt;
+</span><span class="add">+&lt;b&gt;Committed:&lt;/b&gt; {{ commit.committed }}
+</span><span class="add">+
+</span><span class="add">+{{ commit.message }}
+</span><span class="add">+&lt;/pre&gt;
+</span><span class="add">+
+</span><span class="add">+{%- for diff in commit.diffs -%}
+</span><span class="add">+&lt;div class=&quot;diff&quot;&gt;
+</span><span class="add">+  &lt;p&gt;
+</span><span class="add">+    &lt;b&gt;{{ diff.new_file }}&lt;/b&gt;
+</span><span class="add">+    &lt;span class=&quot;status&quot;&gt;{{ diff.status }}&lt;/span&gt;
+</span><span class="add">+  &lt;/p&gt;
+</span><span class="add">+
+</span><span class="add">+  {% if diff.newfile != diff.oldfile %}
+</span><span class="add">+  &lt;p&gt;Renamed from {{ diff.old_file }}&lt;/p&gt;
+</span><span class="add">+  {% endif %}
+</span><span class="add">+
+</span><span class="add">+  &lt;pre&gt;
+</span><span class="add">+  {%- for hunk in diff.hunks -%}
+</span><span class="add">+  {{ hunk.header }}
+</span><span class="add">+
+</span><span class="add">+    {%- for line in hunk.lines -%}
+</span><span class="add">+      &lt;span class=&quot;{{ line.class }}&quot;&gt;{{ line.text }}&lt;/span&gt;
+</span><span class="add">+    {%- endfor -%}
+</span><span class="add">+
+</span><span class="add">+  {%- endfor -%}
+</span><span class="add">+  &lt;/pre&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{%- endfor -%}
+</span><span class="add">+
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/template/index.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,28 @@
+<span class="add">+{% extends &quot;template.html.include&quot; %}
+</span><span class="add">+
+</span><span class="add">+{%- block title -%}
+</span><span class="add">+mcol.xyz / code
+</span><span class="add">+{%- endblock -%}
+</span><span class="add">+
+</span><span class="add">+{% block body %}
+</span><span class="add">+&lt;table id=&quot;head&quot;&gt;
+</span><span class="add">+  &lt;tr&gt;&lt;td width=&quot;32px&quot; rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;&lt;img src=&quot;{{ host }}/avatar.png&quot; id=&quot;avatar&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+</span><span class="add">+    &lt;td rowspan=&quot;2&quot;&gt;&lt;a href=&quot;{{ host }}&quot;&gt;{{ host }}&lt;/a&gt; / &lt;a href=&quot;{{ host }}/code&quot;&gt;code&lt;/a&gt;&lt;/td&gt;&lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/posts.html&quot;&gt;posts&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td class=&quot;link&quot;&gt;&lt;a href=&quot;{{ host }}/about.html&quot;&gt;about&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+&lt;/table&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;hr&gt;
+</span><span class="add">+
+</span><span class="add">+&lt;div id=&quot;content&quot;&gt;
+</span><span class="add">+  &lt;table id=&quot;index&quot;&gt;
+</span><span class="add">+    &lt;thead&gt;
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Last commit&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+    &lt;/thead&gt;
+</span><span class="add">+
+</span><span class="add">+    &lt;tbody&gt;
+</span><span class="add">+      {% for repo in sort(repositories, by=&quot;updated&quot;, reverse=1) %}
+</span><span class="add">+      &lt;tr&gt;&lt;td&gt;&lt;a href=&quot;{{ repo.name }}&quot;&gt;{{ repo.name }}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;{{ repo.description }}&lt;/td&gt;&lt;td&gt;{{ repo.updated[:16] }}&lt;/td&gt;&lt;/tr&gt;
+</span><span class="add">+      {% endfor %}
+</span><span class="add">+    &lt;/tbody&gt;
+</span><span class="add">+  &lt;/table&gt;
+</span><span class="add">+&lt;/div&gt;
+</span><span class="add">+{% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/descriptions.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,38 @@
+<span class="add">+#!/usr/bin/env python3
+</span><span class="add">+#
+</span><span class="add">+# Writes a &apos;description&apos; file into each sibling repo checkout so gitja picks
+</span><span class="add">+# up a human-readable description instead of falling back to the repo&apos;s
+</span><span class="add">+# folder name. Run this after cloning the repos listed in config.dhall and
+</span><span class="add">+# before running gitja itself (see .github/workflows/deploy.yaml).
+</span><span class="add">+#
+</span><span class="add">+# Make sure to re-run this after editing any descriptions or adding repos.
+</span><span class="add">+
+</span><span class="add">+from pathlib import Path
+</span><span class="add">+
+</span><span class="add">+repo_dir = Path(__file__).resolve().parent.parent.parent
+</span><span class="add">+
+</span><span class="add">+descriptions = {
+</span><span class="add">+    &quot;bdf2flf&quot;: &quot;Convert BDF bitmap fonts to flf fonts for figlet&quot;,
+</span><span class="add">+    &quot;gitja&quot;: &quot;🐙 Templated web page generator for your git repositories&quot;,
+</span><span class="add">+    &quot;mcol.xyz&quot;: &quot;The main content of my blog mcol.xyz&quot;,
+</span><span class="add">+    &quot;mini-theme&quot;: &quot;A mini theme for the pelican static site generator&quot;,
+</span><span class="add">+    &quot;mkinitcpio-welcome&quot;: &apos;mkinitcpio hooks that print the word &quot;Welcome&quot; in big letters and draw a box for inputting an encryption password and catching the fsck output during early userspace. See blog post for a video: https://mcol.xyz/2020/06/ricing-early-userspace.html&apos;,
+</span><span class="add">+    &quot;pelican-microfeed&quot;: &quot;Pelican plugin to create tiny single-page feeds&quot;,
+</span><span class="add">+    &quot;pelican-minify-fontawesome&quot;: &quot;Pelican plugin to minify fontawesome assets to include used icons.&quot;,
+</span><span class="add">+    &quot;qtile-config&quot;: &quot;My Qtile window manager configuration&quot;,
+</span><span class="add">+    &quot;qtools&quot;: &quot;An (outdated) collection of plugins for Qtile.&quot;,
+</span><span class="add">+    &quot;sudoku-solver&quot;: &quot;A small haskell script to solve sudoku puzzles&quot;,
+</span><span class="add">+    &quot;tide&quot;: &quot;A tiny vim plugin that sends a word/line/paragraph of text from vim into a tmux pane for execution.&quot;,
+</span><span class="add">+    &quot;vim-misc&quot;: &quot;My vim configuration&quot;,
+</span><span class="add">+    &quot;wimp&quot;: &quot;gimp but for windows: a wayland compositor&quot;,
+</span><span class="add">+    &quot;xanadu&quot;: &quot;Virtual desktop underlay for Wayland and X11&quot;,
+</span><span class="add">+    &quot;xoop&quot;: &quot;Loop your X cursor around the screen 👉😎👉&quot;,
+</span><span class="add">+    &quot;zshrc&quot;: &quot;My zsh configuration&quot;,
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+for name, desc in descriptions.items():
+</span><span class="add">+    path = repo_dir / name / &quot;.git&quot; / &quot;description&quot;
+</span><span class="add">+    if not path.parent.is_dir():
+</span><span class="add">+        print(f&quot;skipping {name}: not checked out at {path.parent}&quot;)
+</span><span class="add">+        continue
+</span><span class="add">+    path.write_text(desc)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>gitja/config.dhall</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,38 @@
+<span class="add">+-- gitja config for generating the /code section of mcol.xyz.
+</span><span class="add">+--
+</span><span class="add">+-- This expects to be run from the mcol.xyz repo root, with the repos below
+</span><span class="add">+-- checked out as sibling directories of that checkout (see
+</span><span class="add">+-- .github/workflows/deploy.yaml), mirroring gitja&apos;s own CI setup. Paths
+</span><span class="add">+-- here are resolved relative to the working directory gitja is invoked
+</span><span class="add">+-- from, not relative to this file.
+</span><span class="add">+
+</span><span class="add">+let repos = &quot;..&quot;
+</span><span class="add">+
+</span><span class="add">+let folders =
+</span><span class="add">+    [ &quot;${repos}/bdf2flf&quot;
+</span><span class="add">+    , &quot;${repos}/gitja&quot;
+</span><span class="add">+    , &quot;${repos}/mcol.xyz&quot;
+</span><span class="add">+    , &quot;${repos}/mini-theme&quot;
+</span><span class="add">+    , &quot;${repos}/mkinitcpio-welcome&quot;
+</span><span class="add">+    , &quot;${repos}/pelican-microfeed&quot;
+</span><span class="add">+    , &quot;${repos}/pelican-minify-fontawesome&quot;
+</span><span class="add">+    , &quot;${repos}/qtile-config&quot;
+</span><span class="add">+    , &quot;${repos}/qtools&quot;
+</span><span class="add">+    , &quot;${repos}/sudoku-solver&quot;
+</span><span class="add">+    , &quot;${repos}/tide&quot;
+</span><span class="add">+    , &quot;${repos}/vim-misc&quot;
+</span><span class="add">+    , &quot;${repos}/wimp&quot;
+</span><span class="add">+    , &quot;${repos}/xanadu&quot;
+</span><span class="add">+    , &quot;${repos}/xoop&quot;
+</span><span class="add">+    , &quot;${repos}/zshrc&quot;
+</span><span class="add">+    ]
+</span><span class="add">+
+</span><span class="add">+let config =
+</span><span class="add">+    { repos = folders
+</span><span class="add">+    , scan = False
+</span><span class="add">+    , template = &quot;./gitja/template&quot;
+</span><span class="add">+    , output = &quot;./gitja/output&quot;
+</span><span class="add">+    , host = &quot;https://mcol.xyz&quot;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+in config
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>content/posts/foss/qtile_borders_and_pixmaps.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -97,4 +97,4 @@
+<span class="def"> .. _XCB: https://en.wikipedia.org/wiki/XCB
+</span><span class="def"> .. _trapezia: https://www.thefreedictionary.com/trapezia
+</span><span class="def"> .. _`Common Desktop Environment`: https://en.wikipedia.org/wiki/Common_Desktop_Environment
+</span><span class="sub">-.. _qtools: /code/qtools/file/qtools/borders/borders.py.html
+</span><span class="add">+.. _qtools: /code/qtools/file/qtools.borders.borders.py.html
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,3 +3,6 @@
+<span class="def"> output
+</span><span class="def"> content/screenshots
+</span><span class="def"> .venv
+</span><span class="add">+gitja/output
+</span><span class="add">+_site
+</span><span class="add">+gitja-src
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.github/workflows/deploy.yaml</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,84 @@
+<span class="add">+name: Deploy
+</span><span class="add">+
+</span><span class="add">+on:
+</span><span class="add">+  push:
+</span><span class="add">+    branches: [master]
+</span><span class="add">+  schedule:
+</span><span class="add">+    # Repos listed in gitja/config.dhall get new commits independently of
+</span><span class="add">+    # this repo, so rebuild periodically to pick those up. gitja only
+</span><span class="add">+    # regenerates pages that have actually changed, so this is cheap.
+</span><span class="add">+    - cron: &quot;0 */6 * * *&quot;
+</span><span class="add">+  workflow_dispatch:
+</span><span class="add">+
+</span><span class="add">+concurrency:
+</span><span class="add">+  group: pages
+</span><span class="add">+  cancel-in-progress: true
+</span><span class="add">+
+</span><span class="add">+permissions:
+</span><span class="add">+  contents: write
+</span><span class="add">+
+</span><span class="add">+jobs:
+</span><span class="add">+  deploy:
+</span><span class="add">+    runs-on: ubuntu-latest
+</span><span class="add">+    steps:
+</span><span class="add">+      - uses: actions/checkout@v4
+</span><span class="add">+
+</span><span class="add">+      - name: Install uv
+</span><span class="add">+        uses: astral-sh/setup-uv@v4
+</span><span class="add">+        with:
+</span><span class="add">+          enable-cache: true
+</span><span class="add">+
+</span><span class="add">+      - name: Build blog
+</span><span class="add">+        run: |
+</span><span class="add">+          uv sync --locked
+</span><span class="add">+          uv run pelican content -o output -s publishconf.py
+</span><span class="add">+
+</span><span class="add">+      - uses: haskell-actions/setup@v2
+</span><span class="add">+        with:
+</span><span class="add">+          enable-stack: true
+</span><span class="add">+
+</span><span class="add">+      - name: Clone gitja
+</span><span class="add">+        run: git clone --depth 1 https://github.com/m-col/gitja gitja-src
+</span><span class="add">+
+</span><span class="add">+      - uses: actions/cache@v4
+</span><span class="add">+        with:
+</span><span class="add">+          path: ~/.stack
+</span><span class="add">+          key: ${{ runner.os }}-stack-${{ hashFiles(&apos;gitja-src/stack.yaml.lock&apos;) }}
+</span><span class="add">+
+</span><span class="add">+      - name: Build gitja
+</span><span class="add">+        run: |
+</span><span class="add">+          cd gitja-src
+</span><span class="add">+          stack --no-terminal install
+</span><span class="add">+          echo &quot;$HOME/.local/bin&quot; &gt;&gt; &quot;$GITHUB_PATH&quot;
+</span><span class="add">+
+</span><span class="add">+      - name: Clone repos listed on /code
+</span><span class="add">+        run: |
+</span><span class="add">+          cd ..
+</span><span class="add">+          for repo in bdf2flf mini-theme mkinitcpio-welcome pelican-microfeed \
+</span><span class="add">+                      pelican-minify-fontawesome qtile-config qtools \
+</span><span class="add">+                      sudoku-solver tide vim-misc wimp xanadu xoop zshrc; do
+</span><span class="add">+            git clone --depth 100 &quot;https://github.com/m-col/$repo&quot; &quot;$repo&quot;
+</span><span class="add">+          done
+</span><span class="add">+          # mcol.xyz itself is already checked out as this workflow&apos;s own repo,
+</span><span class="add">+          # already sitting in the right sibling location for config.dhall&apos;s
+</span><span class="add">+          # &quot;repos = ..&quot; to find it.
+</span><span class="add">+
+</span><span class="add">+      - name: Write repo descriptions
+</span><span class="add">+        run: python3 gitja/descriptions.py
+</span><span class="add">+
+</span><span class="add">+      - name: Build /code pages
+</span><span class="add">+        run: gitja -c gitja/config.dhall -q
+</span><span class="add">+
+</span><span class="add">+      - name: Assemble site
+</span><span class="add">+        run: |
+</span><span class="add">+          mkdir -p _site
+</span><span class="add">+          cp -r output/. _site/
+</span><span class="add">+          mkdir -p _site/code
+</span><span class="add">+          cp -r gitja/output/. _site/code/
+</span><span class="add">+
+</span><span class="add">+      - name: Deploy to GitHub Pages
+</span><span class="add">+        uses: JamesIves/github-pages-deploy-action@v4
+</span><span class="add">+        with:
+</span><span class="add">+          branch: gh-pages
+</span><span class="add">+          folder: _site
+</span><span class="add">+          cname: mcol.xyz
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Make repo list available in all templates</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/05a183562b5469348078df3a24d2ba0876c7e50a.html">05a183562b5469348078df3a24d2ba0876c7e50a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/5778e56f81619179068a193b1b3759bfea6eef39.html">5778e56f81619179068a193b1b3759bfea6eef39</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-26 00:20:14 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-26 00:21:23 +0000
+
+Make repo list available in all templates
+
+Closes #8
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -36,7 +36,9 @@
+<span class="def"> their web pages using the loaded templates.
+</span><span class="def"> -}
+</span><span class="def"> run :: Env -&gt; IO [Repo]
+</span><span class="sub">-run env = mapM (processRepo env) =&lt;&lt; loadRepos env
+</span><span class="add">+run env = do
+</span><span class="add">+    repos &lt;- loadRepos env
+</span><span class="add">+    mapM (processRepo env repos) repos
+</span><span class="def"> 
+</span><span class="def"> ----------------------------------------------------------------------------------------
+</span><span class="def"> -- Private -----------------------------------------------------------------------------
+</span>@@ -61,11 +63,12 @@
+<span class="def"> repository doesn&apos;t exist or is unreadable in any way we can forget about it and move on
+</span><span class="def"> (after informing the user of course).
+</span><span class="def"> -}
+</span><span class="sub">-processRepo :: Env -&gt; Repo -&gt; IO Repo
+</span><span class="sub">-processRepo env repo = withRepository lgFactory (toFilePath . repositoryPath $ repo) $ processRepo&apos; env repo
+</span><span class="add">+processRepo :: Env -&gt; [Repo] -&gt; Repo -&gt; IO Repo
+</span><span class="add">+processRepo env repos repo =
+</span><span class="add">+    withRepository lgFactory (toFilePath . repositoryPath $ repo) $ processRepo&apos; env repos repo
+</span><span class="def"> 
+</span><span class="sub">-processRepo&apos; :: Env -&gt; Repo -&gt; ReaderT LgRepo IO Repo
+</span><span class="sub">-processRepo&apos; env repo = do
+</span><span class="add">+processRepo&apos; :: Env -&gt; [Repo] -&gt; Repo -&gt; ReaderT LgRepo IO Repo
+</span><span class="add">+processRepo&apos; env repos repo = do
+</span><span class="def">     let name = dirname . repositoryPath $ repo
+</span><span class="def">     let output = envOutputDirectory env &lt;/&gt; name
+</span><span class="def"> 
+</span>@@ -81,7 +84,7 @@
+<span class="def">             tree &lt;- getTree gitHead
+</span><span class="def">             tags &lt;- getRefs &quot;refs/tags/&quot;
+</span><span class="def">             branches &lt;- getRefs &quot;refs/heads/&quot;
+</span><span class="sub">-            let scope = package env name (repositoryDescription repo) commits tree tags branches
+</span><span class="add">+            let scope = package env repos name (repositoryDescription repo) commits tree tags branches
+</span><span class="def"> 
+</span><span class="def">             -- Create the destination folders
+</span><span class="def">             commitDir &lt;- liftIO . parseRelDir $ &quot;commit&quot;
+</span>@@ -97,7 +100,8 @@
+<span class="def">             mapM_ (genTarget output scope quiet True $ envFileTemplate env) tree -- TODO: detect file changes
+</span><span class="def"> 
+</span><span class="def">             -- Return the repo with the head so the index page can use it. --
+</span><span class="sub">-            return $ repo{repositoryHead = Just . head $ commits}
+</span><span class="add">+            return
+</span><span class="add">+                repo{repositoryHead = Just . head $ commits}
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="def"> The role of the function above is to gather information about a git repository and
+</span>@@ -107,6 +111,7 @@
+<span class="def"> -}
+</span><span class="def"> package ::
+</span><span class="def">     Env -&gt;
+</span><span class="add">+    [Repo] -&gt;
+</span><span class="def">     Path Rel Dir -&gt;
+</span><span class="def">     Text -&gt;
+</span><span class="def">     [Commit LgRepo] -&gt;
+</span>@@ -114,9 +119,10 @@
+<span class="def">     [Ref] -&gt;
+</span><span class="def">     [Ref] -&gt;
+</span><span class="def">     HashMap.HashMap Text (GVal RunRepo)
+</span><span class="sub">-package env name description commits tree tags branches =
+</span><span class="add">+package env repos name description commits tree tags branches =
+</span><span class="def">     HashMap.fromList
+</span><span class="def">         [ (&quot;host&quot;, toGVal . envHost $ env)
+</span><span class="add">+        , (&quot;repos&quot;, toGVal repos)
+</span><span class="def">         , (&quot;name&quot;, toGVal . pack . init . toFilePath $ name)
+</span><span class="def">         , (&quot;description&quot;, toGVal description)
+</span><span class="def">         , (&quot;commits&quot;, toGVal . reverse $ commits) -- Could be optimised
+</span></pre>
+</div></div>
+  </body>
+</html>

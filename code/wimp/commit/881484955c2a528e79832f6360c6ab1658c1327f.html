@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Rendering corner areas and drag on them to resize windows</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/881484955c2a528e79832f6360c6ab1658c1327f.html">881484955c2a528e79832f6360c6ab1658c1327f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/bd719e46da3325a43e514432438dbd781e2194c1.html">bd719e46da3325a43e514432438dbd781e2194c1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-13 12:10:34 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-13 12:10:34 +0000
+
+Rendering corner areas and drag on them to resize windows
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,6 +19,8 @@
+<span class="def"> #define is_readable(p) (access(p, R_OK) != -1)
+</span><span class="def"> #define is_executable(p) (access(p, R_OK | X_OK) != -1)
+</span><span class="def"> 
+</span><span class="add">+#define CORNER 24
+</span><span class="add">+
+</span><span class="def"> enum cursor_mode {
+</span><span class="def">     CURSOR_PASSTHROUGH,
+</span><span class="def">     CURSOR_MOD,
+</span>@@ -215,7 +217,7 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> enum direction {
+</span><span class="sub">-    NONE = 0,
+</span><span class="add">+    NO_DIRECTION = 0,
+</span><span class="def">     UP = 1 &lt;&lt; 0,
+</span><span class="def">     RIGHT = 1 &lt;&lt; 1,
+</span><span class="def">     DOWN = 1 &lt;&lt; 2,
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/output.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -61,15 +61,15 @@
+<span class="def"> 	    struct wlr_box corners = {
+</span><span class="def"> 		.x = borders.x,
+</span><span class="def"> 		.y = borders.y,
+</span><span class="sub">-		.width = 24,
+</span><span class="sub">-		.height = 24,
+</span><span class="add">+		.width = CORNER,
+</span><span class="add">+		.height = CORNER,
+</span><span class="def"> 	    };
+</span><span class="def"> 	    float *corner = rdata-&gt;is_focussed ?
+</span><span class="def"> 		wimp.current_desk-&gt;corner_focus : wimp.current_desk-&gt;corner_normal;
+</span><span class="def"> 	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="sub">-	    corners.x = borders.x + borders.width - 24;
+</span><span class="add">+	    corners.x = borders.x + borders.width - CORNER;
+</span><span class="def"> 	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="sub">-	    corners.y = borders.y + borders.height - 24;
+</span><span class="add">+	    corners.y = borders.y + borders.height - CORNER;
+</span><span class="def"> 	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span><span class="def"> 	    corners.x = borders.x;
+</span><span class="def"> 	    wlr_render_rect(rdata-&gt;renderer, &amp;corners, corner, output-&gt;transform_matrix);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -168,6 +168,67 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static enum wlr_edges pointer_in_view_corner(struct view *view) {
+</span><span class="add">+    /* It is assumed that the pointer is above the view. */
+</span><span class="add">+    double x = wimp.cursor-&gt;x;
+</span><span class="add">+    double y = wimp.cursor-&gt;y;
+</span><span class="add">+    double zoom = wimp.current_desk-&gt;zoom;
+</span><span class="add">+    int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="add">+    enum wlr_edges edges = WLR_EDGE_NONE;
+</span><span class="add">+
+</span><span class="add">+    struct wlr_box inner = {
+</span><span class="add">+	.x = view-&gt;x * zoom,
+</span><span class="add">+	.y = view-&gt;y * zoom,
+</span><span class="add">+	.width = view-&gt;surface-&gt;geometry.width * zoom,
+</span><span class="add">+	.height = view-&gt;surface-&gt;geometry.height * zoom,
+</span><span class="add">+    };
+</span><span class="add">+    struct wlr_box outer = {
+</span><span class="add">+	.x = inner.x - border_width * zoom,
+</span><span class="add">+	.y = inner.y - border_width * zoom,
+</span><span class="add">+	.width = inner.width + border_width * 2 * zoom,
+</span><span class="add">+	.height = inner.height + border_width * 2 * zoom,
+</span><span class="add">+    };
+</span><span class="add">+
+</span><span class="add">+    if (x &lt;= inner.x) {
+</span><span class="add">+	edges |= WLR_EDGE_LEFT;
+</span><span class="add">+	if (y &lt;= outer.y + CORNER) {
+</span><span class="add">+	    edges |= WLR_EDGE_TOP;
+</span><span class="add">+	} else if (outer.y + outer.height - CORNER &lt;= y) {
+</span><span class="add">+	    edges |= WLR_EDGE_BOTTOM;
+</span><span class="add">+	}
+</span><span class="add">+	return edges;
+</span><span class="add">+    }
+</span><span class="add">+    if (inner.x + inner.width &lt;= x) {
+</span><span class="add">+	edges |= WLR_EDGE_RIGHT;
+</span><span class="add">+	if (y &lt;= outer.y + CORNER) {
+</span><span class="add">+	    edges |= WLR_EDGE_TOP;
+</span><span class="add">+	} else if (outer.y + outer.height - CORNER &lt;= y) {
+</span><span class="add">+	    edges |= WLR_EDGE_BOTTOM;
+</span><span class="add">+	}
+</span><span class="add">+	return edges;
+</span><span class="add">+    }
+</span><span class="add">+    if (y &lt;= inner.y) {
+</span><span class="add">+	edges |= WLR_EDGE_TOP;
+</span><span class="add">+	if (x &lt;= outer.x + CORNER) {
+</span><span class="add">+	    edges |= WLR_EDGE_LEFT;
+</span><span class="add">+	} else if (outer.x + outer.width - CORNER &lt;= x) {
+</span><span class="add">+	    edges |= WLR_EDGE_RIGHT;
+</span><span class="add">+	}
+</span><span class="add">+	return edges;
+</span><span class="add">+    }
+</span><span class="add">+    if (inner.y + inner.height &lt;= y) {
+</span><span class="add">+	edges |= WLR_EDGE_BOTTOM;
+</span><span class="add">+	if (x &lt;= outer.x + CORNER) {
+</span><span class="add">+	    edges |= WLR_EDGE_LEFT;
+</span><span class="add">+	} else if (outer.x + outer.width - CORNER &lt;= x) {
+</span><span class="add">+	    edges |= WLR_EDGE_RIGHT;
+</span><span class="add">+	}
+</span><span class="add">+	return edges;
+</span><span class="add">+    }
+</span><span class="add">+    return edges;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static void process_cursor_motion(uint32_t time, double dx, double dy) {
+</span><span class="def">     double sx, sy;
+</span><span class="def">     struct wlr_seat *seat;
+</span>@@ -280,7 +341,23 @@
+<span class="def">     else {
+</span><span class="def"> 	struct view *view = under_pointer(&amp;surface, &amp;sx, &amp;sy, &amp;is_layer);
+</span><span class="def"> 	if (!is_layer) {
+</span><span class="sub">-	    focus_view(view, surface);
+</span><span class="add">+	    if (view) {
+</span><span class="add">+		enum wlr_edges edges = pointer_in_view_corner(view);
+</span><span class="add">+		if (edges) {
+</span><span class="add">+		    wimp.grabbed_view = view;
+</span><span class="add">+		    wimp.resize_edges = edges;
+</span><span class="add">+		    wimp.grab_x = wimp.cursor-&gt;x - view-&gt;x * wimp.current_desk-&gt;zoom;
+</span><span class="add">+		    wimp.grab_y = wimp.cursor-&gt;y - view-&gt;y * wimp.current_desk-&gt;zoom;
+</span><span class="add">+		    wlr_xdg_surface_get_geometry(view-&gt;surface, &amp;wimp.grab_geobox);
+</span><span class="add">+		    wimp.grab_geobox.x = view-&gt;x;
+</span><span class="add">+		    wimp.grab_geobox.y = view-&gt;y;
+</span><span class="add">+		    wimp.cursor_mode = CURSOR_RESIZE;
+</span><span class="add">+		} else {
+</span><span class="add">+		    focus_view(view, surface);
+</span><span class="add">+		}
+</span><span class="add">+	    } else {
+</span><span class="add">+		focus_view(view, surface);
+</span><span class="add">+	    }
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -388,7 +388,7 @@
+<span class="def"> 	    width = output-&gt;width;
+</span><span class="def"> 	    height = output-&gt;height / 2;
+</span><span class="def"> 	    break;
+</span><span class="sub">-	case NONE:
+</span><span class="add">+	case NO_DIRECTION:
+</span><span class="def"> 	    return;
+</span><span class="def">     }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

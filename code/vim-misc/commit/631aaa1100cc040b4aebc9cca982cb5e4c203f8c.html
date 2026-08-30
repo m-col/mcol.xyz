@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - replace copilot with supermaven</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/631aaa1100cc040b4aebc9cca982cb5e4c203f8c.html">631aaa1100cc040b4aebc9cca982cb5e4c203f8c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/8d6b430109bf0a2f2a3448884f0f1d79ad9af211.html">8d6b430109bf0a2f2a3448884f0f1d79ad9af211</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2024-07-05 14:56:54 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2024-07-05 14:56:54 +0100
+
+replace copilot with supermaven
+</pre><div class="diff">
+  <p>
+    <b>start/supermaven-nvim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1 @@
+<span class="add">+Subproject commit c7ab94a6bcde96c79ff51afd6a1494606bb6f10b
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+
+</span><span class="add">+require(&quot;supermaven-nvim&quot;).setup({})
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/copilot.vim</b>
+    <span class="status">Deleted</span>
+  </p>
+
+  
+  <pre>@@ -1 +0,0 @@
+<span class="sub">-Subproject commit 25feddf8e3aa79f0573c8f43ddb13c44c530cfa5
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitmodules</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,12 +16,12 @@
+<span class="def"> [submodule &quot;start/ctrlp.vim&quot;]
+</span><span class="def"> 	path = start/ctrlp.vim
+</span><span class="def"> 	url = https://github.com/ctrlpvim/ctrlp.vim
+</span><span class="sub">-[submodule &quot;start/copilot.vim&quot;]
+</span><span class="sub">-	path = start/copilot.vim
+</span><span class="sub">-	url = https://github.com/github/copilot.vim
+</span><span class="def"> [submodule &quot;start/vim-gutentags&quot;]
+</span><span class="def"> 	path = start/vim-gutentags
+</span><span class="def"> 	url = https://github.com/ludovicchabant/vim-gutentags
+</span><span class="def"> [submodule &quot;start/blamer.nvim&quot;]
+</span><span class="def"> 	path = start/blamer.nvim
+</span><span class="def"> 	url = https://github.com/APZelos/blamer.nvim
+</span><span class="add">+[submodule &quot;start/supermaven-nvim&quot;]
+</span><span class="add">+	path = start/supermaven-nvim
+</span><span class="add">+	url = https://github.com/supermaven-inc/supermaven-nvim
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>.gitignore</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1,2 @@
+<span class="def"> .DS_Store
+</span><span class="add">+tags
+</span></pre>
+</div></div>
+  </body>
+</html>

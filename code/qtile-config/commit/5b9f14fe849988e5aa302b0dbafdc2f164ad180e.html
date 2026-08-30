@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Keep static windows on top</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/5b9f14fe849988e5aa302b0dbafdc2f164ad180e.html">5b9f14fe849988e5aa302b0dbafdc2f164ad180e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/72bdb059c5fd4db1f663b70736756547c538172a.html">72bdb059c5fd4db1f663b70736756547c538172a</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-25 23:58:53 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-25 23:58:53 +0100
+
+Keep static windows on top
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,6 +13,7 @@
+<span class="def"> from typing import TYPE_CHECKING
+</span><span class="def"> 
+</span><span class="def"> from libqtile import bar, hook, layout, qtile, widget
+</span><span class="add">+from libqtile.backend import base
+</span><span class="def"> from libqtile.config import Drag, Key, Match, Screen
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> from libqtile.widget.backlight import ChangeDirection
+</span>@@ -430,6 +431,14 @@
+<span class="def">         groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;, &apos;q&apos;, &apos;w&apos;, &apos;e&apos;]
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+@hook.subscribe.client_focus
+</span><span class="add">+def _(_):
+</span><span class="add">+    # Keep Static windows on top
+</span><span class="add">+    for window in qtile.windows_map.values():
+</span><span class="add">+        if isinstance(window, base.Static):
+</span><span class="add">+            window.cmd_bring_to_front()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> @hook.subscribe.screen_change
+</span><span class="def"> async def _(_):
+</span><span class="def">     # Reconfigure GroupBox visible groups
+</span></pre>
+</div></div>
+  </body>
+</html>

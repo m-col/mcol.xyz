@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Simplify populate function</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/541956b8e78b2a1bcd0f96965d8dbd0c2cdc2ba0.html">541956b8e78b2a1bcd0f96965d8dbd0c2cdc2ba0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/6c7c3b45fa71f88a81a76ac4f8aa674bcf13af26.html">6c7c3b45fa71f88a81a76ac4f8aa674bcf13af26</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-19 11:11:19 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-19 11:11:19 +0100
+
+Simplify populate function
+</pre><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -41,13 +41,7 @@
+<span class="def">     return ()
+</span><span class="def"> 
+</span><span class="def"> populate :: Gtk.ListStore -&gt; FilePath -&gt; IO ()
+</span><span class="sub">-populate listStore root = do
+</span><span class="sub">-    contents &lt;- ls root
+</span><span class="sub">-    addItems contents
+</span><span class="sub">-    return ()
+</span><span class="sub">-  where
+</span><span class="sub">-    addItems :: [FilePath] -&gt; IO [()]
+</span><span class="sub">-    addItems paths = sequence $ map (addItem listStore) paths
+</span><span class="add">+populate listStore root = ls root &gt;&gt;= mconcat . map (addItem listStore)
+</span><span class="def"> 
+</span><span class="def"> addItem :: Gtk.ListStore -&gt; FilePath -&gt; IO ()
+</span><span class="def"> addItem listStore path = do
+</span></pre>
+</div></div>
+  </body>
+</html>

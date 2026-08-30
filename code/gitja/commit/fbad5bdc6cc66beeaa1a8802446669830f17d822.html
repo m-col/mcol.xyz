@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Add test for repo scope</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/fbad5bdc6cc66beeaa1a8802446669830f17d822.html">fbad5bdc6cc66beeaa1a8802446669830f17d822</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/7260b794051d413c4975cd91554e4b72facb11fa.html">7260b794051d413c4975cd91554e4b72facb11fa</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-11-26 01:47:16 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-11-26 01:47:16 +0000
+
+Add test for repo scope
+</pre><div class="diff">
+  <p>
+    <b>test/templates/repo/index.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,6 +1,17 @@
+<span class="def"> {% extends &quot;../title.html.include&quot; -%}
+</span><span class="sub">-{%- block title -%}{{ repo.name }}{%- endblock -%}
+</span><span class="add">+{%- block title -%}{{ name }}{%- endblock -%}
+</span><span class="def"> 
+</span><span class="def"> {% block body %}
+</span><span class="sub">-repository
+</span><span class="add">+scope: repository
+</span><span class="add">+host: {{ host }}
+</span><span class="add">+repos: {{ repos }}
+</span><span class="add">+name: {{ name }}
+</span><span class="add">+description: {{ description }}
+</span><span class="add">+commits: (skipped)
+</span><span class="add">+tree: (skipped)
+</span><span class="add">+tags: (skipped)
+</span><span class="add">+branches: {{ branches }}
+</span><span class="add">+    branches[0].name: {{ branches[0].name }}
+</span><span class="add">+readme.path: {{ readme.path }}
+</span><span class="add">+license.path: {{ license.path }}
+</span><span class="def"> {% endblock %}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>test/expected/gitserve/index.html</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,14 @@
+<span class="add">+gitserve
+</span><span class="add">+scope: repository
+</span><span class="add">+host: https://github.com/m-col/gitserve
+</span><span class="add">+repos: gitserve
+</span><span class="add">+name: gitserve
+</span><span class="add">+description: 🐙 Templated web page generator for your git repositories
+</span><span class="add">+
+</span><span class="add">+commits: (skipped)
+</span><span class="add">+tree: (skipped)
+</span><span class="add">+tags: (skipped)
+</span><span class="add">+branches: master
+</span><span class="add">+    branches[0].name: master
+</span><span class="add">+readme.path: README.rst
+</span><span class="add">+license.path: LICENSE
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>mcol.xyz / a quick and dirty permissions container</title>
+		<meta charset=utf-8 />
+		<meta name=author content=mcol>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/main.css type=text/css />
+<link href="https://mcol.xyz/rss.xml"
+	type="application/atom+xml" rel="alternate" title="mcol.xyz"
+/>
+		<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	</head>
+
+	<body>
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="/avatar.png"/></a></td>
+				<td rowspan="2"><a href=/>mcol.xyz</a> / <a href=/posts.html>posts</a> / <a href=/2020/03/a-quick-and-dirty-permissions-container.html>a quick and dirty permissions container</a>
+</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				<td class="link"><a href="/about.html">about</a></td>
+			</tr>
+		</table>
+		<hr>
+
+<p>Although the vast majority of the software installed on my Linux daily driver
+is fully free and open source, and in general is trustworthy, over time I've
+had to make use of some programs that are closed source and created by entities
+who I wouldn't want to trust on my system.</p>
+<p>The quick and easy (lazy) solution I've opted for is to give these programs
+their own user and home directory and access to my normal user's X session.</p>
+<p>For example, we can create a user and home directory for steam (as root):</p>
+<div class="highlight"><pre><span></span>useradd<span class="w"> </span>--create-home<span class="w"> </span>steam
+</pre></div>
+<p>We probably want our normal user to be able to launch the program with its user
+without needing to enter a password every time. To do this, we need to add a
+line equivalent to this to our sudoers rules:</p>
+<div class="highlight"><pre><span></span>mcol<span class="w"> </span><span class="nv">ALL</span><span class="o">=(</span>steam<span class="o">)</span><span class="w"> </span>NOPASSWD:<span class="w"> </span>/usr/bin/steam
+</pre></div>
+<p>If we were to launch it now, it wouldn't have access to the running X session
+owned by our normal user. We can use <code>xhost</code> to give the new steam user
+access to the X session. This is best wrapped in a script that looks like:</p>
+<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+xhost<span class="w"> </span>+SI:localuser:steam
+sudo<span class="w"> </span>--set-home<span class="w"> </span>-u<span class="w"> </span>steam<span class="w"> </span>/usr/bin/steam<span class="w"> </span><span class="nv">$@</span>
+</pre></div>
+<p>I call this script <code>steam</code> and put it in a folder on my path inside my
+home folder. This way, I can just execute <code>steam</code> as my normal user and
+the program runs as expected in my X session, but its permissions keep it
+restricted to its own home folder.</p>
+<p>This setup also lets us set firewall rules specific to the program, as nftables
+and iptables support the configuration of rules that match a user's UID. For
+example, if we wanted nftables to block connections from steam that weren't
+going through a VPN we could add this line to our outbound chain:</p>
+<div class="highlight"><pre><span></span>oifname<span class="w"> </span><span class="nv">$vpn_interface</span><span class="w"> </span>skuid<span class="w"> </span>steam<span class="w"> </span>accept
+oifname<span class="w"> </span>!<span class="o">=</span><span class="w"> </span><span class="nv">$vpn_interface</span><span class="w"> </span>skuid<span class="w"> </span>steam<span class="w"> </span>reject
+</pre></div>
+<p>Simple and great for those who wear tinfoil hats!</p>
+
+
+<hr><p>If you have any thoughts, comments, criticisms, feel free to reach
+out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
+href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ</p>
+
+<footer><hr>
+<p>Published @ <time datetime="2020-03-29T00:00:00+00:00">2020-03-29</time>
+in <a href="/category/foss.html">foss</a>
+</p>
+</footer>
+
+		
+	</body>
+</html>

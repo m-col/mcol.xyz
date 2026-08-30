@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - src/shell.c</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- src/shell.c</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> #include &lt;wlr/types/wlr_layer_shell_v1.h&gt;
+<a href="#l2" class="line" id="l2">      2</a> #include &lt;wlr/types/wlr_output_damage.h&gt;
+<a href="#l3" class="line" id="l3">      3</a> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+<a href="#l4" class="line" id="l4">      4</a> #include &lt;wlr/util/edges.h&gt;
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a> #include &quot;action.h&quot;
+<a href="#l7" class="line" id="l7">      7</a> #include &quot;output.h&quot;
+<a href="#l8" class="line" id="l8">      8</a> #include &quot;scratchpad.h&quot;
+<a href="#l9" class="line" id="l9">      9</a> #include &quot;types.h&quot;
+<a href="#l10" class="line" id="l10">     10</a> 
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> void view_apply_geometry(struct view *view, struct wlr_box *new) {
+<a href="#l13" class="line" id="l13">     13</a>     if (new-&gt;width &lt;= 0 || new-&gt;height &lt;= 0) {
+<a href="#l14" class="line" id="l14">     14</a> 	return;
+<a href="#l15" class="line" id="l15">     15</a>     }
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a>     struct wlr_box old = {
+<a href="#l18" class="line" id="l18">     18</a> 	.x = view-&gt;x,
+<a href="#l19" class="line" id="l19">     19</a> 	.y = view-&gt;y,
+<a href="#l20" class="line" id="l20">     20</a> 	.width = view-&gt;surface-&gt;geometry.width,
+<a href="#l21" class="line" id="l21">     21</a> 	.height = view-&gt;surface-&gt;geometry.height,
+<a href="#l22" class="line" id="l22">     22</a>     };
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a>     view-&gt;x = new-&gt;x;
+<a href="#l25" class="line" id="l25">     25</a>     view-&gt;y = new-&gt;y,
+<a href="#l26" class="line" id="l26">     26</a>     wlr_xdg_toplevel_set_size(view-&gt;surface, new-&gt;width, new-&gt;height);
+<a href="#l27" class="line" id="l27">     27</a>     damage_box(&amp;old, true);
+<a href="#l28" class="line" id="l28">     28</a>     damage_box(new, true);
+<a href="#l29" class="line" id="l29">     29</a> }
+<a href="#l30" class="line" id="l30">     30</a> 
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> void unmap_view(struct view *view) {
+<a href="#l33" class="line" id="l33">     33</a>     wl_signal_emit(&amp;view-&gt;surface-&gt;events.unmap, view);
+<a href="#l34" class="line" id="l34">     34</a> }
+<a href="#l35" class="line" id="l35">     35</a> 
+<a href="#l36" class="line" id="l36">     36</a> 
+<a href="#l37" class="line" id="l37">     37</a> void map_view(struct view *view) {
+<a href="#l38" class="line" id="l38">     38</a>     wl_signal_emit(&amp;view-&gt;surface-&gt;events.map, view);
+<a href="#l39" class="line" id="l39">     39</a> }
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a> 
+<a href="#l42" class="line" id="l42">     42</a> void focus(void *data, struct wlr_surface *surface, bool is_layer) {
+<a href="#l43" class="line" id="l43">     43</a>     /* view can be NULL. In that case focus is removed from any focussed surface. */
+<a href="#l44" class="line" id="l44">     44</a>     /* surface can be NULL. In that case focus goes to view-&gt;surface-&gt;surface. */
+<a href="#l45" class="line" id="l45">     45</a>     struct layer_view *lview;
+<a href="#l46" class="line" id="l46">     46</a>     struct view *view;
+<a href="#l47" class="line" id="l47">     47</a>     if (data) {
+<a href="#l48" class="line" id="l48">     48</a> 	if (is_layer) {
+<a href="#l49" class="line" id="l49">     49</a> 	    lview = (struct layer_view *)data;
+<a href="#l50" class="line" id="l50">     50</a> 	    if (!lview-&gt;surface-&gt;current.keyboard_interactive) {
+<a href="#l51" class="line" id="l51">     51</a> 		return;
+<a href="#l52" class="line" id="l52">     52</a> 	    }
+<a href="#l53" class="line" id="l53">     53</a> 	    if (!surface) {
+<a href="#l54" class="line" id="l54">     54</a> 		surface = lview-&gt;surface-&gt;surface;
+<a href="#l55" class="line" id="l55">     55</a> 	    }
+<a href="#l56" class="line" id="l56">     56</a> 	} else {
+<a href="#l57" class="line" id="l57">     57</a> 	    view = (struct view *)data;
+<a href="#l58" class="line" id="l58">     58</a> 	    if (!surface) {
+<a href="#l59" class="line" id="l59">     59</a> 		surface = view-&gt;surface-&gt;surface;
+<a href="#l60" class="line" id="l60">     60</a> 	    }
+<a href="#l61" class="line" id="l61">     61</a> 	}
+<a href="#l62" class="line" id="l62">     62</a>     }
+<a href="#l63" class="line" id="l63">     63</a>     struct wlr_surface *prev_surface = wimp.seat-&gt;keyboard_state.focused_surface;
+<a href="#l64" class="line" id="l64">     64</a> 
+<a href="#l65" class="line" id="l65">     65</a>     if (surface == prev_surface) {
+<a href="#l66" class="line" id="l66">     66</a> 	return;
+<a href="#l67" class="line" id="l67">     67</a>     }
+<a href="#l68" class="line" id="l68">     68</a>     wlr_seat_keyboard_notify_clear_focus(wimp.seat);
+<a href="#l69" class="line" id="l69">     69</a> 
+<a href="#l70" class="line" id="l70">     70</a>     if (prev_surface &amp;&amp; wlr_surface_is_xdg_surface(prev_surface)) {
+<a href="#l71" class="line" id="l71">     71</a> 	struct wlr_xdg_surface *prev_xdg_surface = wlr_xdg_surface_from_wlr_surface(prev_surface);
+<a href="#l72" class="line" id="l72">     72</a> 	wlr_xdg_toplevel_set_activated(prev_xdg_surface, false);
+<a href="#l73" class="line" id="l73">     73</a> 	damage_by_view(prev_xdg_surface-&gt;data, true);
+<a href="#l74" class="line" id="l74">     74</a>     }
+<a href="#l75" class="line" id="l75">     75</a> 
+<a href="#l76" class="line" id="l76">     76</a>     if (!data) {
+<a href="#l77" class="line" id="l77">     77</a> 	wimp.focussed_layer_view = NULL;
+<a href="#l78" class="line" id="l78">     78</a> 	return;
+<a href="#l79" class="line" id="l79">     79</a>     }
+<a href="#l80" class="line" id="l80">     80</a> 
+<a href="#l81" class="line" id="l81">     81</a>     struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(wimp.seat);
+<a href="#l82" class="line" id="l82">     82</a> 
+<a href="#l83" class="line" id="l83">     83</a>     if (is_layer) {
+<a href="#l84" class="line" id="l84">     84</a> 	if (!lview-&gt;surface-&gt;mapped || !lview-&gt;surface-&gt;current.keyboard_interactive) {
+<a href="#l85" class="line" id="l85">     85</a> 	    return;
+<a href="#l86" class="line" id="l86">     86</a> 	}
+<a href="#l87" class="line" id="l87">     87</a> 	if (!surface) {
+<a href="#l88" class="line" id="l88">     88</a> 	    surface = lview-&gt;surface-&gt;surface;
+<a href="#l89" class="line" id="l89">     89</a> 	}
+<a href="#l90" class="line" id="l90">     90</a> 	wlr_seat_keyboard_notify_enter(
+<a href="#l91" class="line" id="l91">     91</a> 	    wimp.seat, surface, keyboard-&gt;keycodes,
+<a href="#l92" class="line" id="l92">     92</a> 	    keyboard-&gt;num_keycodes, &amp;keyboard-&gt;modifiers
+<a href="#l93" class="line" id="l93">     93</a> 	);
+<a href="#l94" class="line" id="l94">     94</a> 	wlr_surface_send_enter(surface, lview-&gt;surface-&gt;output);
+<a href="#l95" class="line" id="l95">     95</a> 	wimp.focussed_layer_view = lview;
+<a href="#l96" class="line" id="l96">     96</a> 	damage_by_lview(lview);
+<a href="#l97" class="line" id="l97">     97</a> 
+<a href="#l98" class="line" id="l98">     98</a>     } else {
+<a href="#l99" class="line" id="l99">     99</a> 	if (view-&gt;is_scratchpad) {
+<a href="#l100" class="line" id="l100">    100</a> 	    struct scratchpad *scratchpad = scratchpad_from_view(view);
+<a href="#l101" class="line" id="l101">    101</a> 	    scratchpad-&gt;is_mapped = true;
+<a href="#l102" class="line" id="l102">    102</a> 	} else {
+<a href="#l103" class="line" id="l103">    103</a> 	    wl_list_remove(&amp;view-&gt;link);
+<a href="#l104" class="line" id="l104">    104</a> 	    wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+<a href="#l105" class="line" id="l105">    105</a> 	}
+<a href="#l106" class="line" id="l106">    106</a> 	if (!surface) {
+<a href="#l107" class="line" id="l107">    107</a> 	    surface = view-&gt;surface-&gt;surface;
+<a href="#l108" class="line" id="l108">    108</a> 	}
+<a href="#l109" class="line" id="l109">    109</a> 	if (wlr_surface_is_xdg_surface(surface)) {
+<a href="#l110" class="line" id="l110">    110</a> 	    wlr_xdg_toplevel_set_activated(view-&gt;surface, true);
+<a href="#l111" class="line" id="l111">    111</a> 	}
+<a href="#l112" class="line" id="l112">    112</a> 	wlr_seat_keyboard_notify_enter(
+<a href="#l113" class="line" id="l113">    113</a> 	    wimp.seat, surface, keyboard-&gt;keycodes,
+<a href="#l114" class="line" id="l114">    114</a> 	    keyboard-&gt;num_keycodes, &amp;keyboard-&gt;modifiers
+<a href="#l115" class="line" id="l115">    115</a> 	);
+<a href="#l116" class="line" id="l116">    116</a> 	damage_by_view(view, true);
+<a href="#l117" class="line" id="l117">    117</a>     }
+<a href="#l118" class="line" id="l118">    118</a> }
+<a href="#l119" class="line" id="l119">    119</a> 
+<a href="#l120" class="line" id="l120">    120</a> 
+<a href="#l121" class="line" id="l121">    121</a> void focus_view(struct view *view, struct wlr_surface *surface) {
+<a href="#l122" class="line" id="l122">    122</a>     focus(view, surface, false);
+<a href="#l123" class="line" id="l123">    123</a> }
+<a href="#l124" class="line" id="l124">    124</a> 
+<a href="#l125" class="line" id="l125">    125</a> 
+<a href="#l126" class="line" id="l126">    126</a> void find_focus() {
+<a href="#l127" class="line" id="l127">    127</a>     struct scratchpad *scratchpad;
+<a href="#l128" class="line" id="l128">    128</a>     wl_list_for_each(scratchpad, &amp;wimp.scratchpads, link) {
+<a href="#l129" class="line" id="l129">    129</a> 	if (scratchpad-&gt;is_mapped) {
+<a href="#l130" class="line" id="l130">    130</a> 	    focus_view(scratchpad-&gt;view, NULL);
+<a href="#l131" class="line" id="l131">    131</a> 	    return;
+<a href="#l132" class="line" id="l132">    132</a> 	}
+<a href="#l133" class="line" id="l133">    133</a>     }
+<a href="#l134" class="line" id="l134">    134</a> 
+<a href="#l135" class="line" id="l135">    135</a>     if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+<a href="#l136" class="line" id="l136">    136</a> 	struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+<a href="#l137" class="line" id="l137">    137</a> 	focus_view(view, NULL);
+<a href="#l138" class="line" id="l138">    138</a> 	return;
+<a href="#l139" class="line" id="l139">    139</a>     };
+<a href="#l140" class="line" id="l140">    140</a> 
+<a href="#l141" class="line" id="l141">    141</a>     focus_view(NULL, NULL);
+<a href="#l142" class="line" id="l142">    142</a> }
+<a href="#l143" class="line" id="l143">    143</a> 
+<a href="#l144" class="line" id="l144">    144</a> 
+<a href="#l145" class="line" id="l145">    145</a> void pan_to_view(struct view *view) {
+<a href="#l146" class="line" id="l146">    146</a>     int border_width = wimp.current_desk-&gt;border_width;
+<a href="#l147" class="line" id="l147">    147</a>     double x = view-&gt;x - border_width;
+<a href="#l148" class="line" id="l148">    148</a>     double y = view-&gt;y - border_width;
+<a href="#l149" class="line" id="l149">    149</a>     double width = view-&gt;surface-&gt;geometry.width + border_width * 2;
+<a href="#l150" class="line" id="l150">    150</a>     double height = view-&gt;surface-&gt;geometry.height + border_width * 2;
+<a href="#l151" class="line" id="l151">    151</a>     struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+<a href="#l152" class="line" id="l152">    152</a>     double zoom = wimp.current_desk-&gt;zoom;
+<a href="#l153" class="line" id="l153">    153</a>     struct motion motion = {
+<a href="#l154" class="line" id="l154">    154</a> 	.dx = 0,
+<a href="#l155" class="line" id="l155">    155</a> 	.dy = 0,
+<a href="#l156" class="line" id="l156">    156</a> 	.is_percentage = false,
+<a href="#l157" class="line" id="l157">    157</a>     };
+<a href="#l158" class="line" id="l158">    158</a> 
+<a href="#l159" class="line" id="l159">    159</a>     int panning = 2;
+<a href="#l160" class="line" id="l160">    160</a>     if (x &lt; 0) {
+<a href="#l161" class="line" id="l161">    161</a> 	motion.dx = x * zoom;
+<a href="#l162" class="line" id="l162">    162</a>     } else if (x + width &gt; extents-&gt;width / zoom) {
+<a href="#l163" class="line" id="l163">    163</a> 	motion.dx = (x + width) * zoom - extents-&gt;width;
+<a href="#l164" class="line" id="l164">    164</a>     } else {
+<a href="#l165" class="line" id="l165">    165</a> 	panning -= 1;
+<a href="#l166" class="line" id="l166">    166</a>     }
+<a href="#l167" class="line" id="l167">    167</a>     if (y &lt; 0) {
+<a href="#l168" class="line" id="l168">    168</a> 	motion.dy = y * zoom;
+<a href="#l169" class="line" id="l169">    169</a>     } else if (y + height &gt; extents-&gt;height / zoom) {
+<a href="#l170" class="line" id="l170">    170</a> 	motion.dy = (y + height) * zoom - extents-&gt;height;
+<a href="#l171" class="line" id="l171">    171</a>     } else {
+<a href="#l172" class="line" id="l172">    172</a> 	panning -= 1;
+<a href="#l173" class="line" id="l173">    173</a>     }
+<a href="#l174" class="line" id="l174">    174</a>     if (panning) {
+<a href="#l175" class="line" id="l175">    175</a> 	pan_desk(&amp;motion);
+<a href="#l176" class="line" id="l176">    176</a> 	damage_all_outputs();
+<a href="#l177" class="line" id="l177">    177</a>     }
+<a href="#l178" class="line" id="l178">    178</a> }
+<a href="#l179" class="line" id="l179">    179</a> 
+<a href="#l180" class="line" id="l180">    180</a> 
+<a href="#l181" class="line" id="l181">    181</a> void fullscreen_xdg_surface(
+<a href="#l182" class="line" id="l182">    182</a>     struct view *view, struct wlr_xdg_surface *xdg_surface, struct wlr_output *wlr_output
+<a href="#l183" class="line" id="l183">    183</a> ) {
+<a href="#l184" class="line" id="l184">    184</a>     /* wlr_output can be NULL, in which case it is calculated using the surface&apos;s position */
+<a href="#l185" class="line" id="l185">    185</a>     struct wlr_box *saved_geo = &amp;wimp.current_desk-&gt;fullscreened_saved_geo;
+<a href="#l186" class="line" id="l186">    186</a> 
+<a href="#l187" class="line" id="l187">    187</a>     struct wlr_xdg_surface *prev_surface = wimp.current_desk-&gt;fullscreened;
+<a href="#l188" class="line" id="l188">    188</a>     if (prev_surface) {
+<a href="#l189" class="line" id="l189">    189</a> 	wlr_xdg_toplevel_set_fullscreen(prev_surface, false);
+<a href="#l190" class="line" id="l190">    190</a> 	wlr_xdg_toplevel_set_tiled(view-&gt;surface, true);
+<a href="#l191" class="line" id="l191">    191</a> 	wlr_xdg_toplevel_set_size(prev_surface, saved_geo-&gt;width, saved_geo-&gt;height);
+<a href="#l192" class="line" id="l192">    192</a> 	view-&gt;x = saved_geo-&gt;x;
+<a href="#l193" class="line" id="l193">    193</a> 	view-&gt;y = saved_geo-&gt;y;
+<a href="#l194" class="line" id="l194">    194</a>     }
+<a href="#l195" class="line" id="l195">    195</a> 
+<a href="#l196" class="line" id="l196">    196</a>     if (prev_surface == xdg_surface) {
+<a href="#l197" class="line" id="l197">    197</a> 	wimp.current_desk-&gt;fullscreened = NULL;
+<a href="#l198" class="line" id="l198">    198</a> 	return;
+<a href="#l199" class="line" id="l199">    199</a>     }
+<a href="#l200" class="line" id="l200">    200</a> 
+<a href="#l201" class="line" id="l201">    201</a>     if (xdg_surface-&gt;role != WLR_XDG_SURFACE_ROLE_TOPLEVEL)
+<a href="#l202" class="line" id="l202">    202</a> 	return;
+<a href="#l203" class="line" id="l203">    203</a> 
+<a href="#l204" class="line" id="l204">    204</a>     if (!wlr_output) {
+<a href="#l205" class="line" id="l205">    205</a> 	double x = view-&gt;x + xdg_surface-&gt;geometry.width / 2;
+<a href="#l206" class="line" id="l206">    206</a> 	double y = view-&gt;y + xdg_surface-&gt;geometry.height / 2;
+<a href="#l207" class="line" id="l207">    207</a> 	double lx, ly;
+<a href="#l208" class="line" id="l208">    208</a> 	wlr_output_layout_closest_point(wimp.output_layout, NULL, x, y, &amp;lx, &amp;ly);
+<a href="#l209" class="line" id="l209">    209</a> 	wlr_output = wlr_output_layout_output_at(wimp.output_layout, lx, ly);
+<a href="#l210" class="line" id="l210">    210</a>     }
+<a href="#l211" class="line" id="l211">    211</a> 
+<a href="#l212" class="line" id="l212">    212</a>     wimp.current_desk-&gt;fullscreened = xdg_surface;
+<a href="#l213" class="line" id="l213">    213</a>     saved_geo-&gt;x = view-&gt;x;
+<a href="#l214" class="line" id="l214">    214</a>     saved_geo-&gt;y = view-&gt;y;
+<a href="#l215" class="line" id="l215">    215</a>     view-&gt;x = view-&gt;y = 0;
+<a href="#l216" class="line" id="l216">    216</a>     saved_geo-&gt;width = xdg_surface-&gt;geometry.width;
+<a href="#l217" class="line" id="l217">    217</a>     saved_geo-&gt;height = xdg_surface-&gt;geometry.height;
+<a href="#l218" class="line" id="l218">    218</a>     wlr_xdg_toplevel_set_fullscreen(xdg_surface, true);
+<a href="#l219" class="line" id="l219">    219</a>     wlr_xdg_toplevel_set_tiled(view-&gt;surface, false);
+<a href="#l220" class="line" id="l220">    220</a>     double zoom = wimp.current_desk-&gt;zoom;
+<a href="#l221" class="line" id="l221">    221</a>     wlr_xdg_toplevel_set_size(xdg_surface, wlr_output-&gt;width / zoom, wlr_output-&gt;height / zoom);
+<a href="#l222" class="line" id="l222">    222</a>     struct output *output = wlr_output-&gt;data;
+<a href="#l223" class="line" id="l223">    223</a>     wlr_output_damage_add_whole(output-&gt;wlr_output_damage);
+<a href="#l224" class="line" id="l224">    224</a> }
+<a href="#l225" class="line" id="l225">    225</a> 
+<a href="#l226" class="line" id="l226">    226</a> 
+<a href="#l227" class="line" id="l227">    227</a> void unfullscreen() {
+<a href="#l228" class="line" id="l228">    228</a>     if (wimp.current_desk-&gt;fullscreened != NULL) {
+<a href="#l229" class="line" id="l229">    229</a> 	toggle_fullscreen(NULL);
+<a href="#l230" class="line" id="l230">    230</a>     }
+<a href="#l231" class="line" id="l231">    231</a> }
+<a href="#l232" class="line" id="l232">    232</a> 
+<a href="#l233" class="line" id="l233">    233</a> 
+<a href="#l234" class="line" id="l234">    234</a> static void on_commit(struct wl_listener *listener, void *data) {
+<a href="#l235" class="line" id="l235">    235</a>     struct view *view = wl_container_of(listener, view, commit_listener);
+<a href="#l236" class="line" id="l236">    236</a>     damage_by_view(view, false);
+<a href="#l237" class="line" id="l237">    237</a> }
+<a href="#l238" class="line" id="l238">    238</a> 
+<a href="#l239" class="line" id="l239">    239</a> 
+<a href="#l240" class="line" id="l240">    240</a> static void on_map(struct wl_listener *listener, void *data) {
+<a href="#l241" class="line" id="l241">    241</a>     struct view *view = wl_container_of(listener, view, map_listener);
+<a href="#l242" class="line" id="l242">    242</a> 
+<a href="#l243" class="line" id="l243">    243</a>     view-&gt;commit_listener.notify = on_commit;
+<a href="#l244" class="line" id="l244">    244</a>     wl_signal_add(&amp;view-&gt;surface-&gt;surface-&gt;events.commit, &amp;view-&gt;commit_listener);
+<a href="#l245" class="line" id="l245">    245</a> 
+<a href="#l246" class="line" id="l246">    246</a>     if (view-&gt;is_scratchpad) {
+<a href="#l247" class="line" id="l247">    247</a> 	struct scratchpad *scratchpad = scratchpad_from_view(view);
+<a href="#l248" class="line" id="l248">    248</a> 	scratchpad_apply_geo(scratchpad);
+<a href="#l249" class="line" id="l249">    249</a> 	scratchpad-&gt;is_mapped = true;
+<a href="#l250" class="line" id="l250">    250</a>     }
+<a href="#l251" class="line" id="l251">    251</a> 
+<a href="#l252" class="line" id="l252">    252</a>     wlr_xdg_toplevel_set_tiled(view-&gt;surface, true);
+<a href="#l253" class="line" id="l253">    253</a>     focus_view(view, NULL);
+<a href="#l254" class="line" id="l254">    254</a> }
+<a href="#l255" class="line" id="l255">    255</a> 
+<a href="#l256" class="line" id="l256">    256</a> 
+<a href="#l257" class="line" id="l257">    257</a> static void on_unmap(struct wl_listener *listener, void *data) {
+<a href="#l258" class="line" id="l258">    258</a>     struct view *view = wl_container_of(listener, view, unmap_listener);
+<a href="#l259" class="line" id="l259">    259</a> 
+<a href="#l260" class="line" id="l260">    260</a>     if (view-&gt;is_scratchpad) {
+<a href="#l261" class="line" id="l261">    261</a> 	struct scratchpad *scratchpad = scratchpad_from_view(view);
+<a href="#l262" class="line" id="l262">    262</a> 	scratchpad-&gt;is_mapped = false;
+<a href="#l263" class="line" id="l263">    263</a>     } else {
+<a href="#l264" class="line" id="l264">    264</a> 	wl_list_remove(&amp;view-&gt;link);
+<a href="#l265" class="line" id="l265">    265</a> 	wl_list_insert(wimp.current_desk-&gt;views.prev, &amp;view-&gt;link);
+<a href="#l266" class="line" id="l266">    266</a>     }
+<a href="#l267" class="line" id="l267">    267</a> 
+<a href="#l268" class="line" id="l268">    268</a>     wl_list_remove(&amp;view-&gt;commit_listener.link);
+<a href="#l269" class="line" id="l269">    269</a>     damage_by_view(view, true);
+<a href="#l270" class="line" id="l270">    270</a> 
+<a href="#l271" class="line" id="l271">    271</a>     if (view-&gt;surface-&gt;surface == wimp.seat-&gt;keyboard_state.focused_surface) {
+<a href="#l272" class="line" id="l272">    272</a> 	find_focus();
+<a href="#l273" class="line" id="l273">    273</a>     }
+<a href="#l274" class="line" id="l274">    274</a> }
+<a href="#l275" class="line" id="l275">    275</a> 
+<a href="#l276" class="line" id="l276">    276</a> 
+<a href="#l277" class="line" id="l277">    277</a> static void on_surface_destroy(struct wl_listener *listener, void *data) {
+<a href="#l278" class="line" id="l278">    278</a>     struct view *view = wl_container_of(listener, view, destroy_listener);
+<a href="#l279" class="line" id="l279">    279</a>     if (wimp.current_desk-&gt;fullscreened == view-&gt;surface) {
+<a href="#l280" class="line" id="l280">    280</a> 	wimp.current_desk-&gt;fullscreened = NULL;
+<a href="#l281" class="line" id="l281">    281</a>     }
+<a href="#l282" class="line" id="l282">    282</a> 
+<a href="#l283" class="line" id="l283">    283</a>     if (view-&gt;is_scratchpad) {
+<a href="#l284" class="line" id="l284">    284</a> 	struct scratchpad *scratchpad = scratchpad_from_view(view);
+<a href="#l285" class="line" id="l285">    285</a> 	scratchpad-&gt;is_mapped = false;
+<a href="#l286" class="line" id="l286">    286</a> 	scratchpad-&gt;view = NULL;
+<a href="#l287" class="line" id="l287">    287</a>     } else {
+<a href="#l288" class="line" id="l288">    288</a> 	wl_list_remove(&amp;view-&gt;link);
+<a href="#l289" class="line" id="l289">    289</a>     }
+<a href="#l290" class="line" id="l290">    290</a> 
+<a href="#l291" class="line" id="l291">    291</a>     free(view);
+<a href="#l292" class="line" id="l292">    292</a> }
+<a href="#l293" class="line" id="l293">    293</a> 
+<a href="#l294" class="line" id="l294">    294</a> 
+<a href="#l295" class="line" id="l295">    295</a> static void process_move_resize(struct view *view, enum cursor_mode mode, uint32_t edges) {
+<a href="#l296" class="line" id="l296">    296</a>     struct wlr_surface *focused_surface = wimp.seat-&gt;pointer_state.focused_surface;
+<a href="#l297" class="line" id="l297">    297</a> 
+<a href="#l298" class="line" id="l298">    298</a>     if (view-&gt;surface-&gt;surface != focused_surface) {
+<a href="#l299" class="line" id="l299">    299</a> 	    return;
+<a href="#l300" class="line" id="l300">    300</a>     }
+<a href="#l301" class="line" id="l301">    301</a>     wimp.grabbed_view = view;
+<a href="#l302" class="line" id="l302">    302</a>     wimp.cursor_mode = mode;
+<a href="#l303" class="line" id="l303">    303</a> 
+<a href="#l304" class="line" id="l304">    304</a>     double zoom = wimp.current_desk-&gt;zoom;
+<a href="#l305" class="line" id="l305">    305</a>     wimp.grab_x = wimp.cursor-&gt;x - view-&gt;x * zoom;
+<a href="#l306" class="line" id="l306">    306</a>     wimp.grab_y = wimp.cursor-&gt;y - view-&gt;y * zoom;
+<a href="#l307" class="line" id="l307">    307</a> 
+<a href="#l308" class="line" id="l308">    308</a>     if (mode == CURSOR_RESIZE) {
+<a href="#l309" class="line" id="l309">    309</a> 	wlr_xdg_surface_get_geometry(view-&gt;surface, &amp;wimp.grab_geobox);
+<a href="#l310" class="line" id="l310">    310</a> 	wimp.grab_geobox.x = view-&gt;x;
+<a href="#l311" class="line" id="l311">    311</a> 	wimp.grab_geobox.y = view-&gt;y;
+<a href="#l312" class="line" id="l312">    312</a> 	wimp.resize_edges = edges;
+<a href="#l313" class="line" id="l313">    313</a>     }
+<a href="#l314" class="line" id="l314">    314</a> }
+<a href="#l315" class="line" id="l315">    315</a> 
+<a href="#l316" class="line" id="l316">    316</a> 
+<a href="#l317" class="line" id="l317">    317</a> static void on_request_move(struct wl_listener *listener, void *data) {
+<a href="#l318" class="line" id="l318">    318</a>     struct view *view = wl_container_of(listener, view, request_move_listener);
+<a href="#l319" class="line" id="l319">    319</a>     wlr_xdg_toplevel_set_tiled(view-&gt;surface, false);
+<a href="#l320" class="line" id="l320">    320</a>     process_move_resize(view, CURSOR_MOVE, 0);
+<a href="#l321" class="line" id="l321">    321</a> }
+<a href="#l322" class="line" id="l322">    322</a> 
+<a href="#l323" class="line" id="l323">    323</a> 
+<a href="#l324" class="line" id="l324">    324</a> static void on_request_resize(struct wl_listener *listener, void *data) {
+<a href="#l325" class="line" id="l325">    325</a>     struct wlr_xdg_toplevel_resize_event *event = data;
+<a href="#l326" class="line" id="l326">    326</a>     struct view *view = wl_container_of(listener, view, request_resize_listener);
+<a href="#l327" class="line" id="l327">    327</a>     wlr_xdg_toplevel_set_tiled(view-&gt;surface, false);
+<a href="#l328" class="line" id="l328">    328</a>     process_move_resize(view, CURSOR_RESIZE, event-&gt;edges);
+<a href="#l329" class="line" id="l329">    329</a> }
+<a href="#l330" class="line" id="l330">    330</a> 
+<a href="#l331" class="line" id="l331">    331</a> 
+<a href="#l332" class="line" id="l332">    332</a> static void on_request_fullscreen(struct wl_listener *listener, void *data) {
+<a href="#l333" class="line" id="l333">    333</a>     struct wlr_xdg_toplevel_set_fullscreen_event *event = data;
+<a href="#l334" class="line" id="l334">    334</a>     struct view *view = wl_container_of(listener, view, request_fullscreen_listener);
+<a href="#l335" class="line" id="l335">    335</a>     fullscreen_xdg_surface(view, event-&gt;surface, event-&gt;output);
+<a href="#l336" class="line" id="l336">    336</a> }
+<a href="#l337" class="line" id="l337">    337</a> 
+<a href="#l338" class="line" id="l338">    338</a> 
+<a href="#l339" class="line" id="l339">    339</a> static void on_new_xdg_surface(struct wl_listener *listener, void *data) {
+<a href="#l340" class="line" id="l340">    340</a>     struct wlr_xdg_surface *surface = data;
+<a href="#l341" class="line" id="l341">    341</a>     if (surface-&gt;role != WLR_XDG_SURFACE_ROLE_TOPLEVEL) {
+<a href="#l342" class="line" id="l342">    342</a> 	return;
+<a href="#l343" class="line" id="l343">    343</a>     }
+<a href="#l344" class="line" id="l344">    344</a> 
+<a href="#l345" class="line" id="l345">    345</a>     struct view *view = calloc(1, sizeof(struct view));
+<a href="#l346" class="line" id="l346">    346</a>     view-&gt;surface = surface;
+<a href="#l347" class="line" id="l347">    347</a>     surface-&gt;data = view;
+<a href="#l348" class="line" id="l348">    348</a> 
+<a href="#l349" class="line" id="l349">    349</a>     view-&gt;map_listener.notify = on_map;
+<a href="#l350" class="line" id="l350">    350</a>     wl_signal_add(&amp;surface-&gt;events.map, &amp;view-&gt;map_listener);
+<a href="#l351" class="line" id="l351">    351</a>     view-&gt;unmap_listener.notify = on_unmap;
+<a href="#l352" class="line" id="l352">    352</a>     wl_signal_add(&amp;surface-&gt;events.unmap, &amp;view-&gt;unmap_listener);
+<a href="#l353" class="line" id="l353">    353</a>     view-&gt;destroy_listener.notify = on_surface_destroy;
+<a href="#l354" class="line" id="l354">    354</a>     wl_signal_add(&amp;surface-&gt;events.destroy, &amp;view-&gt;destroy_listener);
+<a href="#l355" class="line" id="l355">    355</a> 
+<a href="#l356" class="line" id="l356">    356</a>     struct wlr_xdg_toplevel *toplevel = surface-&gt;toplevel;
+<a href="#l357" class="line" id="l357">    357</a>     view-&gt;request_move_listener.notify = on_request_move;
+<a href="#l358" class="line" id="l358">    358</a>     wl_signal_add(&amp;toplevel-&gt;events.request_move, &amp;view-&gt;request_move_listener);
+<a href="#l359" class="line" id="l359">    359</a>     view-&gt;request_resize_listener.notify = on_request_resize;
+<a href="#l360" class="line" id="l360">    360</a>     wl_signal_add(&amp;toplevel-&gt;events.request_resize, &amp;view-&gt;request_resize_listener);
+<a href="#l361" class="line" id="l361">    361</a>     view-&gt;request_fullscreen_listener.notify = on_request_fullscreen;
+<a href="#l362" class="line" id="l362">    362</a>     wl_signal_add(&amp;toplevel-&gt;events.request_fullscreen, &amp;view-&gt;request_fullscreen_listener);
+<a href="#l363" class="line" id="l363">    363</a> 
+<a href="#l364" class="line" id="l364">    364</a>     if (wimp.scratchpad_waiting) {
+<a href="#l365" class="line" id="l365">    365</a> 	if (catch_scratchpad(view)) {
+<a href="#l366" class="line" id="l366">    366</a> 	    return;
+<a href="#l367" class="line" id="l367">    367</a> 	}
+<a href="#l368" class="line" id="l368">    368</a>     }
+<a href="#l369" class="line" id="l369">    369</a> 
+<a href="#l370" class="line" id="l370">    370</a>     view-&gt;is_scratchpad = false;
+<a href="#l371" class="line" id="l371">    371</a>     view-&gt;x = wimp.current_desk-&gt;border_width;
+<a href="#l372" class="line" id="l372">    372</a>     view-&gt;y = wimp.current_desk-&gt;border_width;
+<a href="#l373" class="line" id="l373">    373</a>     wl_list_insert(&amp;wimp.current_desk-&gt;views, &amp;view-&gt;link);
+<a href="#l374" class="line" id="l374">    374</a> }
+<a href="#l375" class="line" id="l375">    375</a> 
+<a href="#l376" class="line" id="l376">    376</a> 
+<a href="#l377" class="line" id="l377">    377</a> void set_up_shell() {
+<a href="#l378" class="line" id="l378">    378</a>     wimp.shell = wlr_xdg_shell_create(wimp.display);
+<a href="#l379" class="line" id="l379">    379</a>     wimp.new_xdg_surface_listener.notify = on_new_xdg_surface;
+<a href="#l380" class="line" id="l380">    380</a>     wl_signal_add(&amp;wimp.shell-&gt;events.new_surface, &amp;wimp.new_xdg_surface_listener);
+<a href="#l381" class="line" id="l381">    381</a> }
+<a href="#l382" class="line" id="l382">    382</a> 
+</pre>
+  </div>
+  </body>
+</html>

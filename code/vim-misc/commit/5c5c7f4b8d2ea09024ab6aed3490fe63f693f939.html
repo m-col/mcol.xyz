@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - cannabalise vim-markdown-folding</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/5c5c7f4b8d2ea09024ab6aed3490fe63f693f939.html">5c5c7f4b8d2ea09024ab6aed3490fe63f693f939</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/30524fb524a75c087f106a7ca5c0078c36262387.html">30524fb524a75c087f106a7ca5c0078c36262387</a>
+<b>Author:</b> matt &lt;<a href="mailto:matt@matt-307.corp.improbable.io">matt@matt-307.corp.improbable.io</a>&gt;
+<b>Date:</b> 2023-04-01 16:25:02 +0100
+<b>Committer:</b> matt &lt;<a href="mailto:matt@matt-307.corp.improbable.io">matt@matt-307.corp.improbable.io</a>&gt;
+<b>Committed:</b> 2023-04-01 16:25:02 +0100
+
+cannabalise vim-markdown-folding
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -27,7 +27,6 @@
+<span class="def"> Plugin &apos;https://mcol.xyz/code/vim-misc&apos;	    &quot; my vimrc and misc functions 
+</span><span class="def"> Plugin &apos;https://mcol.xyz/code/tide&apos;	    &quot; tmux ide 
+</span><span class="def"> Plugin &apos;Yggdroot/indentLine&apos;                &quot; Show indentation lines
+</span><span class="sub">-Plugin &apos;masukomi/vim-markdown-folding&apos;      &quot; markdown folding
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span><span class="def"> filetype plugin indent on		    &quot; required
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>after/ftplugin/markdown.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,3 +2,76 @@
+<span class="def"> setlocal comments+=s:&lt;!---,e:--&gt;
+</span><span class="def"> &quot; couldn&apos;t get this to work, so just sticking in &lt;br&gt; where needed
+</span><span class="def"> &quot;setlocal comments+=s:![**,e:](
+</span><span class="add">+
+</span><span class="add">+&quot; Folding logic below is derived from the vim-markdown-folding plugin
+</span><span class="add">+function! StackedMarkdownFolds()
+</span><span class="add">+  let thisline = getline(v:lnum)
+</span><span class="add">+  let prevline = getline(v:lnum - 1)
+</span><span class="add">+  let nextline = getline(v:lnum + 1)
+</span><span class="add">+  if thisline =~ &apos;^```.*$&apos; &amp;&amp; prevline =~ &apos;^\s*$&apos;  &quot; start of a fenced block
+</span><span class="add">+    return &quot;&gt;2&quot;
+</span><span class="add">+  elseif thisline =~ &apos;^```$&apos; &amp;&amp; nextline =~ &apos;^\s*$&apos;  &quot; end of a fenced block
+</span><span class="add">+    return &quot;&lt;2&quot;
+</span><span class="add">+  endif
+</span><span class="add">+
+</span><span class="add">+  if HeadingDepth(v:lnum) &gt; 0
+</span><span class="add">+    return &quot;&gt;1&quot;
+</span><span class="add">+  else
+</span><span class="add">+    return &quot;=&quot;
+</span><span class="add">+  endif
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+function! HeadingDepth(lnum)
+</span><span class="add">+  let level=0
+</span><span class="add">+  let thisline = getline(a:lnum)
+</span><span class="add">+  if thisline =~ &apos;^#\+\s\+&apos;
+</span><span class="add">+    let hashCount = len(matchstr(thisline, &apos;^#\{1,6}&apos;))
+</span><span class="add">+    if hashCount &gt; 0
+</span><span class="add">+      let level = hashCount
+</span><span class="add">+    endif
+</span><span class="add">+  else
+</span><span class="add">+    if thisline != &apos;&apos;
+</span><span class="add">+      let nextline = getline(a:lnum + 1)
+</span><span class="add">+      if nextline =~ &apos;^=\+\s*$&apos;
+</span><span class="add">+        let level = 1
+</span><span class="add">+      elseif nextline =~ &apos;^-\+\s*$&apos;
+</span><span class="add">+        let level = 2
+</span><span class="add">+      endif
+</span><span class="add">+    endif
+</span><span class="add">+  endif
+</span><span class="add">+  if level &gt; 0 &amp;&amp; HasSyntaxGroup(a:lnum, &apos;\vmarkdown(Code|Highlight)&apos;)
+</span><span class="add">+    &quot; Ignore # or === if they appear within fenced code blocks
+</span><span class="add">+    let level = 0
+</span><span class="add">+  endif
+</span><span class="add">+  return level
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+function! HasSyntaxGroup(lnum, targetGroup)
+</span><span class="add">+  let syntaxGroup = map(synstack(a:lnum, 1), &apos;synIDattr(v:val, &quot;name&quot;)&apos;)
+</span><span class="add">+  for value in syntaxGroup
+</span><span class="add">+    if value =~ a:targetGroup
+</span><span class="add">+        return 1
+</span><span class="add">+    endif
+</span><span class="add">+  endfor
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+function! s:FoldText()
+</span><span class="add">+  let level = HeadingDepth(v:foldstart)
+</span><span class="add">+  let indent = repeat(&apos;#&apos;, level)
+</span><span class="add">+  let title = substitute(getline(v:foldstart), &apos;^#\+\s\+&apos;, &apos;&apos;, &apos;&apos;)
+</span><span class="add">+
+</span><span class="add">+  let spaces_1 = repeat(&apos; &apos;, level) . &apos;   &apos;
+</span><span class="add">+  let spaces_2 = repeat(&apos; &apos;, 200)
+</span><span class="add">+
+</span><span class="add">+  return indent.spaces_1.title.spaces_2
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+setlocal foldmethod=expr
+</span><span class="add">+
+</span><span class="add">+let &amp;l:foldtext = expand(&apos;&lt;SID&gt;&apos;) . &apos;FoldText()&apos;
+</span><span class="add">+let &amp;l:foldexpr = &apos;StackedMarkdownFolds()&apos;
+</span><span class="add">+
+</span><span class="add">+if !exists(&quot;b:undo_ftplugin&quot;) | let b:undo_ftplugin = &apos;&apos; | endif
+</span><span class="add">+let b:undo_ftplugin .= &apos;
+</span><span class="add">+  \ | setlocal foldmethod&lt; foldtext&lt; foldexpr&lt;
+</span><span class="add">+  \ &apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

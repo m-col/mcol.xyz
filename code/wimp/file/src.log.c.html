@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - src/log.c</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- src/log.c</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> #include &lt;stdio.h&gt;
+<a href="#l2" class="line" id="l2">      2</a> #include &lt;time.h&gt;
+<a href="#l3" class="line" id="l3">      3</a> #include &lt;wlr/util/log.h&gt;
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> 
+<a href="#l6" class="line" id="l6">      6</a> static enum wlr_log_importance log_importance;
+<a href="#l7" class="line" id="l7">      7</a> 
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> static const char *verbosity_headers[] = {
+<a href="#l10" class="line" id="l10">     10</a>     [WLR_SILENT] = &quot;&quot;,
+<a href="#l11" class="line" id="l11">     11</a>     [WLR_ERROR] = &quot;[ERROR]&quot;,
+<a href="#l12" class="line" id="l12">     12</a>     [WLR_INFO] = &quot;[INFO]&quot;,
+<a href="#l13" class="line" id="l13">     13</a>     [WLR_DEBUG] = &quot;[DEBUG]&quot;,
+<a href="#l14" class="line" id="l14">     14</a> };
+<a href="#l15" class="line" id="l15">     15</a> 
+<a href="#l16" class="line" id="l16">     16</a> 
+<a href="#l17" class="line" id="l17">     17</a> static void log_stdout(enum wlr_log_importance verbosity, const char *fmt, va_list args) {
+<a href="#l18" class="line" id="l18">     18</a>     if (verbosity &gt; log_importance) {
+<a href="#l19" class="line" id="l19">     19</a> 	return;
+<a href="#l20" class="line" id="l20">     20</a>     }
+<a href="#l21" class="line" id="l21">     21</a> 
+<a href="#l22" class="line" id="l22">     22</a>     time_t t = time(NULL);
+<a href="#l23" class="line" id="l23">     23</a>     struct tm *now = localtime(&amp;t);
+<a href="#l24" class="line" id="l24">     24</a>     char nows[20];
+<a href="#l25" class="line" id="l25">     25</a>     strftime(nows, 20, &quot;%F %T&quot;, now);
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a>     fprintf(stdout, &quot;%s %s: &quot;, nows, verbosity_headers[verbosity]);
+<a href="#l28" class="line" id="l28">     28</a>     vfprintf(stdout, fmt, args);
+<a href="#l29" class="line" id="l29">     29</a>     fprintf(stdout, &quot;\n&quot;);
+<a href="#l30" class="line" id="l30">     30</a> }
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> 
+<a href="#l33" class="line" id="l33">     33</a> void init_log(enum wlr_log_importance log_level) {
+<a href="#l34" class="line" id="l34">     34</a>     log_importance = log_level;
+<a href="#l35" class="line" id="l35">     35</a>     wlr_log_init(log_importance, log_stdout);
+<a href="#l36" class="line" id="l36">     36</a> }
+<a href="#l37" class="line" id="l37">     37</a> 
+</pre>
+  </div>
+  </body>
+</html>

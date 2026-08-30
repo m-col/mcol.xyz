@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sudoku-solver - clean printing a bit</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/sudoku-solver">sudoku-solver</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A small haskell script to solve sudoku puzzles</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/sudoku-solver">https://github.com/m-col/sudoku-solver</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/sudoku-solver/tree.html">Files</a> | <a href="https://mcol.xyz/code/sudoku-solver/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/sudoku-solver/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/0c20fdfb430f39832bb5f9c90183b2d264fdbe1f.html">0c20fdfb430f39832bb5f9c90183b2d264fdbe1f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/sudoku-solver/commit/65107cf632cd3881fc1687dbc85fa2ff03e24275.html">65107cf632cd3881fc1687dbc85fa2ff03e24275</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-03 18:10:41 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-03 18:10:41 +0100
+
+clean printing a bit
+</pre><div class="diff">
+  <p>
+    <b>sudoku.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -11,7 +11,7 @@
+<span class="def"> import Data.Bool (bool)
+</span><span class="def"> import Data.Char (digitToInt)
+</span><span class="def"> import Data.List (nub, sort)
+</span><span class="sub">-import Data.Maybe (catMaybes, fromMaybe, isJust, listToMaybe, mapMaybe)
+</span><span class="add">+import Data.Maybe (catMaybes, fromMaybe, isJust, isNothing, listToMaybe, mapMaybe)
+</span><span class="def"> import System.Environment (getArgs)
+</span><span class="def"> 
+</span><span class="def"> {-
+</span>@@ -57,7 +57,7 @@
+<span class="def">     makeBox (r, c) = [(r, c) | r &lt;- [r .. succ . succ $ r], c &lt;- [c .. succ . succ $ c]]
+</span><span class="def"> 
+</span><span class="def"> {-
+</span><span class="sub">-Solve the given puzzle!
+</span><span class="add">+Solve the puzzle!
+</span><span class="def"> -}
+</span><span class="def"> solve :: Puzzle -&gt; Maybe Puzzle
+</span><span class="def"> solve p = go [(p, (One, One))] (Just (One, One))
+</span>@@ -125,14 +125,9 @@
+<span class="def"> main :: IO ()
+</span><span class="def"> main = do
+</span><span class="def">     args &lt;- getArgs
+</span><span class="sub">-    contents &lt;- readFile $ bool (head args) &quot;puzzle_1.txt&quot; (null args)
+</span><span class="sub">-    let puzzle = loadPuzzle contents
+</span><span class="sub">-    putStrLn &quot;Puzzle:&quot;
+</span><span class="sub">-    putStrLn . showPuzzle $ puzzle
+</span><span class="sub">-
+</span><span class="sub">-    case solve puzzle of
+</span><span class="sub">-        Nothing -&gt;
+</span><span class="sub">-            putStrLn &quot;Failed! Is the puzzle valid?&quot;
+</span><span class="sub">-        Just solved -&gt; do
+</span><span class="sub">-            putStrLn &quot;Completed:&quot;
+</span><span class="sub">-            putStrLn . showPuzzle $ solved
+</span><span class="add">+    let file = bool (head args) &quot;puzzle_1.txt&quot; (null args)
+</span><span class="add">+    solved &lt;- solve . loadPuzzle &lt;$&gt; readFile file
+</span><span class="add">+    putStrLn $
+</span><span class="add">+        if isNothing solved
+</span><span class="add">+            then &quot;Failed! Is the puzzle valid?&quot;
+</span><span class="add">+            else &quot;Completed!&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

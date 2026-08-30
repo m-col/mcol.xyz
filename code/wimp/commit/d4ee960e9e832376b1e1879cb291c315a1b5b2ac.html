@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - return view from under_pointer() if the pointer is within its border</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/d4ee960e9e832376b1e1879cb291c315a1b5b2ac.html">d4ee960e9e832376b1e1879cb291c315a1b5b2ac</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/eb08b684c2cfd937320634b69825a3b90be23983.html">eb08b684c2cfd937320634b69825a3b90be23983</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-12 20:59:23 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-12 20:59:23 +0000
+
+return view from under_pointer() if the pointer is within its border
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -76,6 +76,7 @@
+<span class="def">     struct wlr_surface *tsurface;
+</span><span class="def">     struct wlr_output *wlr_output = wlr_output_layout_output_at(wimp.output_layout, x, y);
+</span><span class="def">     struct output *output = wlr_output-&gt;data;
+</span><span class="add">+    int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="def"> 
+</span><span class="def">     // overlay and top layers
+</span><span class="def">     uint32_t above[] = { ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY, ZWLR_LAYER_SHELL_V1_LAYER_TOP };
+</span>@@ -114,8 +115,9 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // clients
+</span><span class="sub">-    double zx = x / wimp.current_desk-&gt;zoom;
+</span><span class="sub">-    double zy = y / wimp.current_desk-&gt;zoom;
+</span><span class="add">+    double zoom = wimp.current_desk-&gt;zoom;
+</span><span class="add">+    double zx = x / zoom;
+</span><span class="add">+    double zy = y / zoom;
+</span><span class="def"> 
+</span><span class="def">     wl_list_for_each(view, &amp;wimp.current_desk-&gt;views, link) {
+</span><span class="def"> 	tsurface = wlr_xdg_surface_surface_at(
+</span>@@ -128,6 +130,21 @@
+<span class="def"> 	    *is_layer = false;
+</span><span class="def"> 	    return view;
+</span><span class="def"> 	}
+</span><span class="add">+	if (border_width) {
+</span><span class="add">+	    struct wlr_box bordered = {
+</span><span class="add">+		.x = (view-&gt;x - border_width) * zoom,
+</span><span class="add">+		.y = (view-&gt;y - border_width) * zoom,
+</span><span class="add">+		.width = (view-&gt;surface-&gt;geometry.width + border_width * 2) * zoom,
+</span><span class="add">+		.height = (view-&gt;surface-&gt;geometry.height + border_width * 2) * zoom,
+</span><span class="add">+	    };
+</span><span class="add">+	    if (wlr_box_contains_point(&amp;bordered, zx, zy)) {
+</span><span class="add">+		*sx = tsx;
+</span><span class="add">+		*sy = tsy;
+</span><span class="add">+		*surface = view-&gt;surface-&gt;surface;
+</span><span class="add">+		*is_layer = false;
+</span><span class="add">+		return view;
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // bottom and background layers
+</span></pre>
+</div></div>
+  </body>
+</html>

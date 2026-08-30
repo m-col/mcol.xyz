@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Handle UTF8 decoding errors with leniency</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/d57f849993812c4cb9c5b0133a83ab8b970f4541.html">d57f849993812c4cb9c5b0133a83ab8b970f4541</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/9885c412167b8ec53221a90fc240db67fe26e323.html">9885c412167b8ec53221a90fc240db67fe26e323</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-10-04 10:33:53 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-10-04 10:59:48 +0100
+
+Handle UTF8 decoding errors with leniency
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,7 +18,8 @@
+<span class="def"> import Data.Either (fromRight)
+</span><span class="def"> import Data.Tagged
+</span><span class="def"> import Data.Text (pack, unpack, Text, strip, breakOn, replace, append)
+</span><span class="sub">-import Data.Text.Encoding (decodeUtf8)
+</span><span class="add">+import Data.Text.Encoding (decodeUtf8With)
+</span><span class="add">+import Data.Text.Encoding.Error (lenientDecode)
+</span><span class="def"> import Data.Maybe (mapMaybe)
+</span><span class="def"> import Git
+</span><span class="def"> import Git.Libgit2 (lgFactory, LgRepo)
+</span>@@ -132,7 +133,7 @@
+<span class="def">     return $ zipWith TreeFile (fmap fst entries) contents
+</span><span class="def"> 
+</span><span class="def"> gvalTreeEntry :: TreeEntry LgRepo -&gt; ReaderT LgRepo IO Text
+</span><span class="sub">-gvalTreeEntry (BlobEntry oid _) = catBlobUtf8 $ oid
+</span><span class="add">+gvalTreeEntry (BlobEntry oid _) = return . decodeUtf8With lenientDecode =&lt;&lt; catBlob oid
+</span><span class="def"> gvalTreeEntry (TreeEntry _) = return &quot;No contents&quot;
+</span><span class="def"> gvalTreeEntry (CommitEntry _) = return &quot;No contents&quot;
+</span><span class="def"> 
+</span>@@ -178,7 +179,8 @@
+<span class="def"> treeAsLookup :: TreeFile -&gt; Text -&gt; Maybe (GVal m)
+</span><span class="def"> treeAsLookup treefile = \case
+</span><span class="def">     &quot;path&quot; -&gt; Just . toGVal . treeFilePath $ treefile
+</span><span class="sub">-    &quot;href&quot; -&gt; Just . toGVal . flip append &quot;.html&quot; . replace &quot;/&quot; &quot;.&quot; . decodeUtf8 . treeFilePath $ treefile
+</span><span class="add">+    &quot;href&quot; -&gt; Just . toGVal . flip append &quot;.html&quot; . replace &quot;/&quot; &quot;.&quot; .
+</span><span class="add">+        decodeUtf8With lenientDecode . treeFilePath $ treefile
+</span><span class="def">     &quot;contents&quot; -&gt; Just . toGVal . treeFileContents $ treefile
+</span><span class="def">     _ -&gt; Nothing
+</span><span class="def"> 
+</span>@@ -200,7 +202,7 @@
+<span class="def">     category = const &quot;commit&quot;
+</span><span class="def"> 
+</span><span class="def"> instance Target (TreeFile) where
+</span><span class="sub">-    identify = (++ &quot;.html&quot;) . unpack . replace &quot;/&quot; &quot;.&quot; . decodeUtf8 . treeFilePath
+</span><span class="add">+    identify = (++ &quot;.html&quot;) . unpack . replace &quot;/&quot; &quot;.&quot; . decodeUtf8With lenientDecode . treeFilePath
+</span><span class="def">     category = const &quot;file&quot;
+</span><span class="def"> 
+</span><span class="def"> genTarget
+</span></pre>
+</div></div>
+  </body>
+</html>

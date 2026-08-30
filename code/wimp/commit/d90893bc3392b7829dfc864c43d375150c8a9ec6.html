@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Add wlr_xdg_decoration_manager_v1 (credit to sway)</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/d90893bc3392b7829dfc864c43d375150c8a9ec6.html">d90893bc3392b7829dfc864c43d375150c8a9ec6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/2ce713f01ff7ee183cc888677e3534dd5abf8616.html">2ce713f01ff7ee183cc888677e3534dd5abf8616</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 01:03:51 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 01:03:51 +0000
+
+Add wlr_xdg_decoration_manager_v1 (credit to sway)
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,6 +10,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_compositor.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_cursor.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_output_layout.h&gt;
+</span><span class="add">+#include &lt;wlr/types/wlr_xdg_decoration_v1.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span>@@ -49,6 +50,9 @@
+<span class="def">     bool mark_waiting;
+</span><span class="def">     struct mark_indicator mark_indicator;
+</span><span class="def"> 
+</span><span class="add">+    struct wlr_xdg_decoration_manager_v1 *decoration_manager;
+</span><span class="add">+    struct wl_listener decoration_listener;
+</span><span class="add">+
+</span><span class="def">     struct wlr_cursor *cursor;
+</span><span class="def">     struct wlr_xcursor_manager *cursor_manager;
+</span><span class="def">     struct wl_listener cursor_motion_listener;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/main.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,6 +12,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;cursor.h&quot;
+</span><span class="add">+#include &quot;decorations.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;main.h&quot;
+</span><span class="def"> #include &quot;keyboard.h&quot;
+</span>@@ -93,6 +94,7 @@
+<span class="def">     set_up_shell(&amp;server);
+</span><span class="def">     set_up_cursor(&amp;server);
+</span><span class="def">     set_up_keyboard(&amp;server);
+</span><span class="add">+    set_up_decorations(&amp;server);
+</span><span class="def"> 
+</span><span class="def">     // start
+</span><span class="def">     const char *socket = wl_display_add_socket_auto(server.display);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/decorations.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,14 @@
+<span class="add">+#ifndef DESKWM_DECORATIONS_H
+</span><span class="add">+#define DESKWM_DECORATIONS_H
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+struct decoration {
+</span><span class="add">+    struct wlr_xdg_toplevel_decoration_v1 *wlr_xdg_decoration;
+</span><span class="add">+    struct wl_listener destroy_listener;
+</span><span class="add">+    struct wl_listener request_mode_listener;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+void set_up_decorations(struct server *server);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/decorations.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,50 @@
+<span class="add">+#include &quot;decorations.h&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_destroy(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct decoration *deco = wl_container_of(listener, deco, destroy_listener);
+</span><span class="add">+    wl_list_remove(&amp;deco-&gt;destroy_listener.link);
+</span><span class="add">+    wl_list_remove(&amp;deco-&gt;request_mode_listener.link);
+</span><span class="add">+    free(deco);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_request_mode(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct decoration *deco = wl_container_of(listener, deco, request_mode_listener);
+</span><span class="add">+    wlr_xdg_toplevel_decoration_v1_set_mode(
+</span><span class="add">+	deco-&gt;wlr_xdg_decoration, WLR_XDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void on_new_decoration(struct wl_listener *listener, void *data) {
+</span><span class="add">+    struct wlr_xdg_toplevel_decoration_v1 *wlr_deco = data;
+</span><span class="add">+
+</span><span class="add">+    struct decoration *deco = calloc(1, sizeof(struct decoration));
+</span><span class="add">+    if (deco == NULL) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    deco-&gt;wlr_xdg_decoration = wlr_deco;
+</span><span class="add">+
+</span><span class="add">+    wl_signal_add(&amp;wlr_deco-&gt;events.destroy, &amp;deco-&gt;destroy_listener);
+</span><span class="add">+    deco-&gt;destroy_listener.notify = on_destroy;
+</span><span class="add">+
+</span><span class="add">+    wl_signal_add(&amp;wlr_deco-&gt;events.request_mode, &amp;deco-&gt;request_mode_listener);
+</span><span class="add">+    deco-&gt;request_mode_listener.notify = on_request_mode;
+</span><span class="add">+
+</span><span class="add">+    wlr_xdg_toplevel_decoration_v1_set_mode(
+</span><span class="add">+	wlr_deco, WLR_XDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_up_decorations(struct server *server) {
+</span><span class="add">+    server-&gt;decoration_manager = wlr_xdg_decoration_manager_v1_create(server-&gt;display);
+</span><span class="add">+
+</span><span class="add">+    server-&gt;decoration_listener.notify = on_new_decoration;
+</span><span class="add">+    wl_signal_add(
+</span><span class="add">+        &amp;server-&gt;decoration_manager-&gt;events.new_toplevel_decoration,
+</span><span class="add">+        &amp;server-&gt;decoration_listener
+</span><span class="add">+    );
+</span><span class="add">+}
+</span></pre>
+</div></div>
+  </body>
+</html>

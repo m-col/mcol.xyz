@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bdf2flf - Add main chunk of code</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/bdf2flf">bdf2flf</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Convert BDF bitmap fonts to flf fonts for figlet</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/bdf2flf">https://github.com/m-col/bdf2flf</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/bdf2flf/tree.html">Files</a> | <a href="https://mcol.xyz/code/bdf2flf/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/bdf2flf/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/bdf2flf/commit/cba8f74bc5ce7dd3c01e6514483b7e4bf361f490.html">cba8f74bc5ce7dd3c01e6514483b7e4bf361f490</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/bdf2flf/commit/c9e2c2531efcdec67afd56d9353375f8c0e0f6a5.html">c9e2c2531efcdec67afd56d9353375f8c0e0f6a5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-27 13:20:24 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-27 13:20:24 +0000
+
+Add main chunk of code
+
+This is now a semi-complete functional version of the program, but with
+some limitations. It seems that some BDF fonts do not work, possibly due
+to size.
+</pre><div class="diff">
+  <p>
+    <b>bdf2flf.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,29 +2,99 @@
+<span class="def"> #include &lt;stdlib.h&gt;
+</span><span class="def"> #include &lt;string.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#define PROGNAME &quot;bdf2flf&quot;
+</span><span class="def"> 
+</span><span class="sub">-#include &lt;unistd.h&gt; // ?
+</span><span class="sub">-#include &lt;limits.h&gt; // ?
+</span><span class="sub">-#include &lt;errno.h&gt; // ?
+</span><span class="def"> 
+</span><span class="sub">-#define PROGNAME &quot;bdf2flf&quot;
+</span><span class="add">+// These are the characters required at the start of FIGfonts.
+</span><span class="add">+const unsigned int REQUIRED[] = {
+</span><span class="add">+    32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+</span><span class="add">+    51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+</span><span class="add">+    70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88,
+</span><span class="add">+    89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105,
+</span><span class="add">+    106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
+</span><span class="add">+    121, 122, 123, 124, 125, 126, 196, 214, 220, 228, 246, 252, 223
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+struct character {
+</span><span class="add">+    unsigned int width;
+</span><span class="add">+    unsigned int encoding;
+</span><span class="add">+    char *bitmap;
+</span><span class="add">+    _Bool printed;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void die(char *msg)
+</span><span class="add">+{
+</span><span class="add">+    fprintf(stderr, msg);
+</span><span class="add">+    exit(EXIT_FAILURE);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void put_pixel(unsigned int c, unsigned int bit, FILE *out)
+</span><span class="add">+{
+</span><span class="add">+
+</span><span class="add">+    if (c &amp; bit) {
+</span><span class="add">+	fputc(&apos;#&apos;, out);
+</span><span class="add">+    } else {
+</span><span class="add">+	fputc(&apos; &apos;, out);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void print_character(FILE *out, char *bitmap, unsigned int width, unsigned int height)
+</span><span class="add">+{
+</span><span class="add">+    unsigned int y;
+</span><span class="add">+    unsigned int x;
+</span><span class="add">+    int c;
+</span><span class="add">+    unsigned int bit;
+</span><span class="add">+    size_t hex_chars = (width + 7) / 8 * 2;
+</span><span class="add">+    char *s;
+</span><span class="add">+    s = malloc(hex_chars);
+</span><span class="add">+
+</span><span class="add">+    for (y = 0; y &lt; height; y++) {
+</span><span class="add">+	memset(s, 0, strlen(s));
+</span><span class="add">+	if (y)
+</span><span class="add">+	    fprintf(out, &quot;\n&quot;);
+</span><span class="add">+	for (x = 0; x &lt; hex_chars; x++) {
+</span><span class="add">+	    strncat(s, bitmap, 1);
+</span><span class="add">+	    bitmap++;
+</span><span class="add">+	}
+</span><span class="add">+
+</span><span class="add">+	c = (int)strtol(s, NULL, 16);
+</span><span class="add">+	bit = 0x80 * hex_chars / 2;
+</span><span class="add">+	for (x = 0; x &lt; width; x++) {
+</span><span class="add">+	    put_pixel(c, bit, out);
+</span><span class="add">+	    if (bit == 1)
+</span><span class="add">+		break;
+</span><span class="add">+	    bit = bit / 2;
+</span><span class="add">+	}
+</span><span class="add">+	fprintf(out, &quot;$@&quot;);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    fprintf(out, &quot;@\n&quot;);
+</span><span class="add">+    free(s);
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void bdf2flf(FILE * in, FILE * out)
+</span><span class="def"> {
+</span><span class="sub">-    char linebuf[1024];
+</span><span class="def">     char *s;
+</span><span class="sub">-    int widest = 0;
+</span><span class="sub">-    int comments = 2;
+</span><span class="sub">-    int baseline, old_layout, direction, full_layout, codetags;
+</span><span class="add">+    char linebuf[1024];
+</span><span class="def">     char font[1024];
+</span><span class="def">     char copyright[1024];
+</span><span class="sub">-    int chars = 0;
+</span><span class="add">+    int baseline, codetags, i;
+</span><span class="add">+    int comments = 3;
+</span><span class="add">+    int num_chars = 0;
+</span><span class="add">+    int width = 0;
+</span><span class="def">     int height = 0;
+</span><span class="sub">-    int fbb_width = 0;
+</span><span class="sub">-    int fbb_height = 0;
+</span><span class="sub">-    int fbb_yoffset = 0;
+</span><span class="add">+    char bitmap[4 * 32];
+</span><span class="add">+    int n = 0;
+</span><span class="add">+    struct character *chars;
+</span><span class="add">+    const unsigned int *j;
+</span><span class="def"> 
+</span><span class="add">+    // Some of the bdf-reading logic is derived from bdf2c (c) Lutz Sammer.
+</span><span class="add">+    // extract bdf headers
+</span><span class="def">     for (;;) {
+</span><span class="def"> 	if (!fgets(linebuf, sizeof(linebuf), in)) {	// EOF
+</span><span class="def"> 	    break;
+</span>@@ -33,46 +103,105 @@
+<span class="def"> 	    break;
+</span><span class="def"> 	}
+</span><span class="def"> 	if (!strcasecmp(s, &quot;FONTBOUNDINGBOX&quot;)) {
+</span><span class="sub">-	    fbb_width = atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="sub">-	    fbb_height = atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="add">+	    width = atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="add">+	    height = atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="def"> 	    strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-	    fbb_yoffset = atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="add">+	    baseline = height + atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="def"> 
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;FONT&quot;)) {
+</span><span class="def"> 	    strcpy(font, strtok(NULL, &quot;\n&quot;));
+</span><span class="def"> 
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;COPYRIGHT&quot;)) {
+</span><span class="def"> 	    strcpy(copyright, strtok(NULL, &quot;\n&quot;));
+</span><span class="sub">-	    comments = 3;
+</span><span class="add">+	    comments = 4;
+</span><span class="def"> 
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;CHARS&quot;)) {
+</span><span class="sub">-	    chars = atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="add">+	    num_chars = atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="def"> 	    break;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    // exit if data could not be read completely
+</span><span class="sub">-    if (chars &lt;= 0 || fbb_width &lt;= 0 || fbb_height &lt;= 0 || height &lt;= 0) {
+</span><span class="sub">-	fprintf(stderr, &quot;Could not extract BDF data. Is the input a BDF file?\n&quot;);
+</span><span class="sub">-	exit(EXIT_FAILURE);
+</span><span class="add">+    if (num_chars &lt;= 0 || width &lt;= 0 || height &lt;= 0)
+</span><span class="add">+	die(&quot;Could not extract BDF data. Is the input a BDF file?\n&quot;);
+</span><span class="add">+
+</span><span class="add">+    if (width &gt; 32 || height &gt; 32)
+</span><span class="add">+	die(&quot;bdf fonts this large are not supported, sorry.\n&quot;);
+</span><span class="add">+
+</span><span class="add">+    chars = malloc(num_chars * sizeof(struct character));
+</span><span class="add">+    if (!chars)
+</span><span class="add">+	die(&quot;Could not allocate memory.\n&quot;);
+</span><span class="add">+
+</span><span class="add">+    // extract individual char data
+</span><span class="add">+    for (;;) { if (!fgets(linebuf, sizeof(linebuf), in))
+</span><span class="add">+	    break;
+</span><span class="add">+	if (!(s = strtok(linebuf, &quot; \t\n\r&quot;)))
+</span><span class="add">+	    continue;
+</span><span class="add">+	if (!strcasecmp(s, &quot;ENCODING&quot;)) {
+</span><span class="add">+	    chars[n].encoding = atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;BBX&quot;)) {
+</span><span class="add">+	    chars[n].width = atoi(strtok(NULL, &quot; \t\n\r&quot;));
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;BITMAP&quot;)) {
+</span><span class="add">+	    if (n == num_chars)
+</span><span class="add">+		die(&quot;bdf font has incorrect CHARS value.\n&quot;);
+</span><span class="add">+	    i = 0;
+</span><span class="add">+	    chars[n].printed = 0;
+</span><span class="add">+	    chars[n].bitmap = malloc(1);
+</span><span class="add">+	    chars[n].bitmap[0] = &apos;\0&apos;;
+</span><span class="add">+	    for (;;) {
+</span><span class="add">+		fgets(linebuf, sizeof(linebuf), in);
+</span><span class="add">+		s = strtok(linebuf, &quot;\n\r&quot;);
+</span><span class="add">+		if (!strcasecmp(s, &quot;ENDCHAR&quot;)) {
+</span><span class="add">+		    break;
+</span><span class="add">+		}
+</span><span class="add">+		strncat(chars[n].bitmap, s, 4);
+</span><span class="add">+		i++;
+</span><span class="add">+	    }
+</span><span class="add">+	    n++;
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    // output header
+</span><span class="sub">-    fprintf(out, &quot;flf2a$ %i %i %i %i %i %i %i %i\n&quot;, height, baseline, widest+2,
+</span><span class="sub">-	    old_layout, comments, direction, full_layout, codetags);
+</span><span class="add">+    // output flf header
+</span><span class="add">+    codetags = 0;
+</span><span class="add">+    fprintf(out, &quot;flf2a$ %i %i %i -1 %i 0 16384 %i\n&quot;, height, baseline, width+2,
+</span><span class="add">+	    comments, codetags);
+</span><span class="def">     fprintf(out, &quot;FIGlet font derived from %s\n&quot;, font);
+</span><span class="sub">-    if (comments &gt; 2)
+</span><span class="add">+    if (comments &gt; 3)
+</span><span class="def"> 	fprintf(out, &quot;which has copyright: %s\n&quot;, copyright);
+</span><span class="sub">-    fprintf(out, &quot;Converted to flf with bdf2flf (c) Matt Colligan.\n&quot;);
+</span><span class="add">+    fprintf(out, &quot;Converted to flf with bdf2flf (c) 2020 Matt Colligan.\n\n&quot;);
+</span><span class="def"> 
+</span><span class="add">+    // print required characters first
+</span><span class="add">+    n = 0;
+</span><span class="add">+    j = &amp;REQUIRED[0];
+</span><span class="add">+    for (;;) {
+</span><span class="add">+	if (chars[n].encoding == *j) {
+</span><span class="add">+	    strncpy(bitmap, chars[n].bitmap, ((width + 7) / 8) * height * 2);
+</span><span class="add">+	    print_character(out, bitmap, chars[n].width, height);
+</span><span class="add">+	    chars[n].printed = 1;
+</span><span class="add">+	    if (*j == 223)
+</span><span class="add">+		break;
+</span><span class="add">+	    j++;
+</span><span class="add">+	}
+</span><span class="add">+	n++;
+</span><span class="add">+	if (n == num_chars)
+</span><span class="add">+	    n = 0;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // print additional characters second
+</span><span class="add">+    for (n = 0; n &lt; num_chars; n++) {
+</span><span class="add">+	if (!chars[n].printed) {
+</span><span class="add">+	    strncpy(bitmap, chars[n].bitmap, ((width + 7) / 8) * height * 2);
+</span><span class="add">+	    print_character(out, bitmap, chars[n].width, height);
+</span><span class="add">+	}
+</span><span class="add">+	free(chars[n].bitmap);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> int main(int argc, char *argv[])
+</span><span class="def"> {
+</span><span class="def">     if (argc &gt; 1) {
+</span><span class="sub">-	printf(PROGNAME &quot;&lt; input.bdf &gt; output.flf\nbdf data is read from stdin&quot;
+</span><span class="sub">-		&quot;and figlet font data is output to stdout.\n&quot;);
+</span><span class="add">+	printf(PROGNAME &quot; &lt; input.bdf &gt; output.flf\nbdf data is read from stdin&quot;
+</span><span class="add">+		&quot; and figlet font data is output to stdout.\n&quot;);
+</span><span class="def"> 	exit(EXIT_SUCCESS);
+</span><span class="def">     }
+</span><span class="def">     
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - update cmd_ methods on custom widget</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/081da40fe20b9ee6dd6cdafcdac3e7b1b5b92923.html">081da40fe20b9ee6dd6cdafcdac3e7b1b5b92923</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/a697c7466142effd5459898ba697d702379f5335.html">a697c7466142effd5459898ba697d702379f5335</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-10-10 21:03:11 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-10-10 21:03:11 +0100
+
+update cmd_ methods on custom widget
+</pre><div class="diff">
+  <p>
+    <b>wayland.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -139,7 +139,7 @@
+<span class="def">         return
+</span><span class="def"> 
+</span><span class="def">     wlr_output.set_custom_mode(1920, 1080, 0)
+</span><span class="sub">-    # Lastly, while cmd_reconfigure_screens will be fired right after this hook, as it
+</span><span class="add">+    # Lastly, while reconfigure_screens will be fired right after this hook, as it
+</span><span class="def">     # gets subscribed to this hook right after the config is loaded, the backend doesn&apos;t
+</span><span class="def">     # get a change to actually apply the mode, so let&apos;s flush it.
+</span><span class="def">     qtile.core.flush()
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -490,17 +490,17 @@
+<span class="def">             with open(self.wob, &quot;a&quot;) as f:
+</span><span class="def">                 f.write(str(self.volume) + &quot;\n&quot;)
+</span><span class="def"> 
+</span><span class="sub">-    def cmd_increase_vol(self):
+</span><span class="add">+    def increase_vol(self):
+</span><span class="def">         subprocess.run(&quot;amixer -c PCH set PCM 3%+&quot;.split(), capture_output=True)
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="sub">-    def cmd_decrease_vol(self):
+</span><span class="add">+    def decrease_vol(self):
+</span><span class="def">         subprocess.run(&quot;amixer -c PCH set PCM 3%-&quot;.split(), capture_output=True)
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="sub">-    def cmd_mute(self):
+</span><span class="add">+    def mute(self):
+</span><span class="def">         subprocess.run(&quot;amixer -c PCH set PCM toggle&quot;.split(), capture_output=True)
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer(wob=False)
+</span>@@ -704,8 +704,7 @@
+<span class="def">     # Keep Static windows on top
+</span><span class="def">     for window in qtile.windows_map.values():
+</span><span class="def">         if isinstance(window, base.Static):
+</span><span class="sub">-            if hasattr(window, &quot;cmd_bring_to_front&quot;):
+</span><span class="sub">-                window.bring_to_front()
+</span><span class="add">+            window.bring_to_front()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> reconfigure_screens = True
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - flake8 everything</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/cf7eba341a6f5b015530b8aba91ac044045b89d4.html">cf7eba341a6f5b015530b8aba91ac044045b89d4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/bbc7cc7ec1743ef0c08379a8d1f34b7e94f6fecb.html">bbc7cc7ec1743ef0c08379a8d1f34b7e94f6fecb</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-16 22:44:56 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-16 22:44:56 +0100
+
+flake8 everything
+</pre><div class="diff">
+  <p>
+    <b>x11.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,7 +18,8 @@
+<span class="def"> 
+</span><span class="def"> # Keys to run X11-only launchers
+</span><span class="def"> keys_backend.extend([
+</span><span class="sub">-    #([mod],             &apos;d&apos;,    lazy.spawn(&apos;rofi -show run -theme ~/.config/rofi/common-large.rasi&apos;), &quot;rofi: run&quot;),
+</span><span class="add">+    #([mod],             &apos;d&apos;,
+</span><span class="add">+    #   lazy.spawn(&apos;rofi -show run -theme ~/.config/rofi/common-large.rasi&apos;), &quot;rofi: run&quot;),
+</span><span class="def">     ([],    &apos;XF86PowerOff&apos;,     lazy.spawn(&apos;power-menu&apos;),                   &quot;Power menu&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;x&apos;,    lazy.spawn(&apos;set_monitors&apos;),                 &quot;Configure monitors&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;i&apos;,    lazy.spawn(&apos;slock systemctl suspend -i&apos;),   &quot;Suspend system and lock&quot;),
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>setup.cfg</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,5 @@
+<span class="add">+[flake8]
+</span><span class="add">+max-line-length = 110
+</span><span class="add">+ignore = 
+</span><span class="add">+    E265, # Block comments should start with &quot;# &quot;
+</span><span class="add">+    E241  # Multiple spaces after &quot;,&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>scratchpad.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,11 +21,13 @@
+<span class="def"> 
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="def">     term = &quot;foot &quot;
+</span><span class="add">+    mutt = f&quot;foot -D {HOME}/Downloads mutt&quot;
+</span><span class="def"> else:
+</span><span class="def">     if IS_XEPHYR:
+</span><span class="def">         term = &quot;xterm -e &quot;
+</span><span class="def">     else:
+</span><span class="def">         term = &quot;urxvt -e &quot;
+</span><span class="add">+    mutt = f&quot;urxvt -cd {HOME}/Downloads -e mutt&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> conf = {
+</span>@@ -34,32 +36,30 @@
+<span class="def">     &quot;opacity&quot;: 1,
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="sub">-
+</span><span class="def"> dropdowns = [
+</span><span class="def">     DropDown(&quot;tmux&quot;, term + &quot;tmux&quot;, height=0.4, **conf),
+</span><span class="def">     DropDown(&quot;irc&quot;, term + &quot;irc&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **conf),
+</span><span class="def">     DropDown(&quot;ncmpcpp&quot;, term + &quot;ncmpcpp&quot;, x=0.12, y=0.2, width=0.56, height=0.7, **conf),
+</span><span class="def">     DropDown(&quot;python&quot;, term + &quot;python&quot;, x=0.05, y=0.1, width=0.2, height=0.3, **conf),
+</span><span class="add">+    DropDown(&quot;email&quot;, mutt, x=0.1, y=0.05, width=0.8, height=0.9, **conf),
+</span><span class="def">     #DropDown(&quot;newsboat&quot;, term + &quot;newsboat&quot;, x=0.2, y=0.05, width=0.6, height=0.9, **conf),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-# Special case because I want to start mutt in ~/Downloads
+</span><span class="sub">-if IS_WAYLAND:
+</span><span class="sub">-    mutt = DropDown(&quot;email&quot;, f&quot;foot -D {HOME}/Downloads mutt&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **conf)
+</span><span class="sub">-else:
+</span><span class="sub">-    mutt = DropDown(&quot;email&quot;, f&quot;urxvt -cd {HOME}/Downloads -e mutt&quot;, x=0.1, y=0.05, width=0.8, height=0.9, **conf)
+</span><span class="sub">-dropdowns.append(mutt)
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> # Keybindings to open each DropDown
+</span><span class="def"> keys_scratchpad = [
+</span><span class="sub">-    ([mod, &apos;shift&apos;],     &apos;Return&apos;,   lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;tmux&apos;), &quot;Toggle tmux scratchpad&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;],   &apos;e&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;email&apos;), &quot;Toggle email scratchpad&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;],   &apos;w&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;irc&apos;), &quot;Toggle irc scratchpad&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;],   &apos;m&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;ncmpcpp&apos;), &quot;Toggle ncmpcpp scratchpad&quot;),
+</span><span class="sub">-    ([mod],              &apos;c&apos;,        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;python&apos;), &quot;Toggle python scratchpad&quot;),
+</span><span class="sub">-    #([mod, &apos;control&apos;],   &apos;n&apos;, lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;newsboat&apos;), &quot;Toggle newsboat scratchpad&quot;),
+</span><span class="add">+    ([mod, &apos;shift&apos;],     &apos;Return&apos;,
+</span><span class="add">+        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;tmux&apos;), &quot;Toggle tmux scratchpad&quot;),
+</span><span class="add">+    ([mod, &apos;control&apos;],   &apos;e&apos;,
+</span><span class="add">+        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;email&apos;), &quot;Toggle email scratchpad&quot;),
+</span><span class="add">+    ([mod, &apos;control&apos;],   &apos;w&apos;,
+</span><span class="add">+        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;irc&apos;), &quot;Toggle irc scratchpad&quot;),
+</span><span class="add">+    ([mod, &apos;control&apos;],   &apos;m&apos;,
+</span><span class="add">+        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;ncmpcpp&apos;), &quot;Toggle ncmpcpp scratchpad&quot;),
+</span><span class="add">+    ([mod],              &apos;c&apos;,
+</span><span class="add">+        lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;python&apos;), &quot;Toggle python scratchpad&quot;),
+</span><span class="add">+    #([mod, &apos;control&apos;],   &apos;n&apos;,
+</span><span class="add">+    #    lazy.group[&apos;scratchpad&apos;].dropdown_toggle(&apos;newsboat&apos;), &quot;Toggle newsboat scratchpad&quot;),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> scratchpad = ScratchPad(&quot;scratchpad&quot;, dropdowns)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,7 @@
+<span class="def"> from libqtile.lazy import lazy
+</span><span class="def"> 
+</span><span class="def"> if TYPE_CHECKING:
+</span><span class="sub">-    from typing import Callable, List, Tuple
+</span><span class="add">+    from typing import Any, Callable, List, Tuple
+</span><span class="def"> 
+</span><span class="def">     from libqtile.core.manager import Qtile
+</span><span class="def"> 
+</span>@@ -50,13 +50,13 @@
+<span class="def">             return
+</span><span class="def"> 
+</span><span class="def">         old = qtile.current_screen.group.name
+</span><span class="sub">-        if group in &apos;123&apos;:
+</span><span class="add">+        if name in &apos;123&apos;:
+</span><span class="def">             qtile.focus_screen(0)
+</span><span class="sub">-            if old in &apos;123&apos; or qtile.current_screen.group.name != group:
+</span><span class="add">+            if old in &apos;123&apos; or qtile.current_screen.group.name != name:
+</span><span class="def">                 qtile.groups_map[name].cmd_toscreen()
+</span><span class="def">         else:
+</span><span class="def">             qtile.focus_screen(1)
+</span><span class="sub">-            if old in &apos;qwe&apos; or qtile.current_screen.group.name != group:
+</span><span class="add">+            if old in &apos;qwe&apos; or qtile.current_screen.group.name != name:
+</span><span class="def">                 qtile.groups_map[name].cmd_toscreen()
+</span><span class="def"> 
+</span><span class="def">     return _inner
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,23 +7,21 @@
+<span class="def"> 
+</span><span class="def"> import asyncio
+</span><span class="def"> import os
+</span><span class="sub">-import sys
+</span><span class="def"> import subprocess
+</span><span class="sub">-from functools import partial
+</span><span class="def"> from typing import TYPE_CHECKING
+</span><span class="def"> 
+</span><span class="sub">-from libqtile import layout, hook, bar, widget, qtile
+</span><span class="sub">-from libqtile.config import Key, EzKey, Screen, Group, Drag, Click, Match, ScratchPad, DropDown
+</span><span class="add">+from libqtile import bar, hook, layout, qtile, widget
+</span><span class="add">+from libqtile.config import Drag, Key, Match, Screen
+</span><span class="def"> from libqtile.lazy import lazy
+</span><span class="sub">-from libqtile.log_utils import logger
+</span><span class="def"> from libqtile.widget.backlight import ChangeDirection
+</span><span class="add">+from libqtile.widget.battery import Battery, BatteryState
+</span><span class="def"> 
+</span><span class="def"> import traverse
+</span><span class="def"> from groups import groups, keys_group
+</span><span class="sub">-from scratchpad import scratchpad, keys_scratchpad
+</span><span class="add">+from scratchpad import keys_scratchpad, scratchpad
+</span><span class="def"> 
+</span><span class="def"> if TYPE_CHECKING:
+</span><span class="sub">-    from typing import List, Tuple
+</span><span class="add">+    from typing import Any, List, Tuple
+</span><span class="def"> 
+</span><span class="def">     from libqtile.core.manager import Qtile
+</span><span class="def"> 
+</span>@@ -32,12 +30,12 @@
+<span class="def"> IS_XEPHYR: bool = int(os.environ.get(&quot;QTILE_XEPHYR&quot;, 0)) &gt; 0
+</span><span class="def"> 
+</span><span class="def"> if IS_WAYLAND:
+</span><span class="sub">-    from wayland import term, keys_backend, wayland_libinput_config
+</span><span class="add">+    from wayland import keys_backend, term, wayland_libinput_config  # noqa: F401
+</span><span class="def"> else:
+</span><span class="sub">-    from x11 import term, keys_backend, wmname
+</span><span class="add">+    from x11 import keys_backend, term, wmname  # noqa: F401
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-## Colours
+</span><span class="add">+# Colours
+</span><span class="def"> theme = dict(
+</span><span class="def">     foreground=&apos;#CFCCD6&apos;,
+</span><span class="def">     background=&apos;#1B2021&apos;,
+</span>@@ -72,7 +70,7 @@
+<span class="def"> # https://coolors.co/1b2021-cfccd6-bbc2e2-b7b5e4-847979
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-## Keys
+</span><span class="add">+# Keys
+</span><span class="def"> 
+</span><span class="def"> if IS_XEPHYR:
+</span><span class="def">     mod = &quot;mod1&quot;
+</span>@@ -128,16 +126,20 @@
+<span class="def">     ([], &apos;F11&apos;,                   lazy.widget[&apos;myvolume&apos;].decrease_vol(), &quot;Decrease volume&quot;),
+</span><span class="def"> 
+</span><span class="def">     # Backlight control
+</span><span class="sub">-    ([], &apos;XF86MonBrightnessUp&apos;,   lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.UP, 3),   &quot;Increase backlight&quot;),
+</span><span class="sub">-    ([], &apos;XF86MonBrightnessDown&apos;, lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.DOWN, 3), &quot;Decrease backlight&quot;),
+</span><span class="sub">-    ([], &apos;F6&apos;,                    lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.UP, 3),   &quot;Increase backlight&quot;),
+</span><span class="sub">-    ([], &apos;F5&apos;,                    lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.DOWN, 3), &quot;Decrease backlight&quot;),
+</span><span class="add">+    ([], &apos;XF86MonBrightnessUp&apos;,
+</span><span class="add">+        lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.UP, 3),   &quot;Increase backlight&quot;),
+</span><span class="add">+    ([], &apos;XF86MonBrightnessDown&apos;,
+</span><span class="add">+        lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.DOWN, 3), &quot;Decrease backlight&quot;),
+</span><span class="add">+    ([], &apos;F6&apos;,
+</span><span class="add">+        lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.UP, 3),   &quot;Increase backlight&quot;),
+</span><span class="add">+    ([], &apos;F5&apos;,
+</span><span class="add">+        lazy.widget[&apos;backlight&apos;].change_backlight(ChangeDirection.DOWN, 3), &quot;Decrease backlight&quot;),
+</span><span class="def"> 
+</span><span class="def">     # Launchers
+</span><span class="def">     ([mod],             &apos;d&apos;,        lazy.spawncmd(),                            &quot;Spawn with Prompt&quot;),
+</span><span class="def">     ([mod],             &apos;Return&apos;,   lazy.spawn(term),                           &quot;Spawn terminal&quot;),
+</span><span class="def">     ([mod, &apos;shift&apos;],    &apos;f&apos;,        lazy.spawn(&quot;firefox&quot;),                      &quot;Spawn Firefox&quot;),
+</span><span class="sub">-    ([mod, &apos;control&apos;],  &apos;f&apos;,        lazy.spawn(&quot;tor-browser --allow-remote&quot;) ,  &quot;Spawn Tor Browser&quot;),
+</span><span class="add">+    ([mod, &apos;control&apos;],  &apos;f&apos;,        lazy.spawn(&quot;tor-browser --allow-remote&quot;),   &quot;Spawn Tor Browser&quot;),
+</span><span class="def">     ([],                &apos;Print&apos;,    lazy.spawn(&quot;screenshot copy&quot;),              &quot;Screenshot to clipboard&quot;),
+</span><span class="def">     ([&apos;shift&apos;],         &apos;Print&apos;,    lazy.spawn(&apos;screenshot&apos;),                   &quot;Screenshot to file&quot;),
+</span><span class="def">     ([mod],             &apos;p&apos;,        lazy.spawn(&apos;get_password_rofi&apos;),            &quot;Keepass passwords&quot;),
+</span>@@ -145,16 +147,14 @@
+<span class="def"> ])
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-## Mouse control
+</span><span class="add">+# Mouse control
+</span><span class="def"> mouse = [
+</span><span class="sub">-    Drag([mod], &quot;Button1&quot;,      lazy.window.set_position_floating(),    start=lazy.window.get_position()),
+</span><span class="add">+    Drag([mod], &quot;Button1&quot;,      lazy.window.set_position_floating(), start=lazy.window.get_position()),
+</span><span class="def">     Drag([mod, alt], &quot;Button1&quot;, lazy.window.set_size_floating(), start=lazy.window.get_size()),
+</span><span class="sub">-    Click([mod], &quot;Button4&quot;,     lazy.layout.grow_up()),
+</span><span class="sub">-    Click([mod], &quot;Button5&quot;,     lazy.layout.grow_down()),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-## Layouts
+</span><span class="add">+# Layouts
+</span><span class="def"> border_focus = [colours[13], colours[5]]
+</span><span class="def"> #border_focus = colours[13]
+</span><span class="def"> border_normal = background
+</span>@@ -168,24 +168,24 @@
+<span class="def"> 
+</span><span class="def"> layouts = [
+</span><span class="def">     layout.Columns(
+</span><span class="sub">-        insert_position = 1,
+</span><span class="sub">-        border_width = bw,
+</span><span class="sub">-        border_focus = border_focus,
+</span><span class="sub">-        border_normal = border_normal,
+</span><span class="sub">-        border_on_single = True,
+</span><span class="sub">-        wrap_focus_columns = False,
+</span><span class="sub">-        wrap_focus_rows = False,
+</span><span class="sub">-        margin = inner_gaps,
+</span><span class="sub">-        corner_radius = cw,
+</span><span class="add">+        insert_position=1,
+</span><span class="add">+        border_width=bw,
+</span><span class="add">+        border_focus=border_focus,
+</span><span class="add">+        border_normal=border_normal,
+</span><span class="add">+        border_on_single=True,
+</span><span class="add">+        wrap_focus_columns=False,
+</span><span class="add">+        wrap_focus_rows=False,
+</span><span class="add">+        margin=inner_gaps,
+</span><span class="add">+        corner_radius=cw,
+</span><span class="def">     ),
+</span><span class="def">     layout.Max(),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> floating_layout = layout.Floating(
+</span><span class="sub">-    border_width = bw,
+</span><span class="sub">-    border_focus = border_focus,
+</span><span class="sub">-    border_normal = border_normal,
+</span><span class="sub">-    corner_radius = cw,
+</span><span class="add">+    border_width=bw,
+</span><span class="add">+    border_focus=border_focus,
+</span><span class="add">+    border_normal=border_normal,
+</span><span class="add">+    corner_radius=cw,
+</span><span class="def">     float_rules=[
+</span><span class="def">         Match(title=&apos;wlroots - X11-1&apos;),
+</span><span class="def">         Match(title=&apos;wlroots - X11-2&apos;),
+</span>@@ -219,7 +219,7 @@
+<span class="def"> )
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-## Screens and Bars
+</span><span class="add">+# Screens and Bars
+</span><span class="def"> widget_defaults = {
+</span><span class="def">     &apos;padding&apos;: 10,
+</span><span class="def">     &apos;foreground&apos;: foreground,
+</span>@@ -278,6 +278,7 @@
+<span class="def">     foreground=colours[3],
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> class MyVolume(widget.Volume):
+</span><span class="def">     def _configure(self, qtile, bar):
+</span><span class="def">         widget.Volume._configure(self, qtile, bar)
+</span>@@ -314,10 +315,12 @@
+<span class="def">         subprocess.call(&apos;amixer set PCM 4%+&apos;.split())
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer()
+</span><span class="add">+
+</span><span class="def">     def cmd_decrease_vol(self):
+</span><span class="def">         subprocess.call(&apos;amixer set PCM 4%-&apos;.split())
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer()
+</span><span class="add">+
+</span><span class="def">     def cmd_mute(self):
+</span><span class="def">         subprocess.call(&apos;amixer set Master toggle&apos;.split())
+</span><span class="def">         self.channel = &apos;Master&apos;
+</span>@@ -327,6 +330,7 @@
+<span class="def">             self.volume = self.get_volume()
+</span><span class="def">         self._update_drawer()
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> volume = MyVolume(
+</span><span class="def">     fontsize=18,
+</span><span class="def">     channel=&apos;PCM&apos;,
+</span>@@ -347,7 +351,7 @@
+<span class="def">     update_interval=5,
+</span><span class="def"> )
+</span><span class="def"> 
+</span><span class="sub">-from libqtile.widget.battery import Battery, BatteryState
+</span><span class="add">+
+</span><span class="def"> class MyBattery(Battery):
+</span><span class="def">     def build_string(self, status):
+</span><span class="def">         if self.layout is not None:
+</span>@@ -377,12 +381,12 @@
+<span class="def">         self.timer_setup()
+</span><span class="def"> 
+</span><span class="def">     def button_press(self, x, y, button):
+</span><span class="sub">-        old = self.format
+</span><span class="def">         self.format = &apos;{percent:2.0%}&apos;
+</span><span class="sub">-        self.font=&apos;TamzenForPowerline Bold&apos;
+</span><span class="add">+        self.font = &apos;TamzenForPowerline Bold&apos;
+</span><span class="def">         self.timer_setup()
+</span><span class="def">         self.timeout_add(1, self.restore)
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> battery = MyBattery(
+</span><span class="def">     format=&apos;{char}&apos;,
+</span><span class="def">     low_foreground=colours[1],
+</span>@@ -410,6 +414,7 @@
+<span class="def">     widget.GroupBox(**groupbox_config, visible_groups=[&apos;q&apos;, &apos;w&apos;, &apos;e&apos;]),
+</span><span class="def"> ]
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> @hook.subscribe.startup
+</span><span class="def"> def _():
+</span><span class="def">     # Set up initial GroupBox visible groups
+</span>@@ -418,6 +423,7 @@
+<span class="def">     else:
+</span><span class="def">         groupboxes[0].visible_groups = [&apos;1&apos;, &apos;2&apos;, &apos;3&apos;, &apos;q&apos;, &apos;w&apos;, &apos;e&apos;]
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> @hook.subscribe.screen_change
+</span><span class="def"> async def _(_):
+</span><span class="def">     # Reconfigure GroupBox visible groups
+</span>@@ -475,7 +481,7 @@
+<span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-## Config variables
+</span><span class="add">+# Config variables
+</span><span class="def"> reconfigure_screens = True
+</span><span class="def"> follow_mouse_focus = True
+</span><span class="def"> bring_front_click = True
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - update tmux terminal config</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/ac71ea23315aa94fb61b417d1b08ade6b11b4dcc.html">ac71ea23315aa94fb61b417d1b08ade6b11b4dcc</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/de7202f49b868056a9b14fa57858913ac30abc2d.html">de7202f49b868056a9b14fa57858913ac30abc2d</a>
+<b>Author:</b> matt &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Date:</b> 2025-08-18 15:43:54 +0100
+<b>Committer:</b> matt &lt;<a href="mailto:matt@edra.ai">matt@edra.ai</a>&gt;
+<b>Committed:</b> 2025-08-18 15:43:54 +0100
+
+update tmux terminal config
+</pre><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,7 +16,8 @@
+<span class="def"> # general settings
+</span><span class="def"> #set -g default-terminal &quot;rxvt-unicode-256color&quot;
+</span><span class="def"> #set -g default-terminal &quot;xterm-256color&quot;
+</span><span class="sub">-set -ag terminal-overrides &quot;,alacritty:RGB&quot;
+</span><span class="add">+set -g default-terminal &quot;tmux-256color&quot;
+</span><span class="add">+set -ag terminal-overrides &quot;,xterm-256color:RGB&quot;
+</span><span class="def"> set -g mouse on
+</span><span class="def"> set -g history-limit 5000
+</span><span class="def"> set -s escape-time 0
+</span></pre>
+</div></div>
+  </body>
+</html>

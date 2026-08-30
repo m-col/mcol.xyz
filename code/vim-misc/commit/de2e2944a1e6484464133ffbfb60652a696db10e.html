@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - added generic filetype agnostic folding rules</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/de2e2944a1e6484464133ffbfb60652a696db10e.html">de2e2944a1e6484464133ffbfb60652a696db10e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/8796da2cef07a7c47e048c886ffc10499bc288f1.html">8796da2cef07a7c47e048c886ffc10499bc288f1</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 14:55:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 14:55:52 +0000
+
+added generic filetype agnostic folding rules
+</pre><div class="diff">
+  <p>
+    <b>plugin/folds.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,34 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; Global folding rules
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot; format folded section header text
+</span><span class="add">+function! GenericFoldText()
+</span><span class="add">+    let line = getline(v:foldstart)
+</span><span class="add">+
+</span><span class="add">+    let nucolwidth = &amp;fdc + &amp;number * &amp;numberwidth
+</span><span class="add">+    let windowwidth = winwidth(0) - nucolwidth - 3
+</span><span class="add">+    let foldedlinecount = v:foldend - v:foldstart
+</span><span class="add">+
+</span><span class="add">+    let onetab = strpart(&apos;          &apos;, 0, &amp;tabstop)
+</span><span class="add">+    let line = substitute(line, &apos;\t&apos;, onetab, &apos;g&apos;)
+</span><span class="add">+
+</span><span class="add">+    let line = strpart(line, 0, windowwidth - len(foldedlinecount))
+</span><span class="add">+    let fillcharcount = windowwidth - len(line) - len(foldedlinecount)
+</span><span class="add">+    return line . repeat(&quot; &quot;,fillcharcount) . &apos; &apos; . foldedlinecount
+</span><span class="add">+endfunction
+</span><span class="add">+set foldtext=GenericFoldText()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+function! GenericFolds()
+</span><span class="add">+    if match(getline(v:lnum), &apos;^\s*&apos; . &amp;commentstring[0] . &amp;commentstring[0]) &gt;=0
+</span><span class="add">+	return &quot;&gt;1&quot;
+</span><span class="add">+    else
+</span><span class="add">+	return &quot;=&quot;
+</span><span class="add">+    endif
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+set foldmethod=expr
+</span><span class="add">+set foldexpr=GenericFolds()
+</span></pre>
+</div></div>
+  </body>
+</html>

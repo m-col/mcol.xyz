@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - content/posts/foss/python_wallpaper_setter.rst</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- content/posts/foss/python_wallpaper_setter.rst</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> writing a Python wallpaper setter for X11
+<a href="#l2" class="line" id="l2">      2</a> =========================================
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> :date: 2019-11-23
+<a href="#l5" class="line" id="l5">      5</a> :summary: writing a Python wallpaper setter for X11 
+<a href="#l6" class="line" id="l6">      6</a> 
+<a href="#l7" class="line" id="l7">      7</a> For the past few weeks I&apos;ve been learning a lot about the communication
+<a href="#l8" class="line" id="l8">      8</a> interface between the X11 server and its clients. As a devotee of Qtile_, I
+<a href="#l9" class="line" id="l9">      9</a> have been using it as a testing ground for a number of tools that directly talk
+<a href="#l10" class="line" id="l10">     10</a> with the X server, using the Python X bindings provided by xcffib_.
+<a href="#l11" class="line" id="l11">     11</a> 
+<a href="#l12" class="line" id="l12">     12</a> This exercise has seen me spend a fair bit of time and effort trying to &apos;port&apos;
+<a href="#l13" class="line" id="l13">     13</a> C code using XCB_ or xlib_ to xcffib equivalents. At times this is tedious - as
+<a href="#l14" class="line" id="l14">     14</a> anybody who has written X client code will know - but I like the idea of
+<a href="#l15" class="line" id="l15">     15</a> extending Qtile to include more features typically outside of the scope of a
+<a href="#l16" class="line" id="l16">     16</a> standalone window-manager.
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> One such feature is the simple ability to set the background wallpaper. Sounds
+<a href="#l19" class="line" id="l19">     19</a> easy, right? The X server manages the drawing of windows as regions within the
+<a href="#l20" class="line" id="l20">     20</a> root window, which itself is handled in many ways like a normal window. The
+<a href="#l21" class="line" id="l21">     21</a> appearance of each window (including the root window) is stored within a
+<a href="#l22" class="line" id="l22">     22</a> pixmap, whose data can be rendered on-screen as pixels. This description is
+<a href="#l23" class="line" id="l23">     23</a> super simplified; for a fantastic and more in-depth exploration of how this
+<a href="#l24" class="line" id="l24">     24</a> works I recommend reading xplain_ by Jasper St. Pierre.
+<a href="#l25" class="line" id="l25">     25</a> 
+<a href="#l26" class="line" id="l26">     26</a> Setting the desktop wallpaper therefore means colouring and rendering the
+<a href="#l27" class="line" id="l27">     27</a> pixmap for the root window of each screen. Wrapping this behaviour as an X
+<a href="#l28" class="line" id="l28">     28</a> client: we need to open a connection to the X server, load our wallpaper image
+<a href="#l29" class="line" id="l29">     29</a> in a form that can be painted onto a pixmap, and then perform the painting.
+<a href="#l30" class="line" id="l30">     30</a> I&apos;ve packaged what I&apos;ve described here with a convenient interface here_.
+<a href="#l31" class="line" id="l31">     31</a> 
+<a href="#l32" class="line" id="l32">     32</a> 
+<a href="#l33" class="line" id="l33">     33</a> wallpaper setting with xcffib
+<a href="#l34" class="line" id="l34">     34</a> -----------------------------
+<a href="#l35" class="line" id="l35">     35</a> 
+<a href="#l36" class="line" id="l36">     36</a> Opening an X client connection is straightforward and requires the
+<a href="#l37" class="line" id="l37">     37</a> :code:`DISPLAY` environmental variable. xcffib gives us a :code:`Connection`
+<a href="#l38" class="line" id="l38">     38</a> object from which we can get information from the X server such as screen
+<a href="#l39" class="line" id="l39">     39</a> setup.
+<a href="#l40" class="line" id="l40">     40</a> 
+<a href="#l41" class="line" id="l41">     41</a> .. code-block:: python
+<a href="#l42" class="line" id="l42">     42</a>     
+<a href="#l43" class="line" id="l43">     43</a>     import os
+<a href="#l44" class="line" id="l44">     44</a>     import xcffib
+<a href="#l45" class="line" id="l45">     45</a>     import cairocffi            # needed later
+<a href="#l46" class="line" id="l46">     46</a>     import cairocffi.pixbuf     # needed later
+<a href="#l47" class="line" id="l47">     47</a>     import xcffib.xproto        # needed later
+<a href="#l48" class="line" id="l48">     48</a> 
+<a href="#l49" class="line" id="l49">     49</a>     conn = xcffib.Connection(display=os.environ.get(&quot;DISPLAY&quot;))
+<a href="#l50" class="line" id="l50">     50</a>     screens = conn.get_setup().roots
+<a href="#l51" class="line" id="l51">     51</a> 
+<a href="#l52" class="line" id="l52">     52</a> Next we need to load our image. The cairocffi_ library provides Python bindings
+<a href="#l53" class="line" id="l53">     53</a> for cairo_, a 2D graphics library that supports rendering graphics to X
+<a href="#l54" class="line" id="l54">     54</a> pixmaps. We can load our image into what cairo calls a :code:`Surface` with:
+<a href="#l55" class="line" id="l55">     55</a> 
+<a href="#l56" class="line" id="l56">     56</a> .. code-block:: python
+<a href="#l57" class="line" id="l57">     57</a> 
+<a href="#l58" class="line" id="l58">     58</a>     with open(&apos;/path/to/image.png&apos;, &apos;rb&apos;) as fd:
+<a href="#l59" class="line" id="l59">     59</a>         image, _ = cairocffi.pixbuf.decode_to_image_surface(fd.read())
+<a href="#l60" class="line" id="l60">     60</a> 
+<a href="#l61" class="line" id="l61">     61</a> As we need to paint the image to one screen at a time, we could load multiple
+<a href="#l62" class="line" id="l62">     62</a> images and use a different image for each painting operation.
+<a href="#l63" class="line" id="l63">     63</a> 
+<a href="#l64" class="line" id="l64">     64</a> The next part performs the painting of the root pixmap to set the wallpaper.
+<a href="#l65" class="line" id="l65">     65</a> First we must ask the server for a new resource ID and use this to create our
+<a href="#l66" class="line" id="l66">     66</a> pixmap for the current screen. Creating the pixmap requires the colour depth of
+<a href="#l67" class="line" id="l67">     67</a> the screen (:code:`screen.root_depth`) as well as its own ID
+<a href="#l68" class="line" id="l68">     68</a> (:code:`screen.root`), and its dimensions:
+<a href="#l69" class="line" id="l69">     69</a> 
+<a href="#l70" class="line" id="l70">     70</a> .. code-block:: python
+<a href="#l71" class="line" id="l71">     71</a> 
+<a href="#l72" class="line" id="l72">     72</a>     screen = screens[0]
+<a href="#l73" class="line" id="l73">     73</a>     pixmap = conn.generate_id()
+<a href="#l74" class="line" id="l74">     74</a>     conn.core.CreatePixmap(
+<a href="#l75" class="line" id="l75">     75</a>         screen.root_depth,
+<a href="#l76" class="line" id="l76">     76</a>         pixmap,
+<a href="#l77" class="line" id="l77">     77</a>         screen.root,
+<a href="#l78" class="line" id="l78">     78</a>         screen.width_in_pixels,
+<a href="#l79" class="line" id="l79">     79</a>         screen.height_in_pixels,
+<a href="#l80" class="line" id="l80">     80</a>     )
+<a href="#l81" class="line" id="l81">     81</a> 
+<a href="#l82" class="line" id="l82">     82</a> We could iterate over :code:`screens` to paint each screen.
+<a href="#l83" class="line" id="l83">     83</a> 
+<a href="#l84" class="line" id="l84">     84</a> Next we need to extract from the screen its :code:`visual`, which contains
+<a href="#l85" class="line" id="l85">     85</a> information about how it manages colour maps and depths. We need this to create
+<a href="#l86" class="line" id="l86">     86</a> a cairo surface that is compatible with the root window, onto which we can
+<a href="#l87" class="line" id="l87">     87</a> paint our image:
+<a href="#l88" class="line" id="l88">     88</a> 
+<a href="#l89" class="line" id="l89">     89</a> .. code-block:: python
+<a href="#l90" class="line" id="l90">     90</a> 
+<a href="#l91" class="line" id="l91">     91</a>     for depth in screen.allowed_depths:
+<a href="#l92" class="line" id="l92">     92</a>         for visual in depth.visuals:
+<a href="#l93" class="line" id="l93">     93</a>             if visual.visual_id == screen.root_visual:
+<a href="#l94" class="line" id="l94">     94</a>                 root_visual = visual
+<a href="#l95" class="line" id="l95">     95</a>                 break
+<a href="#l96" class="line" id="l96">     96</a> 
+<a href="#l97" class="line" id="l97">     97</a>     surface = cairocffi.xcb.XCBSurface(
+<a href="#l98" class="line" id="l98">     98</a>         conn, pixmap, root_visual,
+<a href="#l99" class="line" id="l99">     99</a>         screen.width_in_pixels, screen.height_in_pixels,
+<a href="#l100" class="line" id="l100">    100</a>     )
+<a href="#l101" class="line" id="l101">    101</a> 
+<a href="#l102" class="line" id="l102">    102</a> The cairocffi API for manipulating surfaces provides us a :code:`Context` in
+<a href="#l103" class="line" id="l103">    103</a> which to modify and use our :code:`Surface` objects (the image and pixmap
+<a href="#l104" class="line" id="l104">    104</a> surfaces).  Surface manipulation is pretty nice, and it only takes one command
+<a href="#l105" class="line" id="l105">    105</a> to set our image as a data source and another to paint it to the pixmap:
+<a href="#l106" class="line" id="l106">    106</a> 
+<a href="#l107" class="line" id="l107">    107</a> .. code-block:: python
+<a href="#l108" class="line" id="l108">    108</a> 
+<a href="#l109" class="line" id="l109">    109</a>     with cairocffi.Context(surface) as context:
+<a href="#l110" class="line" id="l110">    110</a>         context.set_source_surface(image)
+<a href="#l111" class="line" id="l111">    111</a>         context.paint()
+<a href="#l112" class="line" id="l112">    112</a> 
+<a href="#l113" class="line" id="l113">    113</a> It is at this point where we could add more image manipulations to the source
+<a href="#l114" class="line" id="l114">    114</a> image before painting, such as stretching or tiling.
+<a href="#l115" class="line" id="l115">    115</a> 
+<a href="#l116" class="line" id="l116">    116</a> Root windows have two properties named :code:`_XROOTPMAP_ID` and
+<a href="#l117" class="line" id="l117">    117</a> :code:`ESETROOT_PMAP_ID` which it uses to publish the root pixmap so that other
+<a href="#l118" class="line" id="l118">    118</a> X clients can have access to the pixel data. This is used for effects such as
+<a href="#l119" class="line" id="l119">    119</a> the pseudo-transparency feature of urxvt_. We therefore need to set these
+<a href="#l120" class="line" id="l120">    120</a> properties using our newly painted pixmap.
+<a href="#l121" class="line" id="l121">    121</a> 
+<a href="#l122" class="line" id="l122">    122</a> The xcffib API for this might look a bit cryptic; we are passing the
+<a href="#l123" class="line" id="l123">    123</a> property-setting mode :code:`Replace`, the root window concerned, the property
+<a href="#l124" class="line" id="l124">    124</a> we want to change, the type of data we are passing (:code:`PIXMAP`) and lastly
+<a href="#l125" class="line" id="l125">    125</a> the bit format, number of items and our list of items (just our pixmap):
+<a href="#l126" class="line" id="l126">    126</a> 
+<a href="#l127" class="line" id="l127">    127</a> .. code-block:: python
+<a href="#l128" class="line" id="l128">    128</a> 
+<a href="#l129" class="line" id="l129">    129</a>     conn.core.ChangeProperty(
+<a href="#l130" class="line" id="l130">    130</a>         xcffib.xproto.PropMode.Replace,
+<a href="#l131" class="line" id="l131">    131</a>         screen.root,
+<a href="#l132" class="line" id="l132">    132</a>         conn.core.InternAtom(False, 13, &apos;_XROOTPMAP_ID&apos;).reply().atom,
+<a href="#l133" class="line" id="l133">    133</a>         xcffib.xproto.Atom.PIXMAP,
+<a href="#l134" class="line" id="l134">    134</a>         32, 1, [pixmap]
+<a href="#l135" class="line" id="l135">    135</a>     )
+<a href="#l136" class="line" id="l136">    136</a>     conn.core.ChangeProperty(
+<a href="#l137" class="line" id="l137">    137</a>         xcffib.xproto.PropMode.Replace,
+<a href="#l138" class="line" id="l138">    138</a>         screen.root,
+<a href="#l139" class="line" id="l139">    139</a>         conn.core.InternAtom(False, 16, &apos;ESETROOT_PMAP_ID&apos;).reply().atom,
+<a href="#l140" class="line" id="l140">    140</a>         xcffib.xproto.Atom.PIXMAP,
+<a href="#l141" class="line" id="l141">    141</a>         32, 1, [pixmap]
+<a href="#l142" class="line" id="l142">    142</a>     )
+<a href="#l143" class="line" id="l143">    143</a> 
+<a href="#l144" class="line" id="l144">    144</a> We can then change the root window&apos;s background pixmap to our pixmap and clear
+<a href="#l145" class="line" id="l145">    145</a> the area that contains it, which refreshes those pixels to display their new
+<a href="#l146" class="line" id="l146">    146</a> values:
+<a href="#l147" class="line" id="l147">    147</a> 
+<a href="#l148" class="line" id="l148">    148</a> .. code-block:: python
+<a href="#l149" class="line" id="l149">    149</a> 
+<a href="#l150" class="line" id="l150">    150</a>     conn.core.ChangeWindowAttributes(
+<a href="#l151" class="line" id="l151">    151</a>         screen.root, xcffib.xproto.CW.BackPixmap, [pixmap]
+<a href="#l152" class="line" id="l152">    152</a>     )
+<a href="#l153" class="line" id="l153">    153</a>     conn.core.ClearArea(
+<a href="#l154" class="line" id="l154">    154</a>         0, screen.root,
+<a href="#l155" class="line" id="l155">    155</a>         0, 0,           # x and y position
+<a href="#l156" class="line" id="l156">    156</a>         screen.width_in_pixels, screen.height_in_pixels
+<a href="#l157" class="line" id="l157">    157</a>     )
+<a href="#l158" class="line" id="l158">    158</a> 
+<a href="#l159" class="line" id="l159">    159</a> Without the :code:`ClearArea` call background pixels will only refresh when you
+<a href="#l160" class="line" id="l160">    160</a> move a window over them, which can be a cool effect.
+<a href="#l161" class="line" id="l161">    161</a> 
+<a href="#l162" class="line" id="l162">    162</a> Lastly we should set our X client&apos;s :code:`CloseDown` mode to
+<a href="#l163" class="line" id="l163">    163</a> :code:`RetainPermanent` to make the our changes to the root window persist
+<a href="#l164" class="line" id="l164">    164</a> after the client closes, and then disconnect.
+<a href="#l165" class="line" id="l165">    165</a> 
+<a href="#l166" class="line" id="l166">    166</a> .. code-block:: python
+<a href="#l167" class="line" id="l167">    167</a> 
+<a href="#l168" class="line" id="l168">    168</a>     conn.core.SetCloseDownMode(xcffib.xproto.CloseDown.RetainPermanent)
+<a href="#l169" class="line" id="l169">    169</a>     conn.disconnect()
+<a href="#l170" class="line" id="l170">    170</a> 
+<a href="#l171" class="line" id="l171">    171</a> The logic we&apos;ve looked at so far is sufficient to set the X wallpaper, and can
+<a href="#l172" class="line" id="l172">    172</a> easily be extended to apply wallpapers to multiple screens and to manipulate
+<a href="#l173" class="line" id="l173">    173</a> our desired image before painting it the pixmap.
+<a href="#l174" class="line" id="l174">    174</a> 
+<a href="#l175" class="line" id="l175">    175</a> For example, if the dimensions of our image and screen might differ or if we
+<a href="#l176" class="line" id="l176">    176</a> want to use only a subregion of an image, we can use cairocffi&apos;s
+<a href="#l177" class="line" id="l177">    177</a> :code:`Context` API to change how we paint to our pixmap. The library exposes
+<a href="#l178" class="line" id="l178">    178</a> :code:`Context.scale()` and :code:`Context.translate()` methods which can be
+<a href="#l179" class="line" id="l179">    179</a> used right before the paint command to change how the image will map onto the
+<a href="#l180" class="line" id="l180">    180</a> pixmap.
+<a href="#l181" class="line" id="l181">    181</a> 
+<a href="#l182" class="line" id="l182">    182</a> 
+<a href="#l183" class="line" id="l183">    183</a> using a solid colour
+<a href="#l184" class="line" id="l184">    184</a> --------------------
+<a href="#l185" class="line" id="l185">    185</a> 
+<a href="#l186" class="line" id="l186">    186</a> If we want to paint the wallpaper with a single colour instead of an image, we
+<a href="#l187" class="line" id="l187">    187</a> can replace the call to :code:`context.set_source_surface()` with the
+<a href="#l188" class="line" id="l188">    188</a> following, where the three arguments correspond to red, green and blue values:
+<a href="#l189" class="line" id="l189">    189</a> 
+<a href="#l190" class="line" id="l190">    190</a> .. code-block:: python
+<a href="#l191" class="line" id="l191">    191</a> 
+<a href="#l192" class="line" id="l192">    192</a>     context.set_source_rgb(1, 1, 1) 
+<a href="#l193" class="line" id="l193">    193</a> 
+<a href="#l194" class="line" id="l194">    194</a> 
+<a href="#l195" class="line" id="l195">    195</a> see also
+<a href="#l196" class="line" id="l196">    196</a> --------
+<a href="#l197" class="line" id="l197">    197</a> 
+<a href="#l198" class="line" id="l198">    198</a> I learnt a lot reading how these programs handle painting the root window:
+<a href="#l199" class="line" id="l199">    199</a> 
+<a href="#l200" class="line" id="l200">    200</a>  - xsri_
+<a href="#l201" class="line" id="l201">    201</a>  - fvwm-root_
+<a href="#l202" class="line" id="l202">    202</a> 
+<a href="#l203" class="line" id="l203">    203</a> 
+<a href="#l204" class="line" id="l204">    204</a> .. _Qtile: https://github.com/qtile/qtile
+<a href="#l205" class="line" id="l205">    205</a> .. _xcffib: https://github.com/tych0/xcffib
+<a href="#l206" class="line" id="l206">    206</a> .. _XCB: https://xcb.freedesktop.org/
+<a href="#l207" class="line" id="l207">    207</a> .. _xlib: https://www.x.org/releases/current/doc/libX11/libX11/libX11.html
+<a href="#l208" class="line" id="l208">    208</a> .. _xplain: https://magcius.github.io/xplain/article/x-basics.html
+<a href="#l209" class="line" id="l209">    209</a> .. _here: /code/qpaper
+<a href="#l210" class="line" id="l210">    210</a> .. _cairocffi: https://cairocffi.readthedocs.io
+<a href="#l211" class="line" id="l211">    211</a> .. _cairo: https://www.cairographics.org/
+<a href="#l212" class="line" id="l212">    212</a> .. _urxvt: https://software.schmorp.de/pkg/rxvt-unicode.html
+<a href="#l213" class="line" id="l213">    213</a> .. _xsri: https://github.com/tjackson/xsri
+<a href="#l214" class="line" id="l214">    214</a> .. _fvwm-root: https://github.com/fvwmorg/fvwm/blob/master/bin/fvwm-root.c
+<a href="#l215" class="line" id="l215">    215</a> 
+</pre>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - some misc settings. changed vert split bar.</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/e0077204c6f1c321095ef806031b69d377b04187.html">e0077204c6f1c321095ef806031b69d377b04187</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/00537ed98af6754b684c093302ae29ba43c624e6.html">00537ed98af6754b684c093302ae29ba43c624e6</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-12-09 10:59:03 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-12-09 10:59:03 +0000
+
+some misc settings. changed vert split bar.
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -41,8 +41,11 @@
+<span class="def"> &quot; General settings                                                 &quot;
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="add">+set autoread			&quot; update when file is modified outside of vim
+</span><span class="add">+set autowrite			&quot; save file automatically
+</span><span class="add">+au FocusLost * :silent! wall	&quot; save all changed buffers when vim loses focus
+</span><span class="def"> set hidden			&quot; allow opening new buffers without saving first
+</span><span class="sub">-&quot;set lazyredraw			&quot; dont update screen during macros/scripts
+</span><span class="add">+set lazyredraw			&quot; dont update screen during macros/scripts
+</span><span class="def"> set hlsearch			&quot; Highlight all search results - toggled by &lt;Leader&gt;h
+</span><span class="def"> set smartcase			&quot; searches ignore case only if all lower case
+</span><span class="def"> set incsearch			&quot; Searches for strings while typing search term
+</span>@@ -58,19 +61,23 @@
+<span class="def"> set backspace=indent,eol,start	&quot; Backspace behaviour
+</span><span class="def"> set formatoptions+=j		&quot; Delete comment characters when joining lines.
+</span><span class="def"> autocmd FileType * setlocal formatoptions-=cro    &quot; disable autocommenting
+</span><span class="add">+set matchtime=3
+</span><span class="def"> 
+</span><span class="sub">-set undolevels=50		&quot; Number of undo levels
+</span><span class="sub">-set dir^=~/.vim/swap//		&quot; where to store swapfiles
+</span><span class="sub">-set backupdir=~/.vim/backups/	&quot; where to store backups
+</span><span class="add">+set undolevels=100		&quot; Number of undo levels
+</span><span class="add">+set undodir=~/.vim/undo//	&quot; undo files
+</span><span class="add">+set backupdir=~/.vim/backups//	&quot; backups
+</span><span class="add">+set directory=~/.vim/swap//	&quot; swap files
+</span><span class="add">+set noswapfile
+</span><span class="def"> 
+</span><span class="def"> set splitbelow			&quot; default new sp window goes below
+</span><span class="def"> set splitright			&quot; default new vsp window goes right
+</span><span class="sub">-set scrolloff=12		&quot; keep x lines at top and bottom visible when scrolling
+</span><span class="add">+set scrolloff=12		&quot; keep x lines at top and bottom visible when scrollingkeep x lines at top and bottom visible when scrolling
+</span><span class="def"> autocmd VimResized * wincmd =	&quot; keep splits equal size when resizing window
+</span><span class="def"> 
+</span><span class="def"> syntax on			&quot; enable syntax highlighting
+</span><span class="def"> set mouse=a			&quot; enable mouse
+</span><span class="def"> set t_Co=16			&quot; use the 16 terminal colours
+</span><span class="add">+set ttyfast
+</span><span class="def"> 
+</span><span class="def"> set sessionoptions=buffers,folds,tabpages
+</span><span class="def"> set viewoptions=folds,cursor
+</span>@@ -91,7 +98,7 @@
+<span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="def"> &quot; restore last line in opened file
+</span><span class="sub">-:au BufReadPost *
+</span><span class="add">+au BufReadPost *
+</span><span class="def"> 	    \ if line(&quot;&apos;\&quot;&quot;) &gt; 1 &amp;&amp; line(&quot;&apos;\&quot;&quot;) &lt;= line(&quot;$&quot;) &amp;&amp; &amp;ft !~# &apos;commit&apos;
+</span><span class="def"> 	    \ |   exe &quot;normal! g`\&quot;&quot;
+</span><span class="def"> 	    \ | endif
+</span>@@ -107,13 +114,13 @@
+<span class="def"> &quot; vimlab setup
+</span><span class="def"> &quot;------------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="sub">-&quot; vim-slime 
+</span><span class="sub">-if hostname() == &quot;zenbook&quot;
+</span><span class="sub">-    let g:slime_target = &quot;tmux&quot;
+</span><span class="sub">-    let g:slime_dont_ask_default = 1
+</span><span class="sub">-    let g:slime_default_config = {&quot;socket_name&quot;: &quot;default&quot;, &quot;target_pane&quot;: &quot;1&quot;}
+</span><span class="sub">-    let g:slime_paste_file = &quot;/tmp/slime_paste&quot;
+</span><span class="sub">-endif
+</span><span class="add">+&quot;&quot; vim-slime 
+</span><span class="add">+&quot;if hostname() == &quot;zenbook&quot;
+</span><span class="add">+&quot;    let g:slime_target = &quot;tmux&quot;
+</span><span class="add">+&quot;    let g:slime_dont_ask_default = 1
+</span><span class="add">+&quot;    let g:slime_default_config = {&quot;socket_name&quot;: &quot;default&quot;, &quot;target_pane&quot;: &quot;1&quot;}
+</span><span class="add">+&quot;    let g:slime_paste_file = &quot;/tmp/slime_paste&quot;
+</span><span class="add">+&quot;endif
+</span><span class="def"> 
+</span><span class="def"> &quot; mlint code checking 
+</span><span class="def"> if hostname() == &quot;zenbook&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>plugin/theme.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -41,7 +41,7 @@
+<span class="def"> highlight CursorLine ctermbg=8 cterm=bold
+</span><span class="def"> augroup CursorLine
+</span><span class="def">     au!
+</span><span class="sub">-    au VimEnter,WinEnter,BufWinEnter * setlocal  cursorline
+</span><span class="add">+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+</span><span class="def">     au WinLeave * setlocal nocursorline
+</span><span class="def"> augroup END
+</span><span class="def"> 
+</span>@@ -54,4 +54,5 @@
+<span class="def"> augroup END
+</span><span class="def"> 
+</span><span class="def"> &quot; character for line in split
+</span><span class="sub">-set fillchars=vert:\|    
+</span><span class="add">+set fillchars=vert:\ 
+</span><span class="add">+hi VertSplit cterm=bold term=bold ctermbg=12
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Merge nested functions in copyStatic{Dirs,Files}</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/f718b11fce70923fca3dbe7205fb4750eb09f18c.html">f718b11fce70923fca3dbe7205fb4750eb09f18c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/247e0c2f4562522a52dc00203be5c2b109c07ec9.html">247e0c2f4562522a52dc00203be5c2b109c07ec9</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-12-04 13:22:27 +0300
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-12-04 13:22:27 +0300
+
+Merge nested functions in copyStatic{Dirs,Files}
+</pre><div class="diff">
+  <p>
+    <b>src/Templates.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -207,47 +207,37 @@
+<span class="def"> link intact, resulting in a symbolic link at `output/link.html` essentially
+</span><span class="def"> pointing to `output/gitserve/index.html`.
+</span><span class="def"> -}
+</span><span class="sub">--- TODO: merge isStatic and copy so it&apos;s just one step
+</span><span class="def"> copyStaticDirs :: Path Abs Dir -&gt; [Path Abs Dir] -&gt; IO ()
+</span><span class="sub">-copyStaticDirs output = mapM_ copy &lt;=&lt; filterM isStatic
+</span><span class="add">+copyStaticDirs output = mapM_ copy
+</span><span class="def">   where
+</span><span class="sub">-    isStatic :: Path Abs Dir -&gt; IO Bool
+</span><span class="sub">-    isStatic p = do
+</span><span class="sub">-        let isRepo = (toFilePath . dirname $ p) == &quot;repo/&quot;
+</span><span class="sub">-        isLink &lt;- pathIsSymbolicLink . toFilePath $ p
+</span><span class="sub">-        return $ not isRepo || isLink
+</span><span class="sub">-
+</span><span class="def">     copy :: Path Abs Dir -&gt; IO ()
+</span><span class="def">     copy p = do
+</span><span class="sub">-        let output&apos; = output &lt;/&gt; dirname p
+</span><span class="sub">-        let fp = FP.dropTrailingPathSeparator . toFilePath $ p
+</span><span class="sub">-        isLink &lt;- pathIsSymbolicLink fp
+</span><span class="sub">-        if isLink
+</span><span class="sub">-            then do
+</span><span class="sub">-                target &lt;- getSymbolicLinkTarget fp
+</span><span class="sub">-                createDirectoryLink target . FP.dropTrailingPathSeparator . toFilePath $ output&apos;
+</span><span class="sub">-            else copyDirRecur p output&apos;
+</span><span class="add">+        let isRepo = (toFilePath . dirname $ p) == &quot;repo/&quot;
+</span><span class="add">+        isLink &lt;- pathIsSymbolicLink . toFilePath $ p
+</span><span class="add">+        when (not isRepo || isLink) $ do
+</span><span class="add">+            let output&apos; = output &lt;/&gt; dirname p
+</span><span class="add">+            let fp = FP.dropTrailingPathSeparator . toFilePath $ p
+</span><span class="add">+            if isLink
+</span><span class="add">+                then do
+</span><span class="add">+                    target &lt;- getSymbolicLinkTarget fp
+</span><span class="add">+                    createDirectoryLink target . FP.dropTrailingPathSeparator . toFilePath $ output&apos;
+</span><span class="add">+                else copyDirRecur p output&apos;
+</span><span class="def"> 
+</span><span class="def"> copyStaticFiles :: Path Abs Dir -&gt; [Path Abs File] -&gt; IO ()
+</span><span class="sub">-copyStaticFiles output = mapM_ copy &lt;=&lt; filterM isStatic
+</span><span class="add">+copyStaticFiles output = mapM_ copy
+</span><span class="def">   where
+</span><span class="sub">-    isStatic :: Path Abs File -&gt; IO Bool
+</span><span class="sub">-    isStatic p = do
+</span><span class="sub">-        let fp = toFilePath p
+</span><span class="sub">-        let isTemplate = FP.takeExtension fp `elem` [&quot;.html&quot;, &quot;.include&quot;]
+</span><span class="sub">-        isLink &lt;- pathIsSymbolicLink fp
+</span><span class="sub">-        return $ not isTemplate || isLink
+</span><span class="sub">-
+</span><span class="def">     copy :: Path Abs File -&gt; IO ()
+</span><span class="def">     copy p = do
+</span><span class="def">         let fp = toFilePath p
+</span><span class="add">+        let isTemplate = FP.takeExtension fp `elem` [&quot;.html&quot;, &quot;.include&quot;]
+</span><span class="def">         isLink &lt;- pathIsSymbolicLink fp
+</span><span class="sub">-        let output&apos; = output &lt;/&gt; filename p
+</span><span class="sub">-        if isLink
+</span><span class="sub">-            then do
+</span><span class="sub">-                target &lt;- getSymbolicLinkTarget fp
+</span><span class="sub">-                maybeExists &lt;- forgivingAbsence . isSymlink $ output&apos;
+</span><span class="sub">-                let exists = fromMaybe False maybeExists
+</span><span class="sub">-                when exists . removeFile . toFilePath $ output&apos;
+</span><span class="sub">-                createFileLink target . toFilePath $ output&apos;
+</span><span class="sub">-            else copyFile p output&apos;
+</span><span class="add">+        when (not isTemplate || isLink) $ do
+</span><span class="add">+            let output&apos; = output &lt;/&gt; filename p
+</span><span class="add">+            if isLink
+</span><span class="add">+                then do
+</span><span class="add">+                    target &lt;- getSymbolicLinkTarget fp
+</span><span class="add">+                    maybeExists &lt;- forgivingAbsence . isSymlink $ output&apos;
+</span><span class="add">+                    let exists = fromMaybe False maybeExists
+</span><span class="add">+                    when exists . removeFile . toFilePath $ output&apos;
+</span><span class="add">+                    createFileLink target . toFilePath $ output&apos;
+</span><span class="add">+                else copyFile p output&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

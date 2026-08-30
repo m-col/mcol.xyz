@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - pan to view when trying to focus in direction even if none found</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/aa7ab1a348e62e41d361b2e2bd589cf6f99e7af1.html">aa7ab1a348e62e41d361b2e2bd589cf6f99e7af1</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/357da79563a597762f7cf8b1a714054ff72fbbe2.html">357da79563a597762f7cf8b1a714054ff72fbbe2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-12 09:38:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-12 09:38:36 +0000
+
+pan to view when trying to focus in direction even if none found
+</pre><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -70,8 +70,9 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> void focus_in_direction(void *data) {
+</span><span class="sub">-    if (wl_list_empty(&amp;wimp.current_desk-&gt;views))
+</span><span class="add">+    if (wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="def"> 	return;
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="def">     struct view *current = wl_container_of(wimp.current_desk-&gt;views.next, current, link);
+</span><span class="def">     enum direction dir = *(enum direction*)data;
+</span>@@ -107,6 +108,9 @@
+<span class="def"> 	unfullscreen();
+</span><span class="def"> 	pan_to_view(next);
+</span><span class="def"> 	focus_view(next, NULL);
+</span><span class="add">+    } else {
+</span><span class="add">+	pan_to_view(current);
+</span><span class="add">+	focus_view(current, NULL);
+</span><span class="def">     }
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

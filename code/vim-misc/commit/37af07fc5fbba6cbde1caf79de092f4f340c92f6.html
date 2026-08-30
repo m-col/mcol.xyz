@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - created vim dirs in install</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/37af07fc5fbba6cbde1caf79de092f4f340c92f6.html">37af07fc5fbba6cbde1caf79de092f4f340c92f6</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/199db4ac8cc3879adfec49b547ad1005b3f445cb.html">199db4ac8cc3879adfec49b547ad1005b3f445cb</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-09 10:30:15 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-09 10:30:15 +0000
+
+created vim dirs in install
+</pre><div class="diff">
+  <p>
+    <b>install</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,3 +5,9 @@
+<span class="def"> 
+</span><span class="def"> echo &quot;source $dir/vimrc&quot; &gt;&gt; ~/.vimrc
+</span><span class="def"> echo &quot;source $dir/tmux.conf&quot; &gt;&gt; ~/.tmux.conf
+</span><span class="add">+
+</span><span class="add">+add_dir() { [[ ! -d $1 ]] &amp;&amp; mkdir -p $1 }
+</span><span class="add">+add_dir $HOME/backups
+</span><span class="add">+add_dir $HOME/sessions
+</span><span class="add">+add_dir $HOME/swap
+</span><span class="add">+add_dir $HOME/undo
+</span></pre>
+</div></div>
+  </body>
+</html>

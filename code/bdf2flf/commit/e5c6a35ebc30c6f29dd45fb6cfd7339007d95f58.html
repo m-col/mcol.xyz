@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bdf2flf - add readme</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/bdf2flf">bdf2flf</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Convert BDF bitmap fonts to flf fonts for figlet</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/bdf2flf">https://github.com/m-col/bdf2flf</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/bdf2flf/tree.html">Files</a> | <a href="https://mcol.xyz/code/bdf2flf/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/bdf2flf/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/bdf2flf/commit/e5c6a35ebc30c6f29dd45fb6cfd7339007d95f58.html">e5c6a35ebc30c6f29dd45fb6cfd7339007d95f58</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/bdf2flf/commit/32b29ee6e3f2c5abf03e964bbcd37f99640cf6b0.html">32b29ee6e3f2c5abf03e964bbcd37f99640cf6b0</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-27 14:54:49 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-27 14:54:49 +0000
+
+add readme
+</pre><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,43 @@
+<span class="add">+██               ██       ████                  ████     ████         ████
+</span><span class="add">+██               ██     ██       ██████       ██           ██       ██
+</span><span class="add">+██████       ██████   ████████         ██   ████████       ██     ████████
+</span><span class="add">+██    ██   ██    ██     ██           ██       ██           ██       ██
+</span><span class="add">+██    ██   ██    ██     ██         ██         ██           ██       ██
+</span><span class="add">+██████       ██████     ██       ████████     ██         ██████     ██
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+Convert BDF bitmap fonts to flf FIGfonts for figlet.
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+Usage
+</span><span class="add">+-----
+</span><span class="add">+
+</span><span class="add">+bdf2flf simply takes BDF data from stdin and outputs flf data to stdout:
+</span><span class="add">+
+</span><span class="add">+$ bdf2flf &lt; myfont.bdf &gt; myfont.flf
+</span><span class="add">+
+</span><span class="add">+By default, the pixels that form the letters are represented by &apos;#&apos;, with the
+</span><span class="add">+spaces represented  by &apos; &apos;. This can be changed using other tools:
+</span><span class="add">+
+</span><span class="add">+$ bdf2flf &lt; Tamzen5x9r.bdf | sed &apos;s/#/██/g; s/ /  /g&apos; &gt; Tamzen5x9r.flf
+</span><span class="add">+
+</span><span class="add">+This last example is what was used the make the header above (Tamzen font:
+</span><span class="add">+https://github.com/sunaku/tamzen-font).
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+To install
+</span><span class="add">+----------
+</span><span class="add">+
+</span><span class="add">+$ make
+</span><span class="add">+$ sudo make install
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+To uninstall
+</span><span class="add">+------------
+</span><span class="add">+
+</span><span class="add">+$ sudo make uninstall
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+Contact
+</span><span class="add">+-------
+</span><span class="add">+Email me @ mcol@posteo.net for questions or patches.
+</span></pre>
+</div></div>
+  </body>
+</html>

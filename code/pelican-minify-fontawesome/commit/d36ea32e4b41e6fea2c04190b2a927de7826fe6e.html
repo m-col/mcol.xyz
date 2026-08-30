@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-minify-fontawesome - add fas, far, fal and fab RST roles; clarify comments; print used glyphs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-minify-fontawesome">pelican-minify-fontawesome</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to minify fontawesome assets to include used icons.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-minify-fontawesome">https://github.com/m-col/pelican-minify-fontawesome</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-minify-fontawesome/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-minify-fontawesome/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/d36ea32e4b41e6fea2c04190b2a927de7826fe6e.html">d36ea32e4b41e6fea2c04190b2a927de7826fe6e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-minify-fontawesome/commit/b7e657f9c58ed925aa4b58329fed2ff1daa15c39.html">b7e657f9c58ed925aa4b58329fed2ff1daa15c39</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-10-20 20:19:43 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-10-20 20:19:43 +0100
+
+add fas, far, fal and fab RST roles; clarify comments; print used glyphs
+</pre><div class="diff">
+  <p>
+    <b>minify_fontawesome.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -56,10 +56,12 @@
+<span class="def">                     font.generate(os.path.join(dest, f))
+</span><span class="def">                 font.close()
+</span><span class="def"> 
+</span><span class="add">+    print(f&apos;Font Awesome icons incorporated: {icons}&apos;)
+</span><span class="def"> 
+</span><span class="def"> def get_classes(folder):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-    Gets a list of CSS classes defined in all html files within a folder.
+</span><span class="add">+    Gets a list of font awesome CSS classes defined in all html files within a
+</span><span class="add">+    folder i.e. those beginning with &apos;fa&apos;.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     fa_classes = []
+</span><span class="def">     all_classes = []
+</span>@@ -112,6 +114,10 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> def output_font(instance):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Main function that identifies used icons and copies their CSS and font
+</span><span class="add">+    definitions into the output folder.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="def">     FONT_PATH = instance.settings.get(&apos;MINIFY_FONTAWESOME&apos;, None)
+</span><span class="def">     if not FONT_PATH or not os.path.isdir(FONT_PATH):
+</span><span class="def">         return
+</span>@@ -132,8 +138,19 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> def rst_span(name, rawtext, text, lineno, inliner, options={}, content=[]):
+</span><span class="sub">-    return [nodes.raw(&apos;&apos;, f&apos;&lt;span class=&quot;{text}&quot;&gt;&lt;/span&gt;&apos;, format=&apos;html&apos;)], []
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    A RST role that replaces inline glyphs e.g. :fas:`cat` with the appropriate
+</span><span class="add">+    HTML span tag.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    return [nodes.raw(&apos;&apos;, f&apos;&lt;span class=&quot;{name} fa-{text}&quot;&gt;&lt;/span&gt;&apos;, format=&apos;html&apos;)], []
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> def register():
+</span><span class="sub">-    roles.register_local_role(&apos;fa&apos;, rst_span)
+</span><span class="add">+    # Register main program
+</span><span class="def">     signals.finalized.connect(output_font)
+</span><span class="add">+
+</span><span class="add">+    # Register font awesome RST roles
+</span><span class="add">+    roles.register_local_role(&apos;fas&apos;, rst_span)
+</span><span class="add">+    roles.register_local_role(&apos;far&apos;, rst_span)
+</span><span class="add">+    roles.register_local_role(&apos;fal&apos;, rst_span)
+</span><span class="add">+    roles.register_local_role(&apos;fab&apos;, rst_span)
+</span></pre>
+</div></div>
+  </body>
+</html>

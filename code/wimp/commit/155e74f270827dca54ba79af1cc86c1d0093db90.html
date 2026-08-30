@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - snap to side of output when ending window drag</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/155e74f270827dca54ba79af1cc86c1d0093db90.html">155e74f270827dca54ba79af1cc86c1d0093db90</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/c5ea1629089656f52c1e635c9d5b05820343d00d.html">c5ea1629089656f52c1e635c9d5b05820343d00d</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-28 23:07:02 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-28 23:07:02 +0000
+
+snap to side of output when ending window drag
+</pre><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -11,6 +11,91 @@
+<span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+#define SNAP_WIDTH 42
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void try_snap(struct view *view) {
+</span><span class="add">+    double x = wimp.cursor-&gt;x;
+</span><span class="add">+    double y = wimp.cursor-&gt;y;
+</span><span class="add">+    struct wlr_box snap_to;
+</span><span class="add">+    bool snap = false;
+</span><span class="add">+    struct wlr_output *output = wlr_output_layout_output_at(wimp.output_layout, x, y);
+</span><span class="add">+    struct wlr_box *outgeo = wlr_output_layout_get_box(wimp.output_layout, output);
+</span><span class="add">+
+</span><span class="add">+    if (x &lt; SNAP_WIDTH) {
+</span><span class="add">+	snap = true;
+</span><span class="add">+	snap_to.x = outgeo-&gt;x;
+</span><span class="add">+	snap_to.width = outgeo-&gt;width / 2;
+</span><span class="add">+	if (y &lt;= outgeo-&gt;height / 3) {
+</span><span class="add">+	    snap_to.y = outgeo-&gt;y;
+</span><span class="add">+	    snap_to.height = outgeo-&gt;height / 2;
+</span><span class="add">+	} else if (y &lt;= 2 * outgeo-&gt;height / 3) {
+</span><span class="add">+	    snap_to.y = outgeo-&gt;y;
+</span><span class="add">+	    snap_to.height = outgeo-&gt;height;
+</span><span class="add">+	} else {
+</span><span class="add">+	    snap_to.y = outgeo-&gt;y + outgeo-&gt;height / 2;
+</span><span class="add">+	    snap_to.height = outgeo-&gt;height / 2;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (x &gt; outgeo-&gt;width - SNAP_WIDTH) {
+</span><span class="add">+	snap = true;
+</span><span class="add">+	snap_to.x = outgeo-&gt;width / 2;
+</span><span class="add">+	snap_to.width = outgeo-&gt;width / 2;
+</span><span class="add">+	if (y &lt;= outgeo-&gt;height / 3) {
+</span><span class="add">+	    snap_to.y = outgeo-&gt;y;
+</span><span class="add">+	    snap_to.height = outgeo-&gt;height / 2;
+</span><span class="add">+	} else if (y &lt;= 2 * outgeo-&gt;height / 3) {
+</span><span class="add">+	    snap_to.y = outgeo-&gt;y;
+</span><span class="add">+	    snap_to.height = outgeo-&gt;height;
+</span><span class="add">+	} else {
+</span><span class="add">+	    snap_to.y = outgeo-&gt;y + outgeo-&gt;height / 2;
+</span><span class="add">+	    snap_to.height = outgeo-&gt;height / 2;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (y &lt; SNAP_WIDTH) {
+</span><span class="add">+	snap = true;
+</span><span class="add">+	snap_to.y = outgeo-&gt;y;
+</span><span class="add">+	snap_to.height = outgeo-&gt;height / 2;
+</span><span class="add">+	if (x &lt;= outgeo-&gt;width / 3) {
+</span><span class="add">+	    snap_to.x = outgeo-&gt;x;
+</span><span class="add">+	    snap_to.width = outgeo-&gt;width / 2;
+</span><span class="add">+	} else if (x &lt; 2 * outgeo-&gt;width / 3) {
+</span><span class="add">+	    snap_to.x = outgeo-&gt;x;
+</span><span class="add">+	    snap_to.width = outgeo-&gt;width;
+</span><span class="add">+	} else {
+</span><span class="add">+	    snap_to.x = outgeo-&gt;x + outgeo-&gt;width / 2;
+</span><span class="add">+	    snap_to.width = outgeo-&gt;width / 2;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    else if (y &gt; outgeo-&gt;height - SNAP_WIDTH) {
+</span><span class="add">+	snap = true;
+</span><span class="add">+	snap_to.y = outgeo-&gt;height / 2;
+</span><span class="add">+	snap_to.height = outgeo-&gt;height / 2;
+</span><span class="add">+	if (x &lt;= outgeo-&gt;width / 3) {
+</span><span class="add">+	    snap_to.x = outgeo-&gt;x;
+</span><span class="add">+	    snap_to.width = outgeo-&gt;width / 2;
+</span><span class="add">+	} else if (x &lt;= 2 * outgeo-&gt;width / 3) {
+</span><span class="add">+	    snap_to.x = outgeo-&gt;x;
+</span><span class="add">+	    snap_to.width = outgeo-&gt;width;
+</span><span class="add">+	} else {
+</span><span class="add">+	    snap_to.x = outgeo-&gt;x + outgeo-&gt;width / 2;
+</span><span class="add">+	    snap_to.width = outgeo-&gt;width / 2;
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (snap) {
+</span><span class="add">+	int border_width = wimp.current_desk-&gt;border_width;
+</span><span class="add">+	snap_to.x += border_width;
+</span><span class="add">+	snap_to.y += border_width;
+</span><span class="add">+	snap_to.width -= border_width * 2;
+</span><span class="add">+	snap_to.height -= border_width * 2;
+</span><span class="add">+	view_apply_geometry(view, &amp;snap_to);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> void centre_cursor() {
+</span><span class="def">     struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span>@@ -329,6 +414,7 @@
+<span class="def"> 	    wimp.cursor_mode = CURSOR_PASSTHROUGH;
+</span><span class="def"> 	}
+</span><span class="def"> 	if (wimp.grabbed_view) {
+</span><span class="add">+	    try_snap(wimp.grabbed_view);
+</span><span class="def"> 	    wimp.grabbed_view = NULL;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span></pre>
+</div></div>
+  </body>
+</html>

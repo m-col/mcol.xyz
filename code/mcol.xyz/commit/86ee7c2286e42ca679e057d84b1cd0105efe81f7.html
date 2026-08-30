@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - add favicon.png to statics; matomo-&gt;goatcounter header</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/86ee7c2286e42ca679e057d84b1cd0105efe81f7.html">86ee7c2286e42ca679e057d84b1cd0105efe81f7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/e95b1edd0c97a3ce410c05af416bd4d977054007.html">e95b1edd0c97a3ce410c05af416bd4d977054007</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-08-15 20:58:45 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-08-15 20:58:45 +0100
+
+add favicon.png to statics; matomo-&gt;goatcounter header
+</pre><div class="diff">
+  <p>
+    <b>pelicanconf.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,8 +18,7 @@
+<span class="def"> PAGE_PATHS = [&apos;pages&apos;,]
+</span><span class="def"> ARTICLE_PATHS = [&apos;notes&apos;,]
+</span><span class="def"> DEFAULT_DATE_FORMAT = &apos;%Y-%m-%d&apos;
+</span><span class="sub">-#STATIC_PATHS = [&apos;static&apos;, &apos;favicon.png&apos;]
+</span><span class="sub">-STATIC_PATHS = [&apos;static&apos;]
+</span><span class="add">+STATIC_PATHS = [&apos;static&apos;, &apos;favicon.png&apos;]
+</span><span class="def"> PLUGIN_PATHS = [&quot;/home/mcol/git&quot;, &quot;/home/mcol/git/pelican-plugins&quot;]
+</span><span class="def"> PLUGINS = []
+</span><span class="def"> RELATIVE_URLS = True
+</span>@@ -52,7 +51,7 @@
+<span class="def"> SITESUBTITLE = &quot;A hobbyist&apos;s notes on FOSS, linux toys and privacy tools&quot;
+</span><span class="def"> MENUPADTO = 8
+</span><span class="def"> EXTRAHEAD = &quot;&quot;&quot;&lt;link rel=&quot;stylesheet&quot; href=&quot;/theme/css/fa.css&quot; /&gt;
+</span><span class="sub">-    &lt;script async defer src=&quot;/matomo/404.js&quot;&gt;&lt;/script&gt;&quot;&quot;&quot;
+</span><span class="add">+    &lt;script data-goatcounter=&quot;https://goat.mcol.xyz/count&quot; async src=&quot;//goat.mcol.xyz/count.js&quot;&gt;&lt;/script&gt;&quot;&quot;&quot;
+</span><span class="def"> PRIVACYPOLICY = &quot;&quot;&quot;I collect very little 100% anonymous data for a vague sense of what
+</span><span class="def"> pages are visited, and from what websites. That is its only use, only by me, only on my
+</span><span class="def"> machine.&quot;&quot;&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

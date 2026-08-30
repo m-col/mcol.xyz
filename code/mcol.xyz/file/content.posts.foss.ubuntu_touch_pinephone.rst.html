@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - content/posts/foss/ubuntu_touch_pinephone.rst</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- content/posts/foss/ubuntu_touch_pinephone.rst</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> ubuntu-touch on the pinephone: first impressions
+<a href="#l2" class="line" id="l2">      2</a> ================================================
+<a href="#l3" class="line" id="l3">      3</a> 
+<a href="#l4" class="line" id="l4">      4</a> :date: 2020-02-11
+<a href="#l5" class="line" id="l5">      5</a> :summary: My first impression of testing ubuntu-touch on the pinephone
+<a href="#l6" class="line" id="l6">      6</a>           BraveHeart release
+<a href="#l7" class="line" id="l7">      7</a> 
+<a href="#l8" class="line" id="l8">      8</a> My Braveheart edition PinePhone_ arrived a couple of days after a *long*
+<a href="#l9" class="line" id="l9">      9</a> journey and I&apos;ve finally got some time to play with it. The first thing I
+<a href="#l10" class="line" id="l10">     10</a> wanted to do was test drive ubuntu-touch_, the mobile version of Ubuntu
+<a href="#l11" class="line" id="l11">     11</a> maintained by the `UBports community`_, and I figured I&apos;d write about my
+<a href="#l12" class="line" id="l12">     12</a> experiences.
+<a href="#l13" class="line" id="l13">     13</a> 
+<a href="#l14" class="line" id="l14">     14</a> 
+<a href="#l15" class="line" id="l15">     15</a> interface and responsiveness
+<a href="#l16" class="line" id="l16">     16</a> ----------------------------
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> My expectations were sensibly quite low given that it&apos;s still early days for
+<a href="#l19" class="line" id="l19">     19</a> the pinephone, but I&apos;ve got to say, I was pleasantly surprised by how
+<a href="#l20" class="line" id="l20">     20</a> responsive and un-frustrating the UI is at this stage.
+<a href="#l21" class="line" id="l21">     21</a> 
+<a href="#l22" class="line" id="l22">     22</a> The keyboard, which sometimes was an issue for me when I tested postmarketOS_,
+<a href="#l23" class="line" id="l23">     23</a> works 99% perfectly. There does appear to be a minor bug where keyboard sounds,
+<a href="#l24" class="line" id="l24">     24</a> when enabled in the settings, are only triggered on the first key press after
+<a href="#l25" class="line" id="l25">     25</a> the keyboard is opened. A low priority bug to be sure.
+<a href="#l26" class="line" id="l26">     26</a> 
+<a href="#l27" class="line" id="l27">     27</a> The app draw - displayed when swiping in from the left of the screen - feels
+<a href="#l28" class="line" id="l28">     28</a> intuitive and looks great. Much more convenient access to apps than android
+<a href="#l29" class="line" id="l29">     29</a> has. Swiping in the from the right of the screen gives a view of all running
+<a href="#l30" class="line" id="l30">     30</a> apps, allow you to swipe them up to close them. These two very gesture-based
+<a href="#l31" class="line" id="l31">     31</a> features are smooth and responsive and don&apos;t feel clunky at all.
+<a href="#l32" class="line" id="l32">     32</a> 
+<a href="#l33" class="line" id="l33">     33</a> .. image:: /static/UT_pinephone.jpg
+<a href="#l34" class="line" id="l34">     34</a>     :width: 60%
+<a href="#l35" class="line" id="l35">     35</a>     :align: center
+<a href="#l36" class="line" id="l36">     36</a>     :alt: ubuntu-touch on pinephone: view of running apps
+<a href="#l37" class="line" id="l37">     37</a> 
+<a href="#l38" class="line" id="l38">     38</a> Dragging the bar at the top of the screen down (although *not* swiping down
+<a href="#l39" class="line" id="l39">     39</a> from off the top of the screen) dispays a number of informational tabs much
+<a href="#l40" class="line" id="l40">     40</a> like in android and iOS. There has been a little :fas:`envelope` icon on the
+<a href="#l41" class="line" id="l41">     41</a> bar since it first booted suggesting a notifications pending, but the
+<a href="#l42" class="line" id="l42">     42</a> notifications tab is pretty convinced that that is not the case.
+<a href="#l43" class="line" id="l43">     43</a> 
+<a href="#l44" class="line" id="l44">     44</a> .. raw:: html
+<a href="#l45" class="line" id="l45">     45</a> 
+<a href="#l46" class="line" id="l46">     46</a>    &lt;video controls width=&quot;60%&quot; class=&quot;align-center&quot; src=&quot;/static/UT_pinephone.webm&quot;&gt;&lt;/video&gt;
+<a href="#l47" class="line" id="l47">     47</a> 
+<a href="#l48" class="line" id="l48">     48</a> 
+<a href="#l49" class="line" id="l49">     49</a> hardware
+<a href="#l50" class="line" id="l50">     50</a> --------
+<a href="#l51" class="line" id="l51">     51</a> 
+<a href="#l52" class="line" id="l52">     52</a> Much of the hardware is perfectly under control:
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a>  - The volume buttons do indeed change the volume.
+<a href="#l55" class="line" id="l55">     55</a>  - The lock/power button locks the screen, and turns it back on again.
+<a href="#l56" class="line" id="l56">     56</a>  - Screen brightness control works.
+<a href="#l57" class="line" id="l57">     57</a> 
+<a href="#l58" class="line" id="l58">     58</a> But some is not:
+<a href="#l59" class="line" id="l59">     59</a> 
+<a href="#l60" class="line" id="l60">     60</a>  - Wifi appears to connect and work beautifully initially, but then fails.
+<a href="#l61" class="line" id="l61">     61</a>    There is a working fix for when it does, however (discussion on `ubports
+<a href="#l62" class="line" id="l62">     62</a>    &lt;https://forums.ubports.com/topic/3791/wifi-issues-on-pinephone-braveheart/8&gt;`_
+<a href="#l63" class="line" id="l63">     63</a>    and `pine64 &lt;https://forum.pine64.org/showthread.php?tid=8969&gt;`_).
+<a href="#l64" class="line" id="l64">     64</a>  - The *Rotation Lock* setting appears to do nothing; perhaps the gyro doesn&apos;t
+<a href="#l65" class="line" id="l65">     65</a>    quite work yet.
+<a href="#l66" class="line" id="l66">     66</a>  - Currently pinephone ubuntu-touch is stuck in headphone mode, and has other
+<a href="#l67" class="line" id="l67">     67</a>    issues with the speakers (`pine64 discussion
+<a href="#l68" class="line" id="l68">     68</a>    &lt;https://forum.pine64.org/showthread.php?tid=8923&gt;`_).
+<a href="#l69" class="line" id="l69">     69</a>  - There also appears to be a an issue with the battery usage, that `others
+<a href="#l70" class="line" id="l70">     70</a>    have also experienced`_, though this does appear to be an issue that can be
+<a href="#l71" class="line" id="l71">     71</a>    fixed by software changes (fortunately!).
+<a href="#l72" class="line" id="l72">     72</a> 
+<a href="#l73" class="line" id="l73">     73</a> 
+<a href="#l74" class="line" id="l74">     74</a> software
+<a href="#l75" class="line" id="l75">     75</a> --------
+<a href="#l76" class="line" id="l76">     76</a> 
+<a href="#l77" class="line" id="l77">     77</a> It does seem pretty strange, SSH-ing into and exploring a phone from my
+<a href="#l78" class="line" id="l78">     78</a> computer. Using apt to install tor or vim or whatever the hell I want. On my
+<a href="#l79" class="line" id="l79">     79</a> phone. That novelty is yet to wear off.
+<a href="#l80" class="line" id="l80">     80</a> 
+<a href="#l81" class="line" id="l81">     81</a> A dozen or so apps came pre-installed with ubuntu-touch, and more can be
+<a href="#l82" class="line" id="l82">     82</a> downloaded from the *OpenStore*. Many of these are simple web-apps, which has
+<a href="#l83" class="line" id="l83">     83</a> enabled a huge range of &apos;apps&apos; to be created already. Though some are buggy
+<a href="#l84" class="line" id="l84">     84</a> (unsurprising, considering the webpages they display probably weren&apos;t designed
+<a href="#l85" class="line" id="l85">     85</a> with this in mind), they do serve as stepping stones between having no apps and
+<a href="#l86" class="line" id="l86">     86</a> eventually having native apps :fas:`praying-hands`.
+<a href="#l87" class="line" id="l87">     87</a> 
+<a href="#l88" class="line" id="l88">     88</a> We are in the midst of an incredibly exciting time for linux smart phones, and
+<a href="#l89" class="line" id="l89">     89</a> I can&apos;t wait to see what the next few months bring us. I&apos;m sure very soon we
+<a href="#l90" class="line" id="l90">     90</a> will have all the necessary components of the pinephone working smoothly, and
+<a href="#l91" class="line" id="l91">     91</a> once people make that transition to using it as a(n imperfect, yet functional)
+<a href="#l92" class="line" id="l92">     92</a> daily driver, the new apps and functionality will hopefully boom.
+<a href="#l93" class="line" id="l93">     93</a> 
+<a href="#l94" class="line" id="l94">     94</a> 
+<a href="#l95" class="line" id="l95">     95</a> .. _PinePhone: https://wiki.pine64.org/index.php/PinePhone
+<a href="#l96" class="line" id="l96">     96</a> .. _ubuntu-touch: https://ubuntu-touch.io
+<a href="#l97" class="line" id="l97">     97</a> .. _`UBports community`: https://ubports.com
+<a href="#l98" class="line" id="l98">     98</a> .. _postmarketOS: https://postmarketos.org
+<a href="#l99" class="line" id="l99">     99</a> .. _`others have also experienced`: https://forum.pine64.org/showthread.php?tid=9063
+<a href="#l100" class="line" id="l100">    100</a> 
+</pre>
+  </div>
+  </body>
+</html>

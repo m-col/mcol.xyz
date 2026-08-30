@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add geometry focus functions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/378c91408fe31379d5e46f077a6dbd8394256063.html">378c91408fe31379d5e46f077a6dbd8394256063</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/99a6caf3a0af41c704111c6618e475c4a9629f71.html">99a6caf3a0af41c704111c6618e475c4a9629f71</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-06-03 15:09:29 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-06-03 15:09:29 +0100
+
+add geometry focus functions
+</pre><div class="diff">
+  <p>
+    <b>qtools/focus/focus.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,71 @@
+<span class="add">+&quot;&quot;&quot;
+</span><span class="add">+This plugin exposes four functions - up, down, left and right - that when called will
+</span><span class="add">+move window focus to the first window in that general direction. Focussing is based
+</span><span class="add">+entirely on position and geometry, so is independent of screens, layouts and whether
+</span><span class="add">+windows are floating or tiled.
+</span><span class="add">+
+</span><span class="add">+Example usage: binding a key to lazy.function(qtools.focus.right)
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def up(qtile):
+</span><span class="add">+    _focus_window(qtile, -1, &apos;y&apos;)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def down(qtile):
+</span><span class="add">+    _focus_window(qtile, 1, &apos;y&apos;)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def left(qtile):
+</span><span class="add">+    _focus_window(qtile, -1, &apos;x&apos;)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def right(qtile):
+</span><span class="add">+    _focus_window(qtile, 1, &apos;x&apos;)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def _focus_window(qtile, dir, axis):
+</span><span class="add">+    win = None
+</span><span class="add">+    win_wide = None
+</span><span class="add">+    dist = 10000
+</span><span class="add">+    dist_wide = 10000
+</span><span class="add">+
+</span><span class="add">+    if axis == &apos;x&apos;:
+</span><span class="add">+        dim = &apos;width&apos;
+</span><span class="add">+        band_axis = &apos;y&apos;
+</span><span class="add">+        band_dim = &apos;height&apos;
+</span><span class="add">+        cur_pos, band_min, _, band_max = qtile.current_window.edges
+</span><span class="add">+    else:
+</span><span class="add">+        dim = &apos;height&apos;
+</span><span class="add">+        band_axis = &apos;x&apos;
+</span><span class="add">+        band_dim = &apos;width&apos;
+</span><span class="add">+        band_min, cur_pos, band_max, _ = qtile.current_window.edges
+</span><span class="add">+
+</span><span class="add">+    cur_pos += getattr(qtile.current_window, dim) / 2
+</span><span class="add">+
+</span><span class="add">+    windows = [w for g in qtile.groups if g.screen for w in g.windows]
+</span><span class="add">+
+</span><span class="add">+    if qtile.current_window in windows:
+</span><span class="add">+        windows.remove(qtile.current_window)
+</span><span class="add">+
+</span><span class="add">+    for w in windows:
+</span><span class="add">+        if not w.minimized:
+</span><span class="add">+            pos = getattr(w, axis) + getattr(w, dim) / 2
+</span><span class="add">+            gap = dir * (pos - cur_pos)
+</span><span class="add">+            if gap &gt; 0:
+</span><span class="add">+                band_pos = getattr(w, band_axis) + getattr(w, band_dim) / 2
+</span><span class="add">+                if band_min &lt; band_pos &lt; band_max:
+</span><span class="add">+                    if gap &lt; dist:
+</span><span class="add">+                        dist = gap
+</span><span class="add">+                        win = w
+</span><span class="add">+                else:
+</span><span class="add">+                    if gap &lt; dist_wide:
+</span><span class="add">+                        dist_wide = gap
+</span><span class="add">+                        win_wide = w
+</span><span class="add">+
+</span><span class="add">+    if not win:
+</span><span class="add">+        win = win_wide
+</span><span class="add">+    if win:
+</span><span class="add">+        qtile.focus_screen(win.group.screen.index)
+</span><span class="add">+        win.group.focus(win, True)
+</span><span class="add">+        win.focus(False)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/focus/__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+from .focus import up, down, left, right
+</span><span class="add">+__all__ = (&apos;up&apos;, &apos;down&apos;, &apos;left&apos;, &apos;right&apos;)
+</span></pre>
+</div></div>
+  </body>
+</html>

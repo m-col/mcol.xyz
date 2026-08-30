@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - stuff</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/397df90cd77cbbbec87261638ba3d59d2875b028.html">397df90cd77cbbbec87261638ba3d59d2875b028</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/ff18bf68461d966fec0afad280cf47950425aed3.html">ff18bf68461d966fec0afad280cf47950425aed3</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2025-06-16 15:38:00 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2025-06-16 15:38:00 +0100
+
+stuff
+</pre><div class="diff">
+  <p>
+    <b>rc.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -614,7 +614,7 @@
+<span class="def"> map r3 shell convert %s -rotate 270 %s
+</span><span class="def"> 
+</span><span class="def"> # drag files
+</span><span class="sub">-map &lt;C-d&gt; shell dragon-drag-and-drop -a -x %p &amp;&gt; /dev/null &amp;
+</span><span class="add">+map &lt;C-d&gt; shell dragon-drop -T -a -x %p &amp;&gt; /dev/null &amp;
+</span><span class="def"> #map &lt;C-d&gt; shell cp %s /tmp/%s &amp;&amp; dragon-drag-and-drop -a -x /tmp/%s &amp;&gt; /dev/null &amp;
+</span><span class="def"> 
+</span><span class="def"> # filter while finding
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -30,13 +30,13 @@
+<span class="def">     touch $1
+</span><span class="def">     chmod +x $1
+</span><span class="def">     echo -e &quot;#!/usr/bin/env bash\n&quot; &gt; $1
+</span><span class="sub">-    vim +2 $1
+</span><span class="add">+    nvim +2 $1
+</span><span class="def"> }
+</span><span class="def"> shebangpy() { # create new file, add shebang, and vim
+</span><span class="def">     touch $1
+</span><span class="def">     chmod +x $1
+</span><span class="def">     echo -e &quot;#!/usr/bin/env python3\n&quot; &gt; $1
+</span><span class="sub">-    vim +2 $1
+</span><span class="add">+    nvim +2 $1
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> # copy file path to clipboard
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -21,6 +21,7 @@
+<span class="def"> alias dc=docker-compose
+</span><span class="def"> alias vim=nvim
+</span><span class="def"> alias fv=&quot;fzf --print0 | xargs -0 -o nvim&quot;
+</span><span class="add">+alias cat=bat
+</span><span class="def"> 
+</span><span class="def"> if [[ -n &quot;$WAYLAND_DISPLAY&quot; ]]
+</span><span class="def"> then
+</span>@@ -124,6 +125,7 @@
+<span class="def"> alias psiu=&apos;python setup.py -q install --user&apos;
+</span><span class="def"> alias m=make
+</span><span class="def"> alias mc=&apos;make clean&apos;
+</span><span class="add">+alias vimrc=&apos;nvim ~/.vim/pack/vim-misc/start/self/plugin/settings.vim&apos;
+</span><span class="def"> check() { pytest -xs --pdbcls pudb.debugger:Debugger $@; }
+</span><span class="def"> 
+</span><span class="def"> # quick edits
+</span>@@ -144,7 +146,6 @@
+<span class="def"> alias gz=&apos;cd $HOME/.zsh; l&apos;
+</span><span class="def"> alias gR=&apos;cd $HOME/reach&apos;
+</span><span class="def"> 
+</span><span class="sub">-alias c=&apos;cargo&apos;
+</span><span class="sub">-alias cw=&apos;cargo-watch -c -q -x run&apos;
+</span><span class="def"> alias cb=&apos;cargo build --&apos;
+</span><span class="def"> alias cf=&apos;cargo fmt&apos;
+</span><span class="add">+alias cf=&apos;cargo run&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

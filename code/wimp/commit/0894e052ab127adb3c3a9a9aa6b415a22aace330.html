@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - add move_window action</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/0894e052ab127adb3c3a9a9aa6b415a22aace330.html">0894e052ab127adb3c3a9a9aa6b415a22aace330</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/0426767a7328b421c11aebe39319a23dead764ae.html">0426767a7328b421c11aebe39319a23dead764ae</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-01-24 23:44:39 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-01-24 23:44:39 +0000
+
+add move_window action
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -78,6 +78,7 @@
+<span class="def"> # Possible mouse bindings: motion, scroll (+ additional modifiers)
+</span><span class="def"> bind		scroll		pan_desk_mouse
+</span><span class="def"> bind	Shift	scroll		zoom_mouse
+</span><span class="add">+bind		motion		move_window
+</span><span class="def"> 
+</span><span class="def"> # Scroll direction. Can be one of: natural, reverse
+</span><span class="def"> #scroll_direction natural
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,10 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+struct view *view_at(
+</span><span class="add">+    double lx, double ly, struct wlr_surface **surface, double *sx, double *sy
+</span><span class="add">+);
+</span><span class="add">+
+</span><span class="def"> void set_up_cursor();
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/cursor.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -44,7 +44,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static bool view_at(
+</span><span class="add">+static bool _view_at(
+</span><span class="def">     struct view *view, double lx, double ly, struct wlr_surface **surface,
+</span><span class="def">     double *sx, double *sy
+</span><span class="def"> ) {
+</span>@@ -66,14 +66,14 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static struct view *desktop_view_at(
+</span><span class="sub">-    double lx, double ly, struct wlr_surface **surface, double *sx, double *sy, double zoom
+</span><span class="add">+struct view *view_at(
+</span><span class="add">+    double lx, double ly, struct wlr_surface **surface, double *sx, double *sy
+</span><span class="def"> ) {
+</span><span class="def">     struct view *view;
+</span><span class="sub">-    lx /= zoom;
+</span><span class="sub">-    ly /= zoom;
+</span><span class="add">+    lx /= wimp.current_desk-&gt;zoom;
+</span><span class="add">+    ly /= wimp.current_desk-&gt;zoom;
+</span><span class="def">     wl_list_for_each(view, &amp;wimp.current_desk-&gt;views, link) {
+</span><span class="sub">-	if (view_at(view, lx, ly, surface, sx, sy)) {
+</span><span class="add">+	if (_view_at(view, lx, ly, surface, sx, sy)) {
+</span><span class="def"> 	    return view;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span>@@ -94,7 +94,7 @@
+<span class="def"> 	case CURSOR_PASSTHROUGH:
+</span><span class="def"> 	    seat = wimp.seat;
+</span><span class="def"> 	    surface = NULL;
+</span><span class="sub">-	    view = desktop_view_at(wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy, zoom);
+</span><span class="add">+	    view = view_at(wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy);
+</span><span class="def"> 	    if (!view) {
+</span><span class="def"> 		wlr_xcursor_manager_set_cursor_image(wimp.cursor_manager, &quot;left_ptr&quot;, wimp.cursor);
+</span><span class="def"> 	    }
+</span>@@ -154,8 +154,8 @@
+<span class="def">     } else {
+</span><span class="def"> 	double sx, sy;
+</span><span class="def"> 	struct wlr_surface *surface;
+</span><span class="sub">-	struct view *view = desktop_view_at(
+</span><span class="sub">-	    wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy, wimp.current_desk-&gt;zoom
+</span><span class="add">+	struct view *view = view_at(
+</span><span class="add">+	    wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy
+</span><span class="def"> 	);
+</span><span class="def"> 	focus_view(view, surface);
+</span><span class="def">     }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -122,6 +122,7 @@
+<span class="def">     { &quot;shutdown&quot;, &amp;shutdown, NULL },
+</span><span class="def">     { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span><span class="def">     { &quot;close_window&quot;, &amp;close_window, NULL },
+</span><span class="add">+    { &quot;move_window&quot;, &amp;move_window, NULL },
+</span><span class="def">     { &quot;focus&quot;, &amp;focus_in_direction, &amp;dir_handler },
+</span><span class="def">     { &quot;next_desk&quot;, &amp;next_desk, NULL },
+</span><span class="def">     { &quot;prev_desk&quot;, &amp;prev_desk, NULL },
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -7,6 +7,7 @@
+<span class="def"> void exec_command(void *data);
+</span><span class="def"> void change_vt(void *data);
+</span><span class="def"> void close_window(void *data);
+</span><span class="add">+void move_window(void *data);
+</span><span class="def"> void focus_in_direction(void *data);
+</span><span class="def"> void next_desk(void *data);
+</span><span class="def"> void prev_desk(void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,7 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;action.h&quot;
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="add">+#include &quot;cursor.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span>@@ -42,6 +43,21 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void move_window(void *data) {
+</span><span class="add">+    struct wlr_surface *surface;
+</span><span class="add">+    double sx, sy;
+</span><span class="add">+    struct view *view = view_at(
+</span><span class="add">+	wimp.cursor-&gt;x, wimp.cursor-&gt;y, &amp;surface, &amp;sx, &amp;sy
+</span><span class="add">+    );
+</span><span class="add">+    if (!view) {
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+    struct motion motion = *(struct motion*)data;
+</span><span class="add">+    view-&gt;x += motion.dx;
+</span><span class="add">+    view-&gt;y += motion.dy;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void focus_in_direction(void *data) {
+</span><span class="def">     if (wl_list_empty(&amp;wimp.current_desk-&gt;views))
+</span><span class="def"> 	return;
+</span></pre>
+</div></div>
+  </body>
+</html>

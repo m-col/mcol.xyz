@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mini-theme - update some formatting of header</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mini-theme">mini-theme</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">A mini theme for the pelican static site generator</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mini-theme">https://github.com/m-col/mini-theme</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mini-theme/tree.html">Files</a> | <a href="https://mcol.xyz/code/mini-theme/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/mini-theme/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mini-theme/commit/2bd5e018eae5521498049c3cf340a06994495b68.html">2bd5e018eae5521498049c3cf340a06994495b68</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mini-theme/commit/9a1866b2dec32be967d82dff52f362dd8e3df92b.html">9a1866b2dec32be967d82dff52f362dd8e3df92b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-10-01 14:08:54 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-10-01 14:08:54 +0100
+
+update some formatting of header
+</pre><div class="diff">
+  <p>
+    <b>templates/base.html</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -17,7 +17,7 @@
+<span class="def"> 
+</span><span class="def"> 	&lt;body&gt;
+</span><span class="def"> 		{% if output_file != &quot;index.html&quot; %}
+</span><span class="sub">-		&lt;table width=&quot;100%&quot;&gt;
+</span><span class="add">+		&lt;table id=&quot;head&quot;&gt;
+</span><span class="def"> 			&lt;tr&gt;
+</span><span class="def"> 				&lt;td width=&quot;32px&quot; rowspan=&quot;2&quot;&gt;&lt;a href=&quot;/&quot;&gt;&lt;img id=avatar src=&quot;{{ AVATAR }}&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+</span><span class="def"> 				&lt;td rowspan=&quot;2&quot;&gt;{% block header %}{% endblock header %}&lt;/td&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>static/css/main.css</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -109,8 +109,12 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> #content table td {
+</span><span class="sub">-        vertical-align: top;
+</span><span class="sub">-        white-space: nowrap;
+</span><span class="add">+    vertical-align: top;
+</span><span class="add">+    white-space: nowrap;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#head {
+</span><span class="add">+    width: 100%;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> #branches tr:hover td,
+</span>@@ -118,46 +122,46 @@
+<span class="def"> #index tr:hover td,
+</span><span class="def"> #log tr:hover td,
+</span><span class="def"> #files tr:hover td {
+</span><span class="sub">-        background-color: #eee;
+</span><span class="add">+    background-color: #eee;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> #index tr td:nth-child(2),
+</span><span class="def"> #tags tr td:nth-child(3),
+</span><span class="def"> #branches tr td:nth-child(3),
+</span><span class="def"> #log tr td:nth-child(2) {
+</span><span class="sub">-        white-space: normal;
+</span><span class="add">+    white-space: normal;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> td.num {
+</span><span class="sub">-        text-align: right;
+</span><span class="add">+    text-align: right;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> hr {
+</span><span class="sub">-        border: 0;
+</span><span class="sub">-        border-top: 1px solid #777;
+</span><span class="sub">-        height: 1px;
+</span><span class="add">+    border: 0;
+</span><span class="add">+    border-top: 1px solid #777;
+</span><span class="add">+    height: 1px;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> pre a.h {
+</span><span class="sub">-        color: #00a;
+</span><span class="add">+    color: #00a;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> .A,
+</span><span class="def"> span.i,
+</span><span class="def"> pre a.i {
+</span><span class="sub">-        color: #070;
+</span><span class="add">+    color: #070;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> .D,
+</span><span class="def"> span.d,
+</span><span class="def"> pre a.d {
+</span><span class="sub">-        color: #e00;
+</span><span class="add">+    color: #e00;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> pre a.h:hover,
+</span><span class="def"> pre a.i:hover,
+</span><span class="def"> pre a.d:hover {
+</span><span class="sub">-        text-decoration: none;
+</span><span class="add">+    text-decoration: none;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> .highlight {
+</span></pre>
+</div></div>
+  </body>
+</html>

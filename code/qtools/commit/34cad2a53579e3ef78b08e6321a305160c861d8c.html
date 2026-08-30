@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtools - add smooth backlight change, and notify on searx instance removal</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtools">qtools</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">An (outdated) collection of plugins for Qtile.</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtools">https://github.com/m-col/qtools</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtools/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtools/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtools/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtools/commit/34cad2a53579e3ef78b08e6321a305160c861d8c.html">34cad2a53579e3ef78b08e6321a305160c861d8c</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtools/commit/f03bb06d135d30d73b37530d9ea03166baf124a5.html">f03bb06d135d30d73b37530d9ea03166baf124a5</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-01-12 19:42:20 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-01-12 19:42:20 +0000
+
+add smooth backlight change, and notify on searx instance removal
+</pre><div class="diff">
+  <p>
+    <b>qtools/rofi_searx/searx.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -46,6 +46,8 @@
+<span class="def">         (&apos;theme&apos;, None, &apos;rofi theme to use.&apos;),
+</span><span class="def">         (&apos;launcher&apos;, &apos;tor-browser --allow-remote {url}&apos;, &apos;Command used to open web &apos;
+</span><span class="def">                      &apos;browser. Requires {url} to place the search url.&apos;),
+</span><span class="add">+        (&apos;notify_on_remove&apos;, True, &apos;Whether to make a notification when removing a &apos;
+</span><span class="add">+                                   &apos;searx instance.&apos;),
+</span><span class="def">     ]
+</span><span class="def"> 
+</span><span class="def">     def __init__(self, **config):
+</span>@@ -88,6 +90,8 @@
+<span class="def">             if self.instances_file:
+</span><span class="def">                 self.instances.append(f&apos;#{self.last_used}&apos;)
+</span><span class="def">                 self.save_instances()
+</span><span class="add">+            if self.notify_on_remove:
+</span><span class="add">+                self.show(self.last_used)
+</span><span class="def">             self.last_used = None
+</span><span class="def"> 
+</span><span class="def">     def load_instances(self, qtile=None):
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>qtools/backlight/backlight.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -13,11 +13,15 @@
+<span class="def"> &quot;&quot;&quot;
+</span><span class="def"> 
+</span><span class="def"> import os
+</span><span class="add">+import time
+</span><span class="def"> 
+</span><span class="def"> from libqtile.log_utils import logger
+</span><span class="def"> from qtools import Notifier
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+_transition = 80
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> class Backlight(Notifier):
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     This class controls screen backlight by directly reading and writing to the
+</span>@@ -26,6 +30,7 @@
+<span class="def">     defaults = [
+</span><span class="def">         (&apos;summary&apos;, &apos;Backlight&apos;, &apos;Notification summary.&apos;),
+</span><span class="def">         (&apos;interval&apos;, 10, &apos;Percentage interval by which to change backlight&apos;),
+</span><span class="add">+        (&apos;smooth&apos;, True, &apos;Whether to smoothly change brightness level.&apos;),
+</span><span class="def">         (
+</span><span class="def">             &apos;path&apos;,
+</span><span class="def">             &apos;/sys/class/backlight/nv_backlight/brightness&apos;,
+</span>@@ -36,31 +41,45 @@
+<span class="def">     def __init__(self, **config):
+</span><span class="def">         Notifier.__init__(self, **config)
+</span><span class="def">         self.add_defaults(Backlight.defaults)
+</span><span class="add">+        self.transition = _transition / self.interval / 1000
+</span><span class="def"> 
+</span><span class="def">         if not os.path.isfile(self.path):
+</span><span class="def">             logger.error(&apos;Path passed to Backlight plugin is invalid&apos;)
+</span><span class="def">             self.path = &apos;/dev/null&apos;
+</span><span class="def"> 
+</span><span class="sub">-    @property
+</span><span class="sub">-    def brightness(self):
+</span><span class="add">+    def inc_brightness(self, qtile=None):
+</span><span class="add">+        self.change(1)
+</span><span class="add">+
+</span><span class="add">+    def dec_brightness(self, qtile=None):
+</span><span class="add">+        self.change(-1)
+</span><span class="add">+
+</span><span class="add">+    def change(self, direction):
+</span><span class="add">+        start = self.get_brightness()
+</span><span class="add">+        end = self.check_value(start + self.interval * direction)
+</span><span class="add">+        self.show(end)
+</span><span class="add">+
+</span><span class="add">+        if self.smooth:
+</span><span class="add">+            for i in range(
+</span><span class="add">+                start + direction,
+</span><span class="add">+                end + direction,
+</span><span class="add">+                direction
+</span><span class="add">+            ):
+</span><span class="add">+                with open(self.path, &apos;w&apos;) as f:
+</span><span class="add">+                    f.write(str(i))
+</span><span class="add">+                time.sleep(self.transition)
+</span><span class="add">+        else:
+</span><span class="add">+            with open(self.path, &apos;w&apos;) as f:
+</span><span class="add">+                f.write(str(end))
+</span><span class="add">+
+</span><span class="add">+    def get_brightness(self):
+</span><span class="def">         with open(self.path, &apos;r&apos;) as f:
+</span><span class="def">             return int(f.read())
+</span><span class="def"> 
+</span><span class="sub">-    @brightness.setter
+</span><span class="sub">-    def brightness(self, value):
+</span><span class="add">+    def check_value(self, value):
+</span><span class="def">         if value &gt; 100:
+</span><span class="def">             value = 100
+</span><span class="def">         elif value &lt; 0:
+</span><span class="def">             value = 0
+</span><span class="def">         elif value % self.interval:
+</span><span class="def">             value = self.interval * round(value / self.interval)
+</span><span class="sub">-
+</span><span class="sub">-        with open(self.path, &apos;w&apos;) as f:
+</span><span class="sub">-            f.write(str(value))
+</span><span class="sub">-        self.show(value)
+</span><span class="sub">-
+</span><span class="sub">-    def inc_brightness(self, qtile=None):
+</span><span class="sub">-        self.brightness += self.interval
+</span><span class="sub">-
+</span><span class="sub">-    def dec_brightness(self, qtile=None):
+</span><span class="sub">-        self.brightness -= self.interval
+</span><span class="add">+        return value
+</span></pre>
+</div></div>
+  </body>
+</html>

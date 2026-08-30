@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - some minor changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/bedeeb7b74f8de6153eb2652d411f181746cb6de.html">bedeeb7b74f8de6153eb2652d411f181746cb6de</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/5c5c7f4b8d2ea09024ab6aed3490fe63f693f939.html">5c5c7f4b8d2ea09024ab6aed3490fe63f693f939</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2023-06-17 20:44:51 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2023-06-17 20:44:51 +0100
+
+some minor changes
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -118,9 +118,9 @@
+<span class="def"> 
+</span><span class="def"> runtime macros/emoji-ab.vim
+</span><span class="def"> 
+</span><span class="add">+&quot;\   &apos;python&apos;: [&apos;flake8&apos;, &apos;mypy&apos;],
+</span><span class="def"> let g:ale_linters = {
+</span><span class="def"> \   &apos;haskell&apos;: [&apos;hlint&apos;],
+</span><span class="sub">-\   &apos;python&apos;: [&apos;flake8&apos;, &apos;mypy&apos;],
+</span><span class="def"> \}
+</span><span class="def"> let g:ale_linters_explicit = 1
+</span><span class="def"> let g:ale_lint_on_text_changed = &apos;never&apos;
+</span>@@ -131,3 +131,8 @@
+<span class="def"> \   &apos;python&apos;: [&apos;black&apos;, &apos;isort&apos;],
+</span><span class="def"> \}
+</span><span class="def"> &quot;\   &apos;markdown&apos;: [&apos;prettier&apos;],
+</span><span class="add">+
+</span><span class="add">+let g:vim_markdown_conceal = 0
+</span><span class="add">+let g:vim_markdown_conceal_code_blocks = 0
+</span><span class="add">+let g:vim_json_conceal=0
+</span><span class="add">+let g:markdown_syntax_conceal=0
+</span></pre>
+</div></div>
+  </body>
+</html>

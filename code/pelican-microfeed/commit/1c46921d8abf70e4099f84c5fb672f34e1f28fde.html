@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pelican-microfeed - init commit with working setup</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/pelican-microfeed">pelican-microfeed</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Pelican plugin to create tiny single-page feeds</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/pelican-microfeed">https://github.com/m-col/pelican-microfeed</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/pelican-microfeed/tree.html">Files</a> | <a href="https://mcol.xyz/code/pelican-microfeed/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/pelican-microfeed/file/README.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/pelican-microfeed/commit/1c46921d8abf70e4099f84c5fb672f34e1f28fde.html">1c46921d8abf70e4099f84c5fb672f34e1f28fde</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/pelican-microfeed/commit/.html"></a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-11-17 15:44:25 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-11-17 15:44:25 +0000
+
+init commit with working setup
+</pre><div class="diff">
+  <p>
+    <b>microfeed.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,106 @@
+<span class="add">+# -*- coding: utf-8 -*-
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+microfeed - Pelican plugin
+</span><span class="add">+==========================
+</span><span class="add">+
+</span><span class="add">+microfeeds allows for the creation of pages that each act as a feed of content separate
+</span><span class="add">+to the main articles. The how and what:
+</span><span class="add">+
+</span><span class="add">+ - Write articles under a category that will be used to make a microfeed.
+</span><span class="add">+ - Create the config setting MICROFEEDS as a list of these categories.
+</span><span class="add">+ - Articles in these categories are extracted early in generation so they are excluded
+</span><span class="add">+   from any article lists used in templates.
+</span><span class="add">+ - A *microfeed* object is exposed to page templates via which articles can be accessed
+</span><span class="add">+   as microfeed.*category* or microfeed[*category*] (these are equivalent).
+</span><span class="add">+ - Each microfeed will also generate an ATOM/RSS feed as usual if you have set
+</span><span class="add">+   CATEGORY_FEED_ATOM or CATEGORY_FEED_RSS.
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+from pelican import signals
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+class Microfeed:
+</span><span class="add">+    categories = ()
+</span><span class="add">+    articles = {}
+</span><span class="add">+
+</span><span class="add">+microfeed = Microfeed()
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+def get_categories(pelican):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Collect the list of categories that the user wants to turn into microfeeds.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    print(&apos;====&gt; GETTING MICROFEED CATEGORIES&apos;)
+</span><span class="add">+    categories = pelican.settings.get(&apos;MICROFEEDS&apos;, None)
+</span><span class="add">+    if categories and type(categories) in (list, set, tuple):
+</span><span class="add">+        microfeed.categories = categories
+</span><span class="add">+        for cat in categories:
+</span><span class="add">+            microfeed.articles[cat] = []
+</span><span class="add">+
+</span><span class="add">+def collect_microfeed_articles(article_generator):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Collect the microfeed articles from the article generator and move them to the
+</span><span class="add">+    microfeed object for later use.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    print(&apos;====&gt; COLLECTING MICROFEED ARTICLES&apos;)
+</span><span class="add">+    if microfeed.categories:
+</span><span class="add">+
+</span><span class="add">+        normal_articles = []
+</span><span class="add">+        for article in article_generator.articles:
+</span><span class="add">+            if article.category in microfeed.categories:
+</span><span class="add">+                microfeed.articles[article.category].append(article)
+</span><span class="add">+            else:
+</span><span class="add">+                normal_articles.append(article)
+</span><span class="add">+        article_generator.articles = normal_articles
+</span><span class="add">+
+</span><span class="add">+def add_microfeed_to_context(page_generator):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Expose the microfeed object to the page generator&apos;s context for use in page
+</span><span class="add">+    templates&apos;
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    print(&apos;====&gt; ADDING MICROFEED TO PAGE CONTEXT&apos;)
+</span><span class="add">+    for cat in microfeed.categories:
+</span><span class="add">+        setattr(microfeed, cat, microfeed.articles[cat])
+</span><span class="add">+    page_generator.context[&apos;microfeed&apos;] = microfeed
+</span><span class="add">+
+</span><span class="add">+def gen_microfeed_feed(article_generator, writer):
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    Optionally generate an ATOM/RSS feed for each microfeed.
+</span><span class="add">+    &quot;&quot;&quot;
+</span><span class="add">+    print(&apos;====&gt; GENERATING MICROFEED ATOM/RSS FEED&apos;)
+</span><span class="add">+    for cat_name in microfeed.categories:
+</span><span class="add">+        cat = microfeed.articles[cat_name][0].category
+</span><span class="add">+
+</span><span class="add">+        if article_generator.settings.get(&apos;CATEGORY_FEED_ATOM&apos;):
+</span><span class="add">+            writer.write_feed(
+</span><span class="add">+                microfeed.articles[cat.name],
+</span><span class="add">+                article_generator.context,
+</span><span class="add">+                article_generator.settings[&apos;CATEGORY_FEED_ATOM&apos;].format(slug=cat.slug),
+</span><span class="add">+                article_generator.settings.get(
+</span><span class="add">+                    &apos;CATEGORY_FEED_ATOM_URL&apos;,
+</span><span class="add">+                    article_generator.settings[&apos;CATEGORY_FEED_ATOM&apos;]
+</span><span class="add">+                ).format(slug=cat.slug),
+</span><span class="add">+                feed_title=cat.name
+</span><span class="add">+            )
+</span><span class="add">+
+</span><span class="add">+        if article_generator.settings.get(&apos;CATEGORY_FEED_RSS&apos;):
+</span><span class="add">+            writer.write_feed(
+</span><span class="add">+                microfeed.articles[cat.name],
+</span><span class="add">+                article_generator.context,
+</span><span class="add">+                article_generator.settings[&apos;CATEGORY_FEED_RSS&apos;].format(slug=cat.slug),
+</span><span class="add">+                article_generator.settings.get(
+</span><span class="add">+                    &apos;CATEGORY_FEED_RSS_URL&apos;,
+</span><span class="add">+                    article_generator.settings[&apos;CATEGORY_FEED_RSS&apos;]
+</span><span class="add">+                ).format(slug=cat.slug),
+</span><span class="add">+                feed_title=cat.name,
+</span><span class="add">+                feed_type=&apos;rss&apos;
+</span><span class="add">+            )
+</span><span class="add">+
+</span><span class="add">+def register():
+</span><span class="add">+    signals.initialized.connect(get_categories)
+</span><span class="add">+    signals.article_generator_pretaxonomy.connect(collect_microfeed_articles)
+</span><span class="add">+    #signals.page_generator_context.connect(add_microfeed_to_context)
+</span><span class="add">+    signals.page_generator_finalized.connect(add_microfeed_to_context)
+</span><span class="add">+    signals.article_writer_finalized.connect(gen_microfeed_feed)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>__init__.py</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,2 @@
+<span class="add">+# -*- coding: utf-8 -*-
+</span><span class="add">+from .microfeed import *
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>README.rst</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,14 @@
+<span class="add">+microfeed - Pelican plugin
+</span><span class="add">+==========================
+</span><span class="add">+
+</span><span class="add">+microfeeds allows for the creation of pages that each act as a feed of content separate
+</span><span class="add">+to the main articles. The how and what:
+</span><span class="add">+
+</span><span class="add">+ - Write articles under a category that will be used to make a microfeed.
+</span><span class="add">+ - Create the config setting MICROFEEDS as a list of these categories.
+</span><span class="add">+ - Articles in these categories are extracted early in generation so they are excluded
+</span><span class="add">+   from any article lists used in templates.
+</span><span class="add">+ - A *microfeed* object is exposed to page templates via which articles can be accessed
+</span><span class="add">+   as microfeed.*category* or microfeed[*category*] (these are equivalent).
+</span><span class="add">+ - Each microfeed will also generate an ATOM/RSS feed as usual if you have set
+</span><span class="add">+   CATEGORY_FEED_ATOM or CATEGORY_FEED_RSS.
+</span></pre>
+</div></div>
+  </body>
+</html>

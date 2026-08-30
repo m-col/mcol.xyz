@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - Specify repo name, as variable that can be passed later to ginger</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/d75a1ede4dcf34c7022b621afe3e9d238807e20a.html">d75a1ede4dcf34c7022b621afe3e9d238807e20a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/f92c012b5251e34cf712c27790ddf690ae23ab7b.html">f92c012b5251e34cf712c27790ddf690ae23ab7b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-09-19 21:51:54 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-09-19 21:53:15 +0100
+
+Specify repo name, as variable that can be passed later to ginger
+</pre><div class="diff">
+  <p>
+    <b>src/Repositories.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -40,14 +40,15 @@
+<span class="def">     liftIO $ createDirectoryIfMissing True outPath
+</span><span class="def">     ref &lt;- resolveReference &quot;HEAD&quot;
+</span><span class="def">     case ref of
+</span><span class="sub">-        Nothing -&gt; liftIO . print $ &quot;gitserve: &quot; &lt;&gt; (takeFileName path) &lt;&gt; &quot;: Failed to resolve HEAD.&quot;
+</span><span class="add">+        Nothing -&gt; liftIO . print $ &quot;gitserve: &quot; &lt;&gt; name &lt;&gt; &quot;: Failed to resolve HEAD.&quot;
+</span><span class="def">         Just commitID -&gt; do
+</span><span class="def">             description &lt;- liftIO $ getDescription $ outPath &lt;/&gt; &quot;description&quot;
+</span><span class="def">             head &lt;- lookupCommit (Tagged commitID)
+</span><span class="def">             nodes &lt;- lookupTree (commitTree head) &gt;&gt;= listTreeEntries
+</span><span class="def">             return ()
+</span><span class="def">   where
+</span><span class="sub">-    outPath = outputDirectory &lt;/&gt; (takeFileName path)
+</span><span class="add">+    name = takeFileName path
+</span><span class="add">+    outPath = outputDirectory &lt;/&gt; name
+</span><span class="def"> 
+</span><span class="def">     --mconcat $ runGingerT (makeContextHtmlM (scopeLookup context) (putStr . unpack . htmlSource)) tpl
+</span><span class="def"> 
+</span>@@ -58,7 +59,4 @@
+<span class="def">         Left err -&gt; return Nothing
+</span><span class="def"> 
+</span><span class="def"> -- Variables:
+</span><span class="sub">---title = &quot;gitserve&quot;
+</span><span class="sub">---description = &quot;&quot;
+</span><span class="def"> --host = &quot;http://localhost&quot;
+</span><span class="sub">---path = &quot;&quot;
+</span></pre>
+</div></div>
+  </body>
+</html>

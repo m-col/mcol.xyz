@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - add files to misc repo</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/6659cc9afb2af9481ed2f50ad61cde8b533085e4.html">6659cc9afb2af9481ed2f50ad61cde8b533085e4</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/.html"></a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2018-11-28 19:01:47 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2018-11-28 19:01:47 +0000
+
+add files to misc repo
+</pre><div class="diff">
+  <p>
+    <b>indent.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,13 @@
+<span class="add">+&quot;------------------------------------------------------------------
+</span><span class="add">+&quot;  Indentation of entire file
+</span><span class="add">+&quot;------------------------------------------------------------------
+</span><span class="add">+
+</span><span class="add">+function! IndentFile()
+</span><span class="add">+    mkview
+</span><span class="add">+    let l:win_view = winsaveview()
+</span><span class="add">+    :normal! gg=G
+</span><span class="add">+    silent loadview
+</span><span class="add">+    call winrestview(l:win_view)
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+nnoremap &lt;C-i&gt; :call IndentFile()&lt;CR&gt;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>bclose.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,89 @@
+<span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+&quot; :bclose                                                          &quot;
+</span><span class="add">+&quot;------------------------------------------------------------------&quot;
+</span><span class="add">+
+</span><span class="add">+&quot; Delete buffer while keeping window layout (don&apos;t close buffer&apos;s windows).
+</span><span class="add">+&quot; Version 2008-11-18 from http://vim.wikia.com/wiki/VimTip165
+</span><span class="add">+if v:version &lt; 700 || exists(&apos;loaded_bclose&apos;) || &amp;cp
+</span><span class="add">+    finish
+</span><span class="add">+endif
+</span><span class="add">+let loaded_bclose = 1
+</span><span class="add">+if !exists(&apos;bclose_multiple&apos;)
+</span><span class="add">+    let bclose_multiple = 1
+</span><span class="add">+endif
+</span><span class="add">+
+</span><span class="add">+&quot; Display an error message.
+</span><span class="add">+function! s:Warn(msg)
+</span><span class="add">+    echohl ErrorMsg
+</span><span class="add">+    echomsg a:msg
+</span><span class="add">+    echohl NONE
+</span><span class="add">+endfunction
+</span><span class="add">+
+</span><span class="add">+&quot; Command &apos;:Bclose&apos; executes &apos;:bd&apos; to delete buffer in current window.
+</span><span class="add">+&quot; The window will show the alternate buffer (Ctrl-^) if it exists,
+</span><span class="add">+&quot; or the previous buffer (:bp), or a blank buffer if no previous.
+</span><span class="add">+&quot; Command &apos;:Bclose!&apos; is the same, but executes &apos;:bd!&apos; (discard changes).
+</span><span class="add">+&quot; An optional argument can specify which buffer to close (name or number).
+</span><span class="add">+function! s:Bclose(bang, buffer)
+</span><span class="add">+    if empty(a:buffer)
+</span><span class="add">+	let btarget = bufnr(&apos;%&apos;)
+</span><span class="add">+    elseif a:buffer =~ &apos;^\d\+$&apos;
+</span><span class="add">+	let btarget = bufnr(str2nr(a:buffer))
+</span><span class="add">+    else
+</span><span class="add">+	let btarget = bufnr(a:buffer)
+</span><span class="add">+    endif
+</span><span class="add">+    if btarget &lt; 0
+</span><span class="add">+	call s:Warn(&apos;No matching buffer for &apos;.a:buffer)
+</span><span class="add">+	return
+</span><span class="add">+    endif
+</span><span class="add">+    if empty(a:bang) &amp;&amp; getbufvar(btarget, &apos;&amp;modified&apos;)
+</span><span class="add">+	call s:Warn(&apos;No write since last change for buffer &apos;.btarget.&apos; (use :Bclose!)&apos;)
+</span><span class="add">+	return
+</span><span class="add">+    endif
+</span><span class="add">+    &quot; Numbers of windows that view target buffer which we will delete.
+</span><span class="add">+    let wnums = filter(range(1, winnr(&apos;$&apos;)), &apos;winbufnr(v:val) == btarget&apos;)
+</span><span class="add">+    if !g:bclose_multiple &amp;&amp; len(wnums) &gt; 1
+</span><span class="add">+	call s:Warn(&apos;Buffer is in multiple windows (use &quot;:let bclose_multiple=1&quot;)&apos;)
+</span><span class="add">+	return
+</span><span class="add">+    endif
+</span><span class="add">+    let wcurrent = winnr()
+</span><span class="add">+    for w in wnums
+</span><span class="add">+	execute w.&apos;wincmd w&apos;
+</span><span class="add">+	let prevbuf = bufnr(&apos;#&apos;)
+</span><span class="add">+	if prevbuf &gt; 0 &amp;&amp; buflisted(prevbuf) &amp;&amp; prevbuf != w
+</span><span class="add">+	    buffer #
+</span><span class="add">+	else
+</span><span class="add">+	    bprevious
+</span><span class="add">+	endif
+</span><span class="add">+	if btarget == bufnr(&apos;%&apos;)
+</span><span class="add">+	    &quot; Numbers of listed buffers which are not the target to be deleted.
+</span><span class="add">+	    let blisted = filter(range(1, bufnr(&apos;$&apos;)), &apos;buflisted(v:val) &amp;&amp; v:val != btarget&apos;)
+</span><span class="add">+	    &quot; Listed, not target, and not displayed.
+</span><span class="add">+	    let bhidden = filter(copy(blisted), &apos;bufwinnr(v:val) &lt; 0&apos;)
+</span><span class="add">+	    &quot; Take the first buffer, if any (could be more intelligent).
+</span><span class="add">+	    let bjump = (bhidden + blisted + [-1])[0]
+</span><span class="add">+	    if bjump &gt; 0
+</span><span class="add">+		execute &apos;buffer &apos;.bjump
+</span><span class="add">+	    else
+</span><span class="add">+		execute &apos;enew&apos;.a:bang
+</span><span class="add">+	    endif
+</span><span class="add">+	endif
+</span><span class="add">+    endfor
+</span><span class="add">+    execute &apos;bdelete&apos;.a:bang.&apos; &apos;.btarget
+</span><span class="add">+    execute wcurrent.&apos;wincmd w&apos;
+</span><span class="add">+endfunction
+</span><span class="add">+command! -bang -complete=buffer -nargs=? Bclose call s:Bclose(&apos;&lt;bang&gt;&apos;, &apos;&lt;args&gt;&apos;)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+&quot;&quot;&quot;&quot;&quot; These are left in case the above is not ideal
+</span><span class="add">+&quot;function! CloseIfLastBuffer()
+</span><span class="add">+&quot;    if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;buflisted(v:val)&apos;)) == 1 
+</span><span class="add">+&quot;    let g:fromFile=expand(&apos;%:p&apos;)
+</span><span class="add">+&quot;    execute &quot;q&quot;
+</span><span class="add">+&quot;    execute &quot;bd&quot;
+</span><span class="add">+&quot;endfunction
+</span><span class="add">+&quot;nnoremap &lt;BS&gt; :call CloseIfLastBuffer()&lt;CR&gt;
+</span><span class="add">+
+</span><span class="add">+&quot;autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;buflisted(v:val)&apos;)) == 1 | quit | endif
+</span><span class="add">+&quot;autocmd BufDelete * if len(filter(range(1, bufnr(&apos;$&apos;)), &apos;! empty(bufname(v:val)) &amp;&amp; buflisted(v:val)&apos;)) == 1 | quit | endif
+</span><span class="add">+
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>autohighlight.vim</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,20 @@
+<span class="add">+&quot; Highlight all instances of word under cursor, when idle.
+</span><span class="add">+nnoremap &lt;bar&gt; :if AutoHighlightToggle()&lt;Bar&gt;set hls&lt;Bar&gt;endif&lt;CR&gt;
+</span><span class="add">+function! AutoHighlightToggle()
+</span><span class="add">+  let @/ = &apos;&apos;
+</span><span class="add">+  if exists(&apos;#auto_highlight&apos;)
+</span><span class="add">+    au! auto_highlight
+</span><span class="add">+    augroup! auto_highlight
+</span><span class="add">+    setl updatetime=4000
+</span><span class="add">+    echo &apos;Highlight current word: off&apos;
+</span><span class="add">+    return 0
+</span><span class="add">+  else
+</span><span class="add">+    augroup auto_highlight
+</span><span class="add">+      au!
+</span><span class="add">+      au CursorHold * let @/ = &apos;\V\&lt;&apos;.escape(expand(&apos;&lt;cword&gt;&apos;), &apos;\&apos;).&apos;\&gt;&apos;
+</span><span class="add">+    augroup end
+</span><span class="add">+    setl updatetime=500
+</span><span class="add">+    echo &apos;Highlight current word: ON&apos;
+</span><span class="add">+    return 1
+</span><span class="add">+  endif
+</span><span class="add">+endfunction
+</span></pre>
+</div></div>
+  </body>
+</html>

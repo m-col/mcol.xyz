@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>zshrc - git ting</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/zshrc">zshrc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My zsh configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/zshrc">https://github.com/m-col/zshrc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/zshrc/tree.html">Files</a> | <a href="https://mcol.xyz/code/zshrc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/zshrc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/zshrc/commit/51bbe8679260bfe3d416944306e86345058e1643.html">51bbe8679260bfe3d416944306e86345058e1643</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/zshrc/commit/397df90cd77cbbbec87261638ba3d59d2875b028.html">397df90cd77cbbbec87261638ba3d59d2875b028</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2025-08-07 18:13:03 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2025-08-07 18:13:03 +0100
+
+git ting
+</pre><div class="diff">
+  <p>
+    <b>functions.zsh</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -74,7 +74,3 @@
+<span class="def"> rec_screen_mic() {
+</span><span class="def">     ffmpeg -f x11grab -r 30 -s 1920x1080 -i $DISPLAY -f pulse -ac 2 -i default out.mkv
+</span><span class="def"> }
+</span><span class="sub">-
+</span><span class="sub">-tagans() {
+</span><span class="sub">-    git log --pretty=format:&quot;%an&quot; $1...$2 | sort -u
+</span><span class="sub">-}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>aliases</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -117,6 +117,12 @@
+<span class="def">     git diff --name-only --diff-filter=${1:-M}
+</span><span class="def"> }
+</span><span class="def"> alias vimd=&apos;nvim `pdif`&apos;
+</span><span class="add">+tagans() {
+</span><span class="add">+    git log --pretty=format:&quot;%an&quot; $1...$2 | sort -u
+</span><span class="add">+}
+</span><span class="add">+get_git_dirty() {
+</span><span class="add">+    git status --porcelain | awk &apos;match($1, &quot;M&quot;){print $2}&apos; | grep -E &quot;\.tsx$|\.ts$&quot;
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="def"> # tools
+</span><span class="def"> alias usync=&apos;rsync -avPzh --delete&apos;
+</span></pre>
+</div></div>
+  </body>
+</html>

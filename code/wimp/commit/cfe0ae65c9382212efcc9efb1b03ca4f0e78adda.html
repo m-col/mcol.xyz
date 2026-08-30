@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - clean up view_to_desk</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/cfe0ae65c9382212efcc9efb1b03ca4f0e78adda.html">cfe0ae65c9382212efcc9efb1b03ca4f0e78adda</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/6cccc312a5939aafbf8d2f7ec5afeeab80d2b6ff.html">6cccc312a5939aafbf8d2f7ec5afeeab80d2b6ff</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-06 21:01:58 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-06 21:01:58 +0000
+
+clean up view_to_desk
+</pre><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -40,6 +40,7 @@
+<span class="def">     wimp.desk_count--;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> void configure_desks(int wanted) {
+</span><span class="def">     while (wanted &gt; wimp.desk_count) {
+</span><span class="def"> 	add_desk();
+</span>@@ -70,22 +71,28 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void view_to_desk(struct view *view, int index) {
+</span><span class="add">+static struct desk *desk_from_index(int index) {
+</span><span class="def">     struct desk *desk;
+</span><span class="sub">-    wimp.can_steal_focus = false;
+</span><span class="sub">-
+</span><span class="def">     wl_list_for_each(desk, &amp;wimp.desks, link) {
+</span><span class="def"> 	if (desk-&gt;index == index) {
+</span><span class="sub">-	    wl_list_remove(&amp;view-&gt;link);
+</span><span class="sub">-	    desk == wimp.current_desk ? map_view(view) : unmap_view(view);
+</span><span class="sub">-	    wl_list_insert(&amp;desk-&gt;views, &amp;view-&gt;link);
+</span><span class="sub">-	    break;
+</span><span class="add">+	    return desk;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="add">+    return NULL;
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="sub">-    wimp.can_steal_focus = true;
+</span><span class="sub">-    if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="sub">-	struct view *next_view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="sub">-	focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="add">+
+</span><span class="add">+void view_to_desk(struct view *view, int index) {
+</span><span class="add">+    wimp.can_steal_focus = false;
+</span><span class="add">+    struct desk *desk = desk_from_index(index);
+</span><span class="add">+    if (desk) {
+</span><span class="add">+	wl_list_remove(&amp;view-&gt;link);
+</span><span class="add">+	desk == wimp.current_desk ? map_view(view) : unmap_view(view);
+</span><span class="add">+	wl_list_insert(&amp;desk-&gt;views, &amp;view-&gt;link);
+</span><span class="add">+	wimp.can_steal_focus = true;
+</span><span class="add">+	if (!wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="add">+	    struct view *next_view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="add">+	    focus_view(next_view, next_view-&gt;surface-&gt;surface);
+</span><span class="add">+	}
+</span><span class="def">     }
+</span><span class="def"> }
+</span></pre>
+</div></div>
+  </body>
+</html>

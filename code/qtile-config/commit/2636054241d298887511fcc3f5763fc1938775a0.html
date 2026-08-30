@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - some group changes</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/2636054241d298887511fcc3f5763fc1938775a0.html">2636054241d298887511fcc3f5763fc1938775a0</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/195f3d7532b9a5054a0fccf8c561c2aa7e92ff0b.html">195f3d7532b9a5054a0fccf8c561c2aa7e92ff0b</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2023-02-16 18:53:27 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2023-02-16 18:53:27 +0000
+
+some group changes
+</pre><div class="diff">
+  <p>
+    <b>groups.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -28,10 +28,12 @@
+<span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> groups: list[Group] = [
+</span><span class="sub">-    Group(&quot;1&quot;, label=&quot;html&quot;, matches=[Match(wm_class=&quot;firefox&quot;)]),
+</span><span class="sub">-    Group(&quot;2&quot;, label=&quot;mail&quot;, matches=[Match(wm_class=&quot;geary&quot;), Match(title=&quot;Geary&quot;)]),
+</span><span class="sub">-    Group(&quot;3&quot;, label=&quot;term&quot;),
+</span><span class="sub">-    Group(&quot;4&quot;, label=&quot;tune&quot;, matches=[Match(title=&quot;spotify&quot;)]),
+</span><span class="add">+    Group(&quot;1&quot;, label=&quot;html&quot;),
+</span><span class="add">+    Group(&quot;2&quot;, label=&quot;disc&quot;, matches=[Match(wm_class=&quot;discord&quot;)]),
+</span><span class="add">+    Group(&quot;3&quot;, label=&quot;mail&quot;, matches=[Match(wm_class=&quot;evolution&quot;)]),
+</span><span class="add">+    Group(&quot;4&quot;, label=&quot;tune&quot;, matches=[
+</span><span class="add">+        Match(wm_class=&quot;dev.alextren.Spot&quot;), Match(title=&quot;Spotify&quot;),
+</span><span class="add">+    ]),
+</span><span class="def">     Group(&quot;q&quot;, label=&quot;term&quot;),
+</span><span class="def">     Group(&quot;w&quot;, label=&quot;term&quot;),
+</span><span class="def">     Group(&quot;e&quot;, label=&quot;term&quot;),
+</span>@@ -39,30 +41,26 @@
+<span class="def"> ]
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-def _go_to_group(name: str) -&gt; Callable:
+</span><span class="add">+def _go_to_group(qtile: Qtile, name: str) -&gt; None:
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     This creates lazy functions that jump to a given group. When there is more than one
+</span><span class="def">     screen, the first 4 and second 4 groups are kept on the first and second screen.
+</span><span class="def">     E.g. going to the fifth group when the first group (and first screen) is focussed
+</span><span class="def">     will also change the screen to the second screen.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-    def _inner(qtile: Qtile) -&gt; None:
+</span><span class="sub">-        if len(qtile.screens) == 1:
+</span><span class="add">+    if len(qtile.screens) == 1:
+</span><span class="add">+        qtile.groups_map[name].toscreen(toggle=True)
+</span><span class="add">+        return
+</span><span class="add">+
+</span><span class="add">+    old = qtile.current_screen.group.name
+</span><span class="add">+    if name in &quot;1234&quot;:
+</span><span class="add">+        qtile.focus_screen(0)
+</span><span class="add">+        if old in &quot;1234&quot; or qtile.current_screen.group.name != name:
+</span><span class="add">+            qtile.groups_map[name].toscreen(toggle=True)
+</span><span class="add">+    else:
+</span><span class="add">+        qtile.focus_screen(1)
+</span><span class="add">+        if old in &quot;qwer&quot; or qtile.current_screen.group.name != name:
+</span><span class="def">             qtile.groups_map[name].toscreen(toggle=True)
+</span><span class="sub">-            return
+</span><span class="sub">-
+</span><span class="sub">-        old = qtile.current_screen.group.name
+</span><span class="sub">-        if name in &quot;1234&quot;:
+</span><span class="sub">-            qtile.focus_screen(0)
+</span><span class="sub">-            if old in &quot;1234&quot; or qtile.current_screen.group.name != name:
+</span><span class="sub">-                qtile.groups_map[name].toscreen(toggle=True)
+</span><span class="sub">-        else:
+</span><span class="sub">-            qtile.focus_screen(1)
+</span><span class="sub">-            if old in &quot;qwer&quot; or qtile.current_screen.group.name != name:
+</span><span class="sub">-                qtile.groups_map[name].toscreen(toggle=True)
+</span><span class="sub">-
+</span><span class="sub">-    return _inner
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> for i in groups:
+</span>@@ -71,7 +69,7 @@
+<span class="def">             (
+</span><span class="def">                 [mod],
+</span><span class="def">                 i.name,
+</span><span class="sub">-                lazy.function(_go_to_group(i.name)),
+</span><span class="add">+                lazy.function(_go_to_group, i.name),
+</span><span class="def">                 f&quot;Go to group {i.name}&quot;,
+</span><span class="def">             ),
+</span><span class="def">             (
+</span>@@ -84,33 +82,29 @@
+<span class="def">     )
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-def _scroll_screen(direction: int) -&gt; Callable:
+</span><span class="add">+def _scroll_screen(qtile: Qtile, direction: int) -&gt; None:
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="def">     Scroll to the next/prev group of the subset allocated to a specific screen. This
+</span><span class="def">     will rotate between e.g. 1-&gt;2-&gt;3-&gt;4-&gt;1 when the first screen is focussed.
+</span><span class="def">     &quot;&quot;&quot;
+</span><span class="sub">-
+</span><span class="sub">-    def _inner(qtile: Qtile):
+</span><span class="sub">-        if len(qtile.screens) == 1:
+</span><span class="sub">-            current = qtile.groups.index(qtile.current_group)
+</span><span class="sub">-            destination = (current + direction) % 8
+</span><span class="sub">-            qtile.groups[destination].toscreen()
+</span><span class="sub">-            return
+</span><span class="sub">-
+</span><span class="add">+    if len(qtile.screens) == 1:
+</span><span class="def">         current = qtile.groups.index(qtile.current_group)
+</span><span class="sub">-        if current &lt; 4:
+</span><span class="sub">-            destination = (current + direction) % 4
+</span><span class="sub">-        else:
+</span><span class="sub">-            destination = ((current - 4 + direction) % 4) + 4
+</span><span class="add">+        destination = (current + direction) % 8
+</span><span class="def">         qtile.groups[destination].toscreen()
+</span><span class="add">+        return
+</span><span class="def"> 
+</span><span class="sub">-    return _inner
+</span><span class="add">+    current = qtile.groups.index(qtile.current_group)
+</span><span class="add">+    if current &lt; 4:
+</span><span class="add">+        destination = (current + direction) % 4
+</span><span class="add">+    else:
+</span><span class="add">+        destination = ((current - 4 + direction) % 4) + 4
+</span><span class="add">+    qtile.groups[destination].toscreen()
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> keys_group.extend(
+</span><span class="def">     [
+</span><span class="sub">-        ([mod], &quot;m&quot;, lazy.function(_scroll_screen(1)), &quot;Screen groups forward&quot;),
+</span><span class="sub">-        ([mod], &quot;n&quot;, lazy.function(_scroll_screen(-1)), &quot;Screen groups backward&quot;),
+</span><span class="add">+        ([mod], &quot;m&quot;, lazy.function(_scroll_screen, 1), &quot;Screen groups forward&quot;),
+</span><span class="add">+        ([mod], &quot;n&quot;, lazy.function(_scroll_screen, -1), &quot;Screen groups backward&quot;),
+</span><span class="def">     ]
+</span><span class="def"> )
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

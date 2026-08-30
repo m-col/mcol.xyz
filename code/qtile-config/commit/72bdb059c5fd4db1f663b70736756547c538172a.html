@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>qtile-config - Update wob control in Volume widget</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/qtile-config">qtile-config</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My Qtile window manager configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/qtile-config">https://github.com/m-col/qtile-config</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/qtile-config/tree.html">Files</a> | <a href="https://mcol.xyz/code/qtile-config/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/qtile-config/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/qtile-config/commit/72bdb059c5fd4db1f663b70736756547c538172a.html">72bdb059c5fd4db1f663b70736756547c538172a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/qtile-config/commit/a81183e061de7f328b34395c5767a5c4e8de99f9.html">a81183e061de7f328b34395c5767a5c4e8de99f9</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-06-25 23:46:43 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-06-25 23:46:43 +0100
+
+Update wob control in Volume widget
+</pre><div class="diff">
+  <p>
+    <b>config.py</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -302,7 +302,7 @@
+<span class="def">         if IS_WAYLAND:
+</span><span class="def">             self.wob = &quot;/tmp/wob-&quot; + qtile.core.display_name
+</span><span class="def"> 
+</span><span class="sub">-    def _update_drawer(self):
+</span><span class="add">+    def _update_drawer(self, wob=False):
+</span><span class="def">         if self.volume &lt;= 0:
+</span><span class="def">             self.text = &apos;&apos;
+</span><span class="def">         elif self.volume &lt;= 15:
+</span>@@ -313,19 +313,19 @@
+<span class="def">             self.text = &apos;&apos;
+</span><span class="def">         self.draw()
+</span><span class="def"> 
+</span><span class="sub">-        if IS_WAYLAND:
+</span><span class="add">+        if wob:
+</span><span class="def">             with open(self.wob, &apos;a&apos;) as f:
+</span><span class="def">                 f.write(str(self.volume) + &quot;\n&quot;)
+</span><span class="def"> 
+</span><span class="def">     def cmd_increase_vol(self):
+</span><span class="def">         subprocess.call(&apos;amixer set PCM 4%+&apos;.split())
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="sub">-        self._update_drawer()
+</span><span class="add">+        self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def">     def cmd_decrease_vol(self):
+</span><span class="def">         subprocess.call(&apos;amixer set PCM 4%-&apos;.split())
+</span><span class="def">         self.volume = self.get_volume()
+</span><span class="sub">-        self._update_drawer()
+</span><span class="add">+        self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def">     def cmd_mute(self):
+</span><span class="def">         subprocess.call(&apos;amixer set Master toggle&apos;.split())
+</span>@@ -334,7 +334,7 @@
+<span class="def">         self.channel = &apos;PCM&apos;
+</span><span class="def">         if self.volume == 0:
+</span><span class="def">             self.volume = self.get_volume()
+</span><span class="sub">-        self._update_drawer()
+</span><span class="add">+        self._update_drawer(wob=IS_WAYLAND)
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="def"> volume = MyVolume(
+</span></pre>
+</div></div>
+  </body>
+</html>

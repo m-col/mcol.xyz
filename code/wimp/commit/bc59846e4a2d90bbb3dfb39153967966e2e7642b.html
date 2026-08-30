@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - Use handlers for both client and bound actions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/bc59846e4a2d90bbb3dfb39153967966e2e7642b.html">bc59846e4a2d90bbb3dfb39153967966e2e7642b</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/136ce650d2a24c163a7bd3f41fded1e2e1fcbc03.html">136ce650d2a24c163a7bd3f41fded1e2e1fcbc03</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-03-07 16:09:49 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-03-07 16:09:49 +0000
+
+Use handlers for both client and bound actions
+
+This refactors the handling of strings used to specify actions and their
+arguments, so that that is all contained with parse.c, and actions are
+(almost) always accessed via the action_map array. This is used for both
+`bind` actions and direct cli actions.
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -193,7 +193,6 @@
+<span class="def">     enum wlr_keyboard_modifier mods;
+</span><span class="def">     uint32_t key;
+</span><span class="def">     action action;
+</span><span class="sub">-    action begin;
+</span><span class="def">     void *data;
+</span><span class="def"> };
+</span><span class="def"> 
+</span>@@ -237,7 +236,7 @@
+<span class="def">     struct wlr_box geo; // negative values represent a percentage of the output&apos;s geometry
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="sub">-struct value_map {
+</span><span class="add">+struct dict {
+</span><span class="def">     const char *name;
+</span><span class="def">     const int value;
+</span><span class="def"> };
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/parse.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,10 +3,9 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-int _get(struct value_map *values, const int len, const char *name);
+</span><span class="add">+int _get(struct dict *values, const int len, const char *name);
+</span><span class="def"> #define get(arr, name) _get(arr, sizeof(arr) / sizeof(arr[0]), name)
+</span><span class="def"> 
+</span><span class="sub">-bool wlr_box_from_str(char* str, struct wlr_box *box);
+</span><span class="def"> bool dir_handler(void **data, char *args);
+</span><span class="def"> bool str_handler(void **data, char *args);
+</span><span class="def"> bool motion_handler(void **data, char *args);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/parse.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -6,7 +6,7 @@
+<span class="def"> 
+</span><span class="def"> /* To get the length of these arrays we need to calculate that before passing
+</span><span class="def">  * them to the getter so the macro in the header hides this. */
+</span><span class="sub">-int _get(struct value_map *values, const int len, const char *name) {
+</span><span class="add">+int _get(struct dict *values, const int len, const char *name) {
+</span><span class="def">     for (int i = 0; i &lt; len; i++) {
+</span><span class="def"> 	if (strcasecmp(values[i].name, name) == 0)
+</span><span class="def"> 	    return values[i].value;
+</span>@@ -15,7 +15,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-bool wlr_box_from_str(char* str, struct wlr_box *box) {
+</span><span class="add">+static bool wlr_box_from_str(char* str, struct wlr_box *box) {
+</span><span class="def">     // turns e.g. 1920x1800+500+500 into a wlr_box
+</span><span class="def">     char *w, *h, *x, *y;
+</span><span class="def">     if (str) {
+</span>@@ -69,7 +69,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static struct value_map dirs[] = {
+</span><span class="add">+static struct dict dirs[] = {
+</span><span class="def">     { &quot;up&quot;, UP },
+</span><span class="def">     { &quot;right&quot;, RIGHT },
+</span><span class="def">     { &quot;down&quot;, DOWN },
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keybind.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,7 +4,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static struct value_map mods[] = {
+</span><span class="add">+static struct dict mods[] = {
+</span><span class="def">     { &quot;shift&quot;, WLR_MODIFIER_SHIFT },
+</span><span class="def">     { &quot;caps&quot;, WLR_MODIFIER_CAPS },
+</span><span class="def">     { &quot;ctrl&quot;, WLR_MODIFIER_CTRL },
+</span>@@ -16,7 +16,7 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static struct value_map mouse_keys[] = {
+</span><span class="add">+static struct dict mouse_keys[] = {
+</span><span class="def">     { &quot;motion&quot;, MOTION },
+</span><span class="def">     { &quot;scroll&quot;, SCROLL },
+</span><span class="def">     { &quot;drag1&quot;, DRAG1 },
+</span>@@ -26,89 +26,9 @@
+<span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static struct {
+</span><span class="sub">-    const char *name;
+</span><span class="sub">-    const action action;
+</span><span class="sub">-    bool (*data_handler)(void **data, char *args);
+</span><span class="sub">-} action_map[] = {
+</span><span class="sub">-    { &quot;terminate&quot;, &amp;terminate, NULL },
+</span><span class="sub">-    { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span><span class="sub">-    { &quot;close_window&quot;, &amp;close_window, NULL },
+</span><span class="sub">-    { &quot;move_window&quot;, &amp;move_window, NULL },
+</span><span class="sub">-    { &quot;focus&quot;, &amp;focus_in_direction, &amp;dir_handler },
+</span><span class="sub">-    { &quot;next_desk&quot;, &amp;next_desk, NULL },
+</span><span class="sub">-    { &quot;prev_desk&quot;, &amp;prev_desk, NULL },
+</span><span class="sub">-    { &quot;pan_desk&quot;, &amp;pan_desk, &amp;motion_handler },
+</span><span class="sub">-    { &quot;reset_zoom&quot;, &amp;reset_zoom, NULL },
+</span><span class="sub">-    { &quot;zoom&quot;, &amp;zoom, &amp;str_handler },
+</span><span class="sub">-    { &quot;set_mark&quot;, &amp;set_mark, NULL },
+</span><span class="sub">-    { &quot;go_to_mark&quot;, &amp;go_to_mark, NULL },
+</span><span class="sub">-    { &quot;toggle_fullscreen&quot;, &amp;toggle_fullscreen, NULL },
+</span><span class="sub">-    { &quot;halfimize&quot;, &amp;halfimize, &amp;dir_handler },
+</span><span class="sub">-    { &quot;maximize&quot;, &amp;maximize, NULL },
+</span><span class="sub">-    { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="sub">-    { &quot;scratchpad&quot;, &amp;toggle_scratchpad, &amp;scratchpad_handler },
+</span><span class="sub">-    { &quot;to_region&quot;, &amp;to_region, &amp;box_handler },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static struct {
+</span><span class="sub">-    const char *name;
+</span><span class="sub">-    const action action;
+</span><span class="sub">-    const action begin;
+</span><span class="sub">-} pinch_map[] = {
+</span><span class="sub">-    { &quot;zoom&quot;, &amp;zoom_pinch, &amp;zoom_pinch_begin },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static struct {
+</span><span class="sub">-    const char *name;
+</span><span class="sub">-    const action action;
+</span><span class="sub">-} scroll_map[] = {
+</span><span class="sub">-    { &quot;zoom&quot;, &amp;zoom_scroll },
+</span><span class="sub">-    { &quot;pan_desk&quot;, &amp;pan_desk },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool assign_action(const char *name, char *args, struct binding *kb, char * response) {
+</span><span class="sub">-    kb-&gt;action = NULL;
+</span><span class="sub">-    kb-&gt;data = NULL;
+</span><span class="sub">-    size_t i;
+</span><span class="sub">-
+</span><span class="sub">-    switch (kb-&gt;key) {
+</span><span class="sub">-	case PINCH:
+</span><span class="sub">-	    for (i = 0; i &lt; sizeof(pinch_map) / sizeof(pinch_map[0]); i++) {
+</span><span class="sub">-		if (strcmp(pinch_map[i].name, name) == 0) {
+</span><span class="sub">-		    kb-&gt;action = pinch_map[i].action;
+</span><span class="sub">-		    kb-&gt;begin = pinch_map[i].begin;
+</span><span class="sub">-		    return true;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	    break;
+</span><span class="sub">-	case SCROLL:
+</span><span class="sub">-	    for (i = 0; i &lt; sizeof(scroll_map) / sizeof(scroll_map[0]); i++) {
+</span><span class="sub">-		if (strcmp(scroll_map[i].name, name) == 0) {
+</span><span class="sub">-		    kb-&gt;action = scroll_map[i].action;
+</span><span class="sub">-		    return true;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	    break;
+</span><span class="sub">-	default:
+</span><span class="sub">-	    for (i = 0; i &lt; sizeof(action_map) / sizeof(action_map[0]); i++) {
+</span><span class="sub">-		if (strcmp(action_map[i].name, name) == 0) {
+</span><span class="sub">-		    kb-&gt;action = action_map[i].action;
+</span><span class="sub">-		    if (action_map[i].data_handler != NULL) {
+</span><span class="sub">-			if (!action_map[i].data_handler(&amp;kb-&gt;data, args)){
+</span><span class="sub">-			    sprintf(response, &quot;Command malformed/incomplete.&quot;);
+</span><span class="sub">-			    return false;
+</span><span class="sub">-			}
+</span><span class="sub">-		    }
+</span><span class="sub">-		    return true;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    return false;
+</span><span class="add">+static bool assign_action(char *name, char *args, struct binding *kb, char *response) {
+</span><span class="add">+    // TODO: remove
+</span><span class="add">+    return get_action(name, &amp;kb-&gt;action, args, &amp;kb-&gt;data, response, kb-&gt;key);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -45,7 +45,7 @@
+<span class="def"> 			break;
+</span><span class="def"> 		    case PINCH:
+</span><span class="def"> 			wimp.on_pinch = kb-&gt;action;
+</span><span class="sub">-			wimp.on_pinch_begin = kb-&gt;begin;
+</span><span class="add">+			wimp.on_pinch_begin = *(action* )kb-&gt;data;
+</span><span class="def"> 			break;
+</span><span class="def"> 		}
+</span><span class="def"> 		wimp.cursor_mode = CURSOR_MOD;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,30 +3,14 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="add">+bool get_action(char *name, action *action, char *args, void **data, char *response, int flag);
+</span><span class="def"> bool do_action(char *message, char *response);
+</span><span class="sub">-void terminate(void *data);
+</span><span class="sub">-void exec_command(void *data);
+</span><span class="sub">-void change_vt(void *data);
+</span><span class="sub">-void close_window(void *data);
+</span><span class="sub">-void move_window(void *data);
+</span><span class="sub">-void focus_in_direction(void *data);
+</span><span class="sub">-void next_desk(void *data);
+</span><span class="sub">-void prev_desk(void *data);
+</span><span class="sub">-void pan_desk(void *data);
+</span><span class="sub">-void reset_zoom(void *data);
+</span><span class="sub">-void zoom(void *data);
+</span><span class="sub">-void zoom_scroll(void *data);
+</span><span class="sub">-void zoom_pinch(void *data);
+</span><span class="sub">-void zoom_pinch_begin(void *data);
+</span><span class="sub">-void set_mark(void *data);
+</span><span class="add">+void change_vt(void *data);  // this action is handled a little differently to the others
+</span><span class="def"> void actually_set_mark(const xkb_keysym_t sym);
+</span><span class="sub">-void go_to_mark(void *data);
+</span><span class="def"> void actually_go_to_mark(void *data);
+</span><span class="add">+
+</span><span class="add">+// these actions are needed in other files
+</span><span class="add">+void pan_desk(void *data);
+</span><span class="def"> void toggle_fullscreen(void *data);
+</span><span class="sub">-void halfimize(void *data);
+</span><span class="sub">-void maximize(void *data);
+</span><span class="sub">-void send_to_desk(void *data);
+</span><span class="sub">-void toggle_scratchpad(void *data);
+</span><span class="sub">-void to_region(void *data);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,108 +8,145 @@
+<span class="def"> #include &quot;cursor.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="add">+#include &quot;parse.h&quot;
+</span><span class="def"> #include &quot;scratchpad.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-bool do_action(char *message, char *response) {
+</span><span class="sub">-    char *s;
+</span><span class="sub">-    bool handled = true;
+</span><span class="sub">-
+</span><span class="sub">-    if (!strcasecmp(message, &quot;terminate&quot;)) {
+</span><span class="sub">-	terminate(NULL);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    else if (!strcasecmp(message, &quot;exec&quot;)) {
+</span><span class="sub">-	if ((s = strtok(NULL, &quot;\n\r&quot;))) {
+</span><span class="sub">-	    exec_command(s);
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    else if (!strcasecmp(message, &quot;change_vt&quot;)) {
+</span><span class="sub">-	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	    int vt = strtod(s, NULL);
+</span><span class="sub">-	    if (vt &amp;&amp; 0 &lt; vt &amp;&amp; vt &lt;= 12) {
+</span><span class="sub">-		change_vt(&amp;vt);
+</span><span class="sub">-	    } else {
+</span><span class="sub">-		sprintf(response, &quot;Expected a number from 1 to 12&quot;);
+</span><span class="sub">-	    }
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    else if (!strcasecmp(message, &quot;close_window&quot;)) {
+</span><span class="sub">-	close_window(NULL);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    else if (!strcasecmp(message, &quot;move_window&quot;)) {
+</span><span class="sub">-	char *x, *y;
+</span><span class="sub">-	if (
+</span><span class="sub">-	    (x = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; (y = strtok(NULL, &quot; \t\n\r&quot;))
+</span><span class="sub">-	    &amp;&amp; is_number_perc(x) &amp;&amp; is_number_perc(y)
+</span><span class="sub">-	    &amp;&amp; (is_number(x) == is_number(y))
+</span><span class="sub">-	) {
+</span><span class="sub">-	    struct motion motion;
+</span><span class="sub">-	    if (is_number(x)) {
+</span><span class="sub">-		motion.dx = atoi(x);
+</span><span class="sub">-		motion.dy = atoi(y);
+</span><span class="sub">-		motion.is_percentage = false;
+</span><span class="sub">-		move_window(&amp;motion);
+</span><span class="sub">-	    } else {
+</span><span class="sub">-		if ((x = strtok(x, &quot;%&quot;)) &amp;&amp; (y = strtok(y, &quot;%&quot;))) {
+</span><span class="sub">-		    motion.dx = atoi(x);
+</span><span class="sub">-		    motion.dy = atoi(y);
+</span><span class="sub">-		    motion.is_percentage = true;
+</span><span class="sub">-		    move_window(&amp;motion);
+</span><span class="sub">-		} else {
+</span><span class="sub">-		    sprintf(response, &quot;Expected args in the form of &apos;x y&apos; or &apos;x%% y%%&apos;&quot;);
+</span><span class="add">+static void terminate(void *data);
+</span><span class="add">+static void exec_command(void *data);
+</span><span class="add">+static void close_window(void *data);
+</span><span class="add">+static void move_window(void *data);
+</span><span class="add">+static void focus_in_direction(void *data);
+</span><span class="add">+static void next_desk(void *data);
+</span><span class="add">+static void prev_desk(void *data);
+</span><span class="add">+static void reset_zoom(void *data);
+</span><span class="add">+static void zoom(void *data);
+</span><span class="add">+static void set_mark(void *data);
+</span><span class="add">+static void go_to_mark(void *data);
+</span><span class="add">+static void halfimize(void *data);
+</span><span class="add">+static void maximize(void *data);
+</span><span class="add">+static void send_to_desk(void *data);
+</span><span class="add">+static void toggle_scratchpad(void *data);
+</span><span class="add">+static void to_region(void *data);
+</span><span class="add">+static void zoom_pinch(void *data);
+</span><span class="add">+static void zoom_pinch_begin(void *data);
+</span><span class="add">+static void zoom_scroll(void *data);
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const action action;
+</span><span class="add">+    const action begin;
+</span><span class="add">+} pinch_map[] = {
+</span><span class="add">+    { &quot;zoom&quot;, &amp;zoom_pinch, &amp;zoom_pinch_begin },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const action action;
+</span><span class="add">+} scroll_map[] = {
+</span><span class="add">+    { &quot;zoom&quot;, &amp;zoom_scroll },
+</span><span class="add">+    { &quot;pan_desk&quot;, &amp;pan_desk },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const action action;
+</span><span class="add">+    bool (*data_handler)(void **data, char *args);
+</span><span class="add">+} action_map[] = {
+</span><span class="add">+    { &quot;terminate&quot;, &amp;terminate, NULL },
+</span><span class="add">+    { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span><span class="add">+    { &quot;close_window&quot;, &amp;close_window, NULL },
+</span><span class="add">+    { &quot;move_window&quot;, &amp;move_window, NULL },
+</span><span class="add">+    { &quot;focus&quot;, &amp;focus_in_direction, &amp;dir_handler },
+</span><span class="add">+    { &quot;next_desk&quot;, &amp;next_desk, NULL },
+</span><span class="add">+    { &quot;prev_desk&quot;, &amp;prev_desk, NULL },
+</span><span class="add">+    { &quot;pan_desk&quot;, &amp;pan_desk, &amp;motion_handler },
+</span><span class="add">+    { &quot;reset_zoom&quot;, &amp;reset_zoom, NULL },
+</span><span class="add">+    { &quot;zoom&quot;, &amp;zoom, &amp;str_handler },
+</span><span class="add">+    { &quot;set_mark&quot;, &amp;set_mark, NULL },
+</span><span class="add">+    { &quot;go_to_mark&quot;, &amp;go_to_mark, NULL },
+</span><span class="add">+    { &quot;toggle_fullscreen&quot;, &amp;toggle_fullscreen, NULL },
+</span><span class="add">+    { &quot;halfimize&quot;, &amp;halfimize, &amp;dir_handler },
+</span><span class="add">+    { &quot;maximize&quot;, &amp;maximize, NULL },
+</span><span class="add">+    { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="add">+    { &quot;scratchpad&quot;, &amp;toggle_scratchpad, &amp;scratchpad_handler },
+</span><span class="add">+    { &quot;to_region&quot;, &amp;to_region, &amp;box_handler },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool get_action(
+</span><span class="add">+    char *name, action *found, char *args, void **data, char *response, int flag
+</span><span class="add">+) {
+</span><span class="add">+    // flag can be PINCH or SCROLL to access their actions, otherwise neither
+</span><span class="add">+    *data = NULL;
+</span><span class="add">+    size_t i;
+</span><span class="add">+
+</span><span class="add">+    switch (flag) {
+</span><span class="add">+	case PINCH:
+</span><span class="add">+	    for (i = 0; i &lt; sizeof(pinch_map) / sizeof(pinch_map[0]); i++) {
+</span><span class="add">+		if (strcmp(pinch_map[i].name, name) == 0) {
+</span><span class="add">+		    *found = pinch_map[i].action;
+</span><span class="add">+		    action begin = pinch_map[i].begin;
+</span><span class="add">+		    *data = calloc(1, sizeof(action));
+</span><span class="add">+		    *(action *)(*data) = begin;
+</span><span class="add">+		    return true;
+</span><span class="def"> 		}
+</span><span class="def"> 	    }
+</span><span class="sub">-	} else {
+</span><span class="sub">-	    sprintf(response, &quot;Expected args in the form of &apos;x y&apos; or &apos;x%% y%%&apos;&quot;);
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="add">+	    break;
+</span><span class="def"> 
+</span><span class="sub">-    else if (!strcasecmp(message, &quot;focus_in_direction&quot;)) {
+</span><span class="sub">-	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	    struct wlr_box box;
+</span><span class="sub">-	    if (wlr_box_from_str(s, &amp;box)) {
+</span><span class="sub">-		to_region(&amp;box);
+</span><span class="add">+	case SCROLL:
+</span><span class="add">+	    for (i = 0; i &lt; sizeof(scroll_map) / sizeof(scroll_map[0]); i++) {
+</span><span class="add">+		if (strcmp(scroll_map[i].name, name) == 0) {
+</span><span class="add">+		    *found = scroll_map[i].action;
+</span><span class="add">+		    return true;
+</span><span class="add">+		}
+</span><span class="def"> 	    }
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="add">+	    break;
+</span><span class="def"> 
+</span><span class="sub">-    else if (!strcasecmp(message, &quot;next_desk&quot;)) {
+</span><span class="sub">-	next_desk(NULL);
+</span><span class="sub">-    }
+</span><span class="add">+	default:
+</span><span class="add">+	    for (i = 0; i &lt; sizeof(action_map) / sizeof(action_map[0]); i++) {
+</span><span class="add">+		if (strcmp(action_map[i].name, name) == 0) {
+</span><span class="add">+		    *found = action_map[i].action;
+</span><span class="def"> 
+</span><span class="sub">-    else if (!strcasecmp(message, &quot;prev_desk&quot;)) {
+</span><span class="sub">-	prev_desk(NULL);
+</span><span class="sub">-    }
+</span><span class="add">+		    if (action_map[i].data_handler != NULL) {
+</span><span class="add">+			if (!action_map[i].data_handler(data, args)) {
+</span><span class="add">+			    sprintf(response, &quot;Command malformed/incomplete.&quot;);
+</span><span class="add">+			    return false;
+</span><span class="add">+			}
+</span><span class="add">+		    }
+</span><span class="def"> 
+</span><span class="sub">-    else if (!strcasecmp(message, &quot;to_region&quot;)) {
+</span><span class="sub">-	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	    struct wlr_box box;
+</span><span class="sub">-	    if (wlr_box_from_str(s, &amp;box)) {
+</span><span class="sub">-		to_region(&amp;box);
+</span><span class="add">+		    return true;
+</span><span class="add">+		}
+</span><span class="def"> 	    }
+</span><span class="sub">-	}
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="sub">-    else {
+</span><span class="sub">-	handled = false;
+</span><span class="sub">-    }
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="def"> 
+</span><span class="sub">-    return handled;
+</span><span class="add">+
+</span><span class="add">+bool do_action(char *message, char *response) {
+</span><span class="add">+    void *data;
+</span><span class="add">+    action action;
+</span><span class="add">+    if (get_action(message, &amp;action, strtok(NULL, &quot;\n\r&quot;), &amp;data, response, 0)) {
+</span><span class="add">+	(*action)(data);
+</span><span class="add">+	return true;
+</span><span class="add">+    } else {
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void terminate(void *data) {
+</span><span class="add">+static void terminate(void *data) {
+</span><span class="def">     wl_display_terminate(wimp.display);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void exec_command(void *data) {
+</span><span class="add">+static void exec_command(void *data) {
+</span><span class="def">     pid_t pid = fork();
+</span><span class="def">     if (pid == 0) {
+</span><span class="def"> 	if (execl(&quot;/bin/sh&quot;, &quot;/bin/sh&quot;, &quot;-c&quot;, data, (void *)NULL) == -1) {
+</span>@@ -130,7 +167,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void close_window(void *data) {
+</span><span class="add">+static void close_window(void *data) {
+</span><span class="def">     struct wlr_surface *surface = wimp.seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     if (surface) {
+</span><span class="def"> 	struct wlr_xdg_surface *xdg_surface = surface-&gt;role_data;
+</span>@@ -141,7 +178,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void move_window(void *data) {
+</span><span class="add">+static void move_window(void *data) {
+</span><span class="def">     struct view *view;
+</span><span class="def">     if (wimp.grabbed_view) {
+</span><span class="def"> 	view = wimp.grabbed_view;
+</span>@@ -180,7 +217,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void focus_in_direction(void *data) {
+</span><span class="add">+static void focus_in_direction(void *data) {
+</span><span class="def">     if (wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="def"> 	return;
+</span><span class="def">     }
+</span>@@ -226,7 +263,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void next_desk(void *data) {
+</span><span class="add">+static void next_desk(void *data) {
+</span><span class="def">     struct desk *desk;
+</span><span class="def">     if (wimp.current_desk-&gt;index + 1 == wimp.desk_count) {
+</span><span class="def"> 	desk = wl_container_of(wimp.desks.next, desk, link);
+</span>@@ -237,7 +274,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void prev_desk(void *data) {
+</span><span class="add">+static void prev_desk(void *data) {
+</span><span class="def">     struct desk *desk;
+</span><span class="def">     if (wimp.current_desk-&gt;index == 0) {
+</span><span class="def"> 	desk = wl_container_of(wimp.desks.prev, desk, link);
+</span>@@ -270,7 +307,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void zoom(void *data) {
+</span><span class="add">+static void zoom(void *data) {
+</span><span class="def">     /* Passed value (data) is the percentage step (+ve or -ve) */
+</span><span class="def">     struct desk *desk = wimp.current_desk;
+</span><span class="def">     double f = 1 + (*(double*)data / 100);
+</span>@@ -296,13 +333,13 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void reset_zoom(void *data) {
+</span><span class="add">+static void reset_zoom(void *data) {
+</span><span class="def">     double dz = 100 * 1 / wimp.current_desk-&gt;zoom - 100;
+</span><span class="def">     zoom(&amp;dz);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void zoom_scroll(void *data) {
+</span><span class="add">+static void zoom_scroll(void *data) {
+</span><span class="def">     struct motion motion = *(struct motion*)data;
+</span><span class="def">     double dz = - motion.dx - motion.dy;
+</span><span class="def">     zoom(&amp;dz);
+</span>@@ -312,19 +349,19 @@
+<span class="def"> static double zoom_pinch_initial;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void zoom_pinch(void *data) {
+</span><span class="add">+static void zoom_pinch(void *data) {
+</span><span class="def">     double scale = *(double*)data;
+</span><span class="def">     double dz = 100 * scale * zoom_pinch_initial / wimp.current_desk-&gt;zoom - 100;
+</span><span class="def">     zoom(&amp;dz);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void zoom_pinch_begin(void *data) {
+</span><span class="add">+static void zoom_pinch_begin(void *data) {
+</span><span class="def">     zoom_pinch_initial = wimp.current_desk-&gt;zoom;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void set_mark(void *data) {
+</span><span class="add">+static void set_mark(void *data) {
+</span><span class="def">     struct mark *mark = calloc(1, sizeof(struct mark));
+</span><span class="def">     struct desk *desk = wimp.current_desk;
+</span><span class="def">     mark-&gt;desk = desk;
+</span>@@ -381,7 +418,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void go_to_mark(void *data) {
+</span><span class="add">+static void go_to_mark(void *data) {
+</span><span class="def">     wimp.mark_waiting = true;
+</span><span class="def">     damage_mark_indicator();
+</span><span class="def"> }
+</span>@@ -442,7 +479,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void halfimize(void *data) {
+</span><span class="add">+static void halfimize(void *data) {
+</span><span class="def">     struct wlr_surface *surface = wimp.seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     if (!surface || !wlr_surface_is_xdg_surface(surface) || wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="def"> 	return;
+</span>@@ -497,7 +534,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void maximize(void *data) {
+</span><span class="add">+static void maximize(void *data) {
+</span><span class="def">     struct wlr_surface *surface = wimp.seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     if (!surface || !wlr_surface_is_xdg_surface(surface) || wl_list_empty(&amp;wimp.current_desk-&gt;views)) {
+</span><span class="def"> 	return;
+</span>@@ -523,7 +560,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void send_to_desk(void *data) {
+</span><span class="add">+static void send_to_desk(void *data) {
+</span><span class="def">     struct view *view = wl_container_of(wimp.current_desk-&gt;views.next, view, link);
+</span><span class="def">     int index = *(double*)data - 1;
+</span><span class="def">     unfullscreen();
+</span>@@ -531,7 +568,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void toggle_scratchpad(void *data) {
+</span><span class="add">+static void toggle_scratchpad(void *data) {
+</span><span class="def">     struct scratchpad *scratchpad = scratchpad_from_id(*(int *)data);
+</span><span class="def"> 
+</span><span class="def">     if (scratchpad-&gt;view) {
+</span>@@ -558,7 +595,7 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void to_region(void *data) {
+</span><span class="add">+static void to_region(void *data) {
+</span><span class="def">     struct wlr_box *box = (struct wlr_box *)data;
+</span><span class="def">     struct wlr_box *extents = wlr_output_layout_get_box(wimp.output_layout, NULL);
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - remove ToggleTodo and quickfix nav</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/500250707b1dc4c86dcaba86794d2d3f10a0214a.html">500250707b1dc4c86dcaba86794d2d3f10a0214a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/40dbc87e41b8cfc64e3f924f2ca286246d336d72.html">40dbc87e41b8cfc64e3f924f2ca286246d336d72</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Date:</b> 2023-10-18 19:13:26 +0100
+<b>Committer:</b> Matt Colligan &lt;<a href="mailto:matthewcolligan@improbable.io">matthewcolligan@improbable.io</a>&gt;
+<b>Committed:</b> 2023-10-18 19:13:26 +0100
+
+remove ToggleTodo and quickfix nav
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -90,21 +90,21 @@
+<span class="def"> nnoremap &lt;leader&gt;S :setlocal spell! spelllang=en_gb spell?&lt;CR&gt;:echo &quot;zg to add new word&quot;&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; toggle [ ] tick box on current line with ctrl-space
+</span><span class="sub">-function! ToggleTodo()
+</span><span class="sub">-    let l:line = getline(&apos;.&apos;)
+</span><span class="sub">-    if match(l:line, &apos;\[x\]&apos;) != -1
+</span><span class="sub">-	let l:line = substitute(l:line, &apos;\[x\]&apos;, &apos;\[ \]&apos;, &apos;&apos;)
+</span><span class="sub">-	call setline(&apos;.&apos;, l:line)
+</span><span class="sub">-    elseif match(l:line, &apos;\[ \]&apos;) != -1
+</span><span class="sub">-	let l:line = substitute(l:line, &apos;\[ \]&apos;, &apos;\[x\]&apos;, &apos;&apos;)
+</span><span class="sub">-	call setline(&apos;.&apos;, l:line)
+</span><span class="sub">-    endif
+</span><span class="sub">-endfunction
+</span><span class="sub">-nnoremap &lt;silent&gt; &lt;C-@&gt; :call ToggleTodo()&lt;CR&gt;
+</span><span class="add">+&quot;function! ToggleTodo()
+</span><span class="add">+&quot;    let l:line = getline(&apos;.&apos;)
+</span><span class="add">+&quot;    if match(l:line, &apos;\[x\]&apos;) != -1
+</span><span class="add">+&quot;	let l:line = substitute(l:line, &apos;\[x\]&apos;, &apos;\[ \]&apos;, &apos;&apos;)
+</span><span class="add">+&quot;	call setline(&apos;.&apos;, l:line)
+</span><span class="add">+&quot;    elseif match(l:line, &apos;\[ \]&apos;) != -1
+</span><span class="add">+&quot;	let l:line = substitute(l:line, &apos;\[ \]&apos;, &apos;\[x\]&apos;, &apos;&apos;)
+</span><span class="add">+&quot;	call setline(&apos;.&apos;, l:line)
+</span><span class="add">+&quot;    endif
+</span><span class="add">+&quot;endfunction
+</span><span class="add">+&quot;nnoremap &lt;silent&gt; &lt;C-@&gt; :call ToggleTodo()&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; quickfix navigation
+</span><span class="sub">-nnoremap &lt;localleader&gt;cn :cn&lt;CR&gt;
+</span><span class="sub">-nnoremap &lt;localleader&gt;cp :cp&lt;CR&gt;
+</span><span class="add">+&quot;nnoremap &lt;localleader&gt;cn :cn&lt;CR&gt;
+</span><span class="add">+&quot;nnoremap &lt;localleader&gt;cp :cp&lt;CR&gt;
+</span><span class="def"> 
+</span><span class="def"> &quot; netrw
+</span><span class="def"> nmap &lt;C-n&gt; :Explore&lt;CR&gt;
+</span></pre>
+</div></div>
+  </body>
+</html>

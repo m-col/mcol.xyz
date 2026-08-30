@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - split client interface commands into set, bind and actions</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/2d3e36f7388e0a9907994b441e7382ce8721994a.html">2d3e36f7388e0a9907994b441e7382ce8721994a</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/a3daecf2087655e7a090464e3ae8c59d49e37307.html">a3daecf2087655e7a090464e3ae8c59d49e37307</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-02-24 22:31:20 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-02-24 22:31:20 +0000
+
+split client interface commands into set, bind and actions
+</pre><div class="diff">
+  <p>
+    <b>wimp.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -20,44 +20,44 @@
+<span class="def"> #   $HOME/.config/wimp/startup
+</span><span class="def"> #
+</span><span class="def"> 
+</span><span class="sub">-#wimptool desks 2
+</span><span class="sub">-#wimptool desk 1 background #31475c
+</span><span class="sub">-#wimptool desk 1 borders normal #3e3e73
+</span><span class="sub">-#wimptool desk 1 corners normal #31315c
+</span><span class="sub">-#wimptool desk 1 borders focus #47315c
+</span><span class="sub">-#wimptool desk 1 corners focus #7e5992
+</span><span class="sub">-#wimptool desk 1 borders width 6
+</span><span class="sub">-#wimptool desk 2 background #3e3e73
+</span><span class="sub">-#wimptool desk 2 borders normal #31475c
+</span><span class="sub">-#wimptool desk 1 corners normal #3e5973
+</span><span class="sub">-#wimptool desk 2 borders focus #47315c
+</span><span class="sub">-#wimptool desk 1 corners focus #7e5992
+</span><span class="sub">-#wimptool desk 2 borders width 6
+</span><span class="sub">-wimptool desk 1 background ~/path/to/tiling-image.png
+</span><span class="add">+#wimptool set desks 2
+</span><span class="add">+#wimptool set desk 1 background #31475c
+</span><span class="add">+#wimptool set desk 1 borders normal #3e3e73
+</span><span class="add">+#wimptool set desk 1 corners normal #31315c
+</span><span class="add">+#wimptool set desk 1 borders focus #47315c
+</span><span class="add">+#wimptool set desk 1 corners focus #7e5992
+</span><span class="add">+#wimptool set desk 1 borders width 6
+</span><span class="add">+#wimptool set desk 2 background #3e3e73
+</span><span class="add">+#wimptool set desk 2 borders normal #31475c
+</span><span class="add">+#wimptool set desk 1 corners normal #3e5973
+</span><span class="add">+#wimptool set desk 2 borders focus #47315c
+</span><span class="add">+#wimptool set desk 1 corners focus #7e5992
+</span><span class="add">+#wimptool set desk 2 borders width 6
+</span><span class="add">+wimptool set desk 1 background ~/path/to/tiling-image.png
+</span><span class="def"> 
+</span><span class="def"> # Magnification bounds
+</span><span class="sub">-#wimptool zoom_min 0.2
+</span><span class="sub">-#wimptool zoom_max 5
+</span><span class="add">+#wimptool set zoom_min 0.2
+</span><span class="add">+#wimptool set zoom_max 5
+</span><span class="def"> 
+</span><span class="def"> # Set the colour for the mark setter/getter indicator
+</span><span class="sub">-#wimptool mark_indicator #000000
+</span><span class="add">+#wimptool set mark_indicator #000000
+</span><span class="def"> 
+</span><span class="def"> # Whether to allow VT switching: on or off.
+</span><span class="sub">-#wimptool vt_switching on
+</span><span class="add">+#wimptool set vt_switching on
+</span><span class="def"> 
+</span><span class="def"> # natural or reverse scrolling
+</span><span class="sub">-#wimptool scroll_direction natural
+</span><span class="add">+#wimptool set scroll_direction natural
+</span><span class="def"> 
+</span><span class="def"> # Focus when moving the pointer over a window
+</span><span class="sub">-#wimptool auto_focus on
+</span><span class="add">+#wimptool set auto_focus on
+</span><span class="def"> 
+</span><span class="def"> ## Key bindings
+</span><span class="def"> 
+</span><span class="def"> # Can be one of: Shift, Caps, Ctrl, Alt, Mod2, Mod3, Logo, Mod5
+</span><span class="sub">-#wimptool set_modifier Logo
+</span><span class="add">+#wimptool set mod Logo
+</span><span class="def"> 
+</span><span class="def"> # additional modifiers, key, action
+</span><span class="sub">-wimptool bind	Ctrl	Escape		shutdown
+</span><span class="add">+wimptool bind	Ctrl	Escape		terminate
+</span><span class="def"> wimptool bind	Ctrl	r		reload_config
+</span><span class="def"> 
+</span><span class="def"> # These actions act on windows
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,6 +16,9 @@
+<span class="def"> #include &lt;wlr/types/wlr_xdg_shell.h&gt;
+</span><span class="def"> #include &lt;wlr/util/log.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#define is_number(s) (strspn(s, &quot;0123456789.-&quot;) == strlen(s))
+</span><span class="add">+#define is_number_perc(s) (strspn(s, &quot;0123456789.-%&quot;) == strlen(s))
+</span><span class="add">+
+</span><span class="def"> #define is_readable(p) (access(p, R_OK) != -1)
+</span><span class="def"> #define is_executable(p) (access(p, R_OK | X_OK) != -1)
+</span><span class="def"> 
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keybind.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,7 @@
+<span class="add">+#ifndef WIMP_KEYBIND_H
+</span><span class="add">+#define WIMP_KEYBIND_H
+</span><span class="add">+
+</span><span class="add">+void add_binding(char *message, char *response);
+</span><span class="add">+void set_mod(char *message, char *response);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/keybind.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,384 @@
+<span class="add">+#include &quot;action.h&quot;
+</span><span class="add">+#include &quot;keybind.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+struct value_map {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const int value;
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+/* To get the length of these arrays we need to calculate that before passing
+</span><span class="add">+ * them to the getter so the macro hides this. */
+</span><span class="add">+static int _get(struct value_map *values, const int len, const char *name) {
+</span><span class="add">+    for (int i = 0; i &lt; len; i++) {
+</span><span class="add">+	if (strcasecmp(values[i].name, name) == 0)
+</span><span class="add">+	    return values[i].value;
+</span><span class="add">+    }
+</span><span class="add">+    return 0;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+#define get(arr, name) _get(arr, sizeof(arr) / sizeof(arr[0]), name)
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct value_map mods[] = {
+</span><span class="add">+    { &quot;shift&quot;, WLR_MODIFIER_SHIFT },
+</span><span class="add">+    { &quot;caps&quot;, WLR_MODIFIER_CAPS },
+</span><span class="add">+    { &quot;ctrl&quot;, WLR_MODIFIER_CTRL },
+</span><span class="add">+    { &quot;alt&quot;, WLR_MODIFIER_ALT },
+</span><span class="add">+    { &quot;mod2&quot;, WLR_MODIFIER_MOD2 },
+</span><span class="add">+    { &quot;mod3&quot;, WLR_MODIFIER_MOD3 },
+</span><span class="add">+    { &quot;logo&quot;, WLR_MODIFIER_LOGO },
+</span><span class="add">+    { &quot;mod5&quot;, WLR_MODIFIER_MOD5 },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct value_map dirs[] = {
+</span><span class="add">+    { &quot;up&quot;, UP },
+</span><span class="add">+    { &quot;right&quot;, RIGHT },
+</span><span class="add">+    { &quot;down&quot;, DOWN },
+</span><span class="add">+    { &quot;left&quot;, LEFT },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct value_map mouse_keys[] = {
+</span><span class="add">+    { &quot;motion&quot;, MOTION },
+</span><span class="add">+    { &quot;scroll&quot;, SCROLL },
+</span><span class="add">+    { &quot;drag1&quot;, DRAG1 },
+</span><span class="add">+    { &quot;drag2&quot;, DRAG2 },
+</span><span class="add">+    { &quot;drag3&quot;, DRAG3 },
+</span><span class="add">+    { &quot;pinch&quot;, PINCH },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static bool dir_handler(struct binding *kb, char *data) {
+</span><span class="add">+    kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="add">+    *(enum direction *)(kb-&gt;data) = get(dirs, strtok(data, &quot; \t\n\r&quot;));
+</span><span class="add">+    return true;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static bool str_handler(struct binding *kb, char *data) {
+</span><span class="add">+    if (!data) {
+</span><span class="add">+	wlr_log(WLR_ERROR, &quot;Command requires arguments.&quot;);
+</span><span class="add">+	return false;
+</span><span class="add">+    }
+</span><span class="add">+    if (is_number(data)) {
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(double));
+</span><span class="add">+	*(double *)(kb-&gt;data) = strtod(data, NULL);
+</span><span class="add">+    } else {
+</span><span class="add">+	kb-&gt;data = calloc(strlen(data), sizeof(char));
+</span><span class="add">+	strncpy(kb-&gt;data, data, strlen(data));
+</span><span class="add">+    }
+</span><span class="add">+    return true;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static bool motion_handler(struct binding *kb, char *data) {
+</span><span class="add">+    char *s;
+</span><span class="add">+    if (!data) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="add">+    if (!is_number(s) || !data) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    int x = atoi(s);
+</span><span class="add">+
+</span><span class="add">+    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    if (!is_number(s)) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    int y = atoi(s);
+</span><span class="add">+
+</span><span class="add">+    struct motion motion = {
+</span><span class="add">+	.dx = x,
+</span><span class="add">+	.dy = y,
+</span><span class="add">+	.is_percentage = true,
+</span><span class="add">+    };
+</span><span class="add">+    kb-&gt;data = calloc(1, sizeof(struct motion));
+</span><span class="add">+    *(struct motion *)(kb-&gt;data) = motion;
+</span><span class="add">+    return true;
+</span><span class="add">+
+</span><span class="add">+err:
+</span><span class="add">+    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+bool wlr_box_from_str(char* str, struct wlr_box *box) {
+</span><span class="add">+    // turns e.g. 1920x1800+500+500 into a wlr_box
+</span><span class="add">+    char *w, *h, *x, *y;
+</span><span class="add">+    if (str) {
+</span><span class="add">+	if ((w = strtok(str, &quot;x&quot;)) &amp;&amp; is_number_perc(w)) {
+</span><span class="add">+	    if ((h = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(h)) {
+</span><span class="add">+		if ((x = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(x)) {
+</span><span class="add">+		    if ((y = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number_perc(y)) {
+</span><span class="add">+			if (is_number(w)) {
+</span><span class="add">+			    box-&gt;width = atoi(w);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((w = strtok(w, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;width = - atoi(w);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			if (is_number(h)) {
+</span><span class="add">+			    box-&gt;height = atoi(h);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((h = strtok(h, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;height = - atoi(h);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			if (is_number(x)) {
+</span><span class="add">+			    box-&gt;x = atoi(x);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((x = strtok(x, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;x = - atoi(x);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			if (is_number(y)) {
+</span><span class="add">+			    box-&gt;y = atoi(y);
+</span><span class="add">+			} else {
+</span><span class="add">+			    if ((y = strtok(y, &quot;%&quot;))) {
+</span><span class="add">+				box-&gt;y = - atoi(y);
+</span><span class="add">+			    } else {
+</span><span class="add">+				return false;
+</span><span class="add">+			    }
+</span><span class="add">+			}
+</span><span class="add">+			return true;
+</span><span class="add">+		    }
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static int _scratchpad_id = 0;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static bool scratchpad_handler(struct binding *kb, char *data) {
+</span><span class="add">+    char *geo, *command;
+</span><span class="add">+    struct wlr_box box;
+</span><span class="add">+    if (!data) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    if (!(command = strtok(NULL, &quot;\n\r&quot;))) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    if (!wlr_box_from_str(geo, &amp;box)) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct scratchpad *scratchpad = calloc(1, sizeof(struct scratchpad));
+</span><span class="add">+    wl_list_insert(wimp.scratchpads.prev, &amp;scratchpad-&gt;link);
+</span><span class="add">+    scratchpad-&gt;command = strdup(command);
+</span><span class="add">+    scratchpad-&gt;id = _scratchpad_id;
+</span><span class="add">+    scratchpad-&gt;is_mapped = false;
+</span><span class="add">+    scratchpad-&gt;view = NULL;
+</span><span class="add">+    scratchpad-&gt;geo = box;
+</span><span class="add">+
+</span><span class="add">+    kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="add">+    *(int *)(kb-&gt;data) = _scratchpad_id;
+</span><span class="add">+    _scratchpad_id++;
+</span><span class="add">+    return true;
+</span><span class="add">+
+</span><span class="add">+err:
+</span><span class="add">+    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static bool box_handler(struct binding *kb, char *data) {
+</span><span class="add">+    char *geo;
+</span><span class="add">+    if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    struct wlr_box *box = calloc(1, sizeof(struct wlr_box));
+</span><span class="add">+    if (!wlr_box_from_str(geo, box)) {
+</span><span class="add">+	goto err;
+</span><span class="add">+    }
+</span><span class="add">+    kb-&gt;data = box;
+</span><span class="add">+    return true;
+</span><span class="add">+err:
+</span><span class="add">+    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const action action;
+</span><span class="add">+    bool (*data_handler)(struct binding *kb, char *data);
+</span><span class="add">+} action_map[] = {
+</span><span class="add">+    { &quot;terminate&quot;, &amp;terminate, NULL },
+</span><span class="add">+    { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span><span class="add">+    { &quot;close_window&quot;, &amp;close_window, NULL },
+</span><span class="add">+    { &quot;move_window&quot;, &amp;move_window, NULL },
+</span><span class="add">+    { &quot;focus&quot;, &amp;focus_in_direction, &amp;dir_handler },
+</span><span class="add">+    { &quot;next_desk&quot;, &amp;next_desk, NULL },
+</span><span class="add">+    { &quot;prev_desk&quot;, &amp;prev_desk, NULL },
+</span><span class="add">+    { &quot;pan_desk&quot;, &amp;pan_desk, &amp;motion_handler },
+</span><span class="add">+    { &quot;reset_zoom&quot;, &amp;reset_zoom, NULL },
+</span><span class="add">+    { &quot;zoom&quot;, &amp;zoom, &amp;str_handler },
+</span><span class="add">+    { &quot;set_mark&quot;, &amp;set_mark, NULL },
+</span><span class="add">+    { &quot;go_to_mark&quot;, &amp;go_to_mark, NULL },
+</span><span class="add">+    { &quot;toggle_fullscreen&quot;, &amp;toggle_fullscreen, NULL },
+</span><span class="add">+    { &quot;halfimize&quot;, &amp;halfimize, &amp;dir_handler },
+</span><span class="add">+    { &quot;maximize&quot;, &amp;maximize, NULL },
+</span><span class="add">+    { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="add">+    { &quot;scratchpad&quot;, &amp;toggle_scratchpad, &amp;scratchpad_handler },
+</span><span class="add">+    { &quot;to_region&quot;, &amp;to_region, &amp;box_handler },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const action action;
+</span><span class="add">+    const action begin;
+</span><span class="add">+} pinch_map[] = {
+</span><span class="add">+    { &quot;zoom&quot;, &amp;zoom_pinch, &amp;zoom_pinch_begin },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static struct {
+</span><span class="add">+    const char *name;
+</span><span class="add">+    const action action;
+</span><span class="add">+} scroll_map[] = {
+</span><span class="add">+    { &quot;zoom&quot;, &amp;zoom_scroll },
+</span><span class="add">+    { &quot;pan_desk&quot;, &amp;pan_desk },
+</span><span class="add">+};
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static bool assign_action(const char *name, char *data, struct binding *kb) {
+</span><span class="add">+    kb-&gt;action = NULL;
+</span><span class="add">+    kb-&gt;data = NULL;
+</span><span class="add">+    size_t i;
+</span><span class="add">+
+</span><span class="add">+    switch (kb-&gt;key) {
+</span><span class="add">+	case PINCH:
+</span><span class="add">+	    for (i = 0; i &lt; sizeof(pinch_map) / sizeof(pinch_map[0]); i++) {
+</span><span class="add">+		if (strcmp(pinch_map[i].name, name) == 0) {
+</span><span class="add">+		    kb-&gt;action = pinch_map[i].action;
+</span><span class="add">+		    kb-&gt;begin = pinch_map[i].begin;
+</span><span class="add">+		    return true;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	    break;
+</span><span class="add">+	case SCROLL:
+</span><span class="add">+	    for (i = 0; i &lt; sizeof(scroll_map) / sizeof(scroll_map[0]); i++) {
+</span><span class="add">+		if (strcmp(scroll_map[i].name, name) == 0) {
+</span><span class="add">+		    kb-&gt;action = scroll_map[i].action;
+</span><span class="add">+		    return true;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+	    break;
+</span><span class="add">+	default:
+</span><span class="add">+	    for (i = 0; i &lt; sizeof(action_map) / sizeof(action_map[0]); i++) {
+</span><span class="add">+		if (strcmp(action_map[i].name, name) == 0) {
+</span><span class="add">+		    kb-&gt;action = action_map[i].action;
+</span><span class="add">+		    if (action_map[i].data_handler != NULL) {
+</span><span class="add">+			if (!action_map[i].data_handler(kb, data)){
+</span><span class="add">+			    return false;
+</span><span class="add">+			}
+</span><span class="add">+		    }
+</span><span class="add">+		    return true;
+</span><span class="add">+		}
+</span><span class="add">+	    }
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    return false;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void free_binding(struct binding *kb) {
+</span><span class="add">+    if (kb-&gt;data)
+</span><span class="add">+	free(kb-&gt;data);
+</span><span class="add">+    wl_list_remove(&amp;kb-&gt;link);
+</span><span class="add">+    free(kb);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void add_binding(char *message, char *response) {
+</span><span class="add">+    char *s;
+</span><span class="add">+    if (!(s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	sprintf(response, &quot;What do you want to bind?.&quot;);
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct binding *kb = calloc(1, sizeof(struct binding));
+</span><span class="add">+    enum wlr_keyboard_modifier mod;
+</span><span class="add">+    bool is_mouse_binding = false;
+</span><span class="add">+
+</span><span class="add">+    // additional modifiers
+</span><span class="add">+    kb-&gt;mods = 0;
+</span><span class="add">+    for (int i = 0; i &lt; 8; i++) {
+</span><span class="add">+	mod = get(mods, s);
+</span><span class="add">+	if (mod == 0)
+</span><span class="add">+	    break;
+</span><span class="add">+	kb-&gt;mods |= mod;
+</span><span class="add">+	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // key
+</span><span class="add">+    kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_NO_FLAGS);
+</span><span class="add">+    if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="add">+	kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_CASE_INSENSITIVE);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="add">+	kb-&gt;key = get(mouse_keys, s);
+</span><span class="add">+	if (kb-&gt;key == 0) {
+</span><span class="add">+	    sprintf(response, &quot;No such key &apos;%s&apos;.&quot;, s);
+</span><span class="add">+	    free(kb);
+</span><span class="add">+	    return;
+</span><span class="add">+	}
+</span><span class="add">+	is_mouse_binding = true;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // action
+</span><span class="add">+    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    if (!s) {
+</span><span class="add">+	sprintf(response,  &quot;Command malformed/incompleted.&quot;);
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+    if (!assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb)) {
+</span><span class="add">+	free(kb);
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    struct binding *kb_existing, *tmp;
+</span><span class="add">+    struct wl_list *bindings;
+</span><span class="add">+    if (is_mouse_binding) {
+</span><span class="add">+	bindings = &amp;wimp.mouse_bindings;
+</span><span class="add">+    } else {
+</span><span class="add">+	bindings = &amp;wimp.key_bindings;
+</span><span class="add">+    }
+</span><span class="add">+    wl_list_for_each_safe(kb_existing, tmp, bindings, link) {
+</span><span class="add">+	if (kb_existing-&gt;key == kb-&gt;key &amp;&amp; kb_existing-&gt;mods == kb-&gt;mods) {
+</span><span class="add">+	    free_binding(kb_existing);
+</span><span class="add">+	}
+</span><span class="add">+    }
+</span><span class="add">+    wl_list_insert(bindings-&gt;prev, &amp;kb-&gt;link);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void set_mod(char *message, char *response) {
+</span><span class="add">+    char *s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+    enum wlr_keyboard_modifier mod = get(mods, s);
+</span><span class="add">+    if (mod) {
+</span><span class="add">+        wimp.mod = mod;
+</span><span class="add">+    } else {
+</span><span class="add">+        sprintf(response, &quot;Invalid modifier name &apos;%s&apos;.&quot;, s);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -4,6 +4,7 @@
+<span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> void close_ipc(const char *display);
+</span><span class="add">+void set_up_defaults();
+</span><span class="def"> bool start_ipc(const char *display);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/ipc.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,8 +2,10 @@
+<span class="def"> #include &lt;sys/un.h&gt;
+</span><span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#include &quot;action.h&quot;
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;ipc.h&quot;
+</span><span class="add">+#include &quot;keybind.h&quot;
+</span><span class="def"> 
+</span><span class="def"> #define SOCKET_PATH &quot;/tmp/wimpy-sock-%s&quot;
+</span><span class="def"> 
+</span>@@ -15,6 +17,26 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+static void handle_message(char *message, char *response) {
+</span><span class="add">+    char *s = strtok(message, &quot; \t\n\r&quot;);
+</span><span class="add">+
+</span><span class="add">+    // set &lt;option&gt; &lt;value&gt;
+</span><span class="add">+    if (!strcasecmp(s, &quot;set&quot;)) {
+</span><span class="add">+	set_configurable(s, response);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // bind [&lt;modifiers&gt;] &lt;key&gt; &lt;action&gt;
+</span><span class="add">+    else if (!strcasecmp(s, &quot;bind&quot;)) {
+</span><span class="add">+	add_binding(s, response);
+</span><span class="add">+    }
+</span><span class="add">+
+</span><span class="add">+    // &lt;action&gt; &lt;data&gt;
+</span><span class="add">+    else {
+</span><span class="add">+	do_action(message, response);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> static int dispatch(int sock, unsigned int mask, void *data) {
+</span><span class="def">     char message[1024];
+</span><span class="def">     char response[1024] = {0};
+</span>@@ -38,6 +60,23 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void set_up_defaults(){
+</span><span class="add">+    char defaults[][64] = {
+</span><span class="add">+	&quot;set desks 2&quot;,
+</span><span class="add">+	&quot;set desk 2 background #3e3e73&quot;,
+</span><span class="add">+	&quot;set desk 2 borders normal #31475c&quot;,
+</span><span class="add">+	&quot;set desk 2 corners normal #3e5973&quot;,
+</span><span class="add">+	&quot;set mark_indicator #47315c&quot;,
+</span><span class="add">+	&quot;set mod Logo&quot;,
+</span><span class="add">+	&quot;set vt_switching on&quot;,
+</span><span class="add">+	&quot;bind Ctrl Escape terminate&quot;,
+</span><span class="add">+    };
+</span><span class="add">+    for (size_t i = 0; i &lt; sizeof(defaults) / sizeof(defaults[0]); i++) {
+</span><span class="add">+	handle_message(defaults[i], NULL);
+</span><span class="add">+    }
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> bool start_ipc(const char *display) {
+</span><span class="def">     int sock;
+</span><span class="def">     if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,8 +5,7 @@
+<span class="def"> 
+</span><span class="def"> bool wlr_box_from_str(char* str, struct wlr_box *box);
+</span><span class="def"> void assign_colour(char *hex, float dest[4]);
+</span><span class="sub">-void handle_message(char *buffer, char *response);
+</span><span class="add">+void set_configurable(char *message, char *response);
+</span><span class="def"> void schedule_startup();
+</span><span class="sub">-void set_up_defaults();
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -10,382 +10,15 @@
+<span class="def"> #include &quot;action.h&quot;
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;keybind.h&quot;
+</span><span class="def"> #include &quot;output.h&quot;
+</span><span class="def"> #include &quot;scratchpad.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-#define is_number(s) (strspn(s, &quot;0123456789.-&quot;) == strlen(s))
+</span><span class="sub">-#define is_number_perc(s) (strspn(s, &quot;0123456789.-%&quot;) == strlen(s))
+</span><span class="def"> #define CONFIG_HOME &quot;$HOME/.config/wimp/startup&quot;
+</span><span class="def"> #define CONFIG_HOME_XDG &quot;$XDG_CONFIG_HOME/wimp/startup&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-struct value_map {
+</span><span class="sub">-    const char *name;
+</span><span class="sub">-    const int value;
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static struct value_map mods[] = {
+</span><span class="sub">-    { &quot;shift&quot;, WLR_MODIFIER_SHIFT },
+</span><span class="sub">-    { &quot;caps&quot;, WLR_MODIFIER_CAPS },
+</span><span class="sub">-    { &quot;ctrl&quot;, WLR_MODIFIER_CTRL },
+</span><span class="sub">-    { &quot;alt&quot;, WLR_MODIFIER_ALT },
+</span><span class="sub">-    { &quot;mod2&quot;, WLR_MODIFIER_MOD2 },
+</span><span class="sub">-    { &quot;mod3&quot;, WLR_MODIFIER_MOD3 },
+</span><span class="sub">-    { &quot;logo&quot;, WLR_MODIFIER_LOGO },
+</span><span class="sub">-    { &quot;mod5&quot;, WLR_MODIFIER_MOD5 },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static struct value_map dirs[] = {
+</span><span class="sub">-    { &quot;up&quot;, UP },
+</span><span class="sub">-    { &quot;right&quot;, RIGHT },
+</span><span class="sub">-    { &quot;down&quot;, DOWN },
+</span><span class="sub">-    { &quot;left&quot;, LEFT },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static struct value_map mouse_keys[] = {
+</span><span class="sub">-    { &quot;motion&quot;, MOTION },
+</span><span class="sub">-    { &quot;scroll&quot;, SCROLL },
+</span><span class="sub">-    { &quot;drag1&quot;, DRAG1 },
+</span><span class="sub">-    { &quot;drag2&quot;, DRAG2 },
+</span><span class="sub">-    { &quot;drag3&quot;, DRAG3 },
+</span><span class="sub">-    { &quot;pinch&quot;, PINCH },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-/* To get the length of these arrays we need to calculate that before passing
+</span><span class="sub">- * them to the getter so the macro hides this. */
+</span><span class="sub">-#define get(arr, name) _get(arr, sizeof(arr) / sizeof(arr[0]), name)
+</span><span class="sub">-
+</span><span class="sub">-static int _get(struct value_map *values, const int len, const char *name) {
+</span><span class="sub">-    for (int i = 0; i &lt; len; i++) {
+</span><span class="sub">-	if (strcasecmp(values[i].name, name) == 0)
+</span><span class="sub">-	    return values[i].value;
+</span><span class="sub">-    }
+</span><span class="sub">-    return 0;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool dir_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    kb-&gt;data = calloc(1, sizeof(enum direction));
+</span><span class="sub">-    *(enum direction *)(kb-&gt;data) = get(dirs, strtok(data, &quot; \t\n\r&quot;));
+</span><span class="sub">-    return true;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool str_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    if (!data) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;Command requires arguments.&quot;);
+</span><span class="sub">-	return false;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (is_number(data)) {
+</span><span class="sub">-	kb-&gt;data = calloc(1, sizeof(double));
+</span><span class="sub">-	*(double *)(kb-&gt;data) = strtod(data, NULL);
+</span><span class="sub">-    } else {
+</span><span class="sub">-	kb-&gt;data = calloc(strlen(data), sizeof(char));
+</span><span class="sub">-	strncpy(kb-&gt;data, data, strlen(data));
+</span><span class="sub">-    }
+</span><span class="sub">-    return true;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool motion_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    char *s;
+</span><span class="sub">-    if (!data) {
+</span><span class="sub">-	goto err;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="sub">-    if (!is_number(s) || !data) {
+</span><span class="sub">-	goto err;
+</span><span class="sub">-    }
+</span><span class="sub">-    int x = atoi(s);
+</span><span class="sub">-
+</span><span class="sub">-    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-    if (!is_number(s)) {
+</span><span class="sub">-	goto err;
+</span><span class="sub">-    }
+</span><span class="sub">-    int y = atoi(s);
+</span><span class="sub">-
+</span><span class="sub">-    struct motion motion = {
+</span><span class="sub">-	.dx = x,
+</span><span class="sub">-	.dy = y,
+</span><span class="sub">-	.is_percentage = true,
+</span><span class="sub">-    };
+</span><span class="sub">-    kb-&gt;data = calloc(1, sizeof(struct motion));
+</span><span class="sub">-    *(struct motion *)(kb-&gt;data) = motion;
+</span><span class="sub">-    return true;
+</span><span class="sub">-
+</span><span class="sub">-err:
+</span><span class="sub">-    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="sub">-    return false;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-bool wlr_box_from_str(char* str, struct wlr_box *box) {
+</span><span class="sub">-    // turns e.g. 1920x1800+500+500 into a wlr_box
+</span><span class="sub">-    char *w, *h, *x, *y;
+</span><span class="sub">-    if (str) {
+</span><span class="sub">-	if ((w = strtok(str, &quot;x&quot;)) &amp;&amp; is_number_perc(w)) {
+</span><span class="sub">-	    if ((h = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(h)) {
+</span><span class="sub">-		if ((x = strtok(NULL, &quot;+&quot;)) &amp;&amp; is_number_perc(x)) {
+</span><span class="sub">-		    if ((y = strtok(NULL, &quot; \t\n\r&quot;)) &amp;&amp; is_number_perc(y)) {
+</span><span class="sub">-			if (is_number(w)) {
+</span><span class="sub">-			    box-&gt;width = atoi(w);
+</span><span class="sub">-			} else {
+</span><span class="sub">-			    if ((w = strtok(w, &quot;%&quot;))) {
+</span><span class="sub">-				box-&gt;width = - atoi(w);
+</span><span class="sub">-			    } else {
+</span><span class="sub">-				return false;
+</span><span class="sub">-			    }
+</span><span class="sub">-			}
+</span><span class="sub">-			if (is_number(h)) {
+</span><span class="sub">-			    box-&gt;height = atoi(h);
+</span><span class="sub">-			} else {
+</span><span class="sub">-			    if ((h = strtok(h, &quot;%&quot;))) {
+</span><span class="sub">-				box-&gt;height = - atoi(h);
+</span><span class="sub">-			    } else {
+</span><span class="sub">-				return false;
+</span><span class="sub">-			    }
+</span><span class="sub">-			}
+</span><span class="sub">-			if (is_number(x)) {
+</span><span class="sub">-			    box-&gt;x = atoi(x);
+</span><span class="sub">-			} else {
+</span><span class="sub">-			    if ((x = strtok(x, &quot;%&quot;))) {
+</span><span class="sub">-				box-&gt;x = - atoi(x);
+</span><span class="sub">-			    } else {
+</span><span class="sub">-				return false;
+</span><span class="sub">-			    }
+</span><span class="sub">-			}
+</span><span class="sub">-			if (is_number(y)) {
+</span><span class="sub">-			    box-&gt;y = atoi(y);
+</span><span class="sub">-			} else {
+</span><span class="sub">-			    if ((y = strtok(y, &quot;%&quot;))) {
+</span><span class="sub">-				box-&gt;y = - atoi(y);
+</span><span class="sub">-			    } else {
+</span><span class="sub">-				return false;
+</span><span class="sub">-			    }
+</span><span class="sub">-			}
+</span><span class="sub">-			return true;
+</span><span class="sub">-		    }
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-    return false;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static int scratchpad_id = 0;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool scratchpad_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    char *geo, *command;
+</span><span class="sub">-    struct wlr_box box;
+</span><span class="sub">-    if (!data) {
+</span><span class="sub">-	goto err;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	goto err;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (!(command = strtok(NULL, &quot;\n\r&quot;))) {
+</span><span class="sub">-	goto err;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (!wlr_box_from_str(geo, &amp;box)) {
+</span><span class="sub">-	goto err;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    struct scratchpad *scratchpad = calloc(1, sizeof(struct scratchpad));
+</span><span class="sub">-    wl_list_insert(wimp.scratchpads.prev, &amp;scratchpad-&gt;link);
+</span><span class="sub">-    scratchpad-&gt;command = strdup(command);
+</span><span class="sub">-    scratchpad-&gt;id = scratchpad_id;
+</span><span class="sub">-    scratchpad-&gt;is_mapped = false;
+</span><span class="sub">-    scratchpad-&gt;view = NULL;
+</span><span class="sub">-    scratchpad-&gt;geo = box;
+</span><span class="sub">-
+</span><span class="sub">-    kb-&gt;data = calloc(1, sizeof(int));
+</span><span class="sub">-    *(int *)(kb-&gt;data) = scratchpad_id;
+</span><span class="sub">-    scratchpad_id++;
+</span><span class="sub">-    return true;
+</span><span class="sub">-
+</span><span class="sub">-err:
+</span><span class="sub">-    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="sub">-    return false;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool box_handler(struct binding *kb, char *data) {
+</span><span class="sub">-    char *geo;
+</span><span class="sub">-    if (!(geo = strtok(data, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	goto err;
+</span><span class="sub">-    }
+</span><span class="sub">-    struct wlr_box *box = calloc(1, sizeof(struct wlr_box));
+</span><span class="sub">-    if (!wlr_box_from_str(geo, box)) {
+</span><span class="sub">-	goto err;
+</span><span class="sub">-    }
+</span><span class="sub">-    kb-&gt;data = box;
+</span><span class="sub">-    return true;
+</span><span class="sub">-err:
+</span><span class="sub">-    wlr_log(WLR_ERROR, &quot;Command malformed/incomplete.&quot;);
+</span><span class="sub">-    return false;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static struct {
+</span><span class="sub">-    const char *name;
+</span><span class="sub">-    const action action;
+</span><span class="sub">-    bool (*data_handler)(struct binding *kb, char *data);
+</span><span class="sub">-} action_map[] = {
+</span><span class="sub">-    { &quot;shutdown&quot;, &amp;shutdown, NULL },
+</span><span class="sub">-    { &quot;exec&quot;, &amp;exec_command, &amp;str_handler },
+</span><span class="sub">-    { &quot;close_window&quot;, &amp;close_window, NULL },
+</span><span class="sub">-    { &quot;move_window&quot;, &amp;move_window, NULL },
+</span><span class="sub">-    { &quot;focus&quot;, &amp;focus_in_direction, &amp;dir_handler },
+</span><span class="sub">-    { &quot;next_desk&quot;, &amp;next_desk, NULL },
+</span><span class="sub">-    { &quot;prev_desk&quot;, &amp;prev_desk, NULL },
+</span><span class="sub">-    { &quot;pan_desk&quot;, &amp;pan_desk, &amp;motion_handler },
+</span><span class="sub">-    { &quot;reset_zoom&quot;, &amp;reset_zoom, NULL },
+</span><span class="sub">-    { &quot;zoom&quot;, &amp;zoom, &amp;str_handler },
+</span><span class="sub">-    { &quot;set_mark&quot;, &amp;set_mark, NULL },
+</span><span class="sub">-    { &quot;go_to_mark&quot;, &amp;go_to_mark, NULL },
+</span><span class="sub">-    { &quot;toggle_fullscreen&quot;, &amp;toggle_fullscreen, NULL },
+</span><span class="sub">-    { &quot;halfimize&quot;, &amp;halfimize, &amp;dir_handler },
+</span><span class="sub">-    { &quot;maximize&quot;, &amp;maximize, NULL },
+</span><span class="sub">-    { &quot;send_to_desk&quot;, &amp;send_to_desk, &amp;str_handler },
+</span><span class="sub">-    { &quot;scratchpad&quot;, &amp;toggle_scratchpad, &amp;scratchpad_handler },
+</span><span class="sub">-    { &quot;to_region&quot;, &amp;to_region, &amp;box_handler },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static struct {
+</span><span class="sub">-    const char *name;
+</span><span class="sub">-    const action action;
+</span><span class="sub">-    const action begin;
+</span><span class="sub">-} pinch_map[] = {
+</span><span class="sub">-    { &quot;zoom&quot;, &amp;zoom_pinch, &amp;zoom_pinch_begin },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static struct {
+</span><span class="sub">-    const char *name;
+</span><span class="sub">-    const action action;
+</span><span class="sub">-} scroll_map[] = {
+</span><span class="sub">-    { &quot;zoom&quot;, &amp;zoom_scroll },
+</span><span class="sub">-    { &quot;pan_desk&quot;, &amp;pan_desk },
+</span><span class="sub">-};
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static bool assign_action(const char *name, char *data, struct binding *kb) {
+</span><span class="sub">-    kb-&gt;action = NULL;
+</span><span class="sub">-    kb-&gt;data = NULL;
+</span><span class="sub">-    size_t i;
+</span><span class="sub">-
+</span><span class="sub">-    switch (kb-&gt;key) {
+</span><span class="sub">-	case PINCH:
+</span><span class="sub">-	    for (i = 0; i &lt; sizeof(pinch_map) / sizeof(pinch_map[0]); i++) {
+</span><span class="sub">-		if (strcmp(pinch_map[i].name, name) == 0) {
+</span><span class="sub">-		    kb-&gt;action = pinch_map[i].action;
+</span><span class="sub">-		    kb-&gt;begin = pinch_map[i].begin;
+</span><span class="sub">-		    return true;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	    break;
+</span><span class="sub">-	case SCROLL:
+</span><span class="sub">-	    for (i = 0; i &lt; sizeof(scroll_map) / sizeof(scroll_map[0]); i++) {
+</span><span class="sub">-		if (strcmp(scroll_map[i].name, name) == 0) {
+</span><span class="sub">-		    kb-&gt;action = scroll_map[i].action;
+</span><span class="sub">-		    return true;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-	    break;
+</span><span class="sub">-	default:
+</span><span class="sub">-	    for (i = 0; i &lt; sizeof(action_map) / sizeof(action_map[0]); i++) {
+</span><span class="sub">-		if (strcmp(action_map[i].name, name) == 0) {
+</span><span class="sub">-		    kb-&gt;action = action_map[i].action;
+</span><span class="sub">-		    if (action_map[i].data_handler != NULL) {
+</span><span class="sub">-			if (!action_map[i].data_handler(kb, data)){
+</span><span class="sub">-			    return false;
+</span><span class="sub">-			}
+</span><span class="sub">-		    }
+</span><span class="sub">-		    return true;
+</span><span class="sub">-		}
+</span><span class="sub">-	    }
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    return false;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void free_binding(struct binding *kb) {
+</span><span class="sub">-    if (kb-&gt;data)
+</span><span class="sub">-	free(kb-&gt;data);
+</span><span class="sub">-    wl_list_remove(&amp;kb-&gt;link);
+</span><span class="sub">-    free(kb);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-static void add_binding(char *data) {
+</span><span class="sub">-    struct binding *kb = calloc(1, sizeof(struct binding));
+</span><span class="sub">-    enum wlr_keyboard_modifier mod;
+</span><span class="sub">-    char *s = strtok(data, &quot; \t\n\r&quot;);
+</span><span class="sub">-    bool is_mouse_binding = false;
+</span><span class="sub">-
+</span><span class="sub">-    // additional modifiers
+</span><span class="sub">-    kb-&gt;mods = 0;
+</span><span class="sub">-    for (int i = 0; i &lt; 8; i++) {
+</span><span class="sub">-	mod = get(mods, s);
+</span><span class="sub">-	if (mod == 0)
+</span><span class="sub">-	    break;
+</span><span class="sub">-	kb-&gt;mods |= mod;
+</span><span class="sub">-	s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    // key
+</span><span class="sub">-    kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_NO_FLAGS);
+</span><span class="sub">-    if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="sub">-	kb-&gt;key = xkb_keysym_from_name(s, XKB_KEYSYM_CASE_INSENSITIVE);
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    if (kb-&gt;key == XKB_KEY_NoSymbol) {
+</span><span class="sub">-	kb-&gt;key = get(mouse_keys, s);
+</span><span class="sub">-	if (kb-&gt;key == 0) {
+</span><span class="sub">-	    wlr_log(WLR_ERROR, &quot;No such key &apos;%s&apos;.&quot;, s);
+</span><span class="sub">-	    free(kb);
+</span><span class="sub">-	    return;
+</span><span class="sub">-	}
+</span><span class="sub">-	is_mouse_binding = true;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    // action
+</span><span class="sub">-    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="sub">-    if (!s) {
+</span><span class="sub">-	wlr_log(WLR_ERROR, &quot;Command malformed/incompleted.&quot;);
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="sub">-    if (!assign_action(s, strtok(NULL, &quot;\n\r&quot;), kb)) {
+</span><span class="sub">-	free(kb);
+</span><span class="sub">-	return;
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    struct binding *kb_existing, *tmp;
+</span><span class="sub">-    struct wl_list *bindings;
+</span><span class="sub">-    if (is_mouse_binding) {
+</span><span class="sub">-	bindings = &amp;wimp.mouse_bindings;
+</span><span class="sub">-    } else {
+</span><span class="sub">-	bindings = &amp;wimp.key_bindings;
+</span><span class="sub">-    }
+</span><span class="sub">-    wl_list_for_each_safe(kb_existing, tmp, bindings, link) {
+</span><span class="sub">-	if (kb_existing-&gt;key == kb-&gt;key &amp;&amp; kb_existing-&gt;mods == kb-&gt;mods) {
+</span><span class="sub">-	    free_binding(kb_existing);
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-    wl_list_insert(bindings-&gt;prev, &amp;kb-&gt;link);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void assign_colour(char *hex, float dest[4]) {
+</span><span class="def">     if (strlen(hex) != 7 || hex[0] != &apos;#&apos;) {
+</span><span class="def"> 	wlr_log(WLR_INFO, &quot;Invalid colour: %s. Should be in the form #rrggbb.&quot;, hex);
+</span>@@ -478,8 +111,12 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void handle_message(char *message, char *response) {
+</span><span class="sub">-    char *s = strtok(message, &quot; \t\n\r&quot;);
+</span><span class="add">+void set_configurable(char *message, char *response) {
+</span><span class="add">+    char *s;
+</span><span class="add">+    if (!(s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="add">+	sprintf(response, &quot;What do you want to set?.&quot;);
+</span><span class="add">+	return;
+</span><span class="add">+    }
+</span><span class="def"> 
+</span><span class="def">     // desks &lt;int&gt;
+</span><span class="def">     if (!strcasecmp(s, &quot;desks&quot;)) {
+</span>@@ -583,19 +220,8 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // e.g.: set_modifier logo
+</span><span class="sub">-    else if (!strcasecmp(s, &quot;set_modifier&quot;)) {
+</span><span class="sub">-	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="sub">-	    enum wlr_keyboard_modifier mod = get(mods, s);
+</span><span class="sub">-	    if (mod)
+</span><span class="sub">-		wimp.mod = mod;
+</span><span class="sub">-	    else
+</span><span class="sub">-		wlr_log(WLR_ERROR, &quot;Invalid modifier name &apos;%s&apos;.&quot;, s);
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="sub">-
+</span><span class="sub">-    // bind [&lt;modifiers&gt;] &lt;key&gt; &lt;action&gt;
+</span><span class="sub">-    else if (!strcasecmp(s, &quot;bind&quot;)) {
+</span><span class="sub">-	add_binding(strtok(NULL, &quot;&quot;));
+</span><span class="add">+    else if (!strcasecmp(s, &quot;mod&quot;)) {
+</span><span class="add">+	set_mod(message, response);
+</span><span class="def">     }
+</span><span class="def"> 
+</span><span class="def">     // auto_focus [on|off]
+</span>@@ -607,13 +233,6 @@
+<span class="def"> 	    wimp.auto_focus = true;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="sub">-
+</span><span class="sub">-    // other non-empty, non-commented lines
+</span><span class="sub">-    else {
+</span><span class="sub">-	if(!handle_do_action(s)) {
+</span><span class="sub">-	    sprintf(response, &quot;Unknown command &apos;%s&apos;.&quot;, s);
+</span><span class="sub">-	}
+</span><span class="sub">-    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -659,20 +278,3 @@
+<span class="def">     }
+</span><span class="def"> 
+</span><span class="def"> }
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void set_up_defaults(){
+</span><span class="sub">-    char defaults[][64] = {
+</span><span class="sub">-	&quot;desks 2&quot;,
+</span><span class="sub">-	&quot;desk 2 background #3e3e73&quot;,
+</span><span class="sub">-	&quot;desk 2 borders normal #31475c&quot;,
+</span><span class="sub">-	&quot;desk 2 corners normal #3e5973&quot;,
+</span><span class="sub">-	&quot;mark_indicator #47315c&quot;,
+</span><span class="sub">-	&quot;set_modifier Logo&quot;,
+</span><span class="sub">-	&quot;bind Ctrl Escape shutdown&quot;,
+</span><span class="sub">-    };
+</span><span class="sub">-    for (size_t i = 0; i &lt; sizeof(defaults) / sizeof(defaults[0]); i++) {
+</span><span class="sub">-	handle_message(defaults[i], NULL);
+</span><span class="sub">-    }
+</span><span class="sub">-    setup_vt_switching();
+</span><span class="sub">-}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,8 +3,8 @@
+<span class="def"> 
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-bool handle_do_action(char *command);
+</span><span class="sub">-void shutdown(void *data);
+</span><span class="add">+void do_action(char *message, char *response);
+</span><span class="add">+void terminate(void *data);
+</span><span class="def"> void exec_command(void *data);
+</span><span class="def"> void change_vt(void *data);
+</span><span class="def"> void close_window(void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,23 +12,22 @@
+<span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="sub">-bool handle_do_action(char *command) {
+</span><span class="add">+
+</span><span class="add">+void do_action(char *message, char *response) {
+</span><span class="def">     char *s;
+</span><span class="def"> 
+</span><span class="sub">-    if (!strcasecmp(command, &quot;to_region&quot;)) {
+</span><span class="add">+    if (!strcasecmp(message, &quot;to_region&quot;)) {
+</span><span class="def"> 	if ((s = strtok(NULL, &quot; \t\n\r&quot;))) {
+</span><span class="def"> 	    struct wlr_box box;
+</span><span class="def"> 	    if (wlr_box_from_str(s, &amp;box)) {
+</span><span class="def"> 		to_region(&amp;box);
+</span><span class="def"> 	    }
+</span><span class="def"> 	}
+</span><span class="sub">-	return true;
+</span><span class="def">     }
+</span><span class="sub">-    return false;
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-void shutdown(void *data) {
+</span><span class="add">+void terminate(void *data) {
+</span><span class="def">     wl_display_terminate(wimp.display);
+</span><span class="def"> }
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

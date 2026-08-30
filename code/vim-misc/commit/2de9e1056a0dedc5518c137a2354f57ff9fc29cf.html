@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - remove branch from lualine</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/2de9e1056a0dedc5518c137a2354f57ff9fc29cf.html">2de9e1056a0dedc5518c137a2354f57ff9fc29cf</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/b2976c2aaf21e5d485e2254d00f3c03ddbce8f11.html">b2976c2aaf21e5d485e2254d00f3c03ddbce8f11</a>
+<b>Author:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Date:</b> 2025-05-14 12:32:53 +0100
+<b>Committer:</b> matt colligan &lt;<a href="mailto:mlv@posteo.net">mlv@posteo.net</a>&gt;
+<b>Committed:</b> 2025-05-14 12:32:53 +0100
+
+remove branch from lualine
+</pre><div class="diff">
+  <p>
+    <b>start/self/plugin/keybindings.vim</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -124,7 +124,7 @@
+<span class="def"> 
+</span><span class="def"> &quot; ALE
+</span><span class="def"> &quot;nmap &lt;silent&gt; &lt;C-S-f&gt; &lt;Plug&gt;(ale_fix)
+</span><span class="sub">-nmap &lt;silent&gt; &lt;C-[&gt; &lt;Plug&gt;(ale_find_references)
+</span><span class="add">+nmap &lt;silent&gt; &lt;C-i&gt; &lt;Plug&gt;(ale_find_references)
+</span><span class="def"> nmap &lt;silent&gt; &lt;C-]&gt; &lt;Plug&gt;(ale_go_to_definition)
+</span><span class="def"> 
+</span><span class="def"> &quot; CtrlP (in addition to the default Ctrl-p binding)
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>start/self/plugin/init.lua</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -8,5 +8,17 @@
+<span class="def"> })
+</span><span class="def"> 
+</span><span class="def"> require(&apos;lualine&apos;).setup({
+</span><span class="sub">-    options = { section_separators = &apos;&apos;, component_separators = &apos;&apos;, path = 3 }
+</span><span class="add">+    options = {
+</span><span class="add">+	section_separators = &apos;&apos;,
+</span><span class="add">+	component_separators = &apos;&apos;,
+</span><span class="add">+	path = 3,
+</span><span class="add">+    },
+</span><span class="add">+    sections = {
+</span><span class="add">+	lualine_a = {&apos;mode&apos;},
+</span><span class="add">+	lualine_b = {},
+</span><span class="add">+	lualine_c = {&apos;filename&apos;},
+</span><span class="add">+	lualine_x = {&apos;encoding&apos;, &apos;fileformat&apos;, &apos;filetype&apos;},
+</span><span class="add">+	lualine_y = {&apos;progress&apos;},
+</span><span class="add">+	lualine_z = {&apos;location&apos;}
+</span><span class="add">+    },
+</span><span class="def"> })
+</span></pre>
+</div></div>
+  </body>
+</html>

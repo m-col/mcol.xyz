@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - move desk-related code into dedicated files</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/2f1a499e9cf4b20ffb8af7e8bf3b41466659ef34.html">2f1a499e9cf4b20ffb8af7e8bf3b41466659ef34</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/ef78040a4e031d7806aa7e791e8750160b6f1e5f.html">ef78040a4e031d7806aa7e791e8750160b6f1e5f</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-08 17:55:50 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-08 17:55:50 +0000
+
+move desk-related code into dedicated files
+</pre><div class="diff">
+  <p>
+    <b>src/shell.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -12,10 +12,6 @@
+<span class="def"> void on_request_move(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_request_resize(struct wl_listener *listener, void *data);
+</span><span class="def"> void on_new_xdg_surface(struct wl_listener *listener, void *data);
+</span><span class="sub">-void add_desk(struct server *server);
+</span><span class="sub">-void remove_desk(struct desk *desk);
+</span><span class="sub">-void next_desk(struct server *server);
+</span><span class="sub">-void prev_desk(struct server *server);
+</span><span class="def"> void set_up_shell(struct server *server);
+</span><span class="def"> 
+</span><span class="def"> #endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/shell.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -128,48 +128,6 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="sub">-static int num_desks = 0;
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void add_desk(struct server *server) {
+</span><span class="sub">-    struct desk *desk = calloc(1, sizeof(struct desk));
+</span><span class="sub">-    wl_list_insert(server-&gt;desks.prev, &amp;desk-&gt;link);
+</span><span class="sub">-    desk-&gt;server = server;
+</span><span class="sub">-    wl_list_init(&amp;desk-&gt;views);
+</span><span class="sub">-    assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="sub">-    desk-&gt;index = num_desks;
+</span><span class="sub">-    num_desks++;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void remove_desk(struct desk *desk) {
+</span><span class="sub">-    wl_list_remove(&amp;desk-&gt;link);
+</span><span class="sub">-    free(desk);
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void next_desk(struct server *server) {
+</span><span class="sub">-    struct desk *desk;
+</span><span class="sub">-    if (server-&gt;current_desk-&gt;index + 1 == num_desks) {
+</span><span class="sub">-	desk = wl_container_of(server-&gt;desks.next, desk, link);
+</span><span class="sub">-    } else {
+</span><span class="sub">-	desk = wl_container_of(server-&gt;current_desk-&gt;link.next, desk, link);
+</span><span class="sub">-    }
+</span><span class="sub">-    server-&gt;current_desk = desk;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="sub">-void prev_desk(struct server *server) {
+</span><span class="sub">-    struct desk *desk;
+</span><span class="sub">-    if (server-&gt;current_desk-&gt;index == 0) {
+</span><span class="sub">-	desk = wl_container_of(server-&gt;desks.prev, desk, link);
+</span><span class="sub">-    } else {
+</span><span class="sub">-	desk = wl_container_of(server-&gt;current_desk-&gt;link.prev, desk, link);
+</span><span class="sub">-    }
+</span><span class="sub">-    server-&gt;current_desk = desk;
+</span><span class="sub">-}
+</span><span class="sub">-
+</span><span class="sub">-
+</span><span class="def"> void set_up_shell(struct server *server) {
+</span><span class="def">     server-&gt;shell = wlr_xdg_shell_create(server-&gt;display);
+</span><span class="def">     server-&gt;new_xdg_surface_listener.notify = on_new_xdg_surface;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -3,6 +3,7 @@
+<span class="def"> #include &lt;wlr/types/wlr_data_device.h&gt;
+</span><span class="def"> #include &lt;wlr/types/wlr_xcursor_manager.h&gt;
+</span><span class="def"> 
+</span><span class="add">+#include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;input.h&quot;
+</span><span class="def"> #include &quot;shell.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.h</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,11 @@
+<span class="add">+#ifndef DESKWM_DESK_H
+</span><span class="add">+#define DESKWM_DESK_H
+</span><span class="add">+
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+void add_desk(struct server *server);
+</span><span class="add">+void remove_desk(struct desk *desk);
+</span><span class="add">+void next_desk(struct server *server);
+</span><span class="add">+void prev_desk(struct server *server);
+</span><span class="add">+
+</span><span class="add">+#endif
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/desk.c</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,44 @@
+<span class="add">+#include &quot;config.h&quot;
+</span><span class="add">+#include &quot;desk.h&quot;
+</span><span class="add">+#include &quot;types.h&quot;
+</span><span class="add">+
+</span><span class="add">+static int num_desks = 0;
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void add_desk(struct server *server) {
+</span><span class="add">+    struct desk *desk = calloc(1, sizeof(struct desk));
+</span><span class="add">+    wl_list_insert(server-&gt;desks.prev, &amp;desk-&gt;link);
+</span><span class="add">+    desk-&gt;server = server;
+</span><span class="add">+    wl_list_init(&amp;desk-&gt;views);
+</span><span class="add">+    assign_colour(&quot;#5D479D&quot;, desk-&gt;background);
+</span><span class="add">+    desk-&gt;index = num_desks;
+</span><span class="add">+    num_desks++;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void remove_desk(struct desk *desk) {
+</span><span class="add">+    wl_list_remove(&amp;desk-&gt;link);
+</span><span class="add">+    free(desk);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void next_desk(struct server *server) {
+</span><span class="add">+    struct desk *desk;
+</span><span class="add">+    if (server-&gt;current_desk-&gt;index + 1 == num_desks) {
+</span><span class="add">+	desk = wl_container_of(server-&gt;desks.next, desk, link);
+</span><span class="add">+    } else {
+</span><span class="add">+	desk = wl_container_of(server-&gt;current_desk-&gt;link.next, desk, link);
+</span><span class="add">+    }
+</span><span class="add">+    server-&gt;current_desk = desk;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+void prev_desk(struct server *server) {
+</span><span class="add">+    struct desk *desk;
+</span><span class="add">+    if (server-&gt;current_desk-&gt;index == 0) {
+</span><span class="add">+	desk = wl_container_of(server-&gt;desks.prev, desk, link);
+</span><span class="add">+    } else {
+</span><span class="add">+	desk = wl_container_of(server-&gt;current_desk-&gt;link.prev, desk, link);
+</span><span class="add">+    }
+</span><span class="add">+    server-&gt;current_desk = desk;
+</span><span class="add">+}
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,7 +5,7 @@
+<span class="def"> #include &lt;unistd.h&gt;
+</span><span class="def"> 
+</span><span class="def"> #include &quot;config.h&quot;
+</span><span class="sub">-#include &quot;shell.h&quot;
+</span><span class="add">+#include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span><span class="def"> 
+</span></pre>
+</div></div>
+  </body>
+</html>

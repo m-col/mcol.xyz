@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xoop - add help message option</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xoop">xoop</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Loop your X cursor around the screen 👉😎👉</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xoop">https://github.com/m-col/xoop</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xoop/tree.html">Files</a> | <a href="https://mcol.xyz/code/xoop/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xoop/file/readme.html">Readme</a>     | <a href="https://mcol.xyz/code/xoop/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xoop/commit/f7e761f62c87b665c9050129cca95a1de3c959b7.html">f7e761f62c87b665c9050129cca95a1de3c959b7</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xoop/commit/fc91bb73cb8250524fe865c4e69e10b45d1c21d2.html">fc91bb73cb8250524fe865c4e69e10b45d1c21d2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-04-20 12:27:17 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-04-20 12:27:17 +0100
+
+add help message option
+</pre><div class="diff">
+  <p>
+    <b>xoop.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -30,8 +30,8 @@
+<span class="def"> #include &lt;stdio.h&gt;
+</span><span class="def"> #endif
+</span><span class="def"> 
+</span><span class="add">+#define PROGNAME &quot;xoop&quot;
+</span><span class="def"> 
+</span><span class="sub">-char *CLASS = &quot;xoop&quot;;
+</span><span class="def"> xcb_connection_t    *conn;
+</span><span class="def"> xcb_screen_t	    *screen;
+</span><span class="def"> 
+</span>@@ -129,7 +129,7 @@
+<span class="def">     xcb_configure_window(conn, wid, XCB_CONFIG_WINDOW_STACK_MODE, &amp;above);
+</span><span class="def"> 
+</span><span class="def">     xcb_change_property(
+</span><span class="sub">-	conn, XCB_PROP_MODE_REPLACE, wid, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, 4, CLASS
+</span><span class="add">+	conn, XCB_PROP_MODE_REPLACE, wid, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, 4, PROGNAME
+</span><span class="def">     );
+</span><span class="def"> 
+</span><span class="def">     xcb_map_window(conn, wid);
+</span>@@ -183,6 +183,17 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void print_help()
+</span><span class="add">+{
+</span><span class="add">+    printf(
+</span><span class="add">+	PROGNAME &quot; [-h|-f]\n&quot;
+</span><span class="add">+	&quot;\n&quot;
+</span><span class="add">+	&quot;    -h    print help\n&quot;
+</span><span class="add">+	&quot;    -f    fork\n&quot;
+</span><span class="add">+    );
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> int main(int argc, char *argv[])
+</span><span class="def"> {
+</span><span class="def">     int opt;
+</span>@@ -190,8 +201,11 @@
+<span class="def">     int pid;
+</span><span class="def">     xcb_window_t wid;
+</span><span class="def"> 
+</span><span class="sub">-    while ((opt = getopt(argc, argv, &quot;f&quot;)) != -1) {
+</span><span class="add">+    while ((opt = getopt(argc, argv, &quot;hf&quot;)) != -1) {
+</span><span class="def">         switch (opt) {
+</span><span class="add">+	    case &apos;h&apos;:
+</span><span class="add">+		print_help();
+</span><span class="add">+		exit(EXIT_SUCCESS);
+</span><span class="def"> 	    case &apos;f&apos;:
+</span><span class="def"> 		to_fork = 1;
+</span><span class="def"> 		break;
+</span></pre>
+</div></div>
+  </body>
+</html>

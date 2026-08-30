@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - Split icon-handling code into module</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/xanadu/commit/e66e5b2a0445d99c718e1fcbda9e9cf266c9ccd5.html">e66e5b2a0445d99c718e1fcbda9e9cf266c9ccd5</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/xanadu/commit/e4a272c63cea55732abf0cb91a76b1cb4d6d7723.html">e4a272c63cea55732abf0cb91a76b1cb4d6d7723</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2021-08-21 01:13:50 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2021-08-21 01:13:50 +0100
+
+Split icon-handling code into module
+</pre><div class="diff">
+  <p>
+    <b>xanadu.cabal</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -16,6 +16,7 @@
+<span class="def"> executable xanadu
+</span><span class="def">   hs-source-dirs:      src
+</span><span class="def">   main-is:             Main.hs
+</span><span class="add">+  other-modules:       Icons
+</span><span class="def">   default-language:    Haskell2010
+</span><span class="def">   build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+</span><span class="def">                      , directory
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Main.hs</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -2,18 +2,9 @@
+<span class="def"> 
+</span><span class="def"> module Main where
+</span><span class="def"> 
+</span><span class="sub">-import Control.Monad.IO.Class (liftIO)
+</span><span class="sub">-import Control.Monad.Trans.Maybe
+</span><span class="sub">-import Data.Functor (void)
+</span><span class="sub">-import Data.Maybe
+</span><span class="sub">-import Data.Text (pack)
+</span><span class="sub">-import Data.Void
+</span><span class="sub">-import GHC.Int (Int32)
+</span><span class="sub">-import System.Directory (getDirectoryContents, getHomeDirectory)
+</span><span class="add">+import qualified Icons
+</span><span class="def"> 
+</span><span class="def"> import Data.GI.Base
+</span><span class="sub">-import qualified Data.GI.Base.GType as GType
+</span><span class="sub">-import qualified GI.GdkPixbuf as Pixbuf
+</span><span class="def"> import qualified GI.Gio as Gio
+</span><span class="def"> import qualified GI.Gtk as Gtk
+</span><span class="def"> 
+</span>@@ -33,41 +24,7 @@
+<span class="def">         [ #application := app
+</span><span class="def">         , #title := &quot;xanadu&quot;
+</span><span class="def">         ]
+</span><span class="sub">-    pixbufGType &lt;- glibType @Pixbuf.Pixbuf
+</span><span class="sub">-    listStore &lt;- Gtk.listStoreNew [GType.gtypeString, pixbufGType]
+</span><span class="sub">-    view &lt;- new Gtk.IconView
+</span><span class="sub">-        [ #model := listStore
+</span><span class="sub">-        , #selectionMode := Gtk.SelectionModeMultiple
+</span><span class="sub">-        , #textColumn := 0
+</span><span class="sub">-        , #tooltipColumn := 0
+</span><span class="sub">-        , #pixbufColumn := 1
+</span><span class="sub">-        ]
+</span><span class="sub">-    screen &lt;- Gtk.windowGetScreen win
+</span><span class="sub">-    iconTheme &lt;- Gtk.iconThemeGetForScreen screen
+</span><span class="sub">-    homeDir &lt;- getHomeDirectory
+</span><span class="sub">-    populate listStore iconTheme $ homeDir &lt;&gt; &quot;/Desktop&quot;
+</span><span class="sub">-    #add win view
+</span><span class="add">+    iconView &lt;- Icons.initIcons win
+</span><span class="add">+    #add win iconView
+</span><span class="def">     #showAll win
+</span><span class="def">     return ()
+</span><span class="sub">-
+</span><span class="sub">-populate :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span><span class="sub">-populate listStore iconTheme root = ls root &gt;&gt;= mconcat . map (addItem listStore iconTheme)
+</span><span class="sub">-
+</span><span class="sub">-addItem :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span><span class="sub">-addItem listStore iconTheme path = do
+</span><span class="sub">-    iter &lt;- Gtk.listStoreAppend listStore
+</span><span class="sub">-    value &lt;- Gtk.toGValue $ Just path
+</span><span class="sub">-    icon &lt;- runMaybeT $ getIcon iconTheme path
+</span><span class="sub">-    case icon of
+</span><span class="sub">-        Nothing -&gt; Gtk.listStoreSet listStore iter [0] [value]
+</span><span class="sub">-        (Just icon&apos;) -&gt; Gtk.listStoreSet listStore iter [0, 1] [value, icon&apos;]
+</span><span class="sub">-
+</span><span class="sub">-getIcon :: Gtk.IconTheme -&gt; FilePath -&gt; MaybeT IO GValue
+</span><span class="sub">-getIcon iconTheme path = do
+</span><span class="sub">-    contentType &lt;- Gio.contentTypeGuess (Just . pack $ path) Nothing
+</span><span class="sub">-    iconName &lt;- MaybeT $ Gio.contentTypeGetGenericIconName . fst $ contentType
+</span><span class="sub">-    pixbuf &lt;- Gtk.iconThemeLoadIcon iconTheme iconName 32 []
+</span><span class="sub">-    liftIO . Gtk.toGValue $ pixbuf
+</span><span class="sub">-
+</span><span class="sub">-ls :: FilePath -&gt; IO [FilePath]
+</span><span class="sub">-ls = fmap (filter (\f -&gt; f /= &quot;.&quot; &amp;&amp; f /= &quot;..&quot;)) . getDirectoryContents
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/Icons.hs</b>
+    <span class="status">Added</span>
+  </p>
+
+  
+  <pre>@@ -0,0 +1,54 @@
+<span class="add">+{-# LANGUAGE OverloadedStrings, OverloadedLabels, TypeApplications #-}
+</span><span class="add">+
+</span><span class="add">+module Icons where
+</span><span class="add">+
+</span><span class="add">+import Control.Monad.IO.Class (liftIO)
+</span><span class="add">+import Control.Monad.Trans.Maybe
+</span><span class="add">+import Data.Maybe
+</span><span class="add">+import Data.Text (pack)
+</span><span class="add">+import System.Directory (getDirectoryContents, getHomeDirectory)
+</span><span class="add">+
+</span><span class="add">+import Data.GI.Base
+</span><span class="add">+import qualified Data.GI.Base.GType as GType
+</span><span class="add">+import qualified GI.GdkPixbuf as Pixbuf
+</span><span class="add">+import qualified GI.Gio as Gio
+</span><span class="add">+import qualified GI.Gtk as Gtk
+</span><span class="add">+
+</span><span class="add">+initIcons :: Gtk.ApplicationWindow -&gt; IO Gtk.IconView
+</span><span class="add">+initIcons win = do
+</span><span class="add">+    pixbufGType &lt;- glibType @Pixbuf.Pixbuf
+</span><span class="add">+    listStore &lt;- Gtk.listStoreNew [GType.gtypeString, pixbufGType]
+</span><span class="add">+    view &lt;- new Gtk.IconView
+</span><span class="add">+        [ #model := listStore
+</span><span class="add">+        , #selectionMode := Gtk.SelectionModeMultiple
+</span><span class="add">+        , #textColumn := 0
+</span><span class="add">+        , #tooltipColumn := 0
+</span><span class="add">+        , #pixbufColumn := 1
+</span><span class="add">+        ]
+</span><span class="add">+    screen &lt;- Gtk.windowGetScreen win
+</span><span class="add">+    iconTheme &lt;- Gtk.iconThemeGetForScreen screen
+</span><span class="add">+    homeDir &lt;- getHomeDirectory
+</span><span class="add">+    populate listStore iconTheme $ homeDir &lt;&gt; &quot;/Desktop&quot;
+</span><span class="add">+    return view
+</span><span class="add">+
+</span><span class="add">+populate :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span><span class="add">+populate listStore iconTheme root = ls root &gt;&gt;= mconcat . map (addItem listStore iconTheme)
+</span><span class="add">+
+</span><span class="add">+addItem :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+</span><span class="add">+addItem listStore iconTheme path = do
+</span><span class="add">+    iter &lt;- Gtk.listStoreAppend listStore
+</span><span class="add">+    value &lt;- Gtk.toGValue $ Just path
+</span><span class="add">+    icon &lt;- runMaybeT $ getIcon iconTheme path
+</span><span class="add">+    case icon of
+</span><span class="add">+        Nothing -&gt; Gtk.listStoreSet listStore iter [0] [value]
+</span><span class="add">+        (Just icon&apos;) -&gt; Gtk.listStoreSet listStore iter [0, 1] [value, icon&apos;]
+</span><span class="add">+
+</span><span class="add">+getIcon :: Gtk.IconTheme -&gt; FilePath -&gt; MaybeT IO GValue
+</span><span class="add">+getIcon iconTheme path = do
+</span><span class="add">+    contentType &lt;- Gio.contentTypeGuess (Just . pack $ path) Nothing
+</span><span class="add">+    iconName &lt;- MaybeT $ Gio.contentTypeGetGenericIconName . fst $ contentType
+</span><span class="add">+    pixbuf &lt;- Gtk.iconThemeLoadIcon iconTheme iconName 32 []
+</span><span class="add">+    liftIO . Gtk.toGValue $ pixbuf
+</span><span class="add">+
+</span><span class="add">+ls :: FilePath -&gt; IO [FilePath]
+</span><span class="add">+ls = fmap (filter (\f -&gt; f /= &quot;.&quot; &amp;&amp; f /= &quot;..&quot;)) . getDirectoryContents
+</span></pre>
+</div></div>
+  </body>
+</html>

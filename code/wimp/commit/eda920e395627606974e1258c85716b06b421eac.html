@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>wimp - implement VT switching</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/wimp">wimp</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">gimp but for windows: a wayland compositor</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/wimp">https://github.com/m-col/wimp</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/wimp/tree.html">Files</a> | <a href="https://mcol.xyz/code/wimp/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/wimp/file/readme.rst.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/wimp/commit/eda920e395627606974e1258c85716b06b421eac.html">eda920e395627606974e1258c85716b06b421eac</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/wimp/commit/8d6521d17956052473d173e77655a717b19a75b2.html">8d6521d17956052473d173e77655a717b19a75b2</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-11-22 21:53:52 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-11-22 21:53:52 +0000
+
+implement VT switching
+</pre><div class="diff">
+  <p>
+    <b>src/types.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -65,6 +65,8 @@
+<span class="def">     struct wlr_box grab_geobox;
+</span><span class="def">     uint32_t resize_edges;
+</span><span class="def">     double zoom_min, zoom_max;
+</span><span class="add">+
+</span><span class="add">+    bool vt_switching;
+</span><span class="def"> };
+</span><span class="def"> 
+</span><span class="def"> struct view {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/input.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -219,7 +219,6 @@
+<span class="def"> 	    if (modifiers == kb-&gt;mods) {
+</span><span class="def"> 		switch (kb-&gt;key) {
+</span><span class="def"> 		    case MOTION:
+</span><span class="sub">-			printf(&quot;MOTION\n&quot;);
+</span><span class="def"> 			server-&gt;on_mouse_motion = kb-&gt;action;
+</span><span class="def"> 			break;
+</span><span class="def"> 		    case SCROLL:
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/config.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -137,9 +137,10 @@
+<span class="def"> 	    return;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="sub">-    wl_list_insert(bindings, &amp;kb-&gt;link);
+</span><span class="add">+    wl_list_insert(bindings-&gt;prev, &amp;kb-&gt;link);
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> void assign_colour(char *hex, float dest[4]) {
+</span><span class="def">     if (strlen(hex) != 7 || hex[0] != &apos;#&apos;) {
+</span><span class="def"> 	wlr_log(WLR_INFO, &quot;Invalid colour: %s. Should be in the form #rrggbb.&quot;, hex);
+</span>@@ -224,6 +225,33 @@
+<span class="def">     server-&gt;zoom_min = 0.5;
+</span><span class="def">     server-&gt;zoom_max = 3;
+</span><span class="def">     server-&gt;reverse_scrolling = false;
+</span><span class="add">+    server-&gt;vt_switching = true;
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="add">+static void setup_vt_switching(struct server *server) {
+</span><span class="add">+    if (!server-&gt;vt_switching)
+</span><span class="add">+	return;
+</span><span class="add">+
+</span><span class="add">+    uint32_t func_keys[] = {
+</span><span class="add">+	XKB_KEY_F1,
+</span><span class="add">+	XKB_KEY_F2,
+</span><span class="add">+	XKB_KEY_F3,
+</span><span class="add">+	XKB_KEY_F4,
+</span><span class="add">+	XKB_KEY_F5,
+</span><span class="add">+	XKB_KEY_F6,
+</span><span class="add">+    };
+</span><span class="add">+    struct binding *kb;
+</span><span class="add">+
+</span><span class="add">+    for (unsigned i = 0; i &lt; 6; i++) {
+</span><span class="add">+	kb = calloc(1, sizeof(struct binding));
+</span><span class="add">+	kb-&gt;mods = WLR_MODIFIER_CTRL;
+</span><span class="add">+	kb-&gt;key = func_keys[i];
+</span><span class="add">+	kb-&gt;action = &amp;change_vt;
+</span><span class="add">+	kb-&gt;data = calloc(1, sizeof(unsigned));
+</span><span class="add">+	*(unsigned *)(kb-&gt;data) = i + 1;
+</span><span class="add">+	wl_list_insert(server-&gt;key_bindings.prev, &amp;kb-&gt;link);
+</span><span class="add">+    }
+</span><span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span>@@ -281,7 +309,13 @@
+<span class="def"> 	    }
+</span><span class="def"> 	} else if (!strcasecmp(s, &quot;bind&quot;)) {
+</span><span class="def"> 	    add_binding(server, strtok(NULL, &quot;&quot;), line);
+</span><span class="add">+	} else if (!strcasecmp(s, &quot;vt_switching&quot;)) {
+</span><span class="add">+	    s = strtok(NULL, &quot; \t\n\r&quot;);
+</span><span class="add">+	    if (!strcasecmp(s, &quot;off&quot;))
+</span><span class="add">+		server-&gt;vt_switching = false;
+</span><span class="def"> 	}
+</span><span class="def">     }
+</span><span class="def">     fclose(fd);
+</span><span class="add">+
+</span><span class="add">+    setup_vt_switching(server);
+</span><span class="def"> }
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.h</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -5,6 +5,7 @@
+<span class="def"> 
+</span><span class="def"> void shutdown(struct server *server, void *data);
+</span><span class="def"> void exec_command(struct server *server, void *data);
+</span><span class="add">+void change_vt(struct server *server, void *data);
+</span><span class="def"> void close_current_window(struct server *server, void *data);
+</span><span class="def"> void next_desk(struct server *server, void *data);
+</span><span class="def"> void prev_desk(struct server *server, void *data);
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>src/action.c</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1,3 +1,7 @@
+<span class="add">+#include &lt;sys/vt.h&gt;
+</span><span class="add">+#include &lt;wlr/backend.h&gt;
+</span><span class="add">+#include &lt;wlr/backend/session.h&gt;
+</span><span class="add">+
+</span><span class="def"> #include &quot;desk.h&quot;
+</span><span class="def"> #include &quot;types.h&quot;
+</span><span class="def"> 
+</span>@@ -14,6 +18,13 @@
+<span class="def"> }
+</span><span class="def"> 
+</span><span class="def"> 
+</span><span class="add">+void change_vt(struct server *server, void *data) {
+</span><span class="add">+    unsigned vt = *(unsigned*)data;
+</span><span class="add">+    struct wlr_session *session = wlr_backend_get_session(server-&gt;backend);
+</span><span class="add">+    wlr_session_change_vt(session, vt);
+</span><span class="add">+}
+</span><span class="add">+
+</span><span class="add">+
+</span><span class="def"> void close_current_window(struct server *server, void *data) {
+</span><span class="def">     struct wlr_surface *surface = server-&gt;seat-&gt;keyboard_state.focused_surface;
+</span><span class="def">     if (surface) {
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.rst</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,4 +24,3 @@
+<span class="def">  - handle fullscreening
+</span><span class="def">  - pinch gestures for desk zooming
+</span><span class="def">  - draw rect with mouse when zoomed out to set new view
+</span><span class="sub">- - handle TTY changing
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>deskwm.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -19,6 +19,9 @@
+<span class="def"> #zoom_min 0.5
+</span><span class="def"> #zoom_max 3
+</span><span class="def"> 
+</span><span class="add">+# Whether to allow VT switching: on or off.
+</span><span class="add">+#vt_switching on
+</span><span class="add">+
+</span><span class="def"> 
+</span><span class="def"> ## Bindings
+</span><span class="def"> 
+</span>@@ -46,6 +49,7 @@
+<span class="def"> # Scroll direction. Can be one of: natural, reverse
+</span><span class="def"> #scroll_direction natural
+</span><span class="def"> 
+</span><span class="add">+
+</span><span class="def"> ## Configure desks
+</span><span class="def"> 
+</span><span class="def"> # Commands until a further desk is added pertain to desk 1.
+</span></pre>
+</div></div>
+  </body>
+</html>

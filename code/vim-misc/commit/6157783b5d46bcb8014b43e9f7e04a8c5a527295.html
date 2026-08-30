@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - re-enable vimtex; disable gitgutter by default</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/6157783b5d46bcb8014b43e9f7e04a8c5a527295.html">6157783b5d46bcb8014b43e9f7e04a8c5a527295</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/d94177ebde01fcac4bbf480dc31a81e5fec0233e.html">d94177ebde01fcac4bbf480dc31a81e5fec0233e</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2020-03-03 21:00:36 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2020-03-03 21:00:36 +0000
+
+re-enable vimtex; disable gitgutter by default
+</pre><div class="diff">
+  <p>
+    <b>vimrc</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -24,11 +24,11 @@
+<span class="def">     Plugin &apos;vimwiki/vimwiki&apos;		    &quot; vimwiki
+</span><span class="def">     Plugin &apos;gu-fan/riv.vim&apos;
+</span><span class="def">     Plugin &apos;m-col/vimlab&apos;		    &quot; vimlab
+</span><span class="sub">-    &quot;Plugin &apos;lervag/vimtex&apos;		    &quot; vimtex
+</span><span class="add">+    Plugin &apos;lervag/vimtex&apos;		    &quot; vimtex
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="def"> Plugin &apos;m-col/vim-misc&apos;			    &quot; my vimrc and misc functions 
+</span><span class="sub">-Plugin &apos;airblade/vim-gitgutter&apos;	    &quot; gitgutter
+</span><span class="add">+Plugin &apos;airblade/vim-gitgutter&apos;		    &quot; gitgutter
+</span><span class="def"> Plugin &apos;m-col/tide&apos;			    &quot; tmux ide
+</span><span class="def"> 
+</span><span class="def"> call vundle#end()			    &quot; required
+</span>@@ -80,7 +80,6 @@
+<span class="def"> syntax on			&quot; enable syntax highlighting
+</span><span class="def"> set mouse=a			&quot; enable mouse
+</span><span class="def"> set t_Co=16			&quot; use the 16 terminal colours
+</span><span class="sub">-&quot;set ttyfast
+</span><span class="def"> 
+</span><span class="def"> set sessionoptions=buffers,folds,tabpages
+</span><span class="def"> set viewoptions=folds,cursor
+</span>@@ -91,8 +90,6 @@
+<span class="def"> 
+</span><span class="def"> set autochdir			&quot; cwd to current file
+</span><span class="def"> 
+</span><span class="sub">-set background=dark		&quot; needed in case urxvt background colour is transparent
+</span><span class="sub">-
+</span><span class="def"> &quot; Misc ------------------------------------------------------------&quot;
+</span><span class="def"> 
+</span><span class="def"> &quot; restore last line in opened file
+</span>@@ -105,26 +102,21 @@
+<span class="def"> if stridx(hostname(), &quot;book&quot;) != -1
+</span><span class="def"> 
+</span><span class="def">     packadd! matchit		&quot; needed for matlab indentation functionality
+</span><span class="sub">-    &quot;let g:mlint_path_to_mlint = expand(&quot;$HOME&quot;) . &quot;/applications/MATLAB/R2018b/bin/glnxa64/mlint&quot;
+</span><span class="def">     let g:vimlab_session = &quot;~/.vim/sessions/matlab-session.vim&quot;
+</span><span class="def"> 
+</span><span class="sub">-    &quot; potentially unneeded
+</span><span class="sub">-    &quot;let g:vimwiki_list = [{&apos;path&apos;: &apos;~/work/research/research.wiki/&apos;, &apos;path_html&apos;: &apos;~/work/research/research.wiki.html/&apos;}]
+</span><span class="sub">-
+</span><span class="sub">-    &quot;let g:vimtex_view_general_viewer = &apos;qpdfview&apos;
+</span><span class="sub">-    &quot;let g:vimtex_view_general_options = &apos;--unique @pdf\#src:@tex:@line:@col&apos;
+</span><span class="sub">-    &quot;let g:vimtex_view_general_options_latexmk = &apos;--unique&apos;
+</span><span class="sub">-    &quot;let g:vimtex_view_qpdfview_hook_callback = &apos;ViewerCallback&apos;
+</span><span class="sub">-    &quot;function! ViewerCallback() dict
+</span><span class="sub">-    &quot;    VimtexView
+</span><span class="sub">-    &quot;endfunction
+</span><span class="add">+    let g:vimtex_view_general_viewer = &apos;qpdfview&apos;
+</span><span class="add">+    let g:vimtex_view_general_options = &apos;--unique @pdf\#src:@tex:@line:@col&apos;
+</span><span class="add">+    let g:vimtex_view_general_options_latexmk = &apos;--unique&apos;
+</span><span class="add">+    let g:vimtex_view_qpdfview_hook_callback = &apos;ViewerCallback&apos;
+</span><span class="add">+    function! ViewerCallback() dict
+</span><span class="add">+        VimtexView
+</span><span class="add">+    endfunction
+</span><span class="def"> 
+</span><span class="sub">-    let g:gitgutter_enabled = 0
+</span><span class="sub">-
+</span><span class="sub">-    &quot;riv
+</span><span class="def">     let g:riv_projects = [{ &apos;path&apos;: &apos;~/wiki&apos;, }]
+</span><span class="def"> endif
+</span><span class="def"> 
+</span><span class="add">+let g:gitgutter_enabled = 0
+</span><span class="add">+
+</span><span class="def"> &quot; Intelligently navigate tmux panes and Vim splits using the same keys.
+</span><span class="def"> &quot; See https://sunaku.github.io/tmux-select-pane.html for documentation.
+</span><span class="def"> let progname = substitute($VIM, &apos;.*[/\\]&apos;, &apos;&apos;, &apos;&apos;)
+</span></pre>
+</div></div>
+  </body>
+</html>

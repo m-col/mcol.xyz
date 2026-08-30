@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gitja - add make prof to makefile</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/gitja">gitja</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">🐙 Templated web page generator for your git repositories</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/gitja">https://github.com/m-col/gitja</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/gitja/tree.html">Files</a> | <a href="https://mcol.xyz/code/gitja/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/gitja/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/gitja/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/gitja/commit/345cebf9b1c456f24ff85c4e6924008eac30730e.html">345cebf9b1c456f24ff85c4e6924008eac30730e</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/gitja/commit/8899150c322bb51c6ccbd621adf19529f9f08527.html">8899150c322bb51c6ccbd621adf19529f9f08527</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2022-04-06 01:53:07 +0100
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2022-04-06 01:57:24 +0100
+
+add make prof to makefile
+</pre><div class="diff">
+  <p>
+    <b>Makefile</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -42,5 +42,12 @@
+<span class="def"> prod: ## Build with optimise flags
+</span><span class="def"> 	@stack build --ghc-options=&quot;-O&quot;
+</span><span class="def"> 
+</span><span class="add">+.PHONY: prof
+</span><span class="add">+prof: ## Build with profiling enabled
+</span><span class="add">+	@stack build --profile
+</span><span class="add">+	@rm -r output
+</span><span class="add">+	@stack exec --profile -- gitserve +RTS -p
+</span><span class="add">+	@head -n 6 gitserve.prof
+</span><span class="add">+
+</span><span class="def"> .PHONY: all
+</span><span class="def"> all: format lint rebuild run test ## Lint, format, rebuild, run, test
+</span></pre>
+</div></div>
+  </body>
+</html>

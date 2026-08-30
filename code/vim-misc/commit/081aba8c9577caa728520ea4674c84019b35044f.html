@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vim-misc - added copy mode stuff to tmux conf; clarified installation of vim misc</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/vim-misc">vim-misc</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">My vim configuration</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/vim-misc">https://github.com/m-col/vim-misc</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/vim-misc/tree.html">Files</a> | <a href="https://mcol.xyz/code/vim-misc/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/vim-misc/file/readme.md.html">Readme</a>      </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/vim-misc/commit/081aba8c9577caa728520ea4674c84019b35044f.html">081aba8c9577caa728520ea4674c84019b35044f</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/vim-misc/commit/de9b57b36e36d0280406e953eca945bebb523b56.html">de9b57b36e36d0280406e953eca945bebb523b56</a>
+<b>Author:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2019-02-23 00:22:44 +0000
+<b>Committer:</b> mcol &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Committed:</b> 2019-02-23 00:22:44 +0000
+
+added copy mode stuff to tmux conf; clarified installation of vim misc
+</pre><div class="diff">
+  <p>
+    <b>tmux.conf</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -9,7 +9,7 @@
+<span class="def"> bind r source-file ~/.tmux.conf
+</span><span class="def"> #bind-key C-a last-window
+</span><span class="def"> bind-key | split-window -hb \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="sub">-bind-key -n C-d kill-pane \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="add">+#bind-key -n C-d kill-pane \; run-shell &quot;~/.vim/bundle/vim-misc/bsptm&quot;
+</span><span class="def"> bind C-l send-keys &apos;C-l&apos;
+</span><span class="def"> 
+</span><span class="def"> # general settings
+</span>@@ -19,6 +19,14 @@
+<span class="def"> set -s escape-time 0
+</span><span class="def"> set -g base-index 1
+</span><span class="def"> 
+</span><span class="add">+# copy mode
+</span><span class="add">+# enter it with pre-[
+</span><span class="add">+# select region with space
+</span><span class="add">+# copy with enter
+</span><span class="add">+# or quit with q
+</span><span class="add">+# paste it with pre=]
+</span><span class="add">+set-window-option -g mode-keys vi
+</span><span class="add">+
+</span><span class="def"> # Vim bindings in copy-mode
+</span><span class="def"> #bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel &quot;xclip -i -sel clip &gt; /dev/null&quot;
+</span><span class="def"> #bind-key p run &quot;xclip -o -sel clip | tmux load-buffer - ; tmux paste-buffer&quot;
+</span></pre>
+</div><div class="diff">
+  <p>
+    <b>readme.md</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -1 +1,5 @@
+<span class="def"> install beside [vundle](https://github.com/VundleVim/Vundle.vim)
+</span><span class="add">+
+</span><span class="add">+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+</span><span class="add">+    git clone https://github.com/mcolligan/vim-misc.git ~/.vim/bundle/vim-misc
+</span><span class="add">+    ~/.vim/bundle/vim-misc/install
+</span></pre>
+</div></div>
+  </body>
+</html>

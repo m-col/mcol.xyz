@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xanadu - src/Icons.hs</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/xanadu">xanadu</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">Virtual desktop underlay for Wayland and X11</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/xanadu">https://github.com/m-col/xanadu</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/xanadu/tree.html">Files</a> | <a href="https://mcol.xyz/code/xanadu/refs.html">Refs</a>
+     | <a href="https://mcol.xyz/code/xanadu/file/README.rst.html">Readme</a>     | <a href="https://mcol.xyz/code/xanadu/file/LICENSE.html">License</a>  </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <p>-rw-r--r-- src/Icons.hs</p><hr>
+
+  <pre id="blob"><a href="#l1" class="line" id="l1">      1</a> {-# LANGUAGE OverloadedLabels #-}
+<a href="#l2" class="line" id="l2">      2</a> {-# LANGUAGE OverloadedStrings #-}
+<a href="#l3" class="line" id="l3">      3</a> {-# LANGUAGE TypeApplications #-}
+<a href="#l4" class="line" id="l4">      4</a> 
+<a href="#l5" class="line" id="l5">      5</a> module Icons (
+<a href="#l6" class="line" id="l6">      6</a>     initIcons
+<a href="#l7" class="line" id="l7">      7</a> ) where
+<a href="#l8" class="line" id="l8">      8</a> 
+<a href="#l9" class="line" id="l9">      9</a> import Control.Applicative
+<a href="#l10" class="line" id="l10">     10</a> import Control.Monad.IO.Class (liftIO)
+<a href="#l11" class="line" id="l11">     11</a> import Control.Monad.Trans.Maybe
+<a href="#l12" class="line" id="l12">     12</a> import Data.Text (pack)
+<a href="#l13" class="line" id="l13">     13</a> import System.Directory (doesDirectoryExist, listDirectory, getHomeDirectory)
+<a href="#l14" class="line" id="l14">     14</a> import System.Environment (lookupEnv)
+<a href="#l15" class="line" id="l15">     15</a> import System.FilePath ((&lt;/&gt;))
+<a href="#l16" class="line" id="l16">     16</a> import System.IO (hFlush, stdout)
+<a href="#l17" class="line" id="l17">     17</a> 
+<a href="#l18" class="line" id="l18">     18</a> import Data.GI.Base
+<a href="#l19" class="line" id="l19">     19</a> import qualified Data.GI.Base.GType as GType
+<a href="#l20" class="line" id="l20">     20</a> import qualified GI.GdkPixbuf as Pixbuf
+<a href="#l21" class="line" id="l21">     21</a> import qualified GI.Gio as Gio
+<a href="#l22" class="line" id="l22">     22</a> import qualified GI.Gtk as Gtk
+<a href="#l23" class="line" id="l23">     23</a> 
+<a href="#l24" class="line" id="l24">     24</a> initIcons :: Gtk.ApplicationWindow -&gt; IO ()
+<a href="#l25" class="line" id="l25">     25</a> initIcons win = do
+<a href="#l26" class="line" id="l26">     26</a>     pixbufGType &lt;- glibType @Pixbuf.Pixbuf
+<a href="#l27" class="line" id="l27">     27</a>     listStore &lt;- Gtk.listStoreNew [GType.gtypeString, pixbufGType]
+<a href="#l28" class="line" id="l28">     28</a>     iconTheme &lt;- Gtk.iconThemeGetForScreen =&lt;&lt; Gtk.windowGetScreen win
+<a href="#l29" class="line" id="l29">     29</a>     root &lt;- getRoot
+<a href="#l30" class="line" id="l30">     30</a>     populate listStore iconTheme root
+<a href="#l31" class="line" id="l31">     31</a>     iconView &lt;- new Gtk.IconView
+<a href="#l32" class="line" id="l32">     32</a>         [ #model := listStore
+<a href="#l33" class="line" id="l33">     33</a>         , #selectionMode := Gtk.SelectionModeMultiple
+<a href="#l34" class="line" id="l34">     34</a>         , #textColumn := 0
+<a href="#l35" class="line" id="l35">     35</a>         , #tooltipColumn := 0
+<a href="#l36" class="line" id="l36">     36</a>         , #pixbufColumn := 1
+<a href="#l37" class="line" id="l37">     37</a>         , #reorderable := True
+<a href="#l38" class="line" id="l38">     38</a>         , #itemOrientation := Gtk.OrientationVertical
+<a href="#l39" class="line" id="l39">     39</a>         , #activateOnSingleClick := True
+<a href="#l40" class="line" id="l40">     40</a>         ]
+<a href="#l41" class="line" id="l41">     41</a>     on iconView #itemActivated $ onItemActivated listStore root
+<a href="#l42" class="line" id="l42">     42</a>     Gtk.containerAdd win iconView
+<a href="#l43" class="line" id="l43">     43</a>     return ()
+<a href="#l44" class="line" id="l44">     44</a> 
+<a href="#l45" class="line" id="l45">     45</a> -- Root folder is $(XDG_DESKTOP_DIR:-$HOME/Desktop)
+<a href="#l46" class="line" id="l46">     46</a> getRoot :: IO FilePath
+<a href="#l47" class="line" id="l47">     47</a> getRoot = do
+<a href="#l48" class="line" id="l48">     48</a>     fromEnv &lt;- lookupEnv &quot;XDG_DESKTOP_DIR&quot;
+<a href="#l49" class="line" id="l49">     49</a>     case fromEnv of
+<a href="#l50" class="line" id="l50">     50</a>         Nothing -&gt; (&lt;&gt; &quot;/Desktop&quot;) &lt;$&gt; getHomeDirectory
+<a href="#l51" class="line" id="l51">     51</a>         Just &quot;&quot; -&gt; (&lt;&gt; &quot;/Desktop&quot;) &lt;$&gt; getHomeDirectory
+<a href="#l52" class="line" id="l52">     52</a>         Just path -&gt; return path
+<a href="#l53" class="line" id="l53">     53</a> 
+<a href="#l54" class="line" id="l54">     54</a> populate :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; FilePath -&gt; IO ()
+<a href="#l55" class="line" id="l55">     55</a> populate listStore iconTheme root = mconcat . map (addItem listStore iconTheme) =&lt;&lt; getItems root
+<a href="#l56" class="line" id="l56">     56</a> 
+<a href="#l57" class="line" id="l57">     57</a> addItem :: Gtk.ListStore -&gt; Gtk.IconTheme -&gt; Item -&gt; IO ()
+<a href="#l58" class="line" id="l58">     58</a> addItem listStore iconTheme item = do
+<a href="#l59" class="line" id="l59">     59</a>     iter &lt;- Gtk.listStoreAppend listStore
+<a href="#l60" class="line" id="l60">     60</a>     value &lt;- Gtk.toGValue . Just . itemPath $ item
+<a href="#l61" class="line" id="l61">     61</a>     icon &lt;- runMaybeT $ getIcon iconTheme item
+<a href="#l62" class="line" id="l62">     62</a>     case icon of
+<a href="#l63" class="line" id="l63">     63</a>         Nothing -&gt; Gtk.listStoreSet listStore iter [0] [value]
+<a href="#l64" class="line" id="l64">     64</a>         (Just icon&apos;) -&gt; Gtk.listStoreSet listStore iter [0, 1] [value, icon&apos;]
+<a href="#l65" class="line" id="l65">     65</a> 
+<a href="#l66" class="line" id="l66">     66</a> getIcon :: Gtk.IconTheme -&gt; Item -&gt; MaybeT IO GValue
+<a href="#l67" class="line" id="l67">     67</a> getIcon iconTheme item
+<a href="#l68" class="line" id="l68">     68</a>     | itemIsDir item = liftIO . Gtk.toGValue =&lt;&lt; Gtk.iconThemeLoadIcon iconTheme &quot;folder&quot; 32 []
+<a href="#l69" class="line" id="l69">     69</a>     | otherwise = do
+<a href="#l70" class="line" id="l70">     70</a>         (contentType, _) &lt;- Gio.contentTypeGuess (Just . pack $ itemPath item) Nothing
+<a href="#l71" class="line" id="l71">     71</a>         iconName &lt;- MaybeT . Gio.contentTypeGetGenericIconName $ contentType
+<a href="#l72" class="line" id="l72">     72</a>         liftIO . Gtk.toGValue =&lt;&lt; Gtk.iconThemeLoadIcon iconTheme iconName 32 []
+<a href="#l73" class="line" id="l73">     73</a> 
+<a href="#l74" class="line" id="l74">     74</a> data Item = Item
+<a href="#l75" class="line" id="l75">     75</a>     { itemPath :: FilePath
+<a href="#l76" class="line" id="l76">     76</a>     , itemIsDir :: Bool
+<a href="#l77" class="line" id="l77">     77</a>     }
+<a href="#l78" class="line" id="l78">     78</a> 
+<a href="#l79" class="line" id="l79">     79</a> getItems :: FilePath -&gt; IO [Item]
+<a href="#l80" class="line" id="l80">     80</a> getItems root = do
+<a href="#l81" class="line" id="l81">     81</a>     path &lt;- listDirectory root
+<a href="#l82" class="line" id="l82">     82</a>     isDir &lt;- mapM (doesDirectoryExist . (root &lt;/&gt;)) path
+<a href="#l83" class="line" id="l83">     83</a>     return . getZipList $ Item &lt;$&gt; ZipList path &lt;*&gt; ZipList isDir
+<a href="#l84" class="line" id="l84">     84</a> 
+<a href="#l85" class="line" id="l85">     85</a> onItemActivated :: Gtk.ListStore -&gt; FilePath -&gt; Gtk.TreePath -&gt; IO ()
+<a href="#l86" class="line" id="l86">     86</a> onItemActivated listStore root treePath = do
+<a href="#l87" class="line" id="l87">     87</a>     (_, iter) &lt;- Gtk.treeModelGetIter listStore treePath
+<a href="#l88" class="line" id="l88">     88</a>     gvalue &lt;- Gtk.treeModelGetValue listStore iter 0
+<a href="#l89" class="line" id="l89">     89</a>     maybeValue &lt;- (Gtk.fromGValue gvalue :: IO (Maybe String))
+<a href="#l90" class="line" id="l90">     90</a>     case maybeValue of
+<a href="#l91" class="line" id="l91">     91</a>         Nothing -&gt; return ()
+<a href="#l92" class="line" id="l92">     92</a>         Just value -&gt; putStrLn (root &lt;&gt; &quot;/&quot; &lt;&gt; value) &gt;&gt; hFlush stdout
+<a href="#l93" class="line" id="l93">     93</a> 
+</pre>
+  </div>
+  </body>
+</html>

@@ -40,27 +40,11 @@ jobs:
           uv sync --locked
           uv run pelican content -o output -s publishconf.py
 
-      - uses: haskell-actions/setup@v2
-        with:
-          enable-stack: true
-
-      - name: Checkout gitja
-        uses: actions/checkout@v5
-        with:
-          repository: m-col/gitja
-          path: gitja-src
-          fetch-depth: 0
-
-      - uses: actions/cache@v5
-        with:
-          path: ~/.stack
-          key: ${{ runner.os }}-stack-${{ hashFiles('gitja-src/stack.yaml.lock') }}
-
-      - name: Build gitja
+      - name: Download gitja
         run: |
-          cd gitja-src
-          stack --no-terminal install
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          curl -fsSL -o /usr/local/bin/gitja \
+            https://github.com/m-col/gitja/releases/latest/download/gitja-linux-x86_64
+          chmod +x /usr/local/bin/gitja
 
       - name: Install dhall-to-json
         run: |
@@ -71,15 +55,10 @@ jobs:
       - name: Clone repos listed on /code
         run: |
           repos=$(dhall-to-json --file gitja/config.dhall | jq -r '.repos[]' | sed 's#^\.\./##')
-          mv gitja-src ../gitja
           cd ..
           for repo in $repos; do
-            case "$repo" in
-              # mcol.xyz is already checked out here as this workflow's own
-              # repo, and gitja was just moved into place above (it was
-              # already checked out to build the gitja binary itself).
-              mcol.xyz | gitja) continue ;;
-            esac
+            # mcol.xyz is already checked out here as this workflow's own repo.
+            [ "$repo" = mcol.xyz ] && continue
             # Full clone, not shallow - see the fetch-depth comment above.
             git clone "https://github.com/m-col/$repo" "$repo"
           done

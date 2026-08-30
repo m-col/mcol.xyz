@@ -18,7 +18,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # gitja walks each repo's full commit history, and libgit2 (which
           # gitja uses) doesn't handle git's shallow-clone boundary the way
@@ -41,7 +41,7 @@ jobs:
           enable-stack: true
 
       - name: Checkout gitja
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: m-col/gitja
           path: gitja-src

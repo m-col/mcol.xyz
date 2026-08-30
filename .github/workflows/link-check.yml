@@ -1,0 +1,25 @@
+name: link-check
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/build-site
+
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --root-dir "${{ github.workspace }}/_site"
+            --accept 200..=299,403,429
+            '_site/**/*.html'

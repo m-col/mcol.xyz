@@ -59,7 +59,7 @@ jobs:
 
       - name: Clone repos listed on /code
         run: |
-          repos=$(dhall-to-json --file gitja/repos.dhall | jq -r '.[]' | sed 's#^\.\./##')
+          repos=$(dhall-to-json --file gitja/config.dhall | jq -r '.repos[]' | sed 's#^\.\./##')
           cd ..
           for repo in $repos; do
             # mcol.xyz is already checked out here as this workflow's own repo.

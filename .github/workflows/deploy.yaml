@@ -34,8 +34,11 @@ jobs:
         with:
           enable-stack: true
 
-      - name: Clone gitja
-        run: git clone --depth 1 https://github.com/m-col/gitja gitja-src
+      - name: Checkout gitja
+        uses: actions/checkout@v4
+        with:
+          repository: m-col/gitja
+          path: gitja-src
 
       - uses: actions/cache@v4
         with:
@@ -50,15 +53,13 @@ jobs:
 
       - name: Clone repos listed on /code
         run: |
+          repos=$(grep -oP '\$\{repos\}/\K[^"]+' gitja/repos.dhall)
           cd ..
-          for repo in bdf2flf mini-theme mkinitcpio-welcome pelican-microfeed \
-                      pelican-minify-fontawesome qtile-config qtools \
-                      sudoku-solver tide vim-misc wimp xanadu xoop zshrc; do
+          for repo in $repos; do
+            # mcol.xyz is already checked out here as this workflow's own repo.
+            [ "$repo" = "mcol.xyz" ] && continue
             git clone --depth 100 "https://github.com/m-col/$repo" "$repo"
           done
-          # mcol.xyz itself is already checked out as this workflow's own repo,
-          # already sitting in the right sibling location for config.dhall's
-          # "repos = .." to find it.
 
       - name: Write repo descriptions
         run: python3 gitja/descriptions.py

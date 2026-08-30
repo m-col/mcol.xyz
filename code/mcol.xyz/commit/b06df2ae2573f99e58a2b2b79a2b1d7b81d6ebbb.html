@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mcol.xyz - Merge pull request #14 from m-col/claude/dotfiles-article-tasks-maxnnf</title>
+    <link rel="stylesheet" type="text/css" href="https://mcol.xyz/code/style.css"/>
+    <link rel="icon" type="image/png" href="https://mcol.xyz/favicon.png"/>
+  </head>
+  <body>
+
+  <table id="head">
+  <tr>
+    <td width="32px" rowspan="2"><a href="https://mcol.xyz"><img src="https://mcol.xyz/avatar.png" id="avatar"/></a></td>
+    <td rowspan="2"><a href="https://mcol.xyz">https://mcol.xyz</a> / <a href="https://mcol.xyz/code/">code</a> / <a href="https://mcol.xyz/code/mcol.xyz">mcol.xyz</a></td>
+    <td class="link"><a href="https://mcol.xyz/posts.html">posts</a></td>
+  </tr>
+  <tr>
+    <td class="link"><a href="https://mcol.xyz/about.html">about</a></td>
+  </tr>
+</table>
+<hr>
+
+<table>
+  <tr><td><span class="desc">The main content of my blog mcol.xyz</span></td></tr>
+  <tr class="url"><td>git clone <a href="https://github.com/m-col/mcol.xyz">https://github.com/m-col/mcol.xyz</a></td></tr>
+  <tr><td>
+    <a href="https://mcol.xyz/code/mcol.xyz/tree.html">Files</a> | <a href="https://mcol.xyz/code/mcol.xyz/refs.html">Refs</a>
+          </td></tr>
+</table>
+<hr>
+
+<div id="content">
+  <pre><b>Commit</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/b06df2ae2573f99e58a2b2b79a2b1d7b81d6ebbb.html">b06df2ae2573f99e58a2b2b79a2b1d7b81d6ebbb</a>
+<b>Parent:</b> <a href="https://mcol.xyz/code/mcol.xyz/commit/839d338a741f14deb04867d21d00080c38d16fb5.html">839d338a741f14deb04867d21d00080c38d16fb5</a>
+<b>Author:</b> Matt Colligan &lt;<a href="mailto:mcol@posteo.net">mcol@posteo.net</a>&gt;
+<b>Date:</b> 2026-08-30 20:52:21 +0100
+<b>Committer:</b> GitHub &lt;<a href="mailto:noreply@github.com">noreply@github.com</a>&gt;
+<b>Committed:</b> 2026-08-30 20:52:21 +0100
+
+Merge pull request #14 from m-col/claude/dotfiles-article-tasks-maxnnf
+
+Bump actions/checkout to v5 to drop Node 20 warning
+</pre><div class="diff">
+  <p>
+    <b>.github/workflows/deploy.yaml</b>
+    <span class="status">Modified</span>
+  </p>
+
+  
+  <pre>@@ -18,7 +18,7 @@
+<span class="def">   deploy:
+</span><span class="def">     runs-on: ubuntu-latest
+</span><span class="def">     steps:
+</span><span class="sub">-      - uses: actions/checkout@v4
+</span><span class="add">+      - uses: actions/checkout@v5
+</span><span class="def">         with:
+</span><span class="def">           # gitja walks each repo&apos;s full commit history, and libgit2 (which
+</span><span class="def">           # gitja uses) doesn&apos;t handle git&apos;s shallow-clone boundary the way
+</span>@@ -41,7 +41,7 @@
+<span class="def">           enable-stack: true
+</span><span class="def"> 
+</span><span class="def">       - name: Checkout gitja
+</span><span class="sub">-        uses: actions/checkout@v4
+</span><span class="add">+        uses: actions/checkout@v5
+</span><span class="def">         with:
+</span><span class="def">           repository: m-col/gitja
+</span><span class="def">           path: gitja-src
+</span></pre>
+</div></div>
+  </body>
+</html>

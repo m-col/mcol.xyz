@@ -72,7 +72,7 @@ these by most recent commit, I made a quick Python wrapper:
             (git.Repo(path.parent).head.commit.committed_date, path.parent)
         )
 
-    COMMAND.extend([x for _, x in sorted(REPOS, key=lambda i: i[0], reverse=True)])
+    COMMAND.extend(x for _, x in sorted(REPOS, key=lambda i: i[0], reverse=True))
     subprocess.call(COMMAND)
 
 Then all I need to do is run this little script and the index page will display

@@ -9,6 +9,3 @@ from pelicanconf import *
 
 FEED_ATOM = "rss.xml"
 FEED_DOMAIN = SITEURL
-
-# css-html-js-minify
-PLUGINS.append("css-html-js-minify")

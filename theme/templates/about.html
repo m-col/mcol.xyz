@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+
+{% block title %}{{ SITENAME }} / {{ page.title }}{% endblock %}
+
+
+{% block header %}
+<a href=/>mcol.xyz</a> /
+<a href=/{{ output_file }}>{{ page.title }}</a>
+{% endblock %}
+
+
+{% block content %}
+{{ ABOUT }}
+<hr>
+<p><h2>me on the WWW</h2></p>
+<table>
+{% for name, url, msg in LINKS %}
+<tr><td><a href="{{ url }}">{{ name }}</a></td><td>{{ msg }}</td></tr>
+{% endfor %}
+</table>
+<p></p>
+<hr>
+<p>{{ page.content }}</p>
+
+<table>
+	{% for blog in BLOGROLL %}
+	<tr><td>{{ blog[0] }} at <a href="{{ blog[1] }}">{{ blog[2] }}</a></td></tr>
+	{% endfor %}
+</table>
+
+<footer><hr>- mcol.xyz -</footer>
+{% endblock %}

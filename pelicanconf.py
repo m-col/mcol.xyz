@@ -7,12 +7,14 @@ from html import escape
 sys.path.append(os.curdir)
 from blogroll import BLOGROLL
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 SITEURL = "https://mcol.xyz"
 AUTHOR = "mcol"
 SITENAME = "mcol.xyz"
 PATH = "content"
 TIMEZONE = "UTC"
-THEME = "/home/mcol/git/mini-theme"
+THEME = os.path.join(BASE_DIR, "theme")
 PAGE_PATHS = [
     "pages",
 ]
@@ -22,7 +24,7 @@ ARTICLE_PATHS = [
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 STATIC_PATHS = ["static", "favicon.png", "icons", "avatar.png", "screenshots"]
 STATIC_CREATE_LINKS = True
-PLUGIN_PATHS = ["/home/mcol/git", "/home/mcol/git/pelican-plugins"]
+PLUGIN_PATHS = [os.path.join(BASE_DIR, "plugins")]
 PLUGINS = []
 RELATIVE_URLS = True
 
@@ -59,17 +61,20 @@ mine <a href="/screenshots.html">here</a>).</p>
 AVATAR = "/avatar.png"
 HOME1 = "One more person's notes on FOSS, code and unix toys"
 HOME2 = "Welcome"
-EXTRAHEAD = "<link rel=stylesheet href=/theme/css/fa.css />"
+EXTRAHEAD = '<link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">'
 EXTRATAIL = ""
 ARTICLE_FEEDBACK = """If you have any thoughts, comments, criticisms, feel free to reach
 out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
 href="mailto:mcol@posteo.net">email</a> ʕ•ᴥ•ʔ"""
 
-SCREENSHOTS = reversed([escape(i) for i in os.listdir("content/screenshots")])
+SCREENSHOTS_DIR = "content/screenshots"
+if os.path.isdir(SCREENSHOTS_DIR):
+    SCREENSHOTS = reversed([escape(i) for i in os.listdir(SCREENSHOTS_DIR)])
+else:
+    SCREENSHOTS = []
 
-# minify-fontawesome
-PLUGINS.append("pelican-minify-fontawesome")
-MINIFY_FONTAWESOME = "/home/mcol/git/mcol.xyz/fontawesome-free-5.11.2-web"
+# fontawesome icons (:fas:/:far:/:fab: RST roles), served via CDN
+PLUGINS.append("fontawesome_roles")
 
 
 # development settings

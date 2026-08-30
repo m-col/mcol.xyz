@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+
+{% block title %}{{ SITENAME }} / {{ page.title }}{% endblock %}
+
+
+{% block header %}
+<a href=/>mcol.xyz</a> /
+<a href=/{{ output_file }}>{{ page.title }}</a>
+{% endblock %}
+
+
+{% block content %}
+{% for img in SCREENSHOTS %}
+{% if loop.index != 1 %}
+<hr>
+{% endif %}
+<table>
+	<tr><td><a rel="nix" href="/screenshots/{{ img }}"><img loading="lazy" class="maim" src="/screenshots/{{ img }}"/></a></td></tr>
+</table>
+{% endfor %}
+
+<footer><hr>- mcol.xyz -</footer>
+{% endblock %}

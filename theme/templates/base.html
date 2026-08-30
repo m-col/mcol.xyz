@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang=en-US>
+	<head>
+		<title>{% block title %}{{ SITENAME }}{% endblock title %}</title>
+		<meta charset=utf-8 />
+		<meta name=author content={{ AUTHOR }}>
+		<meta name=viewport content=width=device-width, initial-scale=1>
+		{% for name, content in DEFAULT_METADATA.items() %}
+		<meta name={{ name }} content={{ content }}>
+		{% endfor %}
+		{% block extra_meta %}{% endblock %}
+		<link rel="shortcut icon" type=image/png href=/favicon.png />
+		<link rel=stylesheet href=/theme/css/{{ CSS_FILE }} type=text/css />
+		{% include "feeds.html" %}
+		{{ EXTRAHEAD }}
+	</head>
+
+	<body>
+		{% if output_file != "index.html" %}
+		<table id="head">
+			<tr>
+				<td width="32px" rowspan="2"><a href="/"><img id=avatar src="{{ AVATAR }}"/></a></td>
+				<td rowspan="2">{% block header %}{% endblock header %}</td>
+				<td class="link"><a href="/code">code</a></td>
+			</tr>
+			<tr>
+				{% if output_file == "about.html" %}
+				<td class="link"><a href="/posts.html">posts</a></td>
+				{% else %}
+				<td class="link"><a href="/about.html">about</a></td>
+				{% endif %}
+			</tr>
+		</table>
+		<hr>
+		{% endif %}
+		{% block content %}
+		{% endblock %}
+		{{ EXTRATAIL }}
+	</body>
+</html>

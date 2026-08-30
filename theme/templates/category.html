@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+
+{% block title %}{{ SITENAME }} / {{ category }}{% endblock %}
+
+
+{% block header %}
+<a href=/>mcol.xyz</a> /
+<a href=/{{ ARCHIVES_SAVE_AS }}>{{ ARCHIVES_TITLE }}</a> /
+<a href=/{{ CATEGORIES_SAVE_AS }}>categories</a> /
+<a href=/{{ output_file }}>{{ category }}</a>
+{% endblock %}
+
+
+{% block content %}
+
+<table>
+	{% for year, date_year in dates|groupby( 'date.year' )|sort(reverse=True) %}
+	<tr><td></td><td><h2>{{ year }}</h2></td></tr>
+
+	{% for month, articles in date_year|groupby('date.month')|sort(reverse=True) %}
+	{% for article in articles %}
+	<tr><td>{{ article.date.strftime('%b %d') }}</td>
+			<td><a href="/{{ article.url }}">{{ article.title }}</a></td></tr>
+	{% endfor %}
+	{% endfor %}
+	{% endfor %}
+</table>
+
+<footer><hr>- mcol.xyz -</footer>
+{% endblock %}

@@ -7,12 +7,14 @@ from html import escape
 sys.path.append(os.curdir)
 from blogroll import BLOGROLL
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 SITEURL = "https://mcol.xyz"
 AUTHOR = "mcol"
 SITENAME = "mcol.xyz"
 PATH = "content"
 TIMEZONE = "UTC"
-THEME = "/home/mcol/git/mini-theme"
+THEME = os.path.join(BASE_DIR, "theme")
 PAGE_PATHS = [
     "pages",
 ]
@@ -22,7 +24,7 @@ ARTICLE_PATHS = [
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 STATIC_PATHS = ["static", "favicon.png", "icons", "avatar.png", "screenshots"]
 STATIC_CREATE_LINKS = True
-PLUGIN_PATHS = ["/home/mcol/git", "/home/mcol/git/pelican-plugins"]
+PLUGIN_PATHS = [os.path.join(BASE_DIR, "plugins")]
 PLUGINS = []
 RELATIVE_URLS = True
 
@@ -69,7 +71,7 @@ SCREENSHOTS = reversed([escape(i) for i in os.listdir("content/screenshots")])
 
 # minify-fontawesome
 PLUGINS.append("pelican-minify-fontawesome")
-MINIFY_FONTAWESOME = "/home/mcol/git/mcol.xyz/fontawesome-free-5.11.2-web"
+MINIFY_FONTAWESOME = os.path.join(BASE_DIR, "fontawesome-free-5.11.2-web")
 
 
 # development settings

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+
+{% block title %}{{ SITENAME }} / categories{% endblock %}
+
+
+{% block header %}
+<a href=/>mcol.xyz</a> /
+<a href=/{{ ARCHIVES_SAVE_AS }}>{{ ARCHIVES_TITLE }}</a> /
+<a href=/{{ output_file }}>categories</a>
+{% endblock %}
+
+
+{% block content %}
+<table>
+	{% for category, articles in categories|sort %}
+	<tr><td><a href="/{{ category.url }}">{{ category }} ({{ articles|count }})</a></td></tr>
+	{% endfor %}
+</table>
+<footer><hr>- mcol.xyz -</footer>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% if FEED_ATOM %}
+<link href="{% if FEED_DOMAIN %}{{ FEED_DOMAIN }}{% endif %}/{%if FEED_ATOM_URL %}{{ FEED_ATOM_URL }}{% else %}{{ FEED_ATOM }}{% endif %}"
+	type="application/atom+xml" rel="alternate" title="{{ SITENAME }}"
+/>
+{% endif %}
+{% if FEED_RSS %}
+<link href="{% if FEED_DOMAIN %}{{ FEED_DOMAIN }}{% endif %}/{% if FEED_RSS_URL %}{{ FEED_RSS_URL }}{% else %}{{ FEED_RSS }}{% endif %}"
+	type="application/rss+xml" rel="alternate" title="{{ SITENAME }}"
+/>
+{% endif %}
+{% if CATEGORY_FEED_ATOM and category %}
+<link href="{% if FEED_DOMAIN %}{{ FEED_DOMAIN }}{% endif %}/{% if CATEGORY_FEED_ATOM_URL %}{{ CATEGORY_FEED_ATOM_URL.format(slug=category.slug) }}{% else %}{{ CATEGORY_FEED_ATOM.format(slug=category.slug) }}{% endif %}"
+	type="application/atom+xml" rel="alternate" title="{{ SITENAME }} / {{ category }}"
+/>
+{% endif %}
+{% if CATEGORY_FEED_RSS and category %}
+<link href="{% if FEED_DOMAIN %}{{ FEED_DOMAIN }}{% endif %}/{% if CATEGORY_FEED_RSS_URL %}{{ CATEGORY_FEED_RSS_URL.format(slug=category.slug) }}{% else %}{{ CATEGORY_FEED_RSS.format(slug=category.slug) }}{% endif %}"
+	type="application/rss+xml" rel="alternate" title="{{ SITENAME }} / {{ category }}"
+/>
+{% endif %}

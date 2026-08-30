@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+
+{% block extra_meta %}
+<style>
+	#home { /* this flex is only used on small screens */
+			display: flex;
+			height: 100%;
+			width: 100%;
+			justify-content: space-evenly;
+			align-items: center;
+	}
+
+	.win {
+			position: absolute;
+			border-color: #000;
+			margin: 10px 0;
+			width: 428px;
+			height: 238px;
+			box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.3);
+			border: 6px solid;
+			background-clip: padding-box;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			flex: 0 0 auto;
+	}
+
+	.win:hover
+	{
+			border-color: var(--trim);
+	}
+
+	@keyframes blink{50%{opacity:0;}}
+	#c{
+			color: var(--trim);
+			animation: blink 2s step-start infinite;
+	}
+
+	#home2 {
+			top: calc(50% + 22px);
+			left: calc(50% - 352px);
+	}
+
+	#home1 {
+			top: calc(50% - 260px);
+			left: calc(50% - 88px);
+	}
+
+	.bar {
+			border-top-style: solid;
+			border-width: 18px;
+			border-color: inherit;
+	}
+
+	.wc {
+			font-size: 1.1em;
+			display: flex;
+			flex: 1 1 auto;
+			align-items: center;
+			justify-content: center;
+			align-self: center;
+			width: 75%;
+			line-height: 1.4em;
+			padding-bottom: 0.5em;
+	}
+
+	@media (max-height: 580px) {
+			.win {
+				position: initial;
+			}
+	}
+
+	@media (min-width: 491px) and (max-width: 780px) {
+			#home1 {
+				right: 5%;
+				margin-left: auto;
+			}
+			#home2 {
+				left: 5%;
+				margin-right: auto;
+			}
+	}
+
+	@media (max-width: 490px) {
+			.win {
+				width: 88%;
+				position: initial;
+			}
+	}
+
+	@media (max-width: 960px) {
+			#home {
+				flex-direction: column;
+			}
+	}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div id=home>
+	<div id=home1 class=win>
+		<div class=bar></div>
+		<div class=wc>
+			<div>{{ HOME1 }}<span id=c>_</span></li></div>
+		</div>
+	</div>
+
+	<div id=home2 class=win>
+		<div class=bar></div>
+		<div class=wc>
+			<div><a href=/posts.html>{{ HOME2 }}</a></div>
+		</div>
+	</div>
+</div>
+{% endblock %}

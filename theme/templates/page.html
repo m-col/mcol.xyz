@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+
+{% block title %}{{ SITENAME }} / {{ page.title }}{%endblock%}
+
+
+{% block header %}
+<a href=/{{ output_file }}>{{ page.title }}</a>
+{% endblock %}
+
+
+{% block content %}
+{{ page.content }}
+<footer><hr>- mcol.xyz -</footer>
+{% endblock %}

@@ -3,3 +3,6 @@ drafts
 output
 content/screenshots
 .venv
+gitja/output
+_site
+gitja-src

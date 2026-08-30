@@ -1,0 +1,93 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Build blog
+        run: |
+          uv sync --locked
+          uv run pelican content -o output -s publishconf.py
+
+      - uses: haskell-actions/setup@v2
+        with:
+          enable-stack: true
+
+      - name: Checkout gitja
+        uses: actions/checkout@v4
+        with:
+          repository: m-col/gitja
+          path: gitja-src
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.stack
+          key: ${{ runner.os }}-stack-${{ hashFiles('gitja-src/stack.yaml.lock') }}
+
+      - name: Build gitja
+        run: |
+          cd gitja-src
+          stack --no-terminal install
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install dhall-to-json
+        run: |
+          curl -fsSL \
+            https://github.com/dhall-lang/dhall-haskell/releases/download/1.42.2/dhall-json-1.7.12-x86_64-linux.tar.bz2 \
+            | tar xj -C /usr/local/bin --strip-components=1 bin/dhall-to-json
+
+      - name: Clone repos listed on /code
+        run: |
+          repos=$(dhall-to-json --file gitja/config.dhall | jq -r '.repos[]' | sed 's#^\.\./##')
+          mv gitja-src ../gitja
+          cd ..
+          for repo in $repos; do
+            case "$repo" in
+              # mcol.xyz is already checked out here as this workflow's own
+              # repo, and gitja was just moved into place above (it was
+              # already checked out to build the gitja binary itself).
+              mcol.xyz | gitja) continue ;;
+            esac
+            git clone --depth 100 "https://github.com/m-col/$repo" "$repo"
+          done
+
+      - name: Write repo descriptions
+        run: python3 gitja/descriptions.py
+
+      - name: Build /code pages
+        run: gitja -c gitja/config.dhall -q
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp -r output/. _site/
+          mkdir -p _site/code
+          cp -r gitja/output/. _site/code/
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: _site
+          cname: mcol.xyz

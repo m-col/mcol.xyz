@@ -1,0 +1,46 @@
+{% extends "../template.html.include" %}
+
+{%- block title -%}
+{{ name }} - {{ commit.title }}
+{%- endblock -%}
+
+{% block body %}
+{% include "repo-table-header.html.include" %}
+
+<div id="content">
+  <pre><b>Commit</b> <a href="{{ host }}/code/{{ name }}/commit/{{ commit.id }}.html">{{ commit.id }}</a>
+<b>Parent:</b> <a href="{{ host }}/code/{{ name }}/commit/{{ commit.parent }}.html">{{ commit.parent }}</a>
+<b>Author:</b> {{ commit.author }} &lt;<a href="mailto:{{ commit.author_email }}">{{ commit.author_email }}</a>&gt;
+<b>Date:</b> {{ commit.authored }}
+<b>Committer:</b> {{ commit.committer }} &lt;<a href="mailto:{{ commit.committer_email }}">{{ commit.committer_email }}</a>&gt;
+<b>Committed:</b> {{ commit.committed }}
+
+{{ commit.message }}
+</pre>
+
+{%- for diff in commit.diffs -%}
+<div class="diff">
+  <p>
+    <b>{{ diff.new_file }}</b>
+    <span class="status">{{ diff.status }}</span>
+  </p>
+
+  {% if diff.newfile != diff.oldfile %}
+  <p>Renamed from {{ diff.old_file }}</p>
+  {% endif %}
+
+  <pre>
+  {%- for hunk in diff.hunks -%}
+  {{ hunk.header }}
+
+    {%- for line in hunk.lines -%}
+      <span class="{{ line.class }}">{{ line.text }}</span>
+    {%- endfor -%}
+
+  {%- endfor -%}
+  </pre>
+</div>
+{%- endfor -%}
+
+</div>
+{% endblock %}

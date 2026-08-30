@@ -60,10 +60,15 @@ jobs:
       - name: Clone repos listed on /code
         run: |
           repos=$(dhall-to-json --file gitja/config.dhall | jq -r '.repos[]' | sed 's#^\.\./##')
+          mv gitja-src ../gitja
           cd ..
           for repo in $repos; do
-            # mcol.xyz is already checked out here as this workflow's own repo.
-            [ "$repo" = "mcol.xyz" ] && continue
+            case "$repo" in
+              # mcol.xyz is already checked out here as this workflow's own
+              # repo, and gitja was just moved into place above (it was
+              # already checked out to build the gitja binary itself).
+              mcol.xyz | gitja) continue ;;
+            esac
             git clone --depth 100 "https://github.com/m-col/$repo" "$repo"
           done
 

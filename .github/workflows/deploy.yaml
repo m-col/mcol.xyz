@@ -40,7 +40,7 @@ jobs:
           repository: m-col/gitja
           path: gitja-src
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ~/.stack
           key: ${{ runner.os }}-stack-${{ hashFiles('gitja-src/stack.yaml.lock') }}

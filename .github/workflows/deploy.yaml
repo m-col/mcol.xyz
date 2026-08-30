@@ -1,0 +1,84 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    # Repos listed in gitja/config.dhall get new commits independently of
+    # this repo, so rebuild periodically to pick those up. gitja only
+    # regenerates pages that have actually changed, so this is cheap.
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Build blog
+        run: |
+          uv sync --locked
+          uv run pelican content -o output -s publishconf.py
+
+      - uses: haskell-actions/setup@v2
+        with:
+          enable-stack: true
+
+      - name: Clone gitja
+        run: git clone --depth 1 https://github.com/m-col/gitja gitja-src
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.stack
+          key: ${{ runner.os }}-stack-${{ hashFiles('gitja-src/stack.yaml.lock') }}
+
+      - name: Build gitja
+        run: |
+          cd gitja-src
+          stack --no-terminal install
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Clone repos listed on /code
+        run: |
+          cd ..
+          for repo in bdf2flf mini-theme mkinitcpio-welcome pelican-microfeed \
+                      pelican-minify-fontawesome qtile-config qtools \
+                      sudoku-solver tide vim-misc wimp xanadu xoop zshrc; do
+            git clone --depth 100 "https://github.com/m-col/$repo" "$repo"
+          done
+          # mcol.xyz itself is already checked out as this workflow's own repo,
+          # already sitting in the right sibling location for config.dhall's
+          # "repos = .." to find it.
+
+      - name: Write repo descriptions
+        run: python3 gitja/descriptions.py
+
+      - name: Build /code pages
+        run: gitja -c gitja/config.dhall -q
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp -r output/. _site/
+          mkdir -p _site/code
+          cp -r gitja/output/. _site/code/
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: _site
+          cname: mcol.xyz

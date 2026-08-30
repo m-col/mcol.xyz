@@ -9,7 +9,7 @@ a sadistic programmer who sticks their program's files right into your neatly
 organised home folder. Fortunately, some rebels against the
 what-are-`XDG-directory-standards
 <https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_
-terrorist group have come up with clever solutions to force all of your hidden
+cabal have come up with clever solutions to force all of your hidden
 files to stay within the bounds of your .config folder.
 
 Inspired by the likes of Apache and nginx, `rewritefs

@@ -1,5 +1,9 @@
 /* 🐱  🐭  */
 
+:root {
+    --trim: #5D479D; /* purple */
+}
+
 @viewport {
     width: device-width;
     zoom: 1.0;

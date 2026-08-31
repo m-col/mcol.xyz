@@ -207,7 +207,7 @@ I learnt a lot reading how these programs handle painting the root window:
 .. _xlib: https://www.x.org/releases/current/doc/libX11/libX11/libX11.html
 .. _xplain: https://magcius.github.io/xplain/article/x-basics.html
 .. _here: /code/qpaper
-.. _cairocffi: https://cairocffi.readthedocs.io
+.. _cairocffi: https://doc.courtbouillon.org/cairocffi/
 .. _cairo: https://www.cairographics.org/
 .. _urxvt: https://software.schmorp.de/pkg/rxvt-unicode.html
 .. _xsri: https://github.com/tjackson/xsri

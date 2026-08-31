@@ -21,5 +21,6 @@ jobs:
           args: >-
             --no-progress
             --root-dir "${{ github.workspace }}/_site"
+            --remap "https://mcol.xyz file://${{ github.workspace }}/_site"
             --accept 200..=299,403,429
             '_site/**/*.html'

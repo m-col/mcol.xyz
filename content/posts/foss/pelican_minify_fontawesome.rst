@@ -46,7 +46,7 @@ CSS blocks are then copied into the output folder.
 
 Extracting the glyphs from the fonts was the tricky part. FontForge advertised
 Python bindings, so guided by `their docs
-<https://fontforge.github.io/python.html>`_ I tried to put the logic together.
+<https://fontforge.org/docs/scripting/python.html>`_ I tried to put the logic together.
 FontForge's approach to manipulating fonts did take me a while to understand,
 however it does work well. This is the gist of it:
 

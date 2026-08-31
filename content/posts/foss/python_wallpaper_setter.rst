@@ -210,5 +210,5 @@ I learnt a lot reading how these programs handle painting the root window:
 .. _cairocffi: https://doc.courtbouillon.org/cairocffi/
 .. _cairo: https://www.cairographics.org/
 .. _urxvt: https://software.schmorp.de/pkg/rxvt-unicode.html
-.. _xsri: https://github.com/tjackson/xsri
+.. _xsri: https://src.fedoraproject.org/repo/pkgs/xsri/
 .. _fvwm-root: https://github.com/fvwmorg/fvwm/blob/master/bin/fvwm-root.c

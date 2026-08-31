@@ -56,3 +56,10 @@ runs:
         cp -r output/. _site/
         mkdir -p _site/code
         cp -r gitja/output/. _site/code/
+
+    - name: Minify site
+      shell: bash
+      run: |
+        curl -fsSL https://github.com/tdewolff/minify/releases/latest/download/minify_linux_amd64.tar.gz \
+          | tar xz -C /usr/local/bin minify
+        minify -r -o _site/ _site/

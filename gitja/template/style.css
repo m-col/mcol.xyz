@@ -55,6 +55,7 @@ a:target {
 #avatar {
     width: 32px;
     height: 32px;
+    display: block;
 }
 
 a.d, a.h, a.i, a.line {

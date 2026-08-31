@@ -42,7 +42,7 @@ devserver port="8000" *flags:
 
 # Generate using production settings
 publish *flags: clean
-    uv run pelican {{ inputdir }} -o {{ outputdir }} -s {{ publishconf }} {{ flags }}
+    uv run pelican {{ inputdir }} -o {{ outputdir }} -s {{ publishconf }} --fatal errors {{ flags }}
 
 # Upload the web site via SSH
 ssh-upload: publish

@@ -13,7 +13,7 @@ runs:
       shell: bash
       run: |
         uv sync --locked
-        uv run pelican content -o output -s publishconf.py
+        uv run pelican content -o output -s publishconf.py --fatal errors
 
     - name: Download gitja
       shell: bash

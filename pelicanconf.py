@@ -61,7 +61,7 @@ mine <a href="/screenshots.html">here</a>).</p>
 AVATAR = "/avatar.png"
 HOME1 = "One more person's notes on FOSS, code and unix toys"
 HOME2 = "Welcome"
-EXTRAHEAD = '<link rel=stylesheet href="/theme/fontawesome/css/all.min.css">'
+EXTRAHEAD = ""
 EXTRATAIL = ""
 ARTICLE_FEEDBACK = """If you have any thoughts, comments, criticisms, feel free to reach
 out on <a href="https://fosstodon.org/@mcol">mastodon</a> or by <a
@@ -73,7 +73,7 @@ if os.path.isdir(SCREENSHOTS_DIR):
 else:
     SCREENSHOTS = []
 
-# fontawesome icons (:fas:/:far:/:fab: RST roles), self-hosted 5.11.2
+# fontawesome icons (:fas:/:far:/:fab: RST roles), inlined as SVGs
 PLUGINS.append("fontawesome_roles")
 
 

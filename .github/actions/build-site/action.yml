@@ -1,0 +1,58 @@
+name: Build site
+description: Build the blog and /code pages into _site
+
+runs:
+  using: composite
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        enable-cache: true
+
+    - name: Build blog
+      shell: bash
+      run: |
+        uv sync --locked
+        uv run pelican content -o output -s publishconf.py
+
+    - name: Download gitja
+      shell: bash
+      run: |
+        curl -fsSL -o /usr/local/bin/gitja \
+          https://github.com/m-col/gitja/releases/latest/download/gitja-linux-x86_64
+        chmod +x /usr/local/bin/gitja
+
+    - name: Install dhall-to-json
+      shell: bash
+      run: |
+        curl -fsSL \
+          https://github.com/dhall-lang/dhall-haskell/releases/download/1.42.2/dhall-json-1.7.12-x86_64-linux.tar.bz2 \
+          | tar xj -C /usr/local/bin --strip-components=1 bin/dhall-to-json
+
+    - name: Clone repos listed on /code
+      shell: bash
+      run: |
+        repos=$(dhall-to-json --file gitja/config.dhall | jq -r '.repos[]' | sed 's#^\.\./##')
+        cd ..
+        for repo in $repos; do
+          # mcol.xyz is already checked out here as this workflow's own repo.
+          [ "$repo" = mcol.xyz ] && continue
+          # Full clone, not shallow - gitja needs each repo's full history.
+          git clone "https://github.com/m-col/$repo" "$repo"
+        done
+
+    - name: Write repo descriptions
+      shell: bash
+      run: python3 gitja/descriptions.py
+
+    - name: Build /code pages
+      shell: bash
+      run: gitja -c gitja/config.dhall -q
+
+    - name: Assemble site
+      shell: bash
+      run: |
+        mkdir -p _site
+        cp -r output/. _site/
+        mkdir -p _site/code
+        cp -r gitja/output/. _site/code/

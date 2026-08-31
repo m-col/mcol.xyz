@@ -26,7 +26,7 @@ I need to leave wifi on - as i do with my "current" phone - but I only ever
 turn 4G on when I need it (which is not often). Camera isn't working on UT yet.
 
 Sending and receiving Signal messages works great with `Axolotl
-<https://axolotl.chat/>`_, but it doesn't seem to read contact information from
+<https://github.com/axolotl-chat/axolotl>`_, but it doesn't seem to read contact information from
 the Contacts app, so at the minute I'm just seeing phone numbers and hoping I
 don't message the wrong person. It also doesn't support push notifications or
 phone calls :fas:`sad-tear`.

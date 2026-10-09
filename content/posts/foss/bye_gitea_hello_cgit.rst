@@ -107,6 +107,6 @@ with cgit.
 
 .. _gitea: https://gitea.io
 .. _cgit: https://git.zx2c4.com/cgit
-.. _`arch wiki page`: https://wiki.archlinux.org/index.php/cgit
+.. _`arch wiki page`: https://wiki.archlinux.org/title/Cgit
 .. _git-http-backend: https://git-scm.com/docs/git-http-backend
 .. _paritybit.ca: https://www.paritybit.ca/blog/switching-to-cgit

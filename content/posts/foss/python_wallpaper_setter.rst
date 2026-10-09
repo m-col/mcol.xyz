@@ -27,7 +27,8 @@ Setting the desktop wallpaper therefore means colouring and rendering the
 pixmap for the root window of each screen. Wrapping this behaviour as an X
 client: we need to open a connection to the X server, load our wallpaper image
 in a form that can be painted onto a pixmap, and then perform the painting.
-I've packaged what I've described here with a convenient interface here_.
+I've packaged what I've described here with a convenient interface (that code
+is no longer available, unfortunately).
 
 
 wallpaper setting with xcffib
@@ -206,7 +207,6 @@ I learnt a lot reading how these programs handle painting the root window:
 .. _XCB: https://xcb.freedesktop.org/
 .. _xlib: https://www.x.org/releases/current/doc/libX11/libX11/libX11.html
 .. _xplain: https://magcius.github.io/xplain/article/x-basics.html
-.. _here: /code/qpaper
 .. _cairocffi: https://doc.courtbouillon.org/cairocffi/
 .. _cairo: https://www.cairographics.org/
 .. _urxvt: https://software.schmorp.de/pkg/rxvt-unicode.html

@@ -116,13 +116,13 @@ alongside `mkinitcpio-colors`_ should be enough to recreate this bootup. I
 haven't tested it with any other font sizes though, so the thought of trying it
 with a different size worries me.
 
-.. _plymouth: https://wiki.archlinux.org/index.php/Plymouth
+.. _plymouth: https://wiki.archlinux.org/title/Plymouth
 .. _mkinitcpio-colors: https://github.com/EvanPurkhiser/mkinitcpio-colors
 .. _`box-drawing characters`: https://en.wikipedia.org/wiki/Box-drawing_character
 .. _tamzen: https://github.com/sunaku/tamzen-font
-.. _`arch wiki`: https://wiki.archlinux.org/index.php/Linux_console#Fonts
-.. _`mkinitcpio hooks`: https://wiki.archlinux.org/index.php/Mkinitcpio#HOOKS
+.. _`arch wiki`: https://wiki.archlinux.org/title/Linux_console#Fonts
+.. _`mkinitcpio hooks`: https://wiki.archlinux.org/title/Mkinitcpio#HOOKS
 .. _`ANSI escape codes`: https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_parameters
 .. _`this askubuntu question`: https://askubuntu.com/questions/147462/how-can-i-change-the-tty-colors
-.. _Apparently: https://wiki.archlinux.org/index.php/Silent_boot#fsck
+.. _Apparently: https://wiki.archlinux.org/title/Silent_boot#fsck
 .. _here: /code/mkinitcpio-welcome

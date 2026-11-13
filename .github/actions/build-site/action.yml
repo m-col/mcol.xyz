@@ -22,6 +22,17 @@ runs:
           https://github.com/m-col/gitja/releases/latest/download/gitja-linux-x86_64
         chmod +x /usr/local/bin/gitja
 
+    - name: Install ICU 74 runtime libs for gitja
+      shell: bash
+      run: |
+        # gitja's prebuilt binary links against libicuuc.so.74 etc, which
+        # the runner's Ubuntu release no longer ships. Extract them from
+        # the Ubuntu 24.04 package without installing it system-wide.
+        curl -fsSL -o /tmp/libicu74.deb \
+          http://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu74_74.2-1ubuntu3.1_amd64.deb
+        dpkg-deb -x /tmp/libicu74.deb /tmp/icu74
+        echo "LD_LIBRARY_PATH=/tmp/icu74/usr/lib/x86_64-linux-gnu" >> "$GITHUB_ENV"
+
     - name: Install dhall-to-json
       shell: bash
       run: |

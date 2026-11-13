@@ -20,9 +20,7 @@ permissions:
 
 jobs:
   build:
-    # Pinned: gitja's prebuilt binary links against libicuuc.so.74, which
-    # ubuntu-latest (now 26.04) no longer ships.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:

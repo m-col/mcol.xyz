@@ -73,7 +73,7 @@ While we're on the rasperry pi, let's configure some hard drive power
 management so the hard drive spins down soon after the daily backup to save
 some power. First install :code:`hdparm`, then set the power management and
 spin down settings (see the `Arch wiki
-<https://wiki.archlinux.org/index.php/Hdparm#Power_management_configuration>`_
+<https://wiki.archlinux.org/title/Hdparm#Power_management_configuration>`_
 for more info).
 
 .. code-block:: bash
@@ -139,5 +139,5 @@ pi if you're at home. If it doesn't work for whatever reason, you'll get
 notified of the error and you can check out the log in the /tmp folder.
 
 Complement this with `etckeeper
-<https://wiki.archlinux.org/index.php/etckeeper>`_ to back up system files and
+<https://wiki.archlinux.org/title/Etckeeper>`_ to back up system files and
 this simple and lightweight setup can restore your machine in no time.
